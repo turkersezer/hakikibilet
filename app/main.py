@@ -52,8 +52,9 @@ templates = Jinja2Templates(directory=templates_dir)
 async def maintenance_middleware(request: Request, call_next):
     path = request.url.path
     
-    # Statik dosyalar, favicon ve robots her zaman açık
-    if path.startswith("/static") or path in ("/favicon.ico", "/robots.txt"):
+    # Yasal uyum sayfaları, statik dosyalar, favicon ve robots her zaman herkese açık (Affiliate denetimi için)
+    legal_paths = ("/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
+    if path.startswith("/static") or path in ("/favicon.ico", "/robots.txt") or path in legal_paths:
         return await call_next(request)
         
     # URL parametresiyle doğrudan yönetici girişi: ?onizleme=hakiki2026 veya ?preview=hakiki2026
@@ -124,6 +125,40 @@ async def admin_lock():
     response = RedirectResponse(url="/")
     response.delete_cookie(key="hakiki_preview_access")
     return response
+
+# ==================== HUKUK & YASAL UYUM MERKEZİ ROTALARI ====================
+
+@app.get("/yasal-uyari", response_class=HTMLResponse)
+@app.get("/kullanim-kosullari", response_class=HTMLResponse)
+@app.get("/kvkk", response_class=HTMLResponse)
+@app.get("/cerez-politikasi", response_class=HTMLResponse)
+@app.get("/etkinlik-kurallari", response_class=HTMLResponse)
+@app.get("/iletisim", response_class=HTMLResponse)
+@app.get("/hukuk", response_class=HTMLResponse)
+@app.get("/legal", response_class=HTMLResponse)
+async def legal_center_page(request: Request):
+    """Hukuk, Mevzuat, TÜRSAB Metasearch, KVKK ve Şartlar Merkezi"""
+    path = request.url.path
+    tab_map = {
+        "/yasal-uyari": "tursab",
+        "/kullanim-kosullari": "kullanim",
+        "/kvkk": "kvkk",
+        "/cerez-politikasi": "cerez",
+        "/etkinlik-kurallari": "etkinlik",
+        "/iletisim": "kunye",
+    }
+    initial_tab = tab_map.get(path, "tursab")
+    return templates.TemplateResponse(
+        request=request,
+        name="legal.html",
+        context={
+            "app_name": settings.APP_NAME,
+            "app_slogan": settings.APP_SLOGAN,
+            "app_domain": settings.APP_DOMAIN,
+            "legal_disclaimer": settings.LEGAL_DISCLAIMER,
+            "initial_tab": initial_tab
+        }
+    )
 
 # ==================== SAYFA ROTALARI (HTML) ====================
 

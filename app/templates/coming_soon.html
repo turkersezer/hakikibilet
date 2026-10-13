@@ -171,16 +171,33 @@
     </main>
 
     <!-- Alt Kısım / Footer -->
-    <footer class="w-full border-t border-slate-800/80 bg-slate-950/60 py-6 px-4 text-center text-xs text-slate-500">
-        <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-            <p>© 2026 Hakiki Bilet (hakikibilet.com) • Tüm Hakları Saklıdır.</p>
-            <p class="text-[11px] text-slate-500 max-w-md">
-                Hakiki Bilet bir arama ve fiyat karşılaştırma motorudur. Biletleme işlemleri IATA/TÜRSAB belgeli yetkili acenteler tarafından gerçekleştirilir.
-            </p>
-            <!-- Yönetici Giriş Butonu (Gizli / Sade) -->
-            <button onclick="openAdminModal()" class="text-slate-600 hover:text-amber-400 transition-colors p-1" title="Yönetici Girişi">
-                <i class="fa-solid fa-lock text-xs"></i>
-            </button>
+    <footer class="w-full border-t border-slate-800/80 bg-slate-950/80 py-8 px-4 text-center text-xs text-slate-500">
+        <div class="max-w-5xl mx-auto space-y-4">
+            <!-- Yasal Bağlantılar -->
+            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-400">
+                <a href="/yasal-uyari" class="hover:text-amber-300 transition-colors">TÜRSAB Metasearch Bildirimi</a>
+                <span class="text-slate-700">•</span>
+                <a href="/kullanim-kosullari" class="hover:text-amber-300 transition-colors">Kullanım Koşulları</a>
+                <span class="text-slate-700">•</span>
+                <a href="/kvkk" class="hover:text-amber-300 transition-colors">KVKK & Gizlilik</a>
+                <span class="text-slate-700">•</span>
+                <a href="/cerez-politikasi" class="hover:text-amber-300 transition-colors">Çerez Politikası</a>
+                <span class="text-slate-700">•</span>
+                <a href="/etkinlik-kurallari" class="hover:text-amber-300 transition-colors">Etkinlik & Maç Şartları</a>
+                <span class="text-slate-700">•</span>
+                <a href="/iletisim" class="hover:text-amber-300 transition-colors">Resmi Künye & İletişim</a>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-800/60 text-slate-500">
+                <p>© 2026 Hakiki Bilet (hakikibilet.com) • Tüm Hakları Saklıdır.</p>
+                <p class="text-[11px] text-slate-500 max-w-md">
+                    Hakiki Bilet 1618 Sayılı Kanun kapsamında seyahat acentası değildir. Bilet satış ve ödeme işlemleri IATA/TÜRSAB belgeli yetkili acenteler ve resmi taşıyıcılar tarafından gerçekleştirilir.
+                </p>
+                <!-- Yönetici Giriş Butonu (Gizli / Sade) -->
+                <button onclick="openAdminModal()" class="text-slate-600 hover:text-amber-400 transition-colors p-1" title="Yönetici Girişi">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                </button>
+            </div>
         </div>
     </footer>
 

@@ -698,12 +698,63 @@
             </div>
         </div>
         
+        <!-- Hukuk & Mevzuat Bağlantıları -->
+        <div class="max-w-7xl mx-auto px-4 mt-6 pt-6 border-t border-slate-100 flex flex-wrap justify-center items-center gap-x-5 gap-y-2 text-xs text-slate-500 font-medium">
+            <a href="/yasal-uyari" class="hover:text-blue-600 transition flex items-center gap-1"><i class="fa-solid fa-shield-halved text-amber-500 text-[10px]"></i> TÜRSAB Metasearch Bildirimi</a>
+            <span class="text-slate-300">•</span>
+            <a href="/kullanim-kosullari" class="hover:text-blue-600 transition">Kullanım Koşulları</a>
+            <span class="text-slate-300">•</span>
+            <a href="/kvkk" class="hover:text-blue-600 transition">KVKK Aydınlatma & Gizlilik</a>
+            <span class="text-slate-300">•</span>
+            <a href="/cerez-politikasi" class="hover:text-blue-600 transition">Çerez Politikası</a>
+            <span class="text-slate-300">•</span>
+            <a href="/etkinlik-kurallari" class="hover:text-blue-600 transition">Etkinlik & Maç Şartları</a>
+            <span class="text-slate-300">•</span>
+            <a href="/iletisim" class="hover:text-blue-600 transition">Resmi Künye & İletişim</a>
+        </div>
+
         <!-- Yasal Bilgilendirme & TÜRSAB Muafiyeti Beyanı (Metasearch Modeli) -->
-        <div class="max-w-4xl mx-auto px-4 mt-6 pt-6 border-t border-slate-100 text-slate-400 text-[11px] leading-relaxed">
+        <div class="max-w-4xl mx-auto px-4 mt-4 text-slate-400 text-[11px] leading-relaxed">
             <p><strong class="text-slate-600">Yasal Bilgilendirme:</strong> {{ legal_disclaimer }}</p>
             <p class="mt-1">Hakiki Bilet (hakikibilet.com) portalında listelenen havayolu, demiryolu, feribot ve otobüs firmalarının logoları ile tescilli markaları ilgili hak sahiplerine aittir. Karşılaştırma verileri bilgilendirme amaçlı olup, nihai bilet ücreti sağlayıcı sayfalarında doğrulanır.</p>
         </div>
     </footer>
+    <!-- KVKK & Çerez Onay Bildirimi (Cookie Consent Banner) -->
+    <div id="cookieBanner" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-md bg-slate-900/95 text-slate-200 border border-slate-700/80 p-4 rounded-2xl shadow-2xl backdrop-blur-md z-50 text-xs hidden flex-col gap-3">
+        <div class="flex items-start gap-2.5">
+            <i class="fa-solid fa-cookie-bite text-amber-400 text-base mt-0.5"></i>
+            <div>
+                <p class="font-bold text-white mb-0.5">Çerez ve Gizlilik Bildirimi</p>
+                <p class="text-slate-300 leading-relaxed text-[11px]">
+                    Size en uygun bilet seçeneklerini sunmak ve seyahat tercihlerinizi hatırlamak için çerezler kullanıyoruz.
+                    <a href="/cerez-politikasi" target="_blank" class="text-amber-300 hover:underline">Çerez Politikası</a> ve 
+                    <a href="/kvkk" target="_blank" class="text-amber-300 hover:underline">KVKK Metnimiz</a>.
+                </p>
+            </div>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-800">
+            <button onclick="acceptCookies()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-xl text-xs transition">
+                Anladım & Kabul Ediyorum
+            </button>
+        </div>
+    </div>
+    <script>
+        if (!localStorage.getItem('hakiki_cookie_consent')) {
+            const cb = document.getElementById('cookieBanner');
+            if (cb) {
+                cb.classList.remove('hidden');
+                cb.classList.add('flex');
+            }
+        }
+        function acceptCookies() {
+            localStorage.setItem('hakiki_cookie_consent', 'true');
+            const cb = document.getElementById('cookieBanner');
+            if (cb) {
+                cb.classList.add('hidden');
+                cb.classList.remove('flex');
+            }
+        }
+    </script>
 
     <script>
         window.ALL_CITIES = {{ cities | tojson }};

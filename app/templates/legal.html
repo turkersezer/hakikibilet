@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hukuk ve Yasal Uyum Merkezi | Hakiki Bilet - Hakiki Fiyat, Hakiki Bilet</title>
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0B132B',
+                            dark: '#1C2541',
+                            blue: '#3A506B',
+                            gold: '#D4AF37',
+                            goldlight: '#F3E5AB'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #F9E79F 0%, #D4AF37 50%, #B7950B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .legal-content h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .legal-content h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #F3E5AB;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .legal-content p {
+            color: #CBD5E1;
+            line-height: 1.75;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .legal-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1.25rem;
+            color: #CBD5E1;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .legal-content li {
+            margin-bottom: 0.35rem;
+        }
+        .legal-alert {
+            background: rgba(212, 175, 55, 0.08);
+            border-left: 4px solid #D4AF37;
+            padding: 1rem 1.25rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+            margin: 1.5rem 0;
+        }
+        .tab-btn.active {
+            background: rgba(212, 175, 55, 0.15);
+            color: #F3E5AB;
+            border-color: #D4AF37;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-amber-400 selection:text-slate-900 flex flex-col justify-between">
+
+    <!-- Üst Bar -->
+    <header class="w-full border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50 py-3.5 px-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="/" class="flex items-center space-x-3 group">
+                <img src="/static/img/hakikibilet_logo_circle.png" alt="Hakiki Bilet" class="w-10 h-10 object-contain drop-shadow">
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
+                        HAKİKİ <span class="gold-gradient-text font-black">BİLET</span>
+                    </span>
+                    <p class="text-[10px] text-amber-300 font-medium uppercase tracking-wider -mt-0.5">Hukuk ve Yasal Uyum Merkezi</p>
+                </div>
+            </a>
+            
+            <div class="flex items-center gap-3">
+                <a href="/" class="text-xs font-semibold px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all flex items-center gap-1.5 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Ana Sayfaya Dön</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Ana Gövde -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+        
+        <!-- Üst Başlık Banner -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-6 md:p-8 mb-8 shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-3">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                        <span>Şeffaf & Bağımsız Karşılaştırma Beyanı</span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                        Hakiki Bilet Mevzuat, Hukuk ve Tüketici Güvencesi
+                    </h1>
+                    <p class="text-sm text-slate-400 mt-1 max-w-2xl">
+                        1618 Sayılı Seyahat Acentaları Kanunu, 6502 Sayılı Tüketicinin Korunması Kanunu ve 6698 Sayılı KVKK kapsamında yasal bilgilendirme ve kullanıcı hakları rehberi.
+                    </p>
+                </div>
+                <div class="text-right text-xs text-slate-400 self-start md:self-auto bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    <p class="text-slate-500">Son Güncelleme Tarihi:</p>
+                    <p class="font-bold text-amber-300 mt-0.5">13 Ekim 2026</p>
+                    <p class="text-[10px] text-slate-500 mt-1">Sürüm: v1.0 • Hukuki Koruma</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2 Kolonlu Hukuk Merkezi (Sol Menü + Sağ İçerik) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            <!-- Sol Navigasyon Menüsü -->
+            <div class="lg:col-span-4 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sticky top-24 backdrop-blur-md shadow-lg">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400 px-3 py-2">Hukuki Belgeler</p>
+                <nav class="space-y-1.5 mt-1" id="legalNav">
+                    <button onclick="switchTab('tursab')" id="tab-tursab" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-xs md:text-sm transition-all flex items-center justify-between border border-transparent hover:bg-slate-800/80 text-slate-300">
+                        <span class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-shield-halved text-amber-400 w-4"></i>
+                            <span>TÜRSAB Metasearch Bildirimi</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                    </button>
+
+                    <button onclick="switchTab('kullanim')" id="tab-kullanim" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-xs md:text-sm transition-all flex items-center justify-between border border-transparent hover:bg-slate-800/80 text-slate-300">
+                        <span class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-file-contract text-blue-400 w-4"></i>
+                            <span>Kullanım Koşulları & Sözleşme</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                    </button>
+
+                    <button onclick="switchTab('kvkk')" id="tab-kvkk" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-xs md:text-sm transition-all flex items-center justify-between border border-transparent hover:bg-slate-800/80 text-slate-300">
+                        <span class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-user-shield text-emerald-400 w-4"></i>
+                            <span>KVKK Aydınlatma & Gizlilik</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                    </button>
+
+                    <button onclick="switchTab('cerez')" id="tab-cerez" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-xs md:text-sm transition-all flex items-center justify-between border border-transparent hover:bg-slate-800/80 text-slate-300">
+                        <span class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-cookie-bite text-amber-400 w-4"></i>
+                            <span>Çerezler & Affiliate Şeffaflığı</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                    </button>
+
+                    <button onclick="switchTab('etkinlik')" id="tab-etkinlik" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-xs md:text-sm transition-all flex items-center justify-between border border-transparent hover:bg-slate-800/80 text-slate-300">
+                        <span class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-ticket text-rose-400 w-4"></i>
+                            <span>Konser & Maç Biletleri Şartları</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                    </button>
+
+                    <button onclick="switchTab('kunye')" id="tab-kunye" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-xs md:text-sm transition-all flex items-center justify-between border border-transparent hover:bg-slate-800/80 text-slate-300">
+                        <span class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-building-columns text-purple-400 w-4"></i>
+                            <span>Resmi Künye & İletişim</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                    </button>
+                </nav>
+
+                <!-- Acil İletişim Kutusu -->
+                <div class="mt-6 p-4 bg-slate-950/80 rounded-xl border border-slate-800 text-xs text-slate-400">
+                    <p class="font-bold text-slate-200 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-envelope text-amber-400"></i> Hukuk & Mevzuat Masası
+                    </p>
+                    <p class="text-[11px] text-slate-400 mb-2">Her türlü yasal bildirim ve tebligat için resmi e-posta:</p>
+                    <a href="mailto:hukuk@hakikibilet.com" class="text-amber-300 font-mono text-xs hover:underline block break-all">
+                        hukuk@hakikibilet.com
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sağ İçerik Alanı -->
+            <div class="lg:col-span-8 bg-slate-900/60 border border-slate-800/90 rounded-2xl p-6 md:p-10 shadow-xl legal-content backdrop-blur-sm">
+
+                <!-- 1. SEKME: TÜRSAB METASEARCH BİLDİRİMİ -->
+                <div id="content-tursab" class="legal-tab">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-xs font-semibold mb-2">
+                        Madde 1.1 • 1618 Sayılı Kanun Uyarınca Yasal Statü
+                    </div>
+                    <h2 class="!mt-2">TÜRSAB Metasearch Yasal Bildirimi ve Taşıma Muafiyeti</h2>
+
+                    <div class="legal-alert">
+                        <h4 class="font-bold text-amber-300 text-sm mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            Önemli Yasal Beyan: Seyahat Acentası Değiliz
+                        </h4>
+                        <p class="!text-slate-300 !text-xs !mb-0 leading-relaxed">
+                            <strong>Hakiki Bilet (hakikibilet.com)</strong>, 1618 Sayılı Seyahat Acentaları ve Seyahat Acentaları Birliği Kanunu kapsamında bir seyahat acentası veya bilet satıcısı <u>değildir</u>. Platformumuz, kullanıcıların aradıkları uçak, otobüs, tren, feribot ve etkinlik biletlerinin fiyatlarını karşılaştırmalarını ve en uygun seçeneği bulmalarını sağlayan bağımsız bir <strong>fiyat karşılaştırma ve yönlendirme (metasearch) teknolojisi</strong> platformudur.
+                        </p>
+                    </div>
+
+                    <h3>1. Bilet Satışı ve Tahsilat Muafiyeti</h3>
+                    <p>
+                        Hakiki Bilet doğrudan veya dolaylı olarak bilet satışı yapmaz, rezervasyon oluşturmaz, bilet düzenlemez (biletleme / ticketing yapmaz) ve kullanıcılardan kredi kartı, banka kartı veya herhangi bir yöntemle bilet bedeli tahsil etmez.
+                    </p>
+                    <p>
+                        Kullanıcı platform üzerinde bir bilet seferini seçtiğinde; ilgili seferin biletleme yetkisine sahip IATA ve TÜRSAB belgeli yetkili seyahat acentesine (örn. Enuygun, Turna, Biletall vb.) veya doğrudan resmi taşıyıcı firmanın (Türk Hava Yolları, Pegasus Hava Yolları, Ajet, TCDD Taşımacılık, İDO, BUDO vb.) güvenli ödeme altyapısına <strong>yönlendirilir</strong>.
+                    </p>
+
+                    <h3>2. Akdi İlişkinin ve Biletleme Sözleşmesinin Kurulması</h3>
+                    <p>
+                        Taşıma sözleşmesi, bilet satış sözleşmesi ve mesafeli satış sözleşmesi; <strong>kullanıcı ile yönlendirildiği yetkili acente veya resmi taşıyıcı firma arasında</strong> bizzat kurulur. Hakiki Bilet bu sözleşmenin tarafı, garantörü veya kefili değildir.
+                    </p>
+
+                    <h3>3. Taşıma Hukuku, Rötarlar ve Sefer İptalleri (SHY-PASS)</h3>
+                    <p>
+                        Uçuş iptalleri, tehirler (rötarlar), uçuşa kabul edilmeme, bagaj kaybı veya hasarı ile ilgili hak ve talepler (Sivil Havacılık Genel Müdürlüğü SHY-PASS Yolcu Hakları Yönetmeliği uyarınca) doğrudan biletin satın alındığı taşıyıcı havayoluna yöneltilmelidir. Karayolu ve demiryolu taşımalarında da Karayolu Taşıma Yönetmeliği ve TCDD yolcu taşıma kuralları geçerli olup, Hakiki Bilet operasyonel aksaklıklardan sorumlu tutulamaz.
+                    </p>
+                </div>
+
+                <!-- 2. SEKME: KULLANIM KOŞULLARI -->
+                <div id="content-kullanim" class="legal-tab hidden">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 text-xs font-semibold mb-2">
+                        Madde 2.1 • Hizmet Şartları ve Sorumluluk Sınırları
+                    </div>
+                    <h2 class="!mt-2">Kullanım Koşulları ve Hizmet Sözleşmesi</h2>
+
+                    <p>
+                        <strong>hakikibilet.com</strong> web sitesini ve mobil servislerini kullanarak aşağıdaki koşulları peşinen kabul etmiş sayılırsınız. Bu şartları kabul etmiyorsanız lütfen platformu kullanmayınız.
+                    </p>
+
+                    <h3>1. Hizmetin Niteliği ve Fiyat Doğruluğu</h3>
+                    <p>
+                        Hakiki Bilet, API entegrasyonları, açık veri bağlantıları ve lisanslı veri sağlayıcıları aracılığıyla bilet fiyatlarını, sefer saatlerini ve aktarma seçeneklerini anlık olarak tarar ve kullanıcıya sunar.
+                    </p>
+                    <div class="legal-alert !border-blue-400 !bg-blue-500/10">
+                        <p class="!text-blue-200 !text-xs !mb-0 font-medium">
+                            <strong>Dinamik Fiyatlandırma Uyarısı (6502 Sayılı Kanun Uyarınca):</strong> Havayolu, otobüs ve etkinlik firmaları dinamik fiyatlandırma algoritmaları kullanmakta olup, koltuk ve bilet fiyatları anlık olarak arz-talebe göre değişebilmektedir. Hakiki Bilet verilerin doğruluğu için azami teknik özeni gösterir; ancak yönlendirildiğiniz üçüncü taraf sitedeki anlık bilet tükenmesi veya fiyat artışlarından sorumlu değildir. Nihai ve bağlayıcı fiyat, yönlendirildiğiniz güvenli ödeme sayfasında onayladığınız fiyattır.
+                        </p>
+                    </div>
+
+                    <h3>2. Fikri ve Sınai Mülkiyet Hakları (6769 Sayılı Kanun)</h3>
+                    <p>
+                        "Hakiki Bilet" unvanı, "Hakiki Fiyat, Hakiki Bilet" tescilli sloganı, Hakiki Bilet logo tasarımları, altın onay mührü grafik öğeleri, arayüz mimarisi ve yazılım kodları 6769 Sayılı Sınai Mülkiyet Kanunu ve 5846 Sayılı Fikir ve Sanat Eserleri Kanunu ile korunmaktadır. Önceden yazılı izin alınmaksızın kopyalanamaz, çoğaltılamaz veya otomatik botlarla (scraping) çekilemez.
+                    </p>
+
+                    <h3>3. Ticari Markalar ve Adil Referans Hakkı (Nominative Fair Use)</h3>
+                    <p>
+                        Sitemizde yer alan havayolu (THY, Pegasus vb.), otobüs firması (Kamil Koç, Pamukkale vb.) ve etkinlik platformu marka ve logoları, yalnızca tüketicinin aradığı seferi doğru teşhis etmesi ve yönlendirilecek tarafı açıkça görmesi amacıyla "bilgilendirici ticari referans (nominative fair use)" kapsamında kullanılmaktadır. İlgili markaların tüm mülkiyet hakları kendi tescil sahiplerine aittir.
+                    </p>
+
+                    <h3>4. Uyuşmazlıkların Çözümü</h3>
+                    <p>
+                        Hakiki Bilet servislerinin kullanımından doğabilecek uyuşmazlıklarda Türk Hukuku uygulanır ve İstanbul (Çağlayan) Mahkemeleri ve İcra Daireleri yetkilidir.
+                    </p>
+                </div>
+
+                <!-- 3. SEKME: KVKK AYDINLATMA METNİ -->
+                <div id="content-kvkk" class="legal-tab hidden">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 text-xs font-semibold mb-2">
+                        6698 Sayılı KVKK Uyarınca Aydınlatma Metni
+                    </div>
+                    <h2 class="!mt-2">Kişisel Verilerin Korunması ve Gizlilik Politikası</h2>
+
+                    <p>
+                        Hakiki Bilet olarak, 6698 Sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, veri sorumlusu sıfatıyla kişisel verilerinizin güvenliğine ve gizliliğine en üst düzeyde önem veriyoruz.
+                    </p>
+
+                    <h3>1. Hangi Verileri İşliyoruz?</h3>
+                    <ul>
+                        <li><strong>Arama ve Tercih Verileri:</strong> Kalkış/varış noktası, seyahat tarihi, yolcu sayısı, tercih edilen ulaşım türü (uçak, otobüs, tren, feribot). Bu veriler anonim olarak arama sonuçlarının listelenmesinde işlenir.</li>
+                        <li><strong>İletişim ve Alarm Verileri:</strong> Kullanıcının fiyat alarmı kurması veya lansman listesine kaydolması halinde rızasıyla girdiği e-posta adresi veya telefon numarası.</li>
+                        <li><strong>Teknik ve Cihaz Verileri:</strong> IP adresi, tarayıcı türü, cihaz bilgisi, sistem logları (5651 Sayılı Kanun gereği zorunlu trafik kayıtları).</li>
+                    </ul>
+
+                    <div class="legal-alert !border-emerald-400 !bg-emerald-500/10">
+                        <p class="!text-emerald-200 !text-xs !mb-0 font-medium">
+                            <strong>Ödeme Verisi İşlememe Garantisi:</strong> Hakiki Bilet bilet satışı yapmadığı için hiçbir şekilde kredi kartı numarası, son kullanma tarihi, CVV veya banka hesap bilginizi <u>talep etmez ve sistemlerinde tutmaz</u>.
+                        </p>
+                    </div>
+
+                    <h3>2. Verilerin İşlenme Amaçları ve Hukuki Sebepleri</h3>
+                    <p>
+                        Kişisel verileriniz, KVKK Madde 5 uyarınca "Bir hakkın tesisi, kullanılması veya korunması için veri işlemenin zorunlu olması" ve kullanıcının açık rızası hukuki sebeplerine dayalı olarak şu amaçlarla işlenir:
+                    </p>
+                    <ul>
+                        <li>Kullanıcıya en uygun bilet fiyatlarının ve rotalarının karşılaştırmalı olarak sunulması,</li>
+                        <li>Kullanıcının talep ettiği güzergahlarda fiyat düşüşü olduğunda bildirim (e-posta/SMS/push) gönderilmesi,</li>
+                        <li>Sistem performansının, siber güvenliğin ve hizmet kalitesinin artırılması.</li>
+                    </ul>
+
+                    <h3>3. Verilerin Üçüncü Kişilere Aktarımı</h3>
+                    <p>
+                        Bir bilete tıkladığınızda, yalnızca aradığınız sefer bilgileri (rota, tarih, yolcu sayısı) yetkili bilet sağlayıcısına teknik yönlendirme amacıyla aktarılır. Kişisel kimlik veya iletişim verileriniz üçüncü taraf reklam şirketlerine <strong>asla satılmaz veya devredilmez</strong>.
+                    </p>
+
+                    <h3>4. KVKK Kapsamındaki Haklarınız (Madde 11)</h3>
+                    <p>
+                        Veri sahibi olarak; verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini veya silinmesini talep etme, işlenmesine itiraz etme haklarına sahipsiniz. Taleplerinizi <a href="mailto:kvkk@hakikibilet.com" class="text-amber-300 underline font-medium">kvkk@hakikibilet.com</a> adresine iletebilirsiniz.
+                    </p>
+                </div>
+
+                <!-- 4. SEKME: ÇEREZLER & AFFILIATE ŞEFFAFLIĞI -->
+                <div id="content-cerez" class="legal-tab hidden">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-xs font-semibold mb-2">
+                        Şeffaf Gelir Modeli ve Çerezler
+                    </div>
+                    <h2 class="!mt-2">Çerez (Cookie) Politikası ve Gelir Ortaklığı Şeffaflığı</h2>
+
+                    <h3>1. Çerezler Nedir ve Nasıl Kullanılır?</h3>
+                    <p>
+                        Çerezler, web sitemizi ziyaret ettiğinizde tarayıcınız tarafından bilgisayarınıza veya mobil cihazınıza kaydedilen küçük metin dosyalarıdır. Hakiki Bilet üzerinde kullanıcı deneyimini iyileştirmek, arama geçmişinizi hatırlamak ve oturum tercihlerinizi korumak amacıyla kullanılmaktadır.
+                    </p>
+
+                    <h3>2. Çerez Türleri</h3>
+                    <ul>
+                        <li><strong>Zorunlu Çerezler:</strong> Web sitesinin temel fonksiyonlarının ve güvenlik protokollerinin çalışması için elzemdir. Devre dışı bırakılamaz.</li>
+                        <li><strong>İşlevsel Çerezler:</strong> Para birimi seçiminiz, dil tercihiniz ve son aramalarınızın hatırlanmasını sağlar.</li>
+                        <li><strong>Analitik Çerezler:</strong> Ziyaretçi trafiğini, en çok aranan güzergahları ve sayfa hızlarını ölçerek platformu geliştirmemize yardımcı olur (Google Analytics / Cloudflare).</li>
+                    </ul>
+
+                    <div class="legal-alert">
+                        <h4 class="font-bold text-amber-300 text-sm mb-1">
+                            <i class="fa-solid fa-hand-holding-dollar"></i> Gelir Ortaklığı (Affiliate) Şeffaflık Taahhüdümüz
+                        </h4>
+                        <p class="!text-slate-300 !text-xs !mb-0 leading-relaxed">
+                            Hakiki Bilet tamamen <strong>ücretsiz</strong> bir arama motorudur. Kullanıcılarımızdan hiçbir komisyon, üyelik bedeli veya arama ücreti alınmaz. 
+                            Platformumuz, kullanıcı bir bileti beğenip ilgili bilet acentesine veya havayoluna tıklandığında, sağlayıcı firmadan küçük bir yönlendirme komisyonu kazanabilir. 
+                            <br><br>
+                            <strong>Bu durum kullanıcıya ASLA ek bir maliyet yüklemez; bilet fiyatı Hakiki Bilet üzerinden gidildiğinde artmaz, aksine anlaşmalı kampanyalarla daha avantajlı olabilir.</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 5. SEKME: ETKİNLİK & MAÇ BİLETLERİ -->
+                <div id="content-etkinlik" class="legal-tab hidden">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-300 text-xs font-semibold mb-2">
+                        6222 Sayılı Kanun ve Etkinlik Kuralları
+                    </div>
+                    <h2 class="!mt-2">Konser, Festival ve Spor Müsabakası Bilet Hükümleri</h2>
+
+                    <h3>1. Yalnızca Resmi ve Lisanslı Etkinlik Platformları</h3>
+                    <p>
+                        Hakiki Bilet kültür-sanat, konser, tiyatro ve spor müsabakaları alanında <strong>yalnızca Türkiye'nin resmi lisanslı bilet sağlayıcılarının</strong> (Passo, Biletix, Bubilet, Biletinial vb.) resmi etkinliklerini ve bilet kategorilerini listeler.
+                    </p>
+
+                    <div class="legal-alert !border-rose-400 !bg-rose-500/10">
+                        <p class="!text-rose-200 !text-xs !mb-0 font-medium">
+                            <strong>Karaborsa ve İkinci El Bilet Yasağı:</strong> Hakiki Bilet üzerinde kesinlikle kullanıcılar arası bilet devri, ikinci el bilet satışı veya karaborsa niteliğindeki gayriresmi bilet satışına izin verilmez ve yönlendirme yapılmaz.
+                        </p>
+                    </div>
+
+                    <h3>2. Spor Müsabakaları ve Passolig Kuralları (6222 Sayılı Kanun)</h3>
+                    <p>
+                        6222 Sayılı Sporda Şiddet ve Düzensizliğin Önlenmesine Dair Kanun uyarınca, futbol ve spor müsabakalarına girişlerde elektronik kart (Passolig vb.) zorunluluğu bulunmaktadır. Müsabaka bilet alımlarında e-bilet kuralları, taraftar kartı geçerlilikleri ve TFF/kulüp kısıtlamaları yönlendirilen resmi bilet platformunda geçerlidir.
+                    </p>
+
+                    <h3>3. Etkinlik İptalleri ve Tarih Değişiklikleri</h3>
+                    <p>
+                        Hava muhalefeti, sanatçı mazereti veya organizatör kararıyla iptal edilen ya da ertelenen etkinliklerde bilet iadesi ve değişim süreçleri doğrudan ilgili organizatör ve resmi biletleme firmasının yetki ve sorumluluğundadır.
+                    </p>
+                </div>
+
+                <!-- 6. SEKME: RESMİ KÜNYE & İLETİŞİM -->
+                <div id="content-kunye" class="legal-tab hidden">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-semibold mb-2">
+                        5651 Sayılı Kanun Uyarınca Hizmet Sağlayıcı Bilgileri
+                    </div>
+                    <h2 class="!mt-2">Resmi Künye ve Kurumsal İletişim</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <p class="text-xs text-slate-500">Platform Ticari Adı</p>
+                            <p class="font-bold text-white text-base mt-1">Hakiki Bilet</p>
+                            <p class="text-xs text-amber-300 mt-0.5">"Hakiki Fiyat, Hakiki Bilet"</p>
+                        </div>
+
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <p class="text-xs text-slate-500">Hizmet Alan Adları</p>
+                            <p class="font-bold text-white text-sm mt-1">hakikibilet.com</p>
+                            <p class="text-xs text-slate-400">hakikibilet.com.tr (Yönlendirme)</p>
+                        </div>
+
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <p class="text-xs text-slate-500">Faaliyet Konusu</p>
+                            <p class="font-medium text-slate-200 text-xs mt-1">
+                                Bağımsız Seyahat, Ulaşım ve Etkinlik Bilet Fiyat Karşılaştırma, Multimodal Rota ve Yönlendirme (Metasearch) Teknolojileri
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <p class="text-xs text-slate-500">İletişim ve Destek E-Postaları</p>
+                            <p class="text-xs text-slate-200 mt-1"><strong>Genel Destek:</strong> <a href="mailto:destek@hakikibilet.com" class="text-amber-300 hover:underline">destek@hakikibilet.com</a></p>
+                            <p class="text-xs text-slate-200 mt-0.5"><strong>Hukuk & KVKK:</strong> <a href="mailto:hukuk@hakikibilet.com" class="text-amber-300 hover:underline">hukuk@hakikibilet.com</a></p>
+                            <p class="text-xs text-slate-200 mt-0.5"><strong>İş Birlikleri:</strong> <a href="mailto:ortaklik@hakikibilet.com" class="text-amber-300 hover:underline">ortaklik@hakikibilet.com</a></p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs text-slate-400">
+                        <p class="font-bold text-slate-300 mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-gavel text-amber-400"></i>
+                            Telif Hakkı & Bildir-Kaldır (Notice and Take Down) Süreci:
+                        </p>
+                        <p class="text-slate-400 text-xs leading-relaxed">
+                            Hakiki Bilet 5651 Sayılı Kanun uyarınca "yer sağlayıcı" ve metasearch statüsündedir. Platform üzerinde telif hakkı, marka tecavüzü veya kişilik hakkı ihlali iddiasında bulunmak isteyen hak sahipleri, ilgili bağlantı ve gerekçeleriyle birlikte <a href="mailto:hukuk@hakikibilet.com" class="text-amber-300 underline font-medium">hukuk@hakikibilet.com</a> adresine başvurduğu takdirde, bildirim en geç 48 saat içinde hukuki incelemeye alınarak gerekli aksiyon uygulanır.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Alt Kısım -->
+    <footer class="w-full border-t border-slate-800 bg-slate-950 py-6 px-4 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+            <p>© 2026 Hakiki Bilet (hakikibilet.com) • Tüm Hakları Saklıdır.</p>
+            <p class="text-[11px] text-slate-500 max-w-xl">
+                Hakiki Bilet 1618 Sayılı Kanun kapsamında bir seyahat acentası değildir. Bilet satış ve ödeme işlemleri yönlendirilen IATA/TÜRSAB belgeli yetkili acente ve resmi taşıyıcılar tarafından yapılır.
+            </p>
+            <div class="flex items-center gap-4 text-xs text-slate-400">
+                <a href="#tursab" onclick="switchTab('tursab')" class="hover:text-amber-300">TÜRSAB</a>
+                <a href="#kullanim" onclick="switchTab('kullanim')" class="hover:text-amber-300">Kullanım</a>
+                <a href="#kvkk" onclick="switchTab('kvkk')" class="hover:text-amber-300">KVKK</a>
+                <a href="#kunye" onclick="switchTab('kunye')" class="hover:text-amber-300">Künye</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sekme Geçiş Scripti & URL Hash Desteği -->
+    <script>
+        const tabs = ['tursab', 'kullanim', 'kvkk', 'cerez', 'etkinlik', 'kunye'];
+
+        function switchTab(tabId) {
+            tabs.forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                const content = document.getElementById('content-' + t);
+                if (btn) btn.classList.remove('active');
+                if (content) content.classList.add('hidden');
+            });
+
+            const activeBtn = document.getElementById('tab-' + tabId);
+            const activeContent = document.getElementById('content-' + tabId);
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activeContent) activeContent.classList.remove('hidden');
+
+            window.location.hash = tabId;
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        // Sayfa yüklendiğinde URL hash'ine veya parametreye göre sekmeyi aç
+        window.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash.replace('#', '');
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('sekme') || hash;
+
+            if (tabParam && tabs.includes(tabParam)) {
+                switchTab(tabParam);
+            } else {
+                switchTab('tursab');
+            }
+        });
+    </script>
+</body>
+</html>
