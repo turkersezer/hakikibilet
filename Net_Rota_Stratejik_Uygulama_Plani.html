@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Net Rota: Stratejik Dönüşüm ve Uçtan Uca Seyahat Planlama Raporu</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 16mm 14mm 16mm 14mm;
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            font-size: 10.5pt;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .badge-main {
+            display: inline-block;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 8.5pt;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px solid #bfdbfe;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        h1 {
+            color: #0f172a;
+            font-size: 19pt;
+            font-weight: 900;
+            margin: 0 0 6px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.25;
+        }
+        .subtitle {
+            color: #475569;
+            font-size: 10.5pt;
+            margin: 0;
+            font-weight: 500;
+        }
+        .meta-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin-top: 10px;
+            font-size: 9pt;
+            color: #64748b;
+            font-weight: 600;
+        }
+        h2 {
+            color: #0f172a;
+            font-size: 13pt;
+            font-weight: 800;
+            border-left: 4px solid #2563eb;
+            padding-left: 8px;
+            margin: 20px 0 10px 0;
+            letter-spacing: -0.3px;
+            page-break-after: avoid;
+        }
+        h3 {
+            color: #1e293b;
+            font-size: 11pt;
+            font-weight: 700;
+            margin: 14px 0 6px 0;
+            page-break-after: avoid;
+        }
+        p {
+            margin: 0 0 8px 0;
+            color: #334155;
+        }
+        .card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+        }
+        .card-highlight {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+        .flow-grid {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0;
+            page-break-inside: avoid;
+        }
+        .flow-box {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 9pt;
+        }
+        .flow-box-title {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 9pt;
+            page-break-inside: avoid;
+        }
+        th {
+            background: #0f172a;
+            color: #fff;
+            text-align: left;
+            padding: 8px 10px;
+            font-weight: 700;
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        th:first-child { border-top-left-radius: 5px; }
+        th:last-child { border-top-right-radius: 5px; }
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: top;
+        }
+        tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+        .alert-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 4px solid #f59e0b;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 9pt;
+            color: #92400e;
+            margin: 10px 0;
+            page-break-inside: avoid;
+        }
+        ul {
+            margin: 4px 0 8px 0;
+            padding-left: 18px;
+        }
+        li {
+            margin-bottom: 4px;
+            color: #334155;
+        }
+        ol {
+            margin: 4px 0 8px 0;
+            padding-left: 18px;
+        }
+        .footer-note {
+            margin-top: 20px;
+            padding-top: 8px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 8pt;
+            color: #94a3b8;
+            text-align: center;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span class="badge-main">Stratejik Dönüşüm & Sistem Mimarisi Raporu</span>
+        <h1>🧭 Net Rota: Uçtan Uca Seyahat Planlama ve Stratejik Uygulama Planı</h1>
+        <p class="subtitle">Kullanıcının bulunduğu noktadan gitmek istediği yere kadar tüm seyahatini tek ekranda, en ucuz ve en hızlı alternatiflerle, bütçesini görerek planlayabilmesi için master yol haritası.</p>
+        <div class="meta-bar">
+            <span><strong>Platform:</strong> Net Rota (netrota.com)</span>
+            <span><strong>Doküman Sürümü:</strong> v2.4 Master Plan</span>
+            <span><strong>Tarih:</strong> 12 Ekim 2026</span>
+            <span><strong>Durum:</strong> Onay & Uygulama Aşaması</span>
+        </div>
+    </div>
+
+    <h2>1. 🎯 Temel Vizyon ve Çalışma Mantığı</h2>
+    <p>Net Rota'nın temel varlık amacı; kullanıcının arama kutusuna kalkış ve varışını girdiğinde <strong>1. Öncelik olarak alternatifli gerçek bir rota planlaması yapmak</strong>, <strong>2. Öncelik olarak da her seçeneğin bilet fiyatlarını kuruşuna kadar net göstererek</strong> kullanıcının başka hiçbir siteye veya haritaya ihtiyaç duymadan seyahatini tamamlamasını sağlamaktır.</p>
+
+    <div class="flow-grid">
+        <div class="flow-box">
+            <div class="flow-box-title">📍 1. Adım: Konum & Başlangıç</div>
+            <p style="font-size: 8pt; margin: 0; color: #64748b;">GPS koordinatları veya manuel seçim ile Türkiye'nin tüm 81 ili taranır.</p>
+        </div>
+        <div class="flow-box">
+            <div class="flow-box-title">🧭 2. Adım: Akıllı Rota Analizi</div>
+            <p style="font-size: 8pt; margin: 0; color: #64748b;">Direkt uçuş, TCDD hızlı tren veya Bolu-Paris gibi çok modlu kombine aktarma çizelgesi çıkarılır.</p>
+        </div>
+        <div class="flow-box">
+            <div class="flow-box-title">💰 3. Adım: Fiyat & Bütçe Matrisi</div>
+            <p style="font-size: 8pt; margin: 0; color: #64748b;">Otobüs + Uçak toplam rota maliyeti veya direkt havayolu fiyat farkı kuruşu kuruşuna listelenir.</p>
+        </div>
+        <div class="flow-box">
+            <div class="flow-box-title">🚀 4. Adım: Tek Tık Biletleme</div>
+            <p style="font-size: 8pt; margin: 0; color: #64748b;">Kullanıcı vize, bagaj ve aktarma saatlerini görüp doğrudan resmi koltuğunu alır.</p>
+        </div>
+    </div>
+
+    <h2>2. ⚠️ Karşılaşılacak Riskler ve Alınacak Teknik Önlemler</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">Potansiyel Risk / Zorluk</th>
+                <th style="width: 35%;">Olası Sonuç</th>
+                <th style="width: 40%;">Alınacak Kesin Önlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>1. Fiyat Uyuşmazlığı</strong></td>
+                <td>Sitede 1.850 ₺ görüp resmi sitede 2.100 ₺ ile karşılaşan kullanıcının aldatılmış hissetmesi.</td>
+                <td>Kartın üzerine <strong>'Piyasa Taban Fiyatı (1.850 ₺ den Başlayan)'</strong> etiketi konur. Altına <em>'Seçilen günün doluluk kotasına göre biletleme anında teyit edilir'</em> şeffaflık ibaresi eklenir.</td>
+            </tr>
+            <tr>
+                <td><strong>2. Coğrafi Hata (Milano Treni Bug'ı)</strong></td>
+                <td>İstanbul'dan Milano'ya TCDD YHT treni çıkması gibi mantıksız sonuçların sistemi amatör göstermesi.</td>
+                <td><strong>Katı Bağlantı Filtresi:</strong> Tren yalnızca TCDD garları arasında veya Avrupa içi koridorlarda (Roma-Milano gibi) listelenir. Türkiye'den İtalya'ya tren kartı basılması kökten engellenir.</td>
+            </tr>
+            <tr>
+                <td><strong>3. Bozuk / 404 Derin Linkler</strong></td>
+                <td>Havayollarının URL şemalarını değiştirmesiyle kullanıcının boş sayfaya düşmesi.</td>
+                <td>Doğrulanmış parametreli standart IATA ve booking şemaları kullanılır (Pegasus <code>departurePort/arrivalPort</code>, Google Flights IATA parametreleri).</td>
+            </tr>
+            <tr>
+                <td><strong>4. Havalimanı Olmayan İller</strong></td>
+                <td>Bolu, Yalova gibi illerde arama yapan kullanıcının 'Uçuş Yok' uyarısıyla siteden eli boş dönmesi.</td>
+                <td>Sistem otomatik olarak <strong>Akıllı Çok Modlu Kombine Rota Motoru (Rome2rio modeli)</strong> çalıştırarak Otobüs + Uçak toplam seyahat planını hazırlar.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h2>3. ⚖️ Hukuksal ve Vergisel Yükümlülükler</h2>
+
+    <div class="card">
+        <h3 style="margin-top: 0; color: #1e3a8a;">A. TÜRSAB (Seyahat Acentaları Mevzuatı - 1618 Sayılı Kanun)</h3>
+        <p><strong>Yasal Kural:</strong> Türkiye'de seyahat acentacılığı faaliyeti yürütmek, bilet satışı yapmak, ödeme almak veya kendi adına fatura kesmek için <strong>A Grubu Seyahat Acentası İşletme Belgesi (TÜRSAB)</strong> zorunludur. Belgesiz bilet satışı hapis, para cezası ve siteye erişim engellemeye tabidir.</p>
+        <p><strong>Bizim Yasal Güvencemiz (Metasearch / Yönlendirme Modeli):</strong> Net Rota bilet <u>satmaz</u>, ödeme <u>almaz</u>, kredi kartı çekimi <u>yapmaz</u>. Skyscanner, Google Flights ve Cimri gibi yönlendirme ve arama platformudur. Bilet doğrudan Pegasus, THY, TCDD veya Obilet'ten satın alınır.</p>
+        <div class="alert-box" style="margin-bottom: 0;">
+            <strong>Zorunlu Yasal Şerh (Sitede ve Bilet Kartlarında Yer Alacak):</strong><br>
+            <em>'Yasal Bilgilendirme: Net Rota bir seyahat acentası veya bilet satıcısı değildir. Karşılaştırma ve rota planlama platformudur. Biletleme, sözleşme ve ödeme işlemleri doğrudan ilgili havayolu, demiryolu veya yetkili acentanın resmi sisteminde gerçekleşir.'</em>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0; color: #065f46;">B. KVKK (6698 Sayılı Kişisel Verilerin Korunması Kanunu)</h3>
+        <ul>
+            <li>Fiyat alarmı kuran veya hesap açan kullanıcılardan e-posta veya telefon alındığında <strong>Aydınlatma Metni</strong> ve <strong>Açık Rıza Onay Kutucuğu</strong> şarttır.</li>
+            <li>Kullanıcının IP adresi ve arama geçmişi yalnızca anonimleştirilmiş istatistik olarak tutulur.</li>
+            <li>Kullanıcı dilediği zaman tek tıkla takipleri ve verilerini silme hakkına sahip olmalıdır.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0; color: #7c2d12;">C. Vergisel Yükümlülükler (Gelir İdaresi Başkanlığı)</h3>
+        <ul>
+            <li><strong>1. Aşama (Sıfır Maliyetli Başlangıç Dönemi):</strong> Henüz ticari gelir elde edilmediği sürece herhangi bir vergi mükellefiyeti veya şirket kurma zorunluluğu doğmaz.</li>
+            <li><strong>2. Aşama (Komisyon / Affiliate Gelirleri Başladığında):</strong> Obilet, Enuygun, Skyscanner veya Google reklamlarından düzenli komisyon yatmaya başladığında bir <strong>Şahıs Şirketi</strong> açılır. Gelen gelirler için hizmet faturası düzenlenir, KDV ve Gelir Vergisi yasal olarak beyan edilir.</li>
+        </ul>
+    </div>
+
+    <h2>4. 💎 Kullanıcı Memnuniyeti, Sadakat & Üyelik Stratejisi</h2>
+    <p>Bir kullanıcının bu siteyi tekrar tekrar tercih etmesi ve üye olması için ona şu 4 benzersiz değeri sunuyoruz:</p>
+
+    <div class="flow-grid">
+        <div class="flow-box" style="border-left: 3px solid #e11d48;">
+            <div class="flow-box-title">🔔 1. Fiyat Alarmı Nöbetçisi</div>
+            <p style="font-size: 8pt; margin: 0;">'Milano bileti 1.800 ₺ altına düşerse Telegram/E-posta ile haber ver' modülü. En güçlü üyelik motorudur.</p>
+        </div>
+        <div class="flow-box" style="border-left: 3px solid #10b981;">
+            <div class="flow-box-title">📲 2. Rotayı Paylaş & Kaydet</div>
+            <p style="font-size: 8pt; margin: 0;">Bolu ➔ Milano gibi kombine rotayı tek tıkla WhatsApp'tan seyahat arkadaşına atabilme veya profilde saklama.</p>
+        </div>
+        <div class="flow-box" style="border-left: 3px solid #3b82f6;">
+            <div class="flow-box-title">🧭 3. Eksiksiz Seyahat Asistanı</div>
+            <p style="font-size: 8pt; margin: 0;">Vize durumu (Schengen, Kapı Vizesi, Pasaportsuz Çipli Kimlik), bagaj hakkı ve havalimanı transfer rehberi tek ekranda.</p>
+        </div>
+        <div class="flow-box" style="border-left: 3px solid #8b5cf6;">
+            <div class="flow-box-title">🛡️ 4. Sıfır Spam Garantisi</div>
+            <p style="font-size: 8pt; margin: 0;">Kullanıcıyı gereksiz e-postalarla boğmayan, yalnızca gerçek fiyat düşüşü olduğunda uyaran dürüst bildirim mimarisi.</p>
+        </div>
+    </div>
+
+    <h2>5. 📈 Bütçe ve Büyüme Planı: Sıfır Maliyetten Gelire</h2>
+
+    <div class="card card-highlight">
+        <h3 style="margin-top: 0; color: #166534;">1. Aşama: Sıfır Maliyetli Başlangıç (Bootstrap Modeli)</h3>
+        <ul>
+            <li><strong>Sunucu & Altyapı:</strong> Mevcut yerel ortam ve sıfır ek maliyetli FastAPI/Python mimarisi.</li>
+            <li><strong>Veri & Rotalama:</strong> Sıfır ücretli coğrafi Haversine koordinatları, parametreli derin rezervasyon linkleri ve doğrulanmış taban fiyat matrisi.</li>
+            <li><strong>Bildirimler:</strong> Ücretsiz Telegram Bot API ve tarayıcı Web Push bildirimleri.</li>
+            <li><strong>Gelir Modeli:</strong> Obilet Affiliate (otobüs/araç), Enuygun Gelir Ortaklığı (uçak) ve Skyscanner Ortaklık Ağı başvuruları ile komisyon kazanımı.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0; color: #1e40af;">2. Aşama: Gelir Kazanıldıkça Bütçe Ayırma (Scale Modeli)</h3>
+        <p>Siteden komisyon geliri elde edilmeye başlandığında, kazancın %40'ı sisteme geri yatırılır:</p>
+        <ul>
+            <li><strong>Resmi B2B Canlı Uçuş API'ları:</strong> Duffel, Amadeus veya Skyscanner Canlı Fiyat API paketleri satın alınarak anlık koltuk verisi entegre edilir.</li>
+            <li><strong>WhatsApp Business API:</strong> Netgsm veya Twilio üzerinden kullanıcılara doğrudan anlık WhatsApp fiyat alarmları gönderilir.</li>
+            <li><strong>Hedefli Reklam (Google Ads):</strong> 'Bolu Paris bilet', 'en ucuz uçak bileti' gibi yüksek dönüşümlü arama terimlerine bütçe ayrılır.</li>
+        </ul>
+    </div>
+
+    <h2>6. 🛠️ Uygulama Adımları ve Yol Haritası</h2>
+    <ol style="padding-left: 20px; font-size: 9.5pt;">
+        <li style="margin-bottom: 6px;"><strong>Coğrafi Uygunluk Filtresi:</strong> İstanbul-Milano gibi hatlarda TCDD treninin ve imkansız otobüslerin çıkmasını engelleyen, rota türüne göre doğru ulaşım modunu filtreleyen çekirdek algoritmanın devreye alınması.</li>
+        <li style="margin-bottom: 6px;"><strong>Gerçekçi Taban Fiyat Motoru:</strong> Her hat için bilet kartlarına net başlangıç rakamlarının (Pegasus: 1.850 ₺, THY: 3.800 ₺, TCDD: 540 ₺) ve 'En Uygun Fiyat 🏆' rozetinin yerleştirilmesi.</li>
+        <li style="margin-bottom: 6px;"><strong>Uçtan Uca Kombine Rota Çizelgesi:</strong> Havalimanı olmayan illerde Adım 1 (Otobüs) + Adım 2 (Uçak) toplam bütçe ve süre kartının tek ekranda hazır sunulması.</li>
+        <li style="margin-bottom: 6px;"><strong>TÜRSAB & Yasal Güvence Metni:</strong> Sitenin ve bilet kartlarının altına metasearch yönlendirme muafiyeti şeridinin eklenmesi.</li>
+        <li style="margin-bottom: 6px;"><strong>Sadakat & Alarm Entegrasyonu:</strong> Arama ekranında 'Bu Rotayı Takibe Al (Fiyat Alarmı)' ve 'Rotayı WhatsApp'ta Paylaş' işlevlerinin kullanıcıya açılması.</li>
+    </ol>
+
+    <div class="footer-note">
+        © 2026 Net Rota — Tüm Hakları Saklıdır. Bu doküman Net Rota platformunun stratejik mimari referans belgesidir.
+    </div>
+
+</body>
+</html>

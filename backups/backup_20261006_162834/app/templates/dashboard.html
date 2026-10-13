@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Paneli — {{ app_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Top Bar -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xl shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-arrow-left text-sm"></i>
+                </a>
+                <div>
+                    <a href="/" class="text-xl font-black bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+                        Ucuz Bilet Bul
+                    </a>
+                    <span class="text-xs text-slate-400 font-semibold ml-2">/ Kullanıcı Paneli</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="triggerCronNow()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-2 rounded-lg text-xs flex items-center gap-1.5 border border-indigo-200 transition">
+                    <i class="fa-solid fa-rotate text-indigo-600"></i>
+                    <span>Fiyat Taramasını (Cron) Şimdi Tetikle</span>
+                </button>
+                <div class="h-8 w-px bg-slate-200"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs">
+                        DY
+                    </div>
+                    <span class="text-xs font-bold text-slate-700 hidden sm:inline">{{ user.full_name or 'Demo Yolcu' }}</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header & Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-slate-900" id="statTrackCount">{{ routes|length }}</div>
+                    <div class="text-xs text-slate-500 font-semibold">Takip Edilen Rota</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-emerald-600">{{ logs|length }}</div>
+                    <div class="text-xs text-slate-500 font-semibold">Gönderilen Bildirim</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div>
+                    <div class="text-sm font-bold text-slate-900">2 Saatte Bir</div>
+                    <div class="text-xs text-slate-500 font-semibold">Cron Tarama Periyodu</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <div class="text-sm font-bold text-slate-900">Aktif & Koruma</div>
+                    <div class="text-xs text-slate-500 font-semibold">Spam & Gece Koruması</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Navigation Tabs -->
+        <div class="flex border-b border-slate-200 mb-6 gap-6">
+            <button onclick="switchTab('routes')" id="tabBtnRoutes" class="tab-btn active-dash-tab pb-3 font-bold text-sm text-blue-600 border-b-2 border-blue-600 flex items-center gap-2">
+                <i class="fa-solid fa-list-check"></i> Takip Listem ({{ routes|length }})
+            </button>
+            <button onclick="switchTab('logs')" id="tabBtnLogs" class="tab-btn pb-3 font-bold text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left"></i> Bildirim Geçmişi ({{ logs|length }})
+            </button>
+            <button onclick="switchTab('settings')" id="tabBtnSettings" class="tab-btn pb-3 font-bold text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-gear"></i> Bildirim Kanalları & Test
+            </button>
+        </div>
+
+        <!-- TAB 1: TAKİP LİSTESİ -->
+        <section id="tabContentRoutes" class="space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Aktif Fiyat Takip Listesi</h2>
+                    <p class="text-xs text-slate-500">Bu rotaların fiyatları her periyotta otomatik sorgulanır.</p>
+                </div>
+                <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-plus"></i> Yeni Rota Ekle
+                </a>
+            </div>
+
+            {% if routes %}
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                                <th class="p-4">Rota</th>
+                                <th class="p-4">Araç Türü</th>
+                                <th class="p-4">Tarih</th>
+                                <th class="p-4">Hedef Fiyat</th>
+                                <th class="p-4">Kanallar</th>
+                                <th class="p-4">Durum</th>
+                                <th class="p-4 text-right">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs font-semibold">
+                            {% for r in routes %}
+                            <tr id="route-row-{{ r.id }}" class="hover:bg-slate-50/70 transition">
+                                <td class="p-4 font-bold text-slate-900 text-sm">
+                                    {{ r.origin_city }} → {{ r.destination_city }}
+                                </td>
+                                <td class="p-4">
+                                    {% if r.transport_type == 'flight' %}
+                                    <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded">✈️ Uçak</span>
+                                    {% elif r.transport_type == 'train' %}
+                                    <span class="bg-emerald-50 text-emerald-700 px-2 py-1 rounded">🚆 Tren</span>
+                                    {% elif r.transport_type == 'bus' %}
+                                    <span class="bg-amber-50 text-amber-700 px-2 py-1 rounded">🚌 Otobüs</span>
+                                    {% else %}
+                                    <span class="bg-purple-50 text-purple-700 px-2 py-1 rounded">🌐 Tümü</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-slate-600">
+                                    {{ r.travel_date_start }}
+                                </td>
+                                <td class="p-4 font-extrabold text-emerald-600 text-sm">
+                                    ≤ {{ "%.2f"|format(r.target_price) }} ₺
+                                </td>
+                                <td class="p-4 text-slate-500">
+                                    {% if r.active_channels %}
+                                        {% for ch in r.active_channels %}
+                                            {% if ch == 'email' %}<span title="E-Posta">📧</span>{% endif %}
+                                            {% if ch == 'push' %}<span title="Tarayıcı">📱</span>{% endif %}
+                                            {% if ch == 'telegram' %}<span title="Telegram">📲</span>{% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                                <td class="p-4">
+                                    {% if r.is_active %}
+                                    <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[11px]">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> Nöbette
+                                    </span>
+                                    {% else %}
+                                    <span class="bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded text-[11px]">
+                                        Duraklatıldı
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-right space-x-2">
+                                    <button onclick="toggleRoute('{{ r.id }}', {{ 0 if r.is_active else 1 }})" class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded transition" title="{{ 'Duraklat' if r.is_active else 'Aktifleştir' }}">
+                                        <i class="fa-solid {{ 'fa-pause' if r.is_active else 'fa-play' }}"></i>
+                                    </button>
+                                    <button onclick="deleteRoute('{{ r.id }}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition" title="Sil">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+                <i class="fa-solid fa-route text-4xl text-slate-300 mb-3"></i>
+                <h3 class="text-base font-bold text-slate-800">Henüz Takip Ettiğiniz Bir Rota Yok</h3>
+                <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">Ana sayfadan arama yapıp istediğiniz bir rotayı takibe alarak fiyat alarmlarını başlatabilirsiniz.</p>
+                <a href="/" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-xl text-xs inline-block">Rota Ara ve Takibe Al</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- TAB 2: BİLDİRİM GEÇMİŞİ -->
+        <section id="tabContentLogs" class="hidden space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Gönderilen Bildirim Geçmişi</h2>
+                    <p class="text-xs text-slate-500">Hedef fiyat altına düşen biletler için yapılan gönderimler.</p>
+                </div>
+            </div>
+
+            {% if logs %}
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                                <th class="p-4">Tarih</th>
+                                <th class="p-4">Kanal</th>
+                                <th class="p-4">Detay & Rota</th>
+                                <th class="p-4">Tetiklenen Fiyat</th>
+                                <th class="p-4">Durum</th>
+                                <th class="p-4 text-right">Bağlantı</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs font-semibold">
+                            {% for l in logs %}
+                            <tr class="hover:bg-slate-50/70 transition">
+                                <td class="p-4 text-slate-500">{{ l.sent_at }}</td>
+                                <td class="p-4">
+                                    {% if l.channel == 'email' %}
+                                    <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">📧 E-Posta</span>
+                                    {% elif l.channel == 'telegram' %}
+                                    <span class="bg-sky-50 text-sky-700 px-2 py-0.5 rounded font-bold">📲 Telegram</span>
+                                    {% elif l.channel == 'push' %}
+                                    <span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded font-bold">📱 Tarayıcı</span>
+                                    {% else %}
+                                    <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">{{ l.channel }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-slate-900 font-bold">
+                                    {{ l.payload.route if l.payload and l.payload.route else 'Flaş İndirim Alarmı' }}
+                                </td>
+                                <td class="p-4 font-black text-emerald-600 text-sm">
+                                    {{ "%.2f"|format(l.triggered_price) }} ₺
+                                </td>
+                                <td class="p-4">
+                                    <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[11px]">Başarılı</span>
+                                </td>
+                                <td class="p-4 text-right">
+                                    {% if l.payload and l.payload.link %}
+                                    <a href="{{ l.payload.link }}" target="_blank" class="text-blue-600 hover:underline inline-flex items-center gap-1 font-bold">
+                                        <span>Görüntüle</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+                <i class="fa-solid fa-bell-slash text-4xl text-slate-300 mb-3"></i>
+                <h3 class="text-base font-bold text-slate-800">Henüz Tetiklenen Bir Bildirim Yok</h3>
+                <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">Takip ettiğiniz rotalarda fiyat hedefinizin altına indiğinde kayıtlar burada listelenecektir.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- TAB 3: BİLDİRİM KANALLARI & TEST ET -->
+        <section id="tabContentSettings" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Bildirim Ayarları Formu -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Bildirim Kanal Yapılandırması</h3>
+                        <p class="text-xs text-slate-500">Hangi kanallardan nasıl bildirim almak istediğinizi yönetin.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">E-Posta Adresi (Resend / SendGrid)</label>
+                            <input type="email" id="settingEmail" value="{{ user.email }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Telegram Chat ID (Telegram Botu)</label>
+                            <input type="text" id="settingTelegram" value="{{ user.telegram_chat_id or '123456789' }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold" placeholder="Örn: 987654321">
+                            <p class="text-[11px] text-slate-400 mt-1">Telegram botunuza <code>/start</code> yazarak gelen Chat ID'yi buraya girin.</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Sessiz Saat Başlangıcı</label>
+                                <input type="time" id="settingQuietStart" value="23:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Sessiz Saat Bitişi</label>
+                                <input type="time" id="settingQuietEnd" value="08:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canlı Test Paneli (MODÜL 3 Canlı Doğrulama) -->
+                <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/30 text-indigo-200 text-xs font-bold mb-3">
+                            <i class="fa-solid fa-vial"></i> MODÜL 3 CANLI DOĞRULAMA
+                        </div>
+                        <h3 class="text-xl font-bold">Bildirim Kanallarını Anlık Test Edin</h3>
+                        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                            Sistem mimarisindeki kanalları (E-posta, Telegram, Tarayıcı Push) simüle ederek anında canlı bildirim çıktısını test edin.
+                        </p>
+
+                        <div class="space-y-3 mt-6">
+                            <button onclick="testNotificationChannel('email')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-between transition">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <span>HTML Formatlı Test E-Postası Gönder</span>
+                                </span>
+                                <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                            </button>
+
+                            <button onclick="testNotificationChannel('telegram')" class="w-full bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-between transition">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-brands fa-telegram"></i>
+                                    <span>Telegram Bot Test Mesajı Gönder</span>
+                                </span>
+                                <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                            </button>
+
+                            <button onclick="testNotificationChannel('push')" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-between transition">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-bell"></i>
+                                    <span>Tarayıcı Push (Web Push) Bildirimi Gönder</span>
+                                </span>
+                                <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-white/10 text-[11px] text-slate-400">
+                        * Tüm gönderimler loglanarak bildirim geçmişine kaydedilir.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        function switchTab(tab) {
+            document.getElementById('tabContentRoutes').classList.add('hidden');
+            document.getElementById('tabContentLogs').classList.add('hidden');
+            document.getElementById('tabContentSettings').classList.add('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                b.classList.add('text-slate-500');
+            });
+
+            if (tab === 'routes') {
+                document.getElementById('tabContentRoutes').classList.remove('hidden');
+                document.getElementById('tabBtnRoutes').classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            } else if (tab === 'logs') {
+                document.getElementById('tabContentLogs').classList.remove('hidden');
+                document.getElementById('tabBtnLogs').classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            } else if (tab === 'settings') {
+                document.getElementById('tabContentSettings').classList.remove('hidden');
+                document.getElementById('tabBtnSettings').classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            }
+        }
+    </script>
+</body>
+</html>

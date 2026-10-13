@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hakiki Bilet — Hakiki Fiyat, Hakiki Bilet | hakikibilet.com</title>
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Push Notification Permission Banner -->
+    <div id="pushBanner" class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white px-4 py-2.5 text-sm flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-2 max-w-4xl mx-auto w-full justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bell text-amber-300 animate-bounce"></i>
+                <span><strong>Hakiki Fiyat Fırsatlarını Kaçırmayın!</strong> Anlık bildirimleri açarak dip fiyatlı hakiki bilet indirimlerinden ilk siz haberdar olun.</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="requestPushPermission()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-3 py-1 rounded text-xs transition">
+                    Bildirimlere İzin Ver
+                </button>
+                <button onclick="document.getElementById('pushBanner').style.display='none'" class="text-white opacity-80 hover:opacity-100 text-xs">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/" class="flex items-center gap-3 group">
+                    <img src="/static/img/hakikibilet_logo_circle.png" alt="Hakiki Bilet Onay Mührü" class="w-11 h-11 object-contain drop-shadow-md group-hover:scale-105 transition">
+                    <div>
+                        <div class="text-xl font-black tracking-tight text-slate-900 group-hover:text-blue-700 transition flex items-center gap-1.5">
+                            <span>Hakiki</span><span class="text-amber-500">Bilet</span>
+                        </div>
+                        <span class="block text-[10px] font-extrabold text-slate-400 tracking-wider uppercase -mt-0.5">Hakiki Fiyat, Hakiki Bilet</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Para Birimi Seçici (Döviz Desteği) -->
+                <div class="relative inline-block text-left">
+                    <select id="currencySelector" onchange="changeCurrency(this.value)" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-2xs">
+                        <option value="TRY" selected>🇹🇷 ₺ TRY</option>
+                        <option value="EUR">🇪🇺 € EUR</option>
+                        <option value="USD">🇺🇸 $ USD</option>
+                        <option value="GBP">🇬🇧 £ GBP</option>
+                    </select>
+                </div>
+
+                <a href="#firsatlar" class="hidden sm:inline-flex text-sm font-semibold text-slate-600 hover:text-blue-600 px-3 py-2 transition">
+                    <i class="fa-solid fa-fire text-rose-500 mr-1"></i> Güncel Fırsatlar
+                </a>
+                <a href="/dashboard" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm transition">
+                    <i class="fa-solid fa-user-circle text-blue-600"></i>
+                    <span>Takip Paneli</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero & Search Section (MODÜL 1) -->
+    <div class="relative bg-gradient-to-b from-blue-700 via-indigo-800 to-slate-900 text-white pt-12 pb-24 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center mb-8">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/30 text-amber-200 text-xs font-bold mb-4 backdrop-blur-sm shadow-sm">
+                <i class="fa-solid fa-certificate text-amber-300"></i>
+                <span>%100 Güvenli ve Orijinal Bilet Onayı</span>
+                <span>•</span>
+                <span class="text-white/90">hakikibilet.com</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                Hakiki Fiyat, Hakiki Bilet
+            </h1>
+            <p class="mt-3 text-slate-200 text-base sm:text-lg max-w-2xl mx-auto font-medium">
+                Uçak, otobüs, tren ve feribotta şişirilmiş komisyonlara son! Tek ekranda en ucuz, teyitli ve %100 hakiki biletleri anında karşılaştırın.
+            </p>
+
+            <!-- İKİ ANA KULLANIM MODU (SEKME 1 vs SEKME 2) -->
+            <div class="flex items-center justify-center mt-6">
+                <div class="inline-flex bg-slate-900/50 p-1.5 rounded-2xl border border-white/20 backdrop-blur-md shadow-2xl">
+                    <button type="button" onclick="switchMasterMode('fast')" id="masterModeFastBtn" class="px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm transition bg-white text-blue-700 shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-500"></i>
+                        <span>1. Hızlı Bilet Karşılaştır (A ➔ B)</span>
+                    </button>
+                    <button type="button" onclick="switchMasterMode('smart_route')" id="masterModeRouteBtn" class="px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm text-white/90 hover:text-white transition flex items-center gap-2">
+                        <i class="fa-solid fa-compass text-emerald-400"></i>
+                        <span>2. Akıllı Rota & Seyahat Planla (Uçtan Uca)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Card -->
+        <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl p-6 sm:p-8 text-slate-800 -mb-20 relative z-20 border border-slate-100">
+            <!-- Scope Switcher: Yurt İçi / Yurt Dışı -->
+            <div class="flex flex-wrap items-center justify-between pb-3 mb-4 border-b border-slate-100 gap-2">
+                <div class="flex bg-slate-100 p-1 rounded-xl">
+                    <button type="button" onclick="setScope('domestic')" id="scopeDomesticBtn" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition bg-white text-blue-700 shadow-sm flex items-center gap-1.5">
+                        <span>🇹🇷</span> Yurt İçi
+                    </button>
+                    <button type="button" onclick="setScope('international')" id="scopeIntlBtn" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
+                        <span>🌍</span> Yurt Dışı
+                    </button>
+                </div>
+                <div class="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <span id="scopeHintText">Türkiye geneli tüm havalimanı, tren, otobüs ve feribot seferleri</span>
+                </div>
+            </div>
+
+            <!-- Transport Mode Tabs (Hızlı Bilet Modunda Aktif, 'Tümü' kaldırıldı, Uçak varsayılan) -->
+            <div class="flex border-b border-slate-200 pb-4 mb-6 gap-2 sm:gap-3 overflow-x-auto" id="transportTabs">
+                <button type="button" onclick="selectTransport('flight')" class="transport-tab active-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition" data-mode="flight">
+                    <i class="fa-solid fa-plane"></i> ✈️ Uçak
+                </button>
+                <button type="button" onclick="selectTransport('train')" class="transport-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition text-slate-600 hover:bg-slate-100" data-mode="train">
+                    <i class="fa-solid fa-train"></i> 🚆 Hızlı Tren
+                </button>
+                <button type="button" onclick="selectTransport('bus')" class="transport-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition text-slate-600 hover:bg-slate-100" data-mode="bus">
+                    <i class="fa-solid fa-bus"></i> 🚌 Otobüs
+                </button>
+                <button type="button" onclick="selectTransport('ferry')" class="transport-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition text-slate-600 hover:bg-slate-100" data-mode="ferry">
+                    <i class="fa-solid fa-ship text-cyan-600"></i> ⛴️ Feribot & Adalar
+                </button>
+                <button type="button" onclick="selectTransport('car')" class="transport-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition text-slate-600 hover:bg-slate-100" data-mode="car">
+                    <i class="fa-solid fa-car text-indigo-600"></i> 🚗 Araç Kiralama
+                </button>
+            </div>
+
+            <!-- Akıllı Rota Özel Bilgilendirme ve Otel Seçimi Kutusu -->
+            <div id="smartRouteNoticeBox" class="hidden mb-4 bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 rounded-2xl p-4 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-compass text-emerald-600 text-lg mt-0.5"></i>
+                        <div>
+                            <div class="text-xs font-black text-emerald-950">🧭 Akıllı Çok Modlu Seyahat & Tatil Planlayıcı</div>
+                            <div class="text-[11px] text-emerald-800 font-medium mt-0.5">
+                                Kalkış noktanızdan varış noktasına tüm aktarmalar, havalimanı servisleri ve biletler uçtan uca tek ekranda hesaplanır.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Otel İsteğe Bağlı Seçim Kutusu -->
+                    <label class="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-emerald-300 shadow-2xs cursor-pointer hover:bg-emerald-50/50 transition shrink-0">
+                        <input type="checkbox" id="includeHotelCheck" onchange="toggleHotelSelection()" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                        <span class="text-xs font-black text-slate-800">
+                            🏨 Konaklama / Otel Ekle
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Trip Type Toggle & Traveler Options -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-3 border-b border-slate-100">
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex bg-slate-100 p-1 rounded-xl">
+                        <button type="button" onclick="setTripType('one_way')" id="tripOneWayBtn" class="px-4 py-1.5 rounded-lg text-xs font-bold transition bg-white text-blue-700 shadow-sm">
+                            Tek Yön
+                        </button>
+                        <button type="button" onclick="setTripType('round_trip')" id="tripRoundBtn" class="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+                            Gidiş - Dönüş 🔄
+                        </button>
+                    </div>
+
+                    <!-- Araç Kiralama Lokasyon Tipi Seçimi (Yalnızca Araç Kiralama Modunda Görünür) -->
+                    <div id="carLocationTypeContainer" class="hidden flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+                        <span class="text-xs font-bold text-slate-600 pl-2 flex items-center gap-1">
+                            <i class="fa-solid fa-map-pin text-indigo-600 text-xs"></i> Alış Noktası:
+                        </span>
+                        <button type="button" onclick="setCarLocationType('city')" id="carLocCityBtn" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-white text-indigo-700 shadow-sm">
+                            🏙️ Şehir Merkezi
+                        </button>
+                        <button type="button" onclick="setCarLocationType('airport')" id="carLocAirportBtn" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+                            ✈️ Havalimanı
+                        </button>
+                        <button type="button" onclick="setCarLocationType('station')" id="carLocStationBtn" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+                            🚆 Gar / Otogar
+                        </button>
+                    </div>
+
+                    <!-- Feribot Araç / Yolcu Tipi Seçimi (Yalnızca Feribot Modunda Görünür) -->
+                    <div id="ferryVehicleContainer" class="hidden flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+                        <span class="text-xs font-bold text-slate-600 pl-2 flex items-center gap-1">
+                            <i class="fa-solid fa-ship text-cyan-600 text-xs"></i> Geçiş Tipi:
+                        </span>
+                        <button type="button" onclick="setFerryVehicleType('passenger')" id="ferryVehPassengerBtn" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-white text-cyan-700 shadow-sm">
+                            🚶 Yaya Yolcu
+                        </button>
+                        <button type="button" onclick="setFerryVehicleType('car')" id="ferryVehCarBtn" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+                            🚗 Otomobil / SUV
+                        </button>
+                        <button type="button" onclick="setFerryVehicleType('motorcycle')" id="ferryVehMotoBtn" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+                            🏍️ Motosiklet
+                        </button>
+                    </div>
+
+                    <!-- Kabin Sınıfı Seçimi (Uçak Modunda) -->
+                    <div id="cabinClassContainer" class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+                        <span class="text-xs font-bold text-slate-600 pl-2 flex items-center gap-1">
+                            <i class="fa-solid fa-couch text-indigo-600 text-xs"></i> Sınıf:
+                        </span>
+                        <select id="cabinClass" class="bg-white border-0 rounded-lg px-2.5 py-1 text-xs font-bold text-slate-800 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer">
+                            <option value="economy" selected>Ekonomi</option>
+                            <option value="business">Business Class ⭐</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                    <input type="checkbox" id="nightOnlyCheck" class="rounded text-indigo-600 focus:ring-indigo-500">
+                    <span>🌙 Gece Seferleri (Otel Tasarruflu)</span>
+                </label>
+            </div>
+
+            <!-- Mode Status Indicator (Hidden for clean visual) -->
+            <div id="modeStatusText" class="hidden text-xs text-slate-500 font-semibold mb-3 flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
+                <i class="fa-solid fa-circle-info text-blue-500 text-sm"></i>
+                <span id="modeStatusLabel">Doğrudan seçtiğiniz taşıma moduna ait en uygun seferler listelenir.</span>
+            </div>
+
+            <!-- Search Form (Tek sıra halinde, hizalı ve sade) -->
+            <form id="searchForm" onsubmit="handleSearch(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+                <!-- Kalkış Şehri -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center justify-between mb-1.5 h-5">
+                        <label id="originLabel" class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-location-dot text-blue-600 mr-1"></i> Kalkış
+                        </label>
+                        <button type="button" onclick="detectUserLocation()" title="Mevcut Konumumu Bul ve Seç" class="text-[10px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 bg-blue-50 hover:bg-blue-100 px-1.5 py-0.5 rounded transition border border-blue-200/60 shadow-2xs">
+                            <i class="fa-solid fa-crosshairs text-blue-600 text-[9px]"></i> Konum
+                        </button>
+                    </div>
+                    <select id="originCity" class="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        {% for city in cities %}
+                        <option value="{{ city.name }}" {% if city.name == 'İstanbul' %}selected{% endif %}>
+                            {{ city.name }} {% if city.iata %}({{ city.iata }}){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Varış Şehri -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center mb-1.5 h-5">
+                        <label id="destLabel" class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-location-arrow text-indigo-600 mr-1"></i> Varış
+                        </label>
+                    </div>
+                    <select id="destCity" class="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        {% for city in cities %}
+                        <option value="{{ city.name }}" {% if city.name == 'Ankara' %}selected{% endif %}>
+                            {{ city.name }} {% if city.iata %}({{ city.iata }}){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Gidiş Tarihi -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center mb-1.5 h-5">
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-calendar-days text-slate-600 mr-1"></i> Gidiş
+                        </label>
+                    </div>
+                    <input type="date" id="departureDate" class="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                </div>
+
+                <!-- Dönüş Tarihi (Gidiş-Dönüş seçildiğinde görünür) -->
+                <div id="returnDateContainer" class="hidden lg:col-span-1">
+                    <div class="flex items-center mb-1.5 h-5">
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-calendar-check text-rose-600 mr-1"></i> Dönüş
+                        </label>
+                    </div>
+                    <input type="date" id="returnDate" class="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Yolcu Sayısı -->
+                <div id="passengersCol" class="lg:col-span-1">
+                    <div class="flex items-center mb-1.5 h-5">
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-user-group text-slate-600 mr-1"></i> Yolcu
+                        </label>
+                    </div>
+                    <select id="passengers" class="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="1">1 Yolcu</option>
+                        <option value="2">2 Yolcu</option>
+                        <option value="3">3 Yolcu</option>
+                        <option value="4">4 Yolcu</option>
+                    </select>
+                </div>
+
+                <!-- Ara Butonu -->
+                <div class="lg:col-span-1">
+                    <button type="submit" id="searchSubmitBtn" class="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-4 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 transition cursor-pointer">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Bilet Ara</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
+
+        <!-- Search Results Section (MODÜL 1 Results) -->
+        <section id="searchResultsSection" class="hidden mb-16">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-slate-200 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900" id="resultsTitle">Arama Sonuçları</h2>
+                    <p class="text-sm text-slate-500" id="resultsSubtitle">En ucuzdan en pahalıya sıralandı</p>
+                </div>
+
+                <!-- Top Watch Button -->
+                <button onclick="openTrackModal()" class="inline-flex items-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-4 py-2 rounded-xl border border-rose-200 text-sm transition shadow-sm">
+                    <i class="fa-solid fa-bell text-rose-600 animate-pulse"></i>
+                    <span>Bu Rotayı Takibe Al (Fiyat Alarmı)</span>
+                </button>
+            </div>
+
+            <!-- Akıllı Çapraz Ulaşım İpucu (Uçak ararken YHT veya Otobüs alternatifi varsa) -->
+            <div id="crossModalAlertContainer" class="hidden mb-6">
+                <!-- Dynamically injected Cross-Modal Alert Banner -->
+            </div>
+
+            <!-- Akıllı Çok Modlu Kombine Seyahat Planı (Rome2rio Modeli) -->
+            <div id="smartMultimodalContainer" class="hidden mb-6">
+                <!-- Dynamically injected Smart Multimodal Route Options (A/B) -->
+            </div>
+
+            <!-- MODEL A: ULAŞIM TÜRÜNE GÖRE KARŞILAŞTIRMA SEKMELERİ -->
+            <div id="modelASummaryContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- Dynamically injected Model A Summary Cards -->
+            </div>
+
+            <!-- ESNEK TARİH & EN UCUZ GÜNÜ BUL (FİYAT TAKVİMİ) -->
+            <div id="priceCalendarContainer" class="bg-gradient-to-r from-blue-50 via-indigo-50 to-slate-50 border border-blue-200/70 rounded-2xl p-5 mb-6 shadow-sm">
+                <!-- Dynamically injected Price Calendar -->
+            </div>
+
+            <!-- Deep Link Quick Bar -->
+            <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-4 mb-6">
+                <div class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Doğrudan Arama Sitelerine Parametreli Bağlantılar:
+                </div>
+                <div class="flex flex-wrap gap-2" id="deepLinksContainer">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Akıllı Havalimanı Araç Kiralama Çapraz Satış Kutusu (Cross-Sell Widget) -->
+            <div id="carCrossSellContainer" class="hidden mb-6">
+                <!-- Dynamically injected Car Cross-Sell Card -->
+            </div>
+
+            <!-- Skeleton Screen Loader (Canlı Arama Esnasında Yumuşak Yükleme Görünümü) -->
+            <div id="skeletonLoader" class="hidden space-y-4">
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm animate-pulse flex flex-col md:flex-row justify-between gap-4">
+                    <div class="space-y-3 flex-1">
+                        <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+                        <div class="h-7 bg-slate-200 rounded w-1/2"></div>
+                        <div class="h-3 bg-slate-200 rounded w-1/3"></div>
+                    </div>
+                    <div class="w-48 h-16 bg-slate-200 rounded-xl"></div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm animate-pulse flex flex-col md:flex-row justify-between gap-4">
+                    <div class="space-y-3 flex-1">
+                        <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+                        <div class="h-7 bg-slate-200 rounded w-1/2"></div>
+                        <div class="h-3 bg-slate-200 rounded w-1/3"></div>
+                    </div>
+                    <div class="w-48 h-16 bg-slate-200 rounded-xl"></div>
+                </div>
+            </div>
+
+            <!-- Sıralama Çubuğu & Firma Filtresi (Sort Bar & Carrier Filter) -->
+            <div id="sortFilterBarContainer" class="hidden bg-white rounded-2xl border border-slate-200 p-3.5 mb-5 shadow-xs">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
+                    <!-- Sol: Hızlı Sıralama Butonları -->
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 mr-1">
+                            <i class="fa-solid fa-arrow-down-short-wide text-blue-600"></i> Sırala:
+                        </span>
+                        <button type="button" onclick="setSortMode('price_asc')" id="sortBtnPriceAsc" class="sort-bar-btn px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1 bg-blue-600 text-white shadow-xs" title="En düşük fiyattan en yükseğe">
+                            <span>💰 En Uygun Fiyat</span>
+                        </button>
+                        <button type="button" onclick="setSortMode('dep_asc')" id="sortBtnDepAsc" class="sort-bar-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200" title="Kalkış saatine göre en erken">
+                            <span>⏰ Kalkış: En Erken</span>
+                        </button>
+                        <button type="button" onclick="setSortMode('dep_desc')" id="sortBtnDepDesc" class="sort-bar-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200" title="Kalkış saatine göre en geç">
+                            <span>🌙 Kalkış: En Geç</span>
+                        </button>
+                        <button type="button" onclick="setSortMode('dur_asc')" id="sortBtnDurAsc" class="sort-bar-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200" title="Seyahat süresine göre en hızlı">
+                            <span>⚡ En Hızlı Sefer</span>
+                        </button>
+                    </div>
+
+                    <!-- Sağ: Dinamik Firma Filtresi & Sefer Sayacı -->
+                    <div class="flex items-center gap-2.5 shrink-0 flex-wrap sm:flex-nowrap">
+                        <div class="flex items-center gap-1.5 w-full sm:w-auto">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-filter text-indigo-600"></i> Firma:
+                            </span>
+                            <select id="carrierFilterSelect" onchange="onCarrierFilterChange(this.value)" class="bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition w-full sm:w-auto min-w-[150px]">
+                                <option value="all">Tüm Firmalar</option>
+                            </select>
+                        </div>
+                        <div id="resultsCountBadge" class="bg-slate-100 text-slate-700 text-xs font-extrabold px-2.5 py-1.5 rounded-xl border border-slate-200/80 whitespace-nowrap inline-flex items-center gap-1">
+                            <span id="resultsCountNum">0</span> Sefer
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Comparison Cards List -->
+            <div id="ticketsList" class="space-y-4">
+                <!-- Dynamically injected cards -->
+            </div>
+
+            <!-- Akıllı Otel ve Konaklama Fırsatları (Otel Seçenek A: Booking.com / Enuygun Otel) -->
+            <div id="hotelRecommendationContainer" class="hidden mt-8">
+                <!-- Dynamically injected Hotel Cards -->
+            </div>
+        </section>
+
+        <!-- ✨ Nereye Gitmeliyim? (Festival, Sezon & İlham Radarı) -->
+        <section id="nereyeGitmeliyimSection" class="mb-16">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black mb-2">
+                        <i class="fa-solid fa-sparkles text-amber-500"></i> GEZGİN İLHAM RADARI
+                    </div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">
+                        ✨ Nereye Gitmeliyim? (Festival & Sezon Rehberi)
+                    </h2>
+                    <p class="text-slate-600 mt-1 text-sm">
+                        Özel dönemler, dünya festivalleri ve kapı vizesiz kaçış rotaları. Tek tıkla biletlerinizi ve seyahatinizi planlayın!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Curated Events Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for ev in curated_events %}
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-black px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                                {{ ev.badge }}
+                            </span>
+                            <span class="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">
+                                {{ ev.country }}
+                            </span>
+                        </div>
+
+                        <h3 class="text-xl font-black text-slate-900 mb-2 group-hover:text-blue-600 transition">
+                            {{ ev.title }}
+                        </h3>
+
+                        <p class="text-xs text-slate-500 font-medium leading-relaxed mb-4">
+                            {{ ev.desc }}
+                        </p>
+
+                        <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 mb-4 space-y-2 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-500 font-bold flex items-center gap-1.5">
+                                    <i class="fa-solid fa-calendar-days text-blue-600"></i> Tarih Aralığı:
+                                </span>
+                                <span class="text-slate-900 font-black">{{ ev.dates }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-500 font-bold flex items-center gap-1.5">
+                                    <i class="fa-solid fa-hotel text-emerald-600"></i> Konaklama:
+                                </span>
+                                <span class="text-emerald-700 font-black">{{ ev.hotel_range }}</span>
+                            </div>
+                            <div class="text-[11px] text-slate-600 pt-1.5 border-t border-slate-200">
+                                💡 {{ ev.why }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="button" onclick="selectCuratedEvent('{{ ev.city }}', '{{ ev.dep_date }}', '{{ ev.ret_date }}', '{{ ev.transport_mode }}')" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 transition">
+                            <i class="fa-solid fa-compass"></i>
+                            <span>Bu Seyahati Planla ➔</span>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Campaigns & Deals Showcase (MODÜL 5) -->
+        <section id="firsatlar" class="mb-16">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold mb-2">
+                        <i class="fa-solid fa-bullhorn"></i> MODÜL 5: RESMİ KAMPANYALAR MERKEZİ
+                    </div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">
+                        Doğrulanmış Şirket Kampanyaları & İndirimler
+                    </h2>
+                    <p class="text-slate-600 mt-1 text-sm">
+                        Pegasus, AJet, Türk Hava Yolları, SunExpress, TCDD ve Obilet resmi kampanya bültenleri ve geçerli koşulları.
+                    </p>
+                </div>
+
+                <!-- Ulaşım Türü Filtre Butonları (Tümü, Havayolları, Tren, Otobüs) -->
+                <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shadow-sm flex-wrap">
+                    <button onclick="filterDeals('all')" class="deal-filter-btn active-filter px-4 py-2 rounded-xl text-xs font-bold transition">Tümü ({{ announcements|length }})</button>
+                    <button onclick="filterDeals('flight')" class="deal-filter-btn px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition">✈️ Havayolları</button>
+                    <button onclick="filterDeals('train')" class="deal-filter-btn px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition">🚆 Demiryolu</button>
+                    <button onclick="filterDeals('bus')" class="deal-filter-btn px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition">🚌 Otobüs</button>
+                </div>
+            </div>
+
+            <!-- Bilgilendirme ve Güvence Rozeti -->
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-2xl p-4 mb-6 text-xs font-semibold flex items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
+                    <span>Tüm kartlar ilgili şirketin resmi bülteni olup, butonlar doğrudan firmanın <strong>resmi kampanya sayfasına</strong> yönlendirir. Sanal veya günü geçmiş bilet gösterilmez.</span>
+                </div>
+                <span class="bg-white border border-emerald-200 px-3 py-1 rounded-xl text-emerald-800 font-extrabold text-[11px] whitespace-nowrap">%100 Doğrulanmış</span>
+            </div>
+
+            <!-- RESMİ ŞİRKET KAMPANYA DUYURULARI GRID -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="announcementsGrid">
+                {% for ann in announcements %}
+                <div class="deal-card bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 relative flex flex-col justify-between" data-type="{{ ann.transport_type }}">
+                    <div>
+                        <!-- Header badge -->
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 border border-rose-200">
+                                {{ ann.badge or 'RESMİ KAMPANYA' }}
+                            </span>
+                            <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
+                                {{ ann.provider_name }}
+                            </span>
+                        </div>
+
+                        <!-- Title -->
+                        <h3 class="text-lg font-black text-slate-900 mb-2 leading-snug">
+                            {{ ann.title }}
+                        </h3>
+
+                        <!-- Official Campaign Details Box -->
+                        <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 mb-4 space-y-2 text-xs">
+                            <div class="flex items-start gap-2 text-slate-700 font-semibold">
+                                <i class="fa-solid fa-stopwatch text-amber-600 mt-0.5"></i>
+                                <div>
+                                    <span class="text-slate-400 block text-[10px] uppercase font-bold">Satış / Son Başvuru:</span>
+                                    <span class="text-slate-900 font-bold">{{ ann.sales_period }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 text-slate-700 font-semibold">
+                                <i class="fa-solid fa-calendar-days text-blue-600 mt-0.5"></i>
+                                <div>
+                                    <span class="text-slate-400 block text-[10px] uppercase font-bold">Geçerli Seyahat Dönemi:</span>
+                                    <span class="text-slate-900 font-bold">{{ ann.travel_period }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 text-slate-600 font-medium pt-1 border-t border-slate-200">
+                                <i class="fa-solid fa-circle-info text-slate-400 mt-0.5"></i>
+                                <span>{{ ann.terms }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <!-- Price Indicator (Starting from) -->
+                        <div class="flex items-baseline justify-between mb-4 border-t border-slate-100 pt-3">
+                            <div>
+                                <span class="text-[11px] text-slate-400 block">Lansman Fiyatı</span>
+                                <div class="text-2xl font-black text-blue-700">{{ "%.2f"|format(ann.deal_price) }} ₺'den</div>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
+                                %{{ ann.discount_percentage }}'ye Varan İndirim
+                            </span>
+                        </div>
+
+                        <!-- Action Button: Resmi Kampanya Sayfası -->
+                        <a href="{{ ann.official_link or ann.deep_link }}" target="_blank" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 shadow-sm transition">
+                            <span>Resmi Kampanyayı Gör & Bilet Al</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Track Route Modal (MODÜL 2: Bu Rotayı Takibe Al) -->
+    <div id="trackModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-slate-100">
+            <button onclick="closeTrackModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Rotayı Takibe Al (Fiyat Alarmı)</h3>
+                    <p class="text-xs text-slate-500">Fiyat hedefinizin altına düştüğünde anında haber verelim.</p>
+                </div>
+            </div>
+
+            <form id="trackRouteForm" onsubmit="handleSaveTracker(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Kalkış Şehri</label>
+                        <input type="text" id="trackOrigin" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Varış Şehri</label>
+                        <input type="text" id="trackDest" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold" readonly>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">
+                        🎯 Hedef Fiyat Eşiği (₺)
+                    </label>
+                    <div class="relative">
+                        <input type="number" id="trackTargetPrice" step="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-8 py-2.5 text-base font-bold text-emerald-600 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Örn: 500" required>
+                        <span class="absolute right-3 top-3 text-slate-400 font-bold">₺</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Bilet bu tutarın altına düştüğünde sistem otomatik bildirim üretir.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Seyahat Tarihi</label>
+                    <input type="date" id="trackDate" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold" required>
+                </div>
+
+                <!-- Channels Checklist -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">Hangi Kanallardan Bildirim Almak İstersiniz?</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold hover:bg-slate-100">
+                            <input type="checkbox" id="channelEmail" checked class="rounded text-blue-600 focus:ring-blue-500">
+                            <span>📧 E-Posta</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold hover:bg-slate-100">
+                            <input type="checkbox" id="channelPush" checked class="rounded text-blue-600 focus:ring-blue-500">
+                            <span>📱 Tarayıcı</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold hover:bg-slate-100">
+                            <input type="checkbox" id="channelTelegram" checked class="rounded text-blue-600 focus:ring-blue-500">
+                            <span>📲 Telegram</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">E-Posta Adresiniz</label>
+                    <input type="email" id="trackEmail" value="demo@ucuzbilet.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium" required>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" id="saveTrackerBtn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Takibi Başlat ve Nöbete Geç</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <footer class="bg-white border-t border-slate-200 py-10 mt-20 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <img src="/static/img/hakikibilet_logo_circle.png" alt="Hakiki Bilet" class="w-8 h-8 object-contain">
+                <div class="text-left">
+                    <span class="font-black text-slate-900 text-sm">Hakiki Bilet</span>
+                    <span class="text-slate-400 text-xs ml-1 font-semibold">— Hakiki Fiyat, Hakiki Bilet (hakikibilet.com)</span>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <a href="/dashboard" class="hover:text-blue-600 font-semibold">Takip Paneli</a>
+                <a href="#firsatlar" class="hover:text-blue-600 font-semibold">Kampanyalar</a>
+                <a href="/docs" target="_blank" class="hover:text-blue-600 font-semibold">Swagger API Docs</a>
+            </div>
+        </div>
+        
+        <!-- Yasal Bilgilendirme & TÜRSAB Muafiyeti Beyanı (Metasearch Modeli) -->
+        <div class="max-w-4xl mx-auto px-4 mt-6 pt-6 border-t border-slate-100 text-slate-400 text-[11px] leading-relaxed">
+            <p><strong class="text-slate-600">Yasal Bilgilendirme:</strong> {{ legal_disclaimer }}</p>
+            <p class="mt-1">Hakiki Bilet (hakikibilet.com) portalında listelenen havayolu, demiryolu, feribot ve otobüs firmalarının logoları ile tescilli markaları ilgili hak sahiplerine aittir. Karşılaştırma verileri bilgilendirme amaçlı olup, nihai bilet ücreti sağlayıcı sayfalarında doğrulanır.</p>
+        </div>
+    </footer>
+
+    <script>
+        window.ALL_CITIES = {{ cities | tojson }};
+    </script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
