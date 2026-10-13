@@ -31,13 +31,15 @@ class Settings:
     AFFILIATE_FERRY_SUBID: str = os.getenv("AFFILIATE_FERRY_SUBID", "hakikibilet")
     AFFILIATE_BOOKING_AID: str = os.getenv("AFFILIATE_BOOKING_AID", "hakikibilet")
     AFFILIATE_AGODA_CID: str = os.getenv("AFFILIATE_AGODA_CID", "hakikibilet")
-    AFFILIATE_ENUYGUN_HOTEL_SUBID: str = os.getenv("AFFILIATE_ENUYGUN_HOTEL_SUBID", "hakikibilet")
-
     # Hukuki Yasal Metinler & TÜRSAB Muafiyeti (Metasearch / Karşılaştırma Beyanı)
     LEGAL_DISCLAIMER: str = (
         "Hakiki Bilet (hakikibilet.com) bağımsız bir seyahat ve etkinlik bilet fiyat karşılaştırma ve yönlendirme platformudur. "
         "Hakiki Bilet doğrudan bilet satışı yapmaz, ödeme tahsil etmez. Satın alma, rezervasyon ve biletleme "
         "işlemleri kullanıcının yönlendirildiği yetkili acente veya resmi taşıyıcı firmanın güvenli altyapısında tamamlanır."
     )
+
+    # Bakım / Lansman Öncesi Modu (True olduğunda dışarıya vitrin sayfası, yöneticiye tam site açılır)
+    MAINTENANCE_MODE: bool = os.getenv("MAINTENANCE_MODE", "true").lower() in ("true", "1", "yes")
+    MAINTENANCE_BYPASS_KEY: str = os.getenv("MAINTENANCE_BYPASS_KEY", "hakiki2026")
 
 settings = Settings()

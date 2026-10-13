@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Query, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from contextlib import asynccontextmanager
 import os
 import json
@@ -45,6 +45,85 @@ os.makedirs(templates_dir, exist_ok=True)
 
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 templates = Jinja2Templates(directory=templates_dir)
+
+# ==================== BAKIM / LANSMAN ÖNCESİ MODU MIDDLEWARE ====================
+
+@app.middleware("http")
+async def maintenance_middleware(request: Request, call_next):
+    path = request.url.path
+    
+    # Statik dosyalar, favicon ve robots her zaman açık
+    if path.startswith("/static") or path in ("/favicon.ico", "/robots.txt"):
+        return await call_next(request)
+        
+    # URL parametresiyle doğrudan yönetici girişi: ?onizleme=hakiki2026 veya ?preview=hakiki2026
+    query_key = request.query_params.get("onizleme") or request.query_params.get("preview")
+    if query_key == settings.MAINTENANCE_BYPASS_KEY:
+        clean_url = str(request.url.remove_query_params(["onizleme", "preview"]))
+        response = RedirectResponse(url=clean_url)
+        response.set_cookie(
+            key="hakiki_preview_access",
+            value=settings.MAINTENANCE_BYPASS_KEY,
+            max_age=30 * 24 * 3600,
+            httponly=False,
+            samesite="lax"
+        )
+        return response
+
+    # Admin kilit açma / kapama yolları serbest
+    if path == "/admin/unlock" and request.method == "POST":
+        return await call_next(request)
+    if path == "/admin/lock":
+        return await call_next(request)
+
+    # Bakım modu devredeyse ve tarayıcıda yönetici çerezi yoksa vitrin sayfasını sun
+    if settings.MAINTENANCE_MODE:
+        preview_cookie = request.cookies.get("hakiki_preview_access")
+        if preview_cookie != settings.MAINTENANCE_BYPASS_KEY:
+            if not path.startswith("/api"):
+                return templates.TemplateResponse(
+                    request=request,
+                    name="coming_soon.html",
+                    context={
+                        "app_name": settings.APP_NAME,
+                        "app_slogan": settings.APP_SLOGAN,
+                        "app_domain": settings.APP_DOMAIN,
+                        "legal_disclaimer": settings.LEGAL_DISCLAIMER
+                    }
+                )
+            else:
+                return JSONResponse(
+                    content={"detail": "Hakiki Bilet lansman hazırlığındadır.", "maintenance": True},
+                    status_code=503
+                )
+
+    return await call_next(request)
+
+@app.post("/admin/unlock")
+async def admin_unlock(request: Request):
+    try:
+        data = await request.json()
+        passcode = data.get("passcode", "")
+    except Exception:
+        passcode = ""
+        
+    if passcode == settings.MAINTENANCE_BYPASS_KEY:
+        response = JSONResponse(content={"success": True, "message": "Giriş başarılı."})
+        response.set_cookie(
+            key="hakiki_preview_access",
+            value=settings.MAINTENANCE_BYPASS_KEY,
+            max_age=30 * 24 * 3600,
+            httponly=False,
+            samesite="lax"
+        )
+        return response
+    return JSONResponse(content={"success": False, "message": "Geçersiz şifre."}, status_code=401)
+
+@app.get("/admin/lock")
+async def admin_lock():
+    response = RedirectResponse(url="/")
+    response.delete_cookie(key="hakiki_preview_access")
+    return response
 
 # ==================== SAYFA ROTALARI (HTML) ====================
 
