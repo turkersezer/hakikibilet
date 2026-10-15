@@ -1607,8 +1607,12 @@ function renderEvents() {
 
 // Etkinliğe Ulaşım ve Otel Planla Tetikleyicisi
 function planEventTrip(destCity, depDate, retDate, preferredMode) {
-    switchMasterTab('transport');
-    if (preferredMode) switchTransportSubTab(preferredMode);
+    if (window.switchUnifiedTab) {
+        window.switchUnifiedTab(preferredMode || 'flight');
+    } else if (window.switchMasterTab) {
+        switchMasterTab('transport');
+    }
+    if (preferredMode && window.switchTransportSubTab) switchTransportSubTab(preferredMode);
 
     const destInput = document.getElementById("transDest");
     const depDateInput = document.getElementById("transDepDate");
