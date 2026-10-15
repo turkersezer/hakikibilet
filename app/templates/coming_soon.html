@@ -199,7 +199,10 @@
                     
                     <!-- KVKK Onayı -->
                     <div class="flex items-center justify-center gap-2 text-[11px] text-slate-500 pt-1">
-                        <input type="checkbox" id="kvkkConsent" required class="rounded text-amber-500 focus:ring-amber-500 cursor-pointer">
+                        <input type="checkbox" id="kvkkConsent" required 
+                               oninvalid="this.setCustomValidity('Erken erişim kaydınızı tamamlayabilmemiz için lütfen KVKK Aydınlatma Metni\'ni okuyup onaylayınız.')" 
+                               oninput="this.setCustomValidity('')" 
+                               class="rounded text-amber-500 focus:ring-amber-500 cursor-pointer">
                         <label for="kvkkConsent" class="cursor-pointer">
                             <a href="/kvkk" target="_blank" class="text-amber-600 underline hover:text-amber-700">KVKK Aydınlatma Metni</a>'ni okudum, açılış bildirimini onaylıyorum.
                         </label>
@@ -350,7 +353,7 @@
             const email = emailInput.value.trim();
             if (!email) return;
             if (!kvkkCheckbox.checked) {
-                alert('Lütfen KVKK onay kutusunu işaretleyiniz.');
+                alert('Erken erişim kaydınızı tamamlayabilmemiz için lütfen KVKK Aydınlatma Metni\'ni okuyup onaylayınız.');
                 return;
             }
 
@@ -370,6 +373,7 @@
                     resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-emerald-800 bg-emerald-50 border border-emerald-200';
                     resultBox.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> <strong>Tebrikler!</strong> Erken erişim listenize başarıyla kaydoldunuz. Açılışta ilk siz haberdar olacaksınız.';
                     emailInput.value = '';
+                    kvkkCheckbox.checked = false;
                 } else {
                     resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-amber-800 bg-amber-50 border border-amber-200';
                     resultBox.innerHTML = '<i class="fa-solid fa-info-circle text-amber-600 mr-1.5"></i> ' + (data.message || 'Bu e-posta adresi zaten kayıtlıdır.');
@@ -379,6 +383,7 @@
                 resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-emerald-800 bg-emerald-50 border border-emerald-200';
                 resultBox.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> <strong>Tebrikler!</strong> Erken erişim talebiniz alındı.';
                 emailInput.value = '';
+                kvkkCheckbox.checked = false;
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Erken Erişime Katıl</span> <i class="fa-solid fa-arrow-right text-xs"></i>';
