@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Query, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse
 from contextlib import asynccontextmanager
 import os
 import json
@@ -57,7 +57,10 @@ async def maintenance_middleware(request: Request, call_next):
     # Yasal uyum sayfaları, doğrudan lansman vitrini, erken kayıt API'si, statik dosyalar, favicon ve robots her zaman herkese açık
     legal_paths = ("/lansman", "/api/erken-kayit", "/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
     if path.startswith("/static") or path in ("/favicon.ico", "/robots.txt") or path in legal_paths:
-        return await call_next(request)
+        response = await call_next(request)
+        if path.startswith("/static/"):
+            response.headers["Cache-Control"] = "no-cache, must-revalidate"
+        return response
         
     # URL parametresiyle doğrudan yönetici girişi: ?onizleme=hakiki2026 veya ?preview=hakiki2026
     query_key = request.query_params.get("onizleme") or request.query_params.get("preview")
@@ -129,6 +132,10 @@ async def admin_lock():
     response = RedirectResponse(url="/")
     response.delete_cookie(key="hakiki_preview_access")
     return response
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon_ico():
+    return FileResponse(os.path.join(static_dir, "img", "favicon.png"))
 
 @app.get("/lansman", response_class=HTMLResponse)
 @app.get("/coming-soon", response_class=HTMLResponse)
