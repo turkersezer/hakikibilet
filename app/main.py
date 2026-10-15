@@ -1,11 +1,14 @@
 from fastapi import FastAPI, Request, Query, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse, Response
 from contextlib import asynccontextmanager
 import os
 import json
 import re
+import asyncio
+import csv
+import io
 
 from app.config import settings
 from app.database import init_db, get_db
@@ -472,11 +475,20 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
             (email, client_ip, user_agent, 1 if payload.kvkk_consent else 0)
         )
         await db.commit()
+
+        # Toplam kayıt sayısını al
+        count_cursor = await db.execute("SELECT COUNT(*) as count FROM prelaunch_subscribers")
+        count_row = await count_cursor.fetchone()
+        total_subscribers = count_row["count"] if count_row else 1
+
+        # Arka planda anında hoş geldin e-postası ve yönetici bildirimi gönder (ziyaretçiyi bekletmeden)
+        asyncio.create_task(NotificationService.send_early_access_welcome(email))
+        asyncio.create_task(NotificationService.send_admin_new_lead_alert(email, total_subscribers, client_ip))
         
         return {
             "success": True,
             "already_registered": False,
-            "message": "Tebrikler! Erken erişim listemize başarıyla kaydoldunuz. Kapılar açıldığında ilk haberdar olan sınırlı kitle arasında yerinizi aldınız."
+            "message": "Tebrikler! Erken erişim listemize başarıyla kaydoldunuz. Onay e-postanız info@hakikibilet.com üzerinden gönderildi."
         }
     except Exception as e:
         return JSONResponse(
@@ -486,7 +498,7 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
 
 @app.get("/api/admin/erken-kayit-listesi")
 async def get_early_access_subscribers(request: Request, db=Depends(get_db)):
-    """Yönetici için erken kayıt listesini listeler"""
+    """Yönetici için erken kayıt listesini JSON olarak listeler"""
     cookie = request.cookies.get("hakiki_preview_access")
     param = request.query_params.get("onizleme") or request.query_params.get("preview")
     if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
@@ -499,4 +511,69 @@ async def get_early_access_subscribers(request: Request, db=Depends(get_db)):
         for r in rows
     ]
     return {"total": len(subscribers), "subscribers": subscribers}
+
+@app.get("/api/admin/erken-kayit-csv")
+async def export_early_access_csv(request: Request, db=Depends(get_db)):
+    """Yönetici için erken kayıt listesini Excel uyumlu CSV olarak indirir"""
+    cookie = request.cookies.get("hakiki_preview_access")
+    param = request.query_params.get("onizleme") or request.query_params.get("preview")
+    if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
+        raise HTTPException(status_code=403, detail="Yetkiniz bulunmamaktadır.")
+        
+    cursor = await db.execute("SELECT id, email, created_at, ip_address FROM prelaunch_subscribers ORDER BY created_at DESC")
+    rows = await cursor.fetchall()
+    
+    output = io.StringIO()
+    # Excel'in Türkçe karakterleri düzgün açması için UTF-8 BOM
+    output.write('\ufeff')
+    writer = csv.writer(output, delimiter=';')
+    writer.writerow(["Sıra No", "E-posta Adresi", "Kayıt Tarihi", "IP Adresi"])
+    
+    for r in rows:
+        writer.writerow([r["id"], r["email"], r["created_at"], r["ip_address"] or ""])
+        
+    csv_content = output.getvalue()
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=hakikibilet_erken_kayit_listesi.csv",
+            "Cache-Control": "no-cache"
+        }
+    )
+
+@app.post("/api/admin/toplu-lansman-duyurusu")
+async def trigger_launch_announcement(request: Request, db=Depends(get_db)):
+    """Lansman günü tüm erken kayıtlı kullanıcılara açılış e-postasını gönderir"""
+    cookie = request.cookies.get("hakiki_preview_access")
+    param = request.query_params.get("onizleme") or request.query_params.get("preview")
+    if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
+        raise HTTPException(status_code=403, detail="Yetkiniz bulunmamaktadır.")
+        
+    cursor = await db.execute("SELECT email FROM prelaunch_subscribers")
+    rows = await cursor.fetchall()
+    emails = [r["email"] for r in rows if r["email"]]
+    
+    sent_count = 0
+    failed_count = 0
+    
+    for email in emails:
+        try:
+            res = await NotificationService.send_launch_announcement(email)
+            if res.get("success"):
+                sent_count += 1
+            else:
+                failed_count += 1
+            # Rate limit koruması için ufak bekleme
+            await asyncio.sleep(0.15)
+        except Exception:
+            failed_count += 1
+            
+    return {
+        "success": True,
+        "total": len(emails),
+        "sent": sent_count,
+        "failed": failed_count,
+        "message": f"Toplam {len(emails)} kayıtlı gezginden {sent_count} kişiye açılış müjdesi başarıyla ulaştırıldı."
+    }
 

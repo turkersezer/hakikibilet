@@ -83,11 +83,13 @@ class NotificationService:
                         "https://api.resend.com/emails",
                         headers={
                             "Authorization": f"Bearer {settings.RESEND_API_KEY}",
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            "User-Agent": "HakikiBiletApp/1.0"
                         },
                         json={
-                            "from": "Hakiki Bilet <firsatlar@hakikibilet.com>",
+                            "from": settings.RESEND_FROM_EMAIL,
                             "to": [to_email],
+                            "reply_to": settings.RESEND_REPLY_TO,
                             "subject": f"🔥 FIRSAT: {route} Bileti Sadece {price:,.0f} ₺!",
                             "html": html_content
                         }
@@ -106,6 +108,178 @@ class NotificationService:
             "preview_subject": f"🔥 FIRSAT: {route} Bileti Sadece {price:,.0f} ₺!",
             "status": "delivered_simulated"
         }
+
+    @classmethod
+    async def send_custom_email(cls, to_email: str, subject: str, html_content: str, reply_to: Optional[str] = None) -> Dict[str, Any]:
+        """Resend üzerinden genel amaçlı kurumsal e-posta gönderir"""
+        if not settings.RESEND_API_KEY:
+            logger.warning(f"Resend API anahtarı tanımlı değil. E-posta simüle edildi: {to_email}")
+            return {"success": False, "simulated": True, "message": "Resend API anahtarı yok."}
+            
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.post(
+                    "https://api.resend.com/emails",
+                    headers={
+                        "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+                        "Content-Type": "application/json",
+                        "User-Agent": "HakikiBiletApp/1.0"
+                    },
+                    json={
+                        "from": settings.RESEND_FROM_EMAIL,
+                        "to": [to_email],
+                        "reply_to": reply_to or settings.RESEND_REPLY_TO,
+                        "subject": subject,
+                        "html": html_content
+                    }
+                )
+                if response.status_code in (200, 201):
+                    data = response.json()
+                    logger.info(f"✅ Kurumsal e-posta gönderildi: {to_email} (ID: {data.get('id')})")
+                    return {"success": True, "id": data.get("id")}
+                else:
+                    logger.error(f"Resend API hatası ({response.status_code}): {response.text}")
+                    return {"success": False, "status_code": response.status_code, "error": response.text}
+        except Exception as e:
+            logger.error(f"E-posta gönderim istisnası: {str(e)}")
+            return {"success": False, "error": str(e)}
+
+    @classmethod
+    async def send_early_access_welcome(cls, subscriber_email: str) -> Dict[str, Any]:
+        """Yeni erken kayıt yaptıran kullanıcıya şık kurumsal hoş geldin e-postası gönderir"""
+        subject = "✈️ Hakiki Bilet Erken Erişim Kulübüne Hoş Geldiniz!"
+        html = f"""
+        <!DOCTYPE html>
+        <html lang="tr">
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }}
+                .card {{ max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0; }}
+                .hero {{ background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #ffffff; padding: 40px 32px; text-align: center; border-bottom: 3px solid #f59e0b; }}
+                .brand-title {{ font-size: 28px; font-weight: 900; letter-spacing: -0.5px; margin: 0; color: #ffffff; }}
+                .brand-gold {{ color: #f59e0b; }}
+                .brand-slogan {{ font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #fde68a; margin-top: 6px; }}
+                .badge {{ display: inline-block; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: 9999px; text-transform: uppercase; margin-bottom: 12px; }}
+                .body-content {{ padding: 36px 32px; line-height: 1.7; font-size: 15px; color: #334155; }}
+                .body-content h2 {{ font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 0; }}
+                .feature-box {{ background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px 20px; margin: 24px 0; }}
+                .feature-item {{ margin: 8px 0; font-size: 14px; color: #1e293b; }}
+                .button {{ display: block; text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0f172a !important; font-weight: 800; font-size: 15px; padding: 16px 28px; border-radius: 12px; text-decoration: none; margin-top: 28px; box-shadow: 0 4px 14px rgba(217,119,6,0.3); }}
+                .footer {{ background: #f8fafc; padding: 24px 32px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #f1f5f9; }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div class="hero">
+                    <span class="badge">✨ Erken Erişim Kulübü</span>
+                    <h1 class="brand-title">HAKİKİ <span class="brand-gold">BİLET</span></h1>
+                    <div class="brand-slogan">Hakiki Fiyat, Hakiki Bilet</div>
+                </div>
+                <div class="body-content">
+                    <h2>Aramıza Hoş Geldiniz! ✈️</h2>
+                    <p>
+                        Kulaktan dolma fiyatlara, yanıltıcı indirimlere ve gizli acente komisyonlarına son verecek bağımsız seyahat hareketimizde yerinizi aldınız.
+                    </p>
+                    <p>
+                        Şu an kapalı beta sürecindeyiz ve platformumuzun son hazırlıklarını tamamlıyoruz. Kapılar açıldığında:
+                    </p>
+                    <div class="feature-box">
+                        <div class="feature-item">✈️ <strong>Tüm Havayolları:</strong> THY, Pegasus, AJet ve dünya uçuşları tek ekranda.</div>
+                        <div class="feature-item">🌙 <strong>Dip Fiyat Radarı:</strong> Gece ve erken saatlerdeki gizli dip fiyatlar anında en üstte.</div>
+                        <div class="feature-item">🚌 <strong>Şehirlerarası Otobüsler:</strong> Türkiye'nin tüm otobüs güzergahları.</div>
+                        <div class="feature-item">🛡️ <strong>%100 Şeffaflık:</strong> Sıfır gizli komisyon, doğrudan resmi acente/taşıyıcı yönlendirmesi.</div>
+                    </div>
+                    <p>
+                        Lansman günümüzde kapılar açıldığı an ilk haberdar olan ayrıcalıklı kitle arasında olacaksınız.
+                    </p>
+                    <a href="https://hakikibilet.com" class="button">Hakiki Bilet'i İnceleyin →</a>
+                    <p style="font-size: 13px; color: #64748b; margin-top: 24px;">
+                        <em>Sorularınız veya seyahat önerileriniz için bu e-postayı doğrudan yanıtlayabilirsiniz.</em>
+                    </p>
+                </div>
+                <div class="footer">
+                    <strong>Hakiki Bilet</strong> — Bağımsız Seyahat ve Fiyat Karşılaştırma Portalı<br>
+                    hakikibilet.com • info@hakikibilet.com<br>
+                    Bu e-posta, hakikibilet.com erken erişim talebiniz doğrultusunda gönderilmiştir.
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        return await cls.send_custom_email(subscriber_email, subject, html)
+
+    @classmethod
+    async def send_admin_new_lead_alert(cls, subscriber_email: str, total_count: int, ip_address: Optional[str] = None) -> Dict[str, Any]:
+        """Yeni bir kayıt olduğunda hakikibilet@gmail.com adresine yönetici bildirimi gönderir"""
+        subject = f"🔔 Yeni Erken Kayıt: {subscriber_email} (Toplam: {total_count})"
+        html = f"""
+        <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
+            <h2 style="color: #0f172a;">🎉 Yeni Bir Ziyaretçi Erken Erişime Kaydoldu!</h2>
+            <div style="background: #f1f5f9; padding: 16px; border-radius: 12px; margin: 16px 0;">
+                <p><strong>E-posta:</strong> {subscriber_email}</p>
+                <p><strong>IP Adresi:</strong> {ip_address or 'Bilinmiyor'}</p>
+                <p><strong>Toplam Kayıtlı Gezgin Sayısı:</strong> <span style="color: #d97706; font-size: 18px; font-weight: bold;">{total_count}</span></p>
+            </div>
+            <p style="font-size: 12px; color: #64748b;">
+                Bu bildirim Hakiki Bilet erken kayıt motoru tarafından otomatik olarak gönderilmiştir.
+            </p>
+        </div>
+        """
+        return await cls.send_custom_email(settings.ADMIN_NOTIFICATION_EMAIL, subject, html)
+
+    @classmethod
+    async def send_launch_announcement(cls, to_email: str) -> Dict[str, Any]:
+        """Lansman günü tüm erken kayıtlı kullanıcılara açılış müjdesi gönderir"""
+        subject = "🚀 Kapılar Açıldı: Hakiki Bilet Artık Canlı Yayında!"
+        html = f"""
+        <!DOCTYPE html>
+        <html lang="tr">
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }}
+                .card {{ max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0; }}
+                .hero {{ background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #ffffff; padding: 40px 32px; text-align: center; border-bottom: 3px solid #f59e0b; }}
+                .brand-title {{ font-size: 28px; font-weight: 900; letter-spacing: -0.5px; margin: 0; color: #ffffff; }}
+                .brand-gold {{ color: #f59e0b; }}
+                .brand-slogan {{ font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #fde68a; margin-top: 6px; }}
+                .badge {{ display: inline-block; background: #10b981; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: 9999px; text-transform: uppercase; margin-bottom: 12px; }}
+                .body-content {{ padding: 36px 32px; line-height: 1.7; font-size: 15px; color: #334155; }}
+                .body-content h2 {{ font-size: 22px; font-weight: 900; color: #0f172a; margin-top: 0; }}
+                .button {{ display: block; text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0f172a !important; font-weight: 900; font-size: 16px; padding: 18px 28px; border-radius: 14px; text-decoration: none; margin: 32px 0 20px 0; box-shadow: 0 4px 16px rgba(217,119,6,0.35); }}
+                .footer {{ background: #f8fafc; padding: 24px 32px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #f1f5f9; }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div class="hero">
+                    <span class="badge">🚀 RESMİ LANSMAN</span>
+                    <h1 class="brand-title">HAKİKİ <span class="brand-gold">BİLET</span></h1>
+                    <div class="brand-slogan">Hakiki Fiyat, Hakiki Bilet</div>
+                </div>
+                <div class="body-content">
+                    <h2>Beklediğiniz Gün Geldi: Kapılar Açıldı! 🎉</h2>
+                    <p>
+                        Erken erişim davetimize katıldığınız için teşekkür ederiz. Türkiye'nin bağımsız seyahat ve dip fiyat arama motoru <strong>Hakiki Bilet</strong> resmen yayında!
+                    </p>
+                    <p>
+                        Artık gizli komisyonlar, yapay fiyat artışları ve yanıltıcı rakamlar olmadan Türkiye'nin tüm havayolu ve otobüs seferlerini tek tıkla canlı karşılaştırabilirsiniz.
+                    </p>
+                    <a href="https://hakikibilet.com" class="button">Hemen Hakiki Fiyatları Karşılaştırın →</a>
+                    <p style="font-size: 13px; color: #64748b;">
+                        İlk seyahatinizde hakiki fiyat avantajını keşfedin. Bizi tercih ettiğiniz için teşekkür ederiz!
+                    </p>
+                </div>
+                <div class="footer">
+                    <strong>Hakiki Bilet</strong> — Bağımsız Seyahat Portalı<br>
+                    hakikibilet.com • info@hakikibilet.com
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        return await cls.send_custom_email(to_email, subject, html)
 
     @classmethod
     async def send_telegram(cls, chat_id: str, route: str, price: float, regular_price: float, link: str, carrier: str = "Havayolu / Tren") -> Dict[str, Any]:
