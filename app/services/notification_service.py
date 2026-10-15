@@ -130,7 +130,11 @@ class NotificationService:
                         "to": [to_email],
                         "reply_to": reply_to or settings.RESEND_REPLY_TO,
                         "subject": subject,
-                        "html": html_content
+                        "html": html_content,
+                        "headers": {
+                            "List-Unsubscribe": f"<https://hakikibilet.com/bulten/ayril?email={to_email}>",
+                            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
+                        }
                     }
                 )
                 if response.status_code in (200, 201):
@@ -167,6 +171,7 @@ class NotificationService:
                 .feature-item {{ margin: 8px 0; font-size: 14px; color: #1e293b; }}
                 .button {{ display: block; text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0f172a !important; font-weight: 800; font-size: 15px; padding: 16px 28px; border-radius: 12px; text-decoration: none; margin-top: 28px; box-shadow: 0 4px 14px rgba(217,119,6,0.3); }}
                 .footer {{ background: #f8fafc; padding: 24px 32px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #f1f5f9; }}
+                .unsub-link {{ color: #94a3b8; text-decoration: underline; margin-top: 8px; display: inline-block; }}
             </style>
         </head>
         <body>
@@ -201,7 +206,8 @@ class NotificationService:
                 <div class="footer">
                     <strong>Hakiki Bilet</strong> — Bağımsız Seyahat ve Fiyat Karşılaştırma Portalı<br>
                     hakikibilet.com • info@hakikibilet.com<br>
-                    Bu e-posta, hakikibilet.com erken erişim talebiniz doğrultusunda gönderilmiştir.
+                    Bu e-posta, hakikibilet.com erken erişim talebiniz doğrultusunda gönderilmiştir.<br>
+                    <a href="https://hakikibilet.com/bulten/ayril?email={subscriber_email}" class="unsub-link">Erken Erişim Listesinden Çık</a>
                 </div>
             </div>
         </body>
@@ -249,6 +255,7 @@ class NotificationService:
                 .body-content h2 {{ font-size: 22px; font-weight: 900; color: #0f172a; margin-top: 0; }}
                 .button {{ display: block; text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0f172a !important; font-weight: 900; font-size: 16px; padding: 18px 28px; border-radius: 14px; text-decoration: none; margin: 32px 0 20px 0; box-shadow: 0 4px 16px rgba(217,119,6,0.35); }}
                 .footer {{ background: #f8fafc; padding: 24px 32px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #f1f5f9; }}
+                .unsub-link {{ color: #94a3b8; text-decoration: underline; margin-top: 8px; display: inline-block; }}
             </style>
         </head>
         <body>
@@ -273,7 +280,8 @@ class NotificationService:
                 </div>
                 <div class="footer">
                     <strong>Hakiki Bilet</strong> — Bağımsız Seyahat Portalı<br>
-                    hakikibilet.com • info@hakikibilet.com
+                    hakikibilet.com • info@hakikibilet.com<br>
+                    <a href="https://hakikibilet.com/bulten/ayril?email={to_email}" class="unsub-link">Duyuru Listesinden Çık</a>
                 </div>
             </div>
         </body>

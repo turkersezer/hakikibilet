@@ -370,13 +370,18 @@
 
                 resultBox.classList.remove('hidden');
                 if (response.ok && data.success) {
-                    resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-emerald-800 bg-emerald-50 border border-emerald-200';
-                    resultBox.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> <strong>Tebrikler!</strong> Erken erişim listenize başarıyla kaydoldunuz. Açılışta ilk siz haberdar olacaksınız.';
+                    if (data.already_registered) {
+                        resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-amber-900 bg-amber-50 border border-amber-300';
+                        resultBox.innerHTML = '<i class="fa-solid fa-circle-info text-amber-600 mr-1.5"></i> ' + (data.message || 'Bu e-posta adresi zaten erken erişim listemizde kayıtlı.');
+                    } else {
+                        resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-emerald-800 bg-emerald-50 border border-emerald-200';
+                        resultBox.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> <strong>Tebrikler!</strong> ' + (data.message || 'Erken erişim listenize başarıyla kaydoldunuz. Açılışta ilk siz haberdar olacaksınız.');
+                    }
                     emailInput.value = '';
                     kvkkCheckbox.checked = false;
                 } else {
-                    resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-amber-800 bg-amber-50 border border-amber-200';
-                    resultBox.innerHTML = '<i class="fa-solid fa-info-circle text-amber-600 mr-1.5"></i> ' + (data.message || 'Bu e-posta adresi zaten kayıtlıdır.');
+                    resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-rose-800 bg-rose-50 border border-rose-200';
+                    resultBox.innerHTML = '<i class="fa-solid fa-circle-exclamation text-rose-600 mr-1.5"></i> ' + (data.message || 'Kayıt sırasında bir hata oluştu.');
                 }
             } catch (err) {
                 resultBox.classList.remove('hidden');

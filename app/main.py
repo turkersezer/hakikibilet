@@ -57,8 +57,8 @@ templates = Jinja2Templates(directory=templates_dir)
 async def maintenance_middleware(request: Request, call_next):
     path = request.url.path
     
-    # Yasal uyum sayfaları, doğrudan lansman vitrini, erken kayıt API'si, statik dosyalar, favicon ve robots her zaman herkese açık
-    legal_paths = ("/lansman", "/api/erken-kayit", "/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
+    # Yasal uyum sayfaları, doğrudan lansman vitrini, erken kayıt API'si, bülten ayrılma, statik dosyalar, favicon ve robots her zaman herkese açık
+    legal_paths = ("/lansman", "/api/erken-kayit", "/bulten/ayril", "/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
     if path.startswith("/static") or path in ("/favicon.ico", "/robots.txt") or path in legal_paths:
         response = await call_next(request)
         if path.startswith("/static/"):
@@ -460,24 +460,34 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
     
     try:
         # Zaten kayıtlı mı?
-        cursor = await db.execute("SELECT id FROM prelaunch_subscribers WHERE email = ?", (email,))
+        cursor = await db.execute("SELECT id, is_active FROM prelaunch_subscribers WHERE email = ?", (email,))
         existing = await cursor.fetchone()
         
         if existing:
+            # Daha önce listeden çıkmışsa tekrar aktif et
+            if existing["is_active"] == 0:
+                await db.execute("UPDATE prelaunch_subscribers SET is_active = 1, unsubscribed_at = NULL WHERE id = ?", (existing["id"],))
+                await db.commit()
+                asyncio.create_task(NotificationService.send_early_access_welcome(email))
+                return {
+                    "success": True,
+                    "already_registered": False,
+                    "message": "Erken erişim üyeliğiniz yeniden aktif edildi! Hoş geldin e-postanız info@hakikibilet.com üzerinden gönderildi."
+                }
             return {
                 "success": True,
                 "already_registered": True,
-                "message": "Harika! E-posta adresiniz zaten erken erişim listemizde kayıtlı. Lansman gününde ilk siz haberdar olacaksınız!"
+                "message": "Harika! Bu e-posta adresi zaten erken erişim listemizde kayıtlı. Lansman gününde ilk siz haberdar olacaksınız!"
             }
             
         await db.execute(
-            "INSERT INTO prelaunch_subscribers (email, ip_address, user_agent, kvkk_consent) VALUES (?, ?, ?, ?)",
+            "INSERT INTO prelaunch_subscribers (email, ip_address, user_agent, kvkk_consent, is_active) VALUES (?, ?, ?, ?, 1)",
             (email, client_ip, user_agent, 1 if payload.kvkk_consent else 0)
         )
         await db.commit()
 
         # Toplam kayıt sayısını al
-        count_cursor = await db.execute("SELECT COUNT(*) as count FROM prelaunch_subscribers")
+        count_cursor = await db.execute("SELECT COUNT(*) as count FROM prelaunch_subscribers WHERE is_active = 1")
         count_row = await count_cursor.fetchone()
         total_subscribers = count_row["count"] if count_row else 1
 
@@ -496,6 +506,33 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
             content={"success": False, "message": f"Kayıt işlemi sırasında bir hata oluştu: {str(e)}"}
         )
 
+# ==================== BÜLTEN & ERKEN ERİŞİM ABONELİKTEN ÇIKMA (UNSUBSCRIBE) ====================
+
+@app.get("/bulten/ayril", response_class=HTMLResponse)
+async def unsubscribe_page(request: Request, email: str = Query("", description="Ayrılacak e-posta"), db=Depends(get_db)):
+    """Erken erişim ve bülten listesinden güvenli tek tıkla çıkış sayfası"""
+    clean_email = email.strip().lower()
+    if clean_email:
+        try:
+            await db.execute(
+                "UPDATE prelaunch_subscribers SET is_active = 0, unsubscribed_at = CURRENT_TIMESTAMP WHERE email = ?",
+                (clean_email,)
+            )
+            await db.commit()
+        except Exception:
+            pass
+            
+    return templates.TemplateResponse(
+        request=request,
+        name="unsubscribe.html",
+        context={
+            "app_name": settings.APP_NAME,
+            "app_slogan": settings.APP_SLOGAN,
+            "app_domain": settings.APP_DOMAIN,
+            "email": clean_email or "Belirtilmedi"
+        }
+    )
+
 @app.get("/api/admin/erken-kayit-listesi")
 async def get_early_access_subscribers(request: Request, db=Depends(get_db)):
     """Yönetici için erken kayıt listesini JSON olarak listeler"""
@@ -504,13 +541,25 @@ async def get_early_access_subscribers(request: Request, db=Depends(get_db)):
     if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
         raise HTTPException(status_code=403, detail="Bu listeyi görüntülemek için yetkiniz bulunmamaktadır.")
         
-    cursor = await db.execute("SELECT id, email, created_at, ip_address FROM prelaunch_subscribers ORDER BY created_at DESC")
+    cursor = await db.execute("SELECT id, email, is_active, unsubscribed_at, created_at, ip_address FROM prelaunch_subscribers ORDER BY created_at DESC")
     rows = await cursor.fetchall()
     subscribers = [
-        {"id": r["id"], "email": r["email"], "created_at": r["created_at"], "ip": r["ip_address"]}
+        {
+            "id": r["id"],
+            "email": r["email"],
+            "status": "Aktif" if r["is_active"] == 1 else "Ayrıldı",
+            "is_active": bool(r["is_active"]),
+            "created_at": r["created_at"],
+            "unsubscribed_at": r["unsubscribed_at"],
+            "ip": r["ip_address"]
+        }
         for r in rows
     ]
-    return {"total": len(subscribers), "subscribers": subscribers}
+    return {
+        "total": len(subscribers),
+        "active_total": len([s for s in subscribers if s["is_active"]]),
+        "subscribers": subscribers
+    }
 
 @app.get("/api/admin/erken-kayit-csv")
 async def export_early_access_csv(request: Request, db=Depends(get_db)):
@@ -520,17 +569,18 @@ async def export_early_access_csv(request: Request, db=Depends(get_db)):
     if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
         raise HTTPException(status_code=403, detail="Yetkiniz bulunmamaktadır.")
         
-    cursor = await db.execute("SELECT id, email, created_at, ip_address FROM prelaunch_subscribers ORDER BY created_at DESC")
+    cursor = await db.execute("SELECT id, email, is_active, created_at, ip_address FROM prelaunch_subscribers ORDER BY created_at DESC")
     rows = await cursor.fetchall()
     
     output = io.StringIO()
     # Excel'in Türkçe karakterleri düzgün açması için UTF-8 BOM
     output.write('\ufeff')
     writer = csv.writer(output, delimiter=';')
-    writer.writerow(["Sıra No", "E-posta Adresi", "Kayıt Tarihi", "IP Adresi"])
+    writer.writerow(["Sıra No", "E-posta Adresi", "Durum", "Kayıt Tarihi", "IP Adresi"])
     
     for r in rows:
-        writer.writerow([r["id"], r["email"], r["created_at"], r["ip_address"] or ""])
+        status_text = "Aktif" if r["is_active"] == 1 else "Ayrıldı"
+        writer.writerow([r["id"], r["email"], status_text, r["created_at"], r["ip_address"] or ""])
         
     csv_content = output.getvalue()
     return Response(
@@ -544,13 +594,13 @@ async def export_early_access_csv(request: Request, db=Depends(get_db)):
 
 @app.post("/api/admin/toplu-lansman-duyurusu")
 async def trigger_launch_announcement(request: Request, db=Depends(get_db)):
-    """Lansman günü tüm erken kayıtlı kullanıcılara açılış e-postasını gönderir"""
+    """Lansman günü SADECE aktif (ayrılmamış) erken kayıtlı kullanıcılara açılış e-postasını gönderir"""
     cookie = request.cookies.get("hakiki_preview_access")
     param = request.query_params.get("onizleme") or request.query_params.get("preview")
     if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
         raise HTTPException(status_code=403, detail="Yetkiniz bulunmamaktadır.")
         
-    cursor = await db.execute("SELECT email FROM prelaunch_subscribers")
+    cursor = await db.execute("SELECT email FROM prelaunch_subscribers WHERE is_active = 1")
     rows = await cursor.fetchall()
     emails = [r["email"] for r in rows if r["email"]]
     
@@ -571,9 +621,9 @@ async def trigger_launch_announcement(request: Request, db=Depends(get_db)):
             
     return {
         "success": True,
-        "total": len(emails),
+        "total_active": len(emails),
         "sent": sent_count,
         "failed": failed_count,
-        "message": f"Toplam {len(emails)} kayıtlı gezginden {sent_count} kişiye açılış müjdesi başarıyla ulaştırıldı."
+        "message": f"Toplam {len(emails)} aktif kayıtlı gezginden {sent_count} kişiye açılış müjdesi başarıyla ulaştırıldı."
     }
 

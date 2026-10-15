@@ -132,9 +132,21 @@ async def init_db():
             ip_address TEXT,
             user_agent TEXT,
             kvkk_consent INTEGER DEFAULT 1,
+            is_active INTEGER DEFAULT 1,
+            unsubscribed_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """)
+
+        # Kolon varlık kontrolü / güvenli migrasyon
+        try:
+            await conn.execute("ALTER TABLE prelaunch_subscribers ADD COLUMN is_active INTEGER DEFAULT 1;")
+        except Exception:
+            pass
+        try:
+            await conn.execute("ALTER TABLE prelaunch_subscribers ADD COLUMN unsubscribed_at TIMESTAMP;")
+        except Exception:
+            pass
 
         await conn.commit()
         
