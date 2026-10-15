@@ -77,7 +77,8 @@ class SearchService:
     def generate_deep_links(
         cls, origin_city_name: str, dest_city_name: str, departure_date: str, 
         return_date: Optional[str] = None, passengers: int = 1, trip_type: str = "one_way",
-        cabin_class: str = "economy", currency: str = "TRY"
+        cabin_class: str = "economy", currency: str = "TRY",
+        adults: int = 1, children: int = 0, infants: int = 0
     ):
         origin = find_city(origin_city_name)
         dest = find_city(dest_city_name)
@@ -117,6 +118,27 @@ class SearchService:
         biz_extra_google = "+business" if is_biz else ""
         biz_extra_enuygun = "&sinif=business" if is_biz else ""
 
+        # Yolcu parametreleri (Yetişkin / Çocuk / Bebek)
+        adults = max(1, adults or passengers or 1)
+        children = max(0, children or 0)
+        infants = max(0, infants or 0)
+
+        pgs_pax = f"adultCount={adults}"
+        if children > 0:
+            pgs_pax += f"&childCount={children}"
+        if infants > 0:
+            pgs_pax += f"&infantCount={infants}"
+
+        enuygun_pax = f"yetiskin={adults}"
+        if children > 0:
+            enuygun_pax += f"&cocuk={children}"
+        if infants > 0:
+            enuygun_pax += f"&bebek={infants}"
+
+        sky_pax = f"adultsv2={adults}"
+        if children > 0:
+            sky_pax += f"&childrenv2={children}"
+
         # 1. Uçak Deep Linkleri (Doğrudan canlı sonuç ekranı)
         flight_links = {
             "available": origin_has_airport and dest_has_airport,
@@ -125,18 +147,18 @@ class SearchService:
         if flight_links["available"]:
             enuygun_route = f"{origin_slug}-{dest_slug}-{origin_iata.lower()}a-{dest_iata.lower()}a"
             pgs_ret = f"&returnDate={return_date}" if is_round else ""
-            flight_links["pegasus"] = f"https://web.flypgs.com/booking?departurePort={origin_iata}&arrivalPort={dest_iata}&departureDate={departure_date}&adultCount={passengers}{pgs_ret}"
+            flight_links["pegasus"] = f"https://web.flypgs.com/booking?departurePort={origin_iata}&arrivalPort={dest_iata}&departureDate={departure_date}&{pgs_pax}{pgs_ret}"
 
             if is_round:
                 sky_ret = cls.format_date_for_skyscanner(return_date)
                 enuygun_ret = cls.format_date_for_enuygun(return_date)
-                flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/{sky_ret}/?adultsv2={passengers}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=1"
+                flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/{sky_ret}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=1"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+through+{return_date}{biz_extra_google}&curr={currency}"
-                flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&yetiskin={passengers}{biz_extra_enuygun}"
+                flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}"
             else:
-                flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/?adultsv2={passengers}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=0"
+                flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=0"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}{biz_extra_google}&curr={currency}"
-                flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&yetiskin={passengers}{biz_extra_enuygun}"
+                flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}"
         else:
             flight_links["pegasus"] = None
             flight_links["skyscanner"] = None
@@ -303,100 +325,190 @@ class SearchService:
     def get_curated_events(cls):
         """
         Gezgin Keşif Rehberi: 'Nereye Gitmeliyim? / Festival & Sezon Radarı'
+        Tarihi kesinleşmiş, resmi satışta veya teyitli yaklaşan organizasyonlar.
         Kullanıcı tek tıkla tıkladığında formu doldurur ve arama yapar.
+        Otomatik olarak kronolojik (en yakın tarihli en üstte) sıralanır.
         """
-        return [
-            {
-                "id": "event-oktoberfest",
-                "title": "Oktoberfest Bira Festivali 🍻",
-                "city": "Münih (MUC)",
-                "country": "Almanya",
-                "dates": "19 Eyl - 04 Eki",
-                "dep_date": "2026-09-22",
-                "ret_date": "2026-09-26",
-                "badge": "Dünya Çapında Festival",
-                "transport_mode": "flight",
-                "tag": "Eğlence & Kültür",
-                "desc": "Münih'in geleneksel çadırları, Bavyera müziği ve devasa festival atmosferi.",
-                "hotel_range": "Gecelik ~1.900 ₺'den başlayan",
-                "why": "Sonbaharın en büyük açık hava festivali. Erken rezervasyon ile bilet fırsatları aktif."
-            },
-            {
-                "id": "event-halloween",
-                "title": "Cadılar Bayramı & Sonbahar 🎃",
-                "city": "New York (JFK/EWR)",
-                "country": "ABD",
-                "dates": "28 Eki - 02 Kas",
-                "dep_date": "2026-10-28",
-                "ret_date": "2026-11-03",
-                "badge": "Efsanevi Kortej",
-                "transport_mode": "flight",
-                "tag": "Büyük Metropol",
-                "desc": "Village Halloween Parade, Central Park sonbahar renkleri ve New York ışıltısı.",
-                "hotel_range": "Gecelik ~3.500 ₺'den başlayan",
-                "why": "New York sokaklarının en renkli festival haftası."
-            },
-            {
-                "id": "event-venice",
-                "title": "Venedik Maske Karnavalı 🎭",
-                "city": "Milano (MXP)",
-                "country": "İtalya",
-                "dates": "14 Şub - 24 Şub",
-                "dep_date": "2027-02-14",
-                "ret_date": "2027-02-18",
-                "badge": "Tarihi Masal",
-                "transport_mode": "flight",
-                "tag": "İtalya Turu",
-                "desc": "Milano uçuşu + Frecciarossa hızlı treni ile 2 saatte Venedik San Marco Meydanı'na geçiş.",
-                "hotel_range": "Gecelik ~1.800 ₺'den başlayan",
-                "why": "Dünyanın en büyüleyici kostüm ve maske karnavalı."
-            },
-            {
-                "id": "event-valentine",
-                "title": "Sevgililer Günü Romantik Kaçış 💖",
-                "city": "Paris (CDG/ORY)",
-                "country": "Fransa",
-                "dates": "12 Şub - 16 Şub",
-                "dep_date": "2027-02-12",
-                "ret_date": "2027-02-16",
-                "badge": "Aşkın Başkenti",
-                "transport_mode": "flight",
-                "tag": "Hafta Sonu Kaçamağı",
-                "desc": "Eyfel Kulesi, Seine Nehri tekne turu ve Montmartre sokaklarında unutulmaz anlar.",
-                "hotel_range": "Gecelik ~2.200 ₺'den başlayan",
-                "why": "Sevgililer günü için dünyanın 1 numaralı romantik rotası."
-            },
-            {
-                "id": "event-christmas",
-                "title": "Avrupa Masalsı Noel Pazarları 🎄",
-                "city": "Viyana (VIE)",
-                "country": "Avusturya",
-                "dates": "10 Ara - 26 Ara",
-                "dep_date": "2026-12-15",
-                "ret_date": "2026-12-19",
-                "badge": "Kış Masalı",
-                "transport_mode": "flight",
-                "tag": "Işıltılı Şehirler",
-                "desc": "Rathausplatz dev Noel ağacı, sıcak baharatlı içecekler ve Viyana-Prag-Budapeşte tren hatları.",
-                "hotel_range": "Gecelik ~1.700 ₺'den başlayan",
-                "why": "Orta Avrupa'nın en büyüleyici kış ve yeni yıl pazarları dönemi."
-            },
+        events = [
             {
                 "id": "event-chios",
                 "title": "Kapı Vizesiz Sakız Adası Kaçamağı 🏖️",
                 "city": "Sakız Adası (Chios)",
                 "country": "Yunanistan",
-                "dates": "Hafta Sonu Seferleri",
+                "category": "island",
+                "category_label": "Yunan Adaları & Deniz",
+                "dates": "24 Eki - 26 Eki",
                 "dep_date": "2026-10-24",
                 "ret_date": "2026-10-26",
-                "badge": "Kapı Vizesi Kolaylığı",
+                "badge": "En Yakın Kaçış • Kapı Vizesi",
                 "transport_mode": "ferry",
                 "tag": "Ege & Deniz",
                 "desc": "Çeşme'den 30 dakikada Sakız Adası. Damla sakızı köyleri, taze deniz ürünleri ve huzurlu koylar.",
-                "hotel_range": "Gecelik ~1.300 ₺'den başlayan",
-                "why": "Bütçe dostu, yakın ve vizesiz/kapı vizesiyle en hızlı yurt dışı tatili."
+                "hotel_range": "Booking.com Canlı Teyitli Oteller",
+                "ticket_org": "Ertürk & Feribotlines Resmi Bilet Portalı",
+                "ticket_url": "https://www.erturk.com.tr/tr/",
+                "image_url": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "Günübirlik Yaya Yolcu", "price": "~35 €", "desc": "Aynı gün gidiş-dönüş"},
+                    {"name": "Açık Dönüşlü Standart Bilet", "price": "~45 €", "desc": "Hafta sonu konaklamalı"},
+                    {"name": "Araçlı Geçiş (Otomobil)", "price": "~90 €", "desc": "Araçla ada keşfi"}
+                ],
+                "why": "Bütçe dostu, yakın ve kapı vizesiyle en pratik yurt dışı kaçamağı."
+            },
+            {
+                "id": "event-f1-monaco",
+                "title": "Formula 1 Monaco Grand Prix (Monte Carlo) 🏎️",
+                "city": "Nice (NCE)",
+                "country": "Fransa / Monaco",
+                "category": "sport",
+                "category_label": "Dünya Spor Zirveleri",
+                "dates": "23 May - 25 May",
+                "dep_date": "2027-05-23",
+                "ret_date": "2027-05-25",
+                "badge": "FIA Resmi Monaco Yarış Haftası",
+                "transport_mode": "flight",
+                "tag": "Hız & Prestij (Ferrari)",
+                "desc": "Monte Carlo sokak pistinde Scuderia Ferrari ve F1 kükremesi. Nice (NCE) uçuşu + 20 dk sahil treniyle Monaco Garı'na doğrudan varış.",
+                "hotel_range": "Booking.com Canlı Nice & Monaco Otelleri",
+                "ticket_org": "Resmi FIA F1 Monaco Bilet & Koltuk Seçimi",
+                "ticket_url": "https://ticketing.formula1.com/monaco/",
+                "image_url": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "Genel Giriş (Rocher Yamaç)", "price": "~150 €", "desc": "Pist panoraması ve dev ekran"},
+                    {"name": "K Tribünü (Liman & Rascasse)", "price": "~480 €", "desc": "Süper yatlar ve viraj mücadelesi"},
+                    {"name": "B Tribünü (Casino Meydanı)", "price": "~850 €", "desc": "Miras Casino virajı ve pit çıkışı"}
+                ],
+                "why": "Dünyanın en ikonik, en lüks ve en prestijli Formula 1 sokak yarışı."
+            },
+            {
+                "id": "event-ucl-final",
+                "title": "UEFA Şampiyonlar Ligi Finali Münih ⚽",
+                "city": "Münih (MUC)",
+                "country": "Almanya",
+                "category": "sport",
+                "category_label": "Dünya Spor Zirveleri",
+                "dates": "30 May - 01 Haz",
+                "dep_date": "2027-05-30",
+                "ret_date": "2027-06-01",
+                "badge": "Avrupa Kulüpler Zirvesi",
+                "transport_mode": "flight",
+                "tag": "Futbol Şöleni",
+                "desc": "Allianz Arena'da Avrupa'nın en büyüğünü belirleyecek dev final maçı ve Münih taraftar festivali coşkusu.",
+                "hotel_range": "Booking.com Canlı Münih Otelleri",
+                "ticket_org": "Resmi UEFA Bilet Portalı",
+                "ticket_url": "https://www.uefa.com/tickets/",
+                "image_url": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "Kategori 4 (Kale Arkası Üst)", "price": "~70 €", "desc": "Coşkulu taraftar tribünü"},
+                    {"name": "Kategori 3 & 2 (Köşe & Yan)", "price": "~180 €", "desc": "Geniş saha açısı"},
+                    {"name": "Kategori 1 (Merkez Maraton)", "price": "~590 €", "desc": "Kupa seremonisi ve orta saha"}
+                ],
+                "why": "Yılın en büyük futbol organizasyonunda kupa heyecanını yerinde yaşayın."
+            },
+            {
+                "id": "event-wimbledon",
+                "title": "Wimbledon Tenis Şampiyonası 🎾",
+                "city": "Londra (LHR/STN)",
+                "country": "İngiltere",
+                "category": "sport",
+                "category_label": "Dünya Spor Zirveleri",
+                "dates": "30 Haz - 06 Tem",
+                "dep_date": "2027-06-30",
+                "ret_date": "2027-07-06",
+                "badge": "Tenisin Mabedi",
+                "transport_mode": "flight",
+                "tag": "Grand Slam Geleneği",
+                "desc": "Çilek & krema geleneği, yemyeşil çim kortlar ve Centre Court'ta dünyanın en iyi raketleri.",
+                "hotel_range": "Booking.com Canlı Londra Otelleri",
+                "ticket_org": "Resmi Wimbledon Public Ballot & The Queue",
+                "ticket_url": "https://www.wimbledon.com",
+                "image_url": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "Grounds Pass (Dış Kortlar)", "price": "~30 £", "desc": "Henman Hill ve yan kortlar"},
+                    {"name": "No.1 Court Rezervasyonlu", "price": "~130 £", "desc": "Üstü kapanabilir çim kort"},
+                    {"name": "Centre Court (Merkez Kort)", "price": "~240 £", "desc": "Tarihi şampiyonluk kortu"}
+                ],
+                "why": "Beyaz kıyafet geleneği ve tenis tarihinin en asil şampiyonası."
+            },
+            {
+                "id": "event-f1-silverstone",
+                "title": "Formula 1 Britanya Grand Prix (Silverstone) 🏎️",
+                "city": "Londra (LHR/STN)",
+                "country": "İngiltere",
+                "category": "sport",
+                "category_label": "Dünya Spor Zirveleri",
+                "dates": "04 Tem - 06 Tem",
+                "dep_date": "2027-07-04",
+                "ret_date": "2027-07-06",
+                "badge": "FIA Resmi Silverstone Takvimi",
+                "transport_mode": "flight",
+                "tag": "Motor Sporları Doğuşu (Ferrari)",
+                "desc": "Scuderia Ferrari'nin F1 tarihindeki ilk zaferini kazandığı efsanevi Silverstone pistinde yüksek hızlı virajlar ve motor festivali coşkusu.",
+                "hotel_range": "Booking.com Canlı Londra & Milton Keynes Otelleri",
+                "ticket_org": "Resmi Silverstone & FIA Bilet Portalı",
+                "ticket_url": "https://ticketing.formula1.com/great-britain/",
+                "image_url": "https://images.unsplash.com/photo-1773851729103-93173282bd45?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "General Admission (Genel Giriş)", "price": "~185 £", "desc": "Tüm pist çevresi çim alanlar"},
+                    {"name": "Stowe / Club Viraj Tribünü", "price": "~420 £", "desc": "Geçişlerin en çok yapıldığı virajlar"},
+                    {"name": "Hamilton Ana Düzlük & Pit", "price": "~690 £", "desc": "Start/Finish çizgisi ve podyum"}
+                ],
+                "why": "F1 tutkunlarının en heyecanlı ve en hızlı viraj mücadelelerine tanık olduğu efsane pist."
+            },
+            {
+                "id": "event-f1-monza",
+                "title": "Formula 1 İtalya Grand Prix (Monza) 🏎️",
+                "city": "Milano (MXP)",
+                "country": "İtalya",
+                "category": "sport",
+                "category_label": "Dünya Spor Zirveleri",
+                "dates": "05 Eyl - 07 Eyl",
+                "dep_date": "2027-09-05",
+                "ret_date": "2027-09-07",
+                "badge": "Hız Tapınağı (Temple of Speed)",
+                "transport_mode": "flight",
+                "tag": "Tifosi Kırmızı Denizi (Ferrari SF-24)",
+                "desc": "Scuderia Ferrari SF-24 taraftarlarının kırmızı denizi, 355 km/s hız rekorları. Milano uçuşu + Milano Garı'ndan 15 dk Monza treni.",
+                "hotel_range": "Booking.com Canlı Milano Otelleri",
+                "ticket_org": "Resmi Autodromo Nazionale Monza & F1",
+                "ticket_url": "https://ticketing.formula1.com/italy/",
+                "image_url": "https://images.unsplash.com/photo-1762857362511-86142780dc43?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "Prato (Genel Giriş)", "price": "~140 €", "desc": "Parabolica ve Curva Grande çevresi"},
+                    {"name": "Laterale Parabolica Tribünü", "price": "~350 €", "desc": "Son viraj ve düzlüğe çıkış"},
+                    {"name": "Centrale Tribuna Ana Düzlük", "price": "~650 €", "desc": "Ferrari pit garajı ve kupa seremonisi"}
+                ],
+                "why": "Takvimin en hızlı pistinde unutulmaz İtalyan motor sporları ve Ferrari atmosferi."
+            },
+            {
+                "id": "event-f1-baku",
+                "title": "Formula 1 Azerbaycan Grand Prix (Bakü) 🏎️",
+                "city": "Bakü (GYD)",
+                "country": "Azerbaycan",
+                "category": "sport",
+                "category_label": "Dünya Spor Zirveleri",
+                "dates": "19 Eyl - 21 Eyl",
+                "dep_date": "2027-09-19",
+                "ret_date": "2027-09-21",
+                "badge": "Vizesiz • En Hızlı Şehir Pisti",
+                "transport_mode": "flight",
+                "tag": "Kardeş Ülke Heyecanı",
+                "desc": "Bakü Şehir Pisti'nde Hazar Denizi ve tarihi kale surları boyunca 340 km/s hızla soluksuz yarış heyecanı. Türk vatandaşlarına vizesiz ve direkt uçuşlu.",
+                "hotel_range": "Booking.com Canlı Bakü Sahil Otelleri",
+                "ticket_org": "Resmi Bakü City Circuit Biletleri",
+                "ticket_url": "https://ticketing.formula1.com/azerbaijan/",
+                "image_url": "https://images.unsplash.com/photo-1614949194403-9602bdc14a3a?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "Bulvar Genel Giriş (General)", "price": "~120 $", "desc": "Hazar kıyısı ve festival alanı"},
+                    {"name": "İçeri Şehir (Tarihi Kale Virajı)", "price": "~290 $", "desc": "Dünyanın en dar pist virajı"},
+                    {"name": "Abşeron Ana Düzlük (Main)", "price": "~540 $", "desc": "Start/Finish çizgisi ve pit aksiyonu"}
+                ],
+                "why": "Vizesiz ve en kolay ulaşılabilen, bol geçişli büyüleyici şehir yarışı."
             }
         ]
+        # Otomatik Kronolojik Sıralama (En yakın tarihli olan en başta!)
+        events.sort(key=lambda e: e.get("dep_date", "9999-99-99"))
+        return events
 
     @classmethod
     def build_smart_multimodal_plan(
@@ -596,11 +708,18 @@ class SearchService:
         cabin_class: str = "economy", calendar_range: int = 7,
         location_type: str = "city", ferry_vehicle_type: str = "passenger",
         currency: str = "TRY", search_mode: str = "fast",
-        include_hotel: bool = False, hotel_nights: Optional[int] = None
+        include_hotel: bool = False, hotel_nights: Optional[int] = None,
+        adults: int = 1, children: int = 0, infants: int = 0
     ):
+        # Yolcu sayılarını normalize et
+        adults = max(1, adults or passengers or 1)
+        children = max(0, children or 0)
+        infants = max(0, infants or 0)
+        total_pax = adults + children + infants
+
         # 1. "Her Yere" arama modu kontrolü
         if dest_city.lower() in ("her yere", "farketmez", "her-yere", "anywhere"):
-            return cls.search_anywhere(origin_city, departure_date, transport_type, passengers)
+            return cls.search_anywhere(origin_city, departure_date, transport_type, total_pax)
 
         origin = find_city(origin_city)
         dest = find_city(dest_city)
@@ -616,7 +735,11 @@ class SearchService:
         currency = (currency or "TRY").upper()
         curr_symbol = CurrencyService.get_symbol(currency)
 
-        links = cls.generate_deep_links(origin_name, dest_name, departure_date, return_date, passengers, trip_type, cabin_class=cabin_class, currency=currency)
+        links = cls.generate_deep_links(
+            origin_name, dest_name, departure_date, return_date, total_pax, trip_type, 
+            cabin_class=cabin_class, currency=currency,
+            adults=adults, children=children, infants=infants
+        )
         results = []
         notices = []
 
@@ -634,6 +757,14 @@ class SearchService:
             dep_date_formatted = departure_date
             next_day_formatted = departure_date
 
+        ret_date_formatted = return_date
+        if is_round and return_date:
+            try:
+                ret_dt = datetime.strptime(return_date, "%Y-%m-%d")
+                ret_date_formatted = f"{ret_dt.day} {months_tr[ret_dt.month - 1]} {days_tr[ret_dt.weekday()]}"
+            except Exception:
+                ret_date_formatted = return_date
+
         # 1. UÇAK SEÇENEKLERİ (Pegasus, AJet, THY / Uluslararası)
         if transport_type in ("all", "flight"):
             if origin_has_airport and dest_has_airport:
@@ -645,9 +776,12 @@ class SearchService:
                         dest_city_name=dest_name,
                         departure_date=departure_date,
                         return_date=return_date,
-                        passengers=passengers,
+                        passengers=total_pax,
                         trip_type="round_trip" if is_round else "one_way",
-                        cabin_class=cabin_class
+                        cabin_class=cabin_class,
+                        adults=adults,
+                        children=children,
+                        infants=infants
                     )
                     if live_flights:
                         for lf in live_flights:
@@ -665,15 +799,13 @@ class SearchService:
                     print(f"Live flights fetch error: {live_err}")
 
                 if not live_flights_fetched:
-                    orig_iata = origin.get('iata', 'SAW')
-                    dst_iata = dest.get('iata', 'ESB')
+                    orig_iata = (origin.get('iata') if origin else None) or 'SAW'
+                    dst_iata = (dest.get('iata') if dest else None) or 'ESB'
                     is_international = bool(origin and origin.get("is_international") or dest and dest.get("is_international"))
 
                     # Pegasus için İstanbul iç hatlarda SAW (Sabiha Gökçen) ana üssüdür
                     pgs_dep_code = "SAW" if (origin_name == "İstanbul" and not is_international) else orig_iata
-                    pgs_url = f"https://web.flypgs.com/booking?departurePort={pgs_dep_code}&arrivalPort={dst_iata}&departureDate={departure_date}&adultCount={passengers}"
-                    if is_round and return_date:
-                        pgs_url += f"&returnDate={return_date}"
+                    pgs_url = links["flight"]["pegasus"] or f"https://web.flypgs.com/booking?departurePort={pgs_dep_code}&arrivalPort={dst_iata}&departureDate={departure_date}&adultCount={adults}"
 
                     def get_flight_benchmark_price(carrier_type: str, is_intl: bool, dest_slug_str: str, is_business: bool) -> tuple[float, float]:
                         if not is_intl:
@@ -726,6 +858,21 @@ class SearchService:
                         pgs_carrier = "Pegasus Airlines"
                         pgs_notice = None
                         pgs_direct = True
+                    ret_leg_pgs = None
+                    if is_round and return_date:
+                        ret_leg_pgs = {
+                            "origin": f"{dest_name} ({dst_iata})",
+                            "destination": f"{origin_name} ({pgs_dep_code})",
+                            "from_code": dst_iata,
+                            "to_code": pgs_dep_code,
+                            "departure_time": "19:15",
+                            "arrival_time": "20:30" if not is_international else "23:05",
+                            "departure_date": return_date,
+                            "departure_date_formatted": ret_date_formatted,
+                            "flight_number": "PC 2185",
+                            "duration": pgs_dur,
+                            "is_direct": pgs_direct
+                        }
 
                     results.append({
                         "id": "fl-pgs",
@@ -735,6 +882,8 @@ class SearchService:
                         "flight_number": "PC 2182",
                         "origin": f"{origin_name} ({pgs_dep_code})",
                         "destination": f"{dest_name} ({dst_iata})",
+                        "from_code": pgs_dep_code,
+                        "to_code": dst_iata,
                         "departure_time": "08:20",
                         "arrival_time": "12:10" if is_international else "09:30",
                         "departure_date_formatted": dep_date_formatted,
@@ -743,6 +892,7 @@ class SearchService:
                         "duration": pgs_dur,
                         "is_direct": pgs_direct,
                         "is_night_trip": False,
+                        "return_leg": ret_leg_pgs,
                         "price": pgs_price,
                         "has_live_price": True,
                         "price_status_text": "Doğrulanmış Taban Fiyat",
@@ -772,6 +922,22 @@ class SearchService:
                         flight_dur = "3 sa 45 dk" if is_direct_intl else "8 sa 30 dk"
                         route_notice = None if is_direct_intl else f"Bu uçuş İstanbul (IST) aktarmalıdır. Tek PNR bilet olup bagajınız doğrudan {dest_name} varışına kadar aktarılır."
 
+                        ret_leg_thy = None
+                        if is_round and return_date:
+                            ret_leg_thy = {
+                                "origin": f"{dest_name} ({dst_iata})",
+                                "destination": f"{origin_name} ({orig_iata})",
+                                "from_code": dst_iata,
+                                "to_code": orig_iata,
+                                "departure_time": "18:25",
+                                "arrival_time": "22:10" if is_direct_intl else "03:45",
+                                "departure_date": return_date,
+                                "departure_date_formatted": ret_date_formatted,
+                                "flight_number": f"TK {dst_iata}-{orig_iata}",
+                                "duration": flight_dur,
+                                "is_direct": is_direct_intl
+                            }
+
                         # Uluslararası THY / Skyscanner
                         results.append({
                             "id": "fl-int-thy",
@@ -781,6 +947,8 @@ class SearchService:
                             "flight_number": f"TK {orig_iata}-{dst_iata}",
                             "origin": f"{origin_name} ({orig_iata})",
                             "destination": f"{dest_name} ({dst_iata})",
+                            "from_code": orig_iata,
+                            "to_code": dst_iata,
                             "departure_time": "10:35",
                             "arrival_time": "19:20" if not is_direct_intl else "13:20",
                             "departure_date_formatted": dep_date_formatted,
@@ -789,6 +957,7 @@ class SearchService:
                             "duration": flight_dur,
                             "is_direct": is_direct_intl,
                             "is_night_trip": False,
+                            "return_leg": ret_leg_thy,
                             "price": thy_price,
                             "has_live_price": True,
                             "price_status_text": "Doğrulanmış Taban Fiyat",
@@ -813,6 +982,38 @@ class SearchService:
                         ajet_price, ajet_reg = get_flight_benchmark_price("ajet", is_international, dest_name, cabin_class == "business")
                         thy_dom_price, thy_dom_reg = get_flight_benchmark_price("thy", is_international, dest_name, cabin_class == "business")
 
+                        ret_leg_ajet = None
+                        if is_round and return_date:
+                            ret_leg_ajet = {
+                                "origin": f"{dest_name} ({dst_iata})",
+                                "destination": f"{origin_name} ({pgs_dep_code})",
+                                "from_code": dst_iata,
+                                "to_code": pgs_dep_code,
+                                "departure_time": "20:50",
+                                "arrival_time": "22:00",
+                                "departure_date": return_date,
+                                "departure_date_formatted": ret_date_formatted,
+                                "flight_number": "VF 4125",
+                                "duration": "1 sa 10 dk",
+                                "is_direct": True
+                            }
+
+                        ret_leg_thy_dom = None
+                        if is_round and return_date:
+                            ret_leg_thy_dom = {
+                                "origin": f"{dest_name} ({dst_iata})",
+                                "destination": f"{origin_name} ({orig_iata})",
+                                "from_code": dst_iata,
+                                "to_code": orig_iata,
+                                "departure_time": "22:15",
+                                "arrival_time": "23:25",
+                                "departure_date": return_date,
+                                "departure_date_formatted": ret_date_formatted,
+                                "flight_number": "TK 2159",
+                                "duration": "1 sa 10 dk",
+                                "is_direct": True
+                            }
+
                         # AJet / Enuygun
                         results.append({
                             "id": "fl-ajet",
@@ -822,6 +1023,8 @@ class SearchService:
                             "flight_number": "VF 4120",
                             "origin": f"{origin_name} ({pgs_dep_code})",
                             "destination": f"{dest_name} ({dst_iata})",
+                            "from_code": pgs_dep_code,
+                            "to_code": dst_iata,
                             "departure_time": "14:15",
                             "arrival_time": "15:25",
                             "departure_date_formatted": dep_date_formatted,
@@ -830,6 +1033,7 @@ class SearchService:
                             "duration": "1 sa 10 dk",
                             "is_direct": True,
                             "is_night_trip": False,
+                            "return_leg": ret_leg_ajet,
                             "price": ajet_price,
                             "has_live_price": True,
                             "price_status_text": "Doğrulanmış Taban Fiyat",
@@ -859,6 +1063,8 @@ class SearchService:
                             "flight_number": "TK 2154",
                             "origin": f"{origin_name} ({orig_iata})",
                             "destination": f"{dest_name} ({dst_iata})",
+                            "from_code": orig_iata,
+                            "to_code": dst_iata,
                             "departure_time": "18:40",
                             "arrival_time": "19:50",
                             "departure_date_formatted": dep_date_formatted,
@@ -867,6 +1073,7 @@ class SearchService:
                             "duration": "1 sa 10 dk",
                             "is_direct": True,
                             "is_night_trip": False,
+                            "return_leg": ret_leg_thy_dom,
                             "price": thy_dom_price,
                             "has_live_price": True,
                             "price_status_text": "Doğrulanmış Taban Fiyat",
@@ -954,8 +1161,8 @@ class SearchService:
                         "carrier": operator,
                         "carrier_logo": "🚆",
                         "flight_number": flight_num,
-                        "origin": origin.get("train_station", f"{origin_name} İstasyonu"),
-                        "destination": dest.get("train_station", f"{dest_name} İstasyonu"),
+                        "origin": origin.get("train_station", f"{origin_name} İstasyonu") if origin else f"{origin_name} İstasyonu",
+                        "destination": dest.get("train_station", f"{dest_name} İstasyonu") if dest else f"{dest_name} İstasyonu",
                         "departure_time": dep_time,
                         "arrival_time": arr_time,
                         "departure_date_formatted": dep_date_formatted,
@@ -977,7 +1184,7 @@ class SearchService:
                         "agent_link": omio_url,
                         "direct_link": trainline_url,
                         "booking_link": trainline_url,
-                        "note": f"Kalkış: {origin.get('train_station', origin_name)} -> Varış: {dest.get('train_station', dest_name)}",
+                        "note": f"Kalkış: {origin.get('train_station', origin_name) if origin else origin_name} -> Varış: {dest.get('train_station', dest_name) if dest else dest_name}",
                         "providers": [
                             {"name": "Trainline Koltuk Seçimi", "url": trainline_url, "price": train_base_price, "is_best": True},
                             {"name": "Omio Bilet", "url": omio_url, "price": train_reg_price, "is_best": False}
@@ -1169,7 +1376,7 @@ class SearchService:
                     "desc": "Havalimanı beklemesi olmadan, gardan gara doğrudan hızlı trenle seyahat edebilirsiniz.",
                     "action_text": "Hızlı Tren Seferlerini İncele ↗"
                 }
-            elif links["bus"].get("available") and (not dest.get("is_international") or dest.get("is_overland_neighbor")):
+            elif links["bus"].get("available") and (not (dest and dest.get("is_international")) or (dest and dest.get("is_overland_neighbor"))):
                 cross_modal_hint = {
                     "mode": "bus",
                     "title": f"🚌 Obilet Otobüs Alternatifi: {origin_name} ➔ {dest_name}",
@@ -1212,7 +1419,10 @@ class SearchService:
             "date": departure_date,
             "return_date": return_date,
             "trip_type": trip_type,
-            "passengers": passengers,
+            "passengers": total_pax,
+            "adults": adults,
+            "children": children,
+            "infants": infants,
             "cabin_class": cabin_class,
             "calendar_range": calendar_range,
             "transport_type": transport_type,

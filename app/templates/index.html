@@ -440,24 +440,33 @@
 
         <!-- ✨ Nereye Gitmeliyim? (Festival, Sezon & İlham Radarı) -->
         <section id="nereyeGitmeliyimSection" class="mb-16">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
                 <div>
                     <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black mb-2">
-                        <i class="fa-solid fa-sparkles text-amber-500"></i> GEZGİN İLHAM RADARI
+                        <i class="fa-solid fa-sparkles text-amber-500"></i> DÜNYA & TÜRKİYE ETKİNLİK RADARI
                     </div>
                     <h2 class="text-3xl font-black text-slate-900 tracking-tight">
                         ✨ Nereye Gitmeliyim? (Festival & Sezon Rehberi)
                     </h2>
                     <p class="text-slate-600 mt-1 text-sm">
-                        Özel dönemler, dünya festivalleri ve kapı vizesiz kaçış rotaları. Tek tıkla biletlerinizi ve seyahatinizi planlayın!
+                        Japonya Sakura'dan Adana Portakal Çiçeği'ne, Şampiyonlar Ligi'nden Sakız Adası'na en popüler seyahatler!
                     </p>
+                </div>
+
+                <!-- Kategori Filtre Butonları -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="filterEvents('all')" class="event-filter-btn active bg-[#0C4A60] text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition" data-cat="all">Tümü ({{ curated_events|length }})</button>
+                    <button type="button" onclick="filterEvents('world')" class="event-filter-btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-xl transition" data-cat="world">🌸 Dünya Festivalleri</button>
+                    <button type="button" onclick="filterEvents('domestic')" class="event-filter-btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-xl transition" data-cat="domestic">🍊 Türkiye Kültür & Hasat</button>
+                    <button type="button" onclick="filterEvents('sport')" class="event-filter-btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-xl transition" data-cat="sport">⚽ Spor Zirveleri</button>
+                    <button type="button" onclick="filterEvents('island')" class="event-filter-btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-xl transition" data-cat="island">🏖️ Yunan Adaları</button>
                 </div>
             </div>
 
             <!-- Curated Events Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="eventsGrid">
                 {% for ev in curated_events %}
-                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                <div class="event-card bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group" data-category="{{ ev.category or 'world' }}">
                     <div>
                         <div class="flex items-center justify-between gap-2 mb-3">
                             <span class="text-xs font-black px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
@@ -489,6 +498,21 @@
                                 </span>
                                 <span class="text-emerald-700 font-black">{{ ev.hotel_range }}</span>
                             </div>
+                            {% if ev.ticket_org %}
+                            <div class="flex items-center justify-between pt-1 border-t border-slate-200/60">
+                                <span class="text-slate-500 font-bold flex items-center gap-1.5">
+                                    <i class="fa-solid fa-ticket text-rose-500"></i> Bilet / Giriş:
+                                </span>
+                                {% if ev.ticket_url %}
+                                <a href="{{ ev.ticket_url }}" target="_blank" class="text-rose-600 hover:text-rose-700 font-extrabold flex items-center gap-1" title="Resmi Bilet Sitesi">
+                                    <span>{{ ev.ticket_org }}</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                                </a>
+                                {% else %}
+                                <span class="text-slate-800 font-bold">{{ ev.ticket_org }}</span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
                             <div class="text-[11px] text-slate-600 pt-1.5 border-t border-slate-200">
                                 💡 {{ ev.why }}
                             </div>

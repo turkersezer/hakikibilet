@@ -76,7 +76,7 @@ function changeCurrency(curr) {
 
 // ==================== İKİ ANA KULLANIM MODU VE OTEL YÖNETİMİ ====================
 
-function switchMasterMode(mode) {
+function switchMasterMode(mode, suppressSearch = false) {
     currentMasterMode = mode;
     const fastBtn = document.getElementById('masterModeFastBtn');
     const routeBtn = document.getElementById('masterModeRouteBtn');
@@ -112,7 +112,7 @@ function switchMasterMode(mode) {
         }
     }
 
-    if (currentSearchData) {
+    if (!suppressSearch && currentSearchData) {
         handleSearch();
     }
 }
@@ -127,31 +127,81 @@ function toggleHotelSelection() {
 }
 
 function selectCuratedEvent(city, depDate, retDate, transportMode) {
-    // 1. Şehir kontrolü ve Kapsam belirleme
-    const cityObj = (window.ALL_CITIES || []).find(c => c.name.toLowerCase() === city.toLowerCase() || c.name.toLowerCase().includes(city.toLowerCase()));
-    if (cityObj && (cityObj.is_international || cityObj.is_ferry)) {
-        if (currentScope !== 'international') {
-            setScope('international');
-        }
-    } else if (currentScope !== 'domestic' && cityObj && !cityObj.is_international) {
-        setScope('domestic');
-    }
+    // 1. Şehir / Lokasyon nesnesini tam olarak bul (Türkçe ve format uyumlu)
+    const cityClean = (city || '').trim().toLowerCase();
+    const cityObj = (window.ALL_CITIES || []).find(c => {
+        if (!c) return false;
+        const cName = (c.name || '').toLowerCase();
+        const cSlug = (c.slug || '').toLowerCase();
+        const cIata = (c.iata || '').toLowerCase();
+        return cName === cityClean ||
+               cName.includes(cityClean) ||
+               cityClean.includes(cName) ||
+               (cSlug && cityClean.includes(cSlug)) ||
+               (cIata && cityClean.includes(cIata));
+    });
 
-    // 2. Akıllı Rota Moduna geçir ve Otel seçeneğini aktif yap
-    switchMasterMode('smart_route');
+    const isFerry = (transportMode === 'ferry') || (cityObj && Boolean(cityObj.is_ferry));
+    const isIntl = (cityObj && Boolean(cityObj.is_international)) || isFerry;
+
+    // 2. Kapsam ve Ulaşım Modunu SESSIZCE (arama tetiklemeden) ayarla
+    const targetScope = isIntl ? 'international' : 'domestic';
+    setScope(targetScope, true);
+
+    const targetMode = isFerry ? 'ferry' : (transportMode || 'flight');
+    selectTransport(targetMode, true);
+
+    switchMasterMode('smart_route', true);
+
     const hotelChk = document.getElementById('includeHotelCheck');
     if (hotelChk) hotelChk.checked = true;
     currentIncludeHotel = true;
 
-    // 3. Varış noktasını seç
+    // 3. Kalkış ve Varış Noktalarını KESİN Olarak Seç
+    const originSelect = document.getElementById('originCity');
     const destSelect = document.getElementById('destCity');
+
+    if (isFerry) {
+        // Sakız Adası için kalkış mutlaka Çeşme Limanı
+        if (originSelect) {
+            const cesmeOpt = Array.from(originSelect.options).find(o => 
+                o.value.toLowerCase().includes('çeşme') || o.value.toLowerCase().includes('cesme')
+            );
+            if (cesmeOpt) {
+                originSelect.value = cesmeOpt.value;
+            } else {
+                originSelect.add(new Option('Çeşme Limanı (İzmir)', 'Çeşme Limanı (İzmir)'), 0);
+                originSelect.value = 'Çeşme Limanı (İzmir)';
+            }
+        }
+    } else {
+        // Uçuşlar için: Mevcut kalkışta havalimanı yoksa İstanbul olarak ayarla
+        if (originSelect) {
+            const curOrig = originSelect.value;
+            const origObj = (window.ALL_CITIES || []).find(c => c.name === curOrig);
+            if (!origObj || !origObj.has_airport) {
+                const istOpt = Array.from(originSelect.options).find(o => 
+                    o.value.toLowerCase() === 'istanbul' || o.value.toLowerCase().includes('istanbul')
+                );
+                if (istOpt) originSelect.value = istOpt.value;
+            }
+        }
+    }
+
     if (destSelect) {
-        let optFound = Array.from(destSelect.options).find(o => o.value.toLowerCase().includes(city.toLowerCase()));
-        if (!optFound && cityObj) {
-            destSelect.add(new Option(cityObj.name, cityObj.name), 0);
-            destSelect.value = cityObj.name;
-        } else if (optFound) {
+        const targetDestName = cityObj ? cityObj.name : city;
+        let optFound = Array.from(destSelect.options).find(o => {
+            const val = o.value.toLowerCase();
+            return val === targetDestName.toLowerCase() ||
+                   val.includes(cityClean) ||
+                   (cityObj && val.includes(cityObj.name.toLowerCase()));
+        });
+
+        if (optFound) {
             destSelect.value = optFound.value;
+        } else {
+            destSelect.add(new Option(targetDestName, targetDestName), 0);
+            destSelect.value = targetDestName;
         }
     }
 
@@ -162,19 +212,41 @@ function selectCuratedEvent(city, depDate, retDate, transportMode) {
     if (retDate) {
         setTripType('round_trip');
         if (retInput) retInput.value = retDate;
-    }
-
-    // 5. Ulaşım modunu ayarla
-    if (transportMode && transportMode !== 'flight') {
-        currentTransportMode = transportMode;
     } else {
-        currentTransportMode = 'flight';
+        setTripType('one_way');
     }
 
-    showToast(`✨ ${city} festival ve seyahat planı hazırlanıyor...`, 'success');
+    // 5. Bilgilendirme ve Tek Seferlik Arama Başlat
+    const targetCityLabel = cityObj ? cityObj.name : city;
+    showToast(`🧭 ${targetCityLabel} için rota ve seyahat planı hazırlanıyor...`, 'success');
+
+    const resultsSec = document.getElementById('searchResultsSection');
+    if (resultsSec) {
+        resultsSec.classList.remove('hidden');
+        resultsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     handleSearch();
 }
 
+function filterEvents(category) {
+    document.querySelectorAll('.event-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === category) {
+            btn.className = 'event-filter-btn active bg-[#0C4A60] text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition';
+        } else {
+            btn.className = 'event-filter-btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-xl transition';
+        }
+    });
+
+    document.querySelectorAll('.event-card').forEach(card => {
+        const cardCat = card.getAttribute('data-category');
+        if (category === 'all' || cardCat === category) {
+            card.classList.remove('hidden');
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Para birimi seçici durumunu yükle
@@ -297,7 +369,7 @@ function setTripType(type) {
 
 let currentScope = 'domestic'; // 'domestic' or 'international'
 
-function setScope(scope) {
+function setScope(scope, suppressSearch = false) {
     currentScope = scope;
     const domBtn = document.getElementById('scopeDomesticBtn');
     const intlBtn = document.getElementById('scopeIntlBtn');
@@ -314,10 +386,12 @@ function setScope(scope) {
     }
 
     updateCityDropdowns(currentTransportMode);
-    showToast(scope === 'domestic' ? '🇹🇷 Yurt İçi sefer moduna geçildi.' : '🌍 Yurt Dışı & Global sefer moduna geçildi.', 'info');
-
-    if (currentSearchData) {
-        handleSearch();
+    
+    if (!suppressSearch) {
+        showToast(scope === 'domestic' ? '🇹🇷 Yurt İçi sefer moduna geçildi.' : '🌍 Yurt Dışı & Global sefer moduna geçildi.', 'info');
+        if (currentSearchData) {
+            handleSearch();
+        }
     }
 }
 
@@ -512,7 +586,10 @@ function updateCityDropdowns(mode) {
         destSelect.value = currentDest;
     } else {
         if (currentScope === 'international') {
-            destSelect.value = destCities.find(c => c.name === 'Paris')?.name || destCities[0]?.name || 'Paris';
+            const defaultIntl = destCities.find(c => (c.slug === 'paris' || c.name.toLowerCase().includes('paris'))) ||
+                                destCities.find(c => (c.slug === 'munih' || c.name.toLowerCase().includes('münih'))) ||
+                                destCities[0];
+            destSelect.value = defaultIntl ? defaultIntl.name : (destCities[0]?.name || 'Paris (CDG/ORY)');
         } else {
             const altCity = destCities.find(c => c.name !== originSelect.value);
             destSelect.value = altCity ? altCity.name : (destCities[1]?.name || 'Ankara');
@@ -574,7 +651,7 @@ function setFerryVehicleType(type) {
     }
 }
 
-function selectTransport(mode) {
+function selectTransport(mode, suppressSearch = false) {
     currentTransportMode = mode;
     currentActiveSummaryFilter = mode;
     document.querySelectorAll('.transport-tab').forEach(btn => {
@@ -635,7 +712,7 @@ function selectTransport(mode) {
 
     updateCityDropdowns(mode);
 
-    if (currentSearchData) {
+    if (!suppressSearch && currentSearchData) {
         if (mode === 'car') {
             handleSearch();
         } else {
@@ -1158,13 +1235,64 @@ function renderHotelRecommendations(hotel) {
         </div>
     `).join('');
 
+    const hasLive = hotel.live_hotels && hotel.live_hotels.length > 0;
+    let liveHotelsHtml = '';
+    if (hasLive) {
+        liveHotelsHtml = `
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-black uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Booking.com Canlı Teyit Edilmiş Oteller (${hotel.live_hotels.length} Gerçek Tesis)
+                    </span>
+                    <span class="text-[11px] text-slate-300 font-semibold">${hotel.checkin_date} - ${hotel.checkout_date} • ${hotel.nights} Gece</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                    ${hotel.live_hotels.map(h => `
+                        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition text-slate-800 flex flex-col justify-between border border-slate-200 group">
+                            ${h.photo ? `
+                            <div class="h-36 w-full overflow-hidden bg-slate-100 relative">
+                                <img src="${h.photo}" alt="${h.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" onerror="this.parentElement.style.display='none'">
+                                <div class="absolute top-2.5 right-2.5 bg-slate-900/90 backdrop-blur-xs text-white text-[11px] font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm border border-white/10">
+                                    <i class="fa-solid fa-star text-amber-400 text-[10px]"></i>
+                                    <span>${h.score}</span>
+                                    <span class="text-[10px] text-slate-300 font-medium">(${h.score_word})</span>
+                                </div>
+                            </div>` : ''}
+                            <div class="p-4 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h4 class="font-black text-sm text-slate-900 line-clamp-1 mb-1 group-hover:text-blue-600 transition" title="${h.name}">${h.name}</h4>
+                                    <div class="text-[11px] text-slate-500 font-medium flex items-center gap-1">
+                                        <i class="fa-solid fa-location-dot text-slate-400 text-[10px]"></i>
+                                        <span>${hotel.destination}</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                    <div>
+                                        <div class="text-[10px] text-slate-400 font-bold uppercase">Gecelik Canlı</div>
+                                        <div class="text-sm font-black text-slate-900">~${h.nightly_price.toLocaleString('tr-TR')} ${h.currency}</div>
+                                        <div class="text-[10px] text-emerald-600 font-extrabold">${hotel.nights} Gece Net: ${h.total_price.toLocaleString('tr-TR')} ${h.currency}</div>
+                                    </div>
+                                    <a href="${h.booking_url}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow-xs transition flex items-center gap-1">
+                                        <span>Odayı Seç</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
     container.classList.remove('hidden');
     container.innerHTML = `
         <div class="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 rounded-2xl p-6 text-white shadow-xl border border-blue-500/30">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5 pb-4 border-b border-indigo-800/60">
                 <div>
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black border border-emerald-400/30 mb-2">
-                        <i class="fa-solid fa-hotel"></i> AKILLI KONAKLAMA & OTEL METASEARCH
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${hasLive ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40' : 'bg-blue-500/20 text-blue-300 border border-blue-400/30'} text-xs font-black mb-2">
+                        <i class="fa-solid fa-hotel"></i> ${hasLive ? '🟢 CANLI TEYİT EDİLMİŞ BOOKING.COM VERİSİ' : 'AKILLI KONAKLAMA METASEARCH'}
                     </div>
                     <h3 class="text-lg sm:text-xl font-black text-white">
                         🏨 ${hotel.destination} İçin ${hotel.nights} Gece Konaklama Seçenekleri
@@ -1175,13 +1303,14 @@ function renderHotelRecommendations(hotel) {
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <a href="${hotel.deep_links.booking}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5">
-                        <span>Booking.com'da İncele</span>
+                        <span>Booking.com'da Tümünü Gör</span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                     </a>
+                    ${hotel.deep_links.enuygun ? `
                     <a href="${hotel.deep_links.enuygun}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5">
                         <span>Enuygun Otel</span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                    </a>
+                    </a>` : ''}
                     <a href="${hotel.deep_links.agoda}" target="_blank" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-xs px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5">
                         <span>Agoda</span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
@@ -1189,7 +1318,10 @@ function renderHotelRecommendations(hotel) {
                 </div>
             </div>
 
-            <!-- Fiyat Seviyesi Kartları -->
+            <!-- Canlı Oteller (Varsa Öncelikli Gösterim) -->
+            ${liveHotelsHtml}
+
+            <!-- Fiyat Seviyesi & Bütçe Kategorileri -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-slate-800">
                 ${categoriesHtml}
             </div>
@@ -1689,10 +1821,12 @@ function filterAndRenderTickets(prefixHtml = '') {
                 <!-- Tıklanabilir Fiyat Alanı: Doğrudan Bilet Sayfasına Gider -->
                 <a href="${bookingLink}" target="_blank" class="block group text-left md:text-right w-full cursor-pointer hover:opacity-90 transition">
                     ${(ticket.has_live_price && ticket.price != null) ? `
-                        ${ticket.regular_price ? `<div class="text-xs text-slate-400 line-through font-semibold">${ticket.regular_price.toLocaleString('tr-TR', {minimumFractionDigits: 0, maximumFractionDigits: 2})} ${ticket.currency || '₺'}</div>` : ''}
+                        <div class="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md mb-1">
+                            <i class="fa-solid fa-shield-halved text-emerald-500"></i> Komisyonsuz Net Fiyat
+                        </div>
                         <div class="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight group-hover:text-emerald-700">${ticket.price.toLocaleString('tr-TR', {minimumFractionDigits: 0, maximumFractionDigits: 2})} ${ticket.currency || '₺'}</div>
                         <div class="text-[10px] text-emerald-700 font-extrabold flex items-center md:justify-end gap-1">
-                            <i class="fa-solid fa-circle-check text-emerald-600"></i> ${ticket.price_status_text || 'Doğrulanmış Fiyat'}
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i> ${ticket.price_status_text || 'Doğrulanmış Canlı Fiyat'}
                         </div>
                     ` : `
                         <div class="text-xl font-black text-blue-700 group-hover:text-blue-800">Canlı Fiyat & Koltuk ↗</div>

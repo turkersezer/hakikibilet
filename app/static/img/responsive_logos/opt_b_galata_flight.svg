@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="bgB" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0C4A60"/>
+      <stop offset="100%" stop-color="#0F766E"/>
+    </linearGradient>
+    <linearGradient id="goldB" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <filter id="shadowB" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0C4A60" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Dairesel Çerçeve -->
+  <circle cx="50" cy="50" r="44" fill="url(#bgB)" filter="url(#shadowB)"/>
+  <circle cx="50" cy="50" r="41" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.8"/>
+  <!-- Deniz Dalgaları Tabanı -->
+  <path d="M12 66C22 60 32 70 48 64C62 59 76 67 88 62C85 78 72 90 50 94C28 90 15 78 12 66Z" fill="#0284C7" opacity="0.9"/>
+  <!-- Galata Kulesi Minimalist Silüeti (Sol Altta Güçlü Taban) -->
+  <g transform="translate(32, 45)">
+    <!-- Külah çatı -->
+    <path d="M0 -14 L6 0 L-6 0 Z" fill="url(#goldB)"/>
+    <!-- Seyir balkonu -->
+    <rect x="-7.5" y="0" width="15" height="3" rx="1" fill="#FFFFFF"/>
+    <!-- Kule gövdesi -->
+    <path d="M-6 3 L6 3 L7.5 28 L-7.5 28 Z" fill="#F8FAFC"/>
+    <!-- Kemerli pencereler -->
+    <rect x="-2" y="7" width="4" height="6" rx="2" fill="#0C4A60"/>
+    <rect x="-2" y="17" width="4" height="6" rx="2" fill="#0C4A60"/>
+  </g>
+  <!-- Gökyüzünde Yükselen Uçak (Galata'nın Üstünden Göğe) -->
+  <g transform="translate(64, 34) rotate(-35)">
+    <path d="M0 -22 C2 -22 3 -15 3 -7 L20 6 L20 10 L3 6 L3 15 L8 19 L8 22 L0 20.5 L-8 22 L-8 19 L-3 15 L-3 6 L-20 10 L-20 6 L-3 -7 C-3 -15 -2 -22 0 -22 Z" fill="#FFFFFF"/>
+  </g>
+  <!-- Dinamik Uçuş İzi -->
+  <path d="M38 52 Q50 42 60 36" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 3"/>
+</svg>

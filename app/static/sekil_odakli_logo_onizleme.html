@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hakiki Bilet — Kusursuz Ortalanmış & Sıfır Kesintili 3D Amblem Testi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F8FAFC;
+      color: #1E293B;
+    }
+    .brand-font {
+      font-family: 'Outfit', sans-serif;
+    }
+    .active-pill {
+      background-color: #0C4A60 !important;
+      color: #FFFFFF !important;
+      border-color: #0C4A60 !important;
+      box-shadow: 0 4px 12px rgba(12, 74, 96, 0.25);
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+  <!-- BAŞLIK & DÜZELTME NOTU -->
+  <header class="text-center mb-10 pt-2 pb-6 border-b border-slate-200">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold tracking-wider uppercase mb-3 border border-emerald-200">
+      <i class="fa-solid fa-check-double"></i> DÜZELTME UYGULANDI: SIFIR KESİNTİ (ZERO-CLIP) + TAM MERKEZ HİZALAMA
+    </div>
+    <h1 class="brand-font text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-2">
+      KUSURSUZ ORTALANMIŞ & KESİKSİZ 3D LOGO
+    </h1>
+    <p class="text-sm md:text-base text-slate-600 max-w-3xl mx-auto font-normal leading-relaxed">
+      Geri bildiriminiz için teşekkürler! Önceki denemede figürleri kare olarak kırpıp büyüttüğümüz için uçak ve palmiye kenarlardan kesilmiş ve kule sola kaymıştı. Şimdi <strong>tek bir pikseli bile kesilmeden</strong>, tüm figürleri tam bir bütün halinde <strong>optik olarak tam merkeze oturttuk</strong> ve keskinleştirdik.
+    </p>
+  </header>
+
+  <!-- 3 YENİ ALTERNATİF SEÇİM ALANI -->
+  <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm mb-12">
+    
+    <div class="text-center mb-6">
+      <h2 class="brand-font text-2xl md:text-3xl font-black text-slate-900 mb-1">
+        3 Yeni Ortalanmış & Kesiksiz Alternatif
+      </h2>
+      <p class="text-xs md:text-sm text-slate-500">
+        Aşağıdaki butonlara tıklayarak hem büyük görseli hem de navbar simülasyonunu anında canlı değiştirin:
+      </p>
+    </div>
+
+    <!-- Butonlar -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      
+      <button onclick="selectOption('opt1')" id="btn-opt1" class="option-btn active-pill p-4 rounded-2xl border border-slate-200 text-left transition flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-full bg-white/20 p-1 flex-shrink-0 flex items-center justify-center">
+          <img src="/static/img/emblem_kusursuz_tam_rozet.png" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <div class="text-xs font-bold leading-tight">Alternatif 1 (Önerilen)</div>
+          <div class="text-[10px] opacity-80">Kusursuz Orijinal Rozet • Sıfır Kesinti</div>
+        </div>
+      </button>
+
+      <button onclick="selectOption('opt2')" id="btn-opt2" class="option-btn p-4 rounded-2xl border border-slate-200 text-left transition flex items-center gap-3.5 bg-slate-50 text-slate-700 hover:bg-slate-100">
+        <div class="w-12 h-12 rounded-full bg-white p-1 flex-shrink-0 flex items-center justify-center border border-slate-200">
+          <img src="/static/img/emblem_optik_dengeli_merkez.png" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <div class="text-xs font-bold leading-tight">Alternatif 2</div>
+          <div class="text-[10px] text-slate-500">Optik Dengeli Merkez • Kule Ortada</div>
+        </div>
+      </button>
+
+      <button onclick="selectOption('opt3')" id="btn-opt3" class="option-btn p-4 rounded-2xl border border-slate-200 text-left transition flex items-center gap-3.5 bg-slate-50 text-slate-700 hover:bg-slate-100">
+        <div class="w-12 h-12 rounded-full bg-white p-1 flex-shrink-0 flex items-center justify-center border border-slate-200">
+          <img src="/static/img/emblem_kesiksiz_yazisiz_gecis.png" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <div class="text-xs font-bold leading-tight">Alternatif 3</div>
+          <div class="text-[10px] text-slate-500">Kesiksiz Dairesel Dolgu • Yumuşak Geçiş</div>
+        </div>
+      </button>
+
+    </div>
+
+    <!-- MERKEZİ VİTRİN: BÜYÜK GÖRSEL & DETAYLAR -->
+    <div class="bg-slate-50 rounded-3xl p-6 border border-slate-200 mb-8 flex flex-col md:flex-row items-center gap-8 justify-center">
+      
+      <div class="w-56 h-56 rounded-full bg-white p-2 shadow-lg border border-slate-200 flex-shrink-0 flex items-center justify-center">
+        <img id="mainDisplayImg" src="/static/img/emblem_kusursuz_tam_rozet.png" alt="Seçili Amblem" class="w-full h-full object-contain transition-all duration-300">
+      </div>
+
+      <div class="max-w-md text-left">
+        <div id="badgeLabel" class="inline-block px-3 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-bold mb-2">
+          Alternatif 1: Kusursuz Orijinal Rozet
+        </div>
+        <h3 id="displayTitle" class="brand-font text-xl font-bold text-slate-900 mb-2">
+          Hiçbir Parçası Kesilmemiş, Tam Simetrik 3D Rozet
+        </h3>
+        <p id="displayDesc" class="text-xs text-slate-600 leading-relaxed mb-4">
+          Uçak, Galata Kulesi, kırmızı-beyaz şemsiye, palmiye ve deniz dalgalarının <strong>tek bir pikseli bile kesilmeden</strong> eksiksiz korunduğu ana mühürdür. Dairenin tam merkezindedir. Üzerine çok aşamalı <em>Unsharp Masking</em> uygulanarak tüm detaylar jilet gibi netleştirilmiştir.
+        </p>
+        <div class="flex items-center gap-4 text-xs font-semibold text-slate-500">
+          <span><i class="fa-solid fa-check text-emerald-600 mr-1"></i> %100 Kesiksiz</span>
+          <span><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Tam Ortalanmış</span>
+          <span><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Yüksek Kontrast</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOYUT SEÇENEKLERİ (56px ve 64px) -->
+    <div class="flex items-center justify-center gap-3 mb-6 p-3 rounded-2xl bg-white border border-slate-200 max-w-md mx-auto shadow-sm">
+      <span class="text-xs font-bold text-slate-600">Navbar Boyutu:</span>
+      <button onclick="setSize(48)" id="size-48" class="size-btn px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">48px (Standart)</button>
+      <button onclick="setSize(56)" id="size-56" class="size-btn px-3.5 py-1 rounded-xl text-xs font-bold active-pill">56px (Önerilen • İdeal)</button>
+      <button onclick="setSize(64)" id="size-64" class="size-btn px-3.5 py-1 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">64px (Görkemli)</button>
+    </div>
+
+    <!-- CANLI NAVBAR 1: AYDINLIK TEMA -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+          <i class="fa-regular fa-sun text-amber-500 mr-1"></i> Web Sitenizin Üst Barında Canlı Görünüm (Aydınlık Tema)
+        </span>
+        <span id="currentSizeLabel" class="text-[11px] text-emerald-600 font-bold">Mevcut Boyut: 56px</span>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 flex items-center justify-between transition-all">
+        
+        <!-- Marka & Logo Alanı -->
+        <div class="flex items-center space-x-4">
+          <div id="navIconWrapper" style="width: 56px; height: 56px;" class="flex-shrink-0 flex items-center justify-center transition-all duration-300">
+            <img id="navIconLight" src="/static/img/emblem_kusursuz_tam_rozet.png" alt="Hakiki Bilet" class="w-full h-full object-contain drop-shadow-sm">
+          </div>
+          <div>
+            <div class="brand-font text-2xl font-black tracking-tight text-[#0C4A60] flex items-center gap-1.5 leading-none">
+              HAKİKİ <span class="text-[#0284C7]">BİLET</span>
+            </div>
+            <p class="text-[10px] text-[#D97706] font-bold tracking-wider uppercase mt-1">Hakiki Fiyat, Hakiki Bilet</p>
+          </div>
+        </div>
+
+        <!-- Menü Linkleri -->
+        <div class="hidden sm:flex items-center gap-6 text-xs font-semibold text-slate-600">
+          <span class="text-[#0284C7] font-bold flex items-center gap-1.5"><i class="fa-solid fa-plane-departure"></i> Uçak Bileti</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-bus"></i> Otobüs</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-train"></i> Tren</span>
+          <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
+            Fiyat Takibi
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CANLI NAVBAR 2: KOYU PETROL TEMA -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+          <i class="fa-regular fa-moon text-sky-400 mr-1"></i> Alternatif Koyu Petrol Başlıkta Görünüm
+        </span>
+      </div>
+      <div class="rounded-2xl border border-slate-800 bg-[#0C4A60] shadow-md p-4 flex items-center justify-between text-white">
+        
+        <!-- Marka & Logo Alanı -->
+        <div class="flex items-center space-x-4">
+          <div id="navIconWrapperDark" style="width: 56px; height: 56px;" class="flex-shrink-0 flex items-center justify-center transition-all duration-300">
+            <img id="navIconDark" src="/static/img/emblem_kusursuz_tam_rozet.png" alt="Hakiki Bilet" class="w-full h-full object-contain drop-shadow-md">
+          </div>
+          <div>
+            <div class="brand-font text-2xl font-black tracking-tight text-white flex items-center gap-1.5 leading-none">
+              HAKİKİ <span class="text-[#38BDF8]">BİLET</span>
+            </div>
+            <p class="text-[10px] text-[#FBBF24] font-bold tracking-wider uppercase mt-1">Hakiki Fiyat, Hakiki Bilet</p>
+          </div>
+        </div>
+
+        <div class="hidden sm:flex items-center gap-5 text-xs font-medium text-slate-200">
+          <span class="text-[#38BDF8] font-bold">Uçak</span>
+          <span>Otobüs</span>
+          <span>Tren</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JAVASCRIPT ETKİLEŞİMİ -->
+  <script>
+    const optionsData = {
+      'opt1': {
+        src: '/static/img/emblem_kusursuz_tam_rozet.png',
+        badge: 'Alternatif 1: Kusursuz Orijinal Rozet (Önerilen)',
+        title: 'Hiçbir Parçası Kesilmemiş, Tam Simetrik 3D Rozet',
+        desc: 'Uçak, Galata Kulesi, kırmızı-beyaz şemsiye, palmiye ve deniz dalgalarının <strong>tek bir pikseli bile kesilmeden</strong> eksiksiz korunduğu ana mühürdür. Dairenin tam merkezindedir. Üzerine çok aşamalı <em>Unsharp Masking</em> uygulanarak tüm detaylar jilet gibi netleştirilmiştir.'
+      },
+      'opt2': {
+        src: '/static/img/emblem_optik_dengeli_merkez.png',
+        badge: 'Alternatif 2: Optik Dengeli Merkez',
+        title: 'Kule ve Palmiyenin Tam Eşit Ağırlıkta Ortalandığı Versiyon',
+        desc: 'Kullanıcımızın "sola yakın duruyor" hissini tamamen sıfırlamak için, kompozisyonun ağırlık ekseni matematiksel olarak tam düşey merkeze kaydırılmıştır. Sağdaki palmiye ve yükselen uçak ile soldaki Galata kulesi tam 1:1 terazi dengesindedir.'
+      },
+      'opt3': {
+        src: '/static/img/emblem_kesiksiz_yazisiz_gecis.png',
+        badge: 'Alternatif 3: Kesiksiz Dairesel Dolgu',
+        title: 'Yumuşak Geçişli Gökyüzü ve Deniz Dolgusu',
+        desc: 'Kenarlarda hiçbir düz kesik çizgi olmaksızın, figürlerin dairesel gökyüzü ve turkuaz deniz zeminine organik olarak harmanlandığı, yazısız amblem seçeneğidir.'
+      }
+    };
+
+    function selectOption(key) {
+      const data = optionsData[key];
+      if (!data) return;
+
+      document.getElementById('mainDisplayImg').src = data.src;
+      document.getElementById('navIconLight').src = data.src;
+      document.getElementById('navIconDark').src = data.src;
+      document.getElementById('badgeLabel').innerText = data.badge;
+      document.getElementById('displayTitle').innerText = data.title;
+      document.getElementById('displayDesc').innerHTML = data.desc;
+
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('active-pill');
+        btn.classList.add('bg-slate-50', 'text-slate-700');
+      });
+      const activeBtn = document.getElementById('btn-' + key);
+      activeBtn.classList.remove('bg-slate-50', 'text-slate-700');
+      activeBtn.classList.add('active-pill');
+    }
+
+    function setSize(px) {
+      const wrapperLight = document.getElementById('navIconWrapper');
+      const wrapperDark = document.getElementById('navIconWrapperDark');
+      
+      wrapperLight.style.width = px + 'px';
+      wrapperLight.style.height = px + 'px';
+      wrapperDark.style.width = px + 'px';
+      wrapperDark.style.height = px + 'px';
+
+      document.querySelectorAll('.size-btn').forEach(btn => {
+        btn.classList.remove('active-pill');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      const activeBtn = document.getElementById('size-' + px);
+      activeBtn.classList.remove('bg-slate-100', 'text-slate-700');
+      activeBtn.classList.add('active-pill');
+
+      document.getElementById('currentSizeLabel').innerText = `Mevcut Boyut: ${px}px`;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="bgD" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0C4A60"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+    <linearGradient id="goldD" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <filter id="shadowD" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0C4A60" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Arka Plan Dairesi -->
+  <circle cx="50" cy="50" r="44" fill="url(#bgD)" filter="url(#shadowD)"/>
+  <!-- H Harfi Sol Sütun (Sağlam Temel) -->
+  <rect x="22" y="24" width="11" height="52" rx="4" fill="#FFFFFF"/>
+  <!-- H Harfi Orta Köprü -->
+  <rect x="30" y="45" width="22" height="10" fill="#FFFFFF"/>
+  <!-- H Harfi Sağ Sütun: Göğe Doğru Yükselen Dinamik Uçak Formu -->
+  <path d="M50 76 L61 76 L61 46 L76 56 L76 48 L61 36 L61 24 C61 20 57 16 53 16 C51 16 50 17 50 19 Z" fill="#38BDF8"/>
+  <path d="M61 36 L83 22 L83 17 L61 24 Z" fill="url(#goldD)"/>
+  <circle cx="78" cy="18" r="2.5" fill="#FFFFFF"/>
+</svg>

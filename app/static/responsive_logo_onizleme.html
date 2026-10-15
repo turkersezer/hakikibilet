@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hakiki Bilet — Responsive Logo Sistemi Önizleme Panosu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F8FAFC;
+      color: #1E293B;
+    }
+    .brand-font {
+      font-family: 'Outfit', sans-serif;
+    }
+    .active-pill {
+      background-color: #0C4A60 !important;
+      color: #FFFFFF !important;
+      border-color: #0C4A60 !important;
+      box-shadow: 0 4px 12px rgba(12, 74, 96, 0.25);
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+  <!-- BAŞLIK & AMACIN ÖZETİ -->
+  <header class="text-center mb-10 pt-4 pb-6 border-b border-slate-200">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 text-[#0284C7] text-xs font-bold tracking-wider uppercase mb-3 border border-sky-200">
+      <i class="fa-solid fa-layer-group"></i> 1. YOL • RESPONSIVE LOGO SİSTEMİ CANLI ÖNİZLEME
+    </div>
+    <h1 class="brand-font text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-2">
+      SİTEDE KULLANMADAN ÖNCE TEST ET VE KARŞILAŞTIR
+    </h1>
+    <p class="text-sm md:text-base text-slate-600 max-w-3xl mx-auto font-normal leading-relaxed">
+      Sitenizin mevcut tasarımına <strong>hiç dokunulmadı</strong>. Bu sayfada, web sitenizin üst barında (navbar 48px) şekillerin bulanıklaşmasını önleyen 4 farklı <strong>vektörel rozet alternatifini</strong> canlı olarak deneyebilir, mevcut logo ile farkını inceleyebilirsiniz.
+    </p>
+  </header>
+
+  <!-- MAKRO VS MİKRO FELSEFESİ (GÖRSEL KARŞILAŞTIRMA) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+    
+    <!-- MAKRO BOYUT (NEREDE KULLANILIR?) -->
+    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col items-center text-center">
+      <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Büyük Ekranda / Vitrinde (Makro Boyut - 130px - 1080px)</span>
+      <h3 class="brand-font text-lg font-bold text-slate-900 mb-4">Zengin 3D İllüstrasyon Amblemimiz</h3>
+      <div class="w-36 h-36 rounded-full bg-slate-50 border border-slate-200 p-2 shadow-inner flex items-center justify-center mb-4">
+        <img src="/static/img/instagram_avatar_light_1080.png" alt="Mevcut Amblem" class="w-full h-full object-contain">
+      </div>
+      <p class="text-xs text-slate-500 max-w-sm">
+        <strong>Kullanım Alanı:</strong> Instagram Profil Fotoğrafı, Ana Sayfa Karşılama (Hero) Vitrini, Lansman Afişleri, Basılı Belgeler.
+        <br><span class="text-emerald-600 font-semibold">Tüm detaylar (Galata, sahil, sahne) büyükken harika duruyor!</span>
+      </p>
+    </div>
+
+    <!-- MİKRO BOYUT (PROBLEMİN ÇÖZÜLDÜĞÜ YER) -->
+    <div class="bg-white rounded-3xl p-6 border border-sky-200 shadow-sm flex flex-col items-center text-center relative overflow-hidden">
+      <div class="absolute top-3 right-3 bg-sky-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+        YENİ ÇÖZÜMÜMÜZ
+      </div>
+      <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Web Üst Barında / Mobilde (Mikro Boyut - 32px - 48px)</span>
+      <h3 class="brand-font text-lg font-bold text-slate-900 mb-4">Kristal Netlikte Vektörel Rozet</h3>
+      
+      <!-- Yan Yana Karşılaştırma -->
+      <div class="flex items-center gap-6 mb-4">
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-12 rounded-full bg-rose-50 border border-rose-200 p-1 flex items-center justify-center">
+            <img src="/static/img/instagram_avatar_light_1080.png" class="w-full h-full object-contain">
+          </div>
+          <span class="text-[10px] text-rose-500 font-bold mt-1">Eski Hal (Bulanık)</span>
+        </div>
+        <i class="fa-solid fa-arrow-right text-slate-300"></i>
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 p-1 flex items-center justify-center shadow-sm">
+            <img id="comparisonTarget" src="/static/img/responsive_logos/opt_a_aero_shield.svg" class="w-full h-full object-contain">
+          </div>
+          <span class="text-[10px] text-emerald-600 font-bold mt-1">Yeni Rozet (Ultra Net)</span>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-500 max-w-sm">
+        <strong>Kullanım Alanı:</strong> Web Sitesi Sol Üst Köşesi (Navbar), Mobil Başlık, Tarayıcı Sekme Simgesi (Favicon).
+        <br><span class="text-[#0284C7] font-semibold">10 mikro detay yerine güçlü 1 ana sembol: 50 metreden bile tanınır!</span>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ETKİLEŞİMLİ SEÇİM ALANI (ALTERNATİF BUTONLARI) -->
+  <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm mb-12">
+    <div class="text-center mb-6">
+      <h2 class="brand-font text-2xl font-black text-slate-900 mb-1">Navbar İçin 4 Farklı İkon Alternatifi</h2>
+      <p class="text-xs md:text-sm text-slate-500">Aşağıdaki alternatiflere tıklayarak web barının anında nasıl değiştiğini canlı görün:</p>
+    </div>
+
+    <!-- Butonlar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      
+      <button onclick="selectOption('a')" id="btn-a" class="option-btn active-pill p-3 rounded-2xl border border-slate-200 text-left transition flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/20 p-1 flex-shrink-0 flex items-center justify-center">
+          <img src="/static/img/responsive_logos/opt_a_aero_shield.svg" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <div class="text-xs font-bold leading-tight">A: Aero Shield</div>
+          <div class="text-[10px] opacity-80">Kalkan & Uçak</div>
+        </div>
+      </button>
+
+      <button onclick="selectOption('b')" id="btn-b" class="option-btn p-3 rounded-2xl border border-slate-200 text-left transition flex items-center gap-3 bg-slate-50 text-slate-700 hover:bg-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-white p-1 flex-shrink-0 flex items-center justify-center border border-slate-200">
+          <img src="/static/img/responsive_logos/opt_b_galata_flight.svg" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <div class="text-xs font-bold leading-tight">B: Galata & Uçak</div>
+          <div class="text-[10px] text-slate-500">Tarih & Gökyüzü</div>
+        </div>
+      </button>
+
+      <button onclick="selectOption('c')" id="btn-c" class="option-btn p-3 rounded-2xl border border-slate-200 text-left transition flex items-center gap-3 bg-slate-50 text-slate-700 hover:bg-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-white p-1 flex-shrink-0 flex items-center justify-center border border-slate-200">
+          <img src="/static/img/responsive_logos/opt_c_ticket_orbit.svg" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <div class="text-xs font-bold leading-tight">C: Ticket Orbit</div>
+          <div class="text-[10px] text-slate-500">Bilet Rozeti & Jet</div>
+        </div>
+      </button>
+
+      <button onclick="selectOption('d')" id="btn-d" class="option-btn p-3 rounded-2xl border border-slate-200 text-left transition flex items-center gap-3 bg-slate-50 text-slate-700 hover:bg-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-white p-1 flex-shrink-0 flex items-center justify-center border border-slate-200">
+          <img src="/static/img/responsive_logos/opt_d_monogram_h.svg" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <div class="text-xs font-bold leading-tight">D: 'H' Monogram</div>
+          <div class="text-[10px] text-slate-500">Modern Kanat & H</div>
+        </div>
+      </button>
+
+    </div>
+
+    <!-- CANLI SİMÜLASYON 1: AYDINLIK (LIGHT) NAVBAR MOCKUP -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+          <i class="fa-regular fa-sun text-amber-500 mr-1"></i> Sitenizin Gerçek Üst Barında (Aydınlık Tema) Görünüm
+        </span>
+        <span class="text-[11px] text-slate-400">Yükseklik: 48px</span>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white/95 shadow-sm p-3.5 flex items-center justify-between">
+        
+        <!-- Marka & Logo Alanı -->
+        <div class="flex items-center space-x-3.5">
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <img id="liveNavIconLight" src="/static/img/responsive_logos/opt_a_aero_shield.svg" alt="Seçilen İkon" class="w-11 h-11 object-contain drop-shadow-sm transition-all duration-300">
+          </div>
+          <div>
+            <div class="brand-font text-xl font-black tracking-tight text-[#0C4A60] flex items-center gap-1.5 leading-none">
+              HAKİKİ <span class="text-[#0284C7]">BİLET</span>
+            </div>
+            <p class="text-[9.5px] text-[#D97706] font-bold tracking-wider uppercase mt-1">Hakiki Fiyat, Hakiki Bilet</p>
+          </div>
+        </div>
+
+        <!-- Menü Linkleri Simülasyonu -->
+        <div class="hidden sm:flex items-center gap-5 text-xs font-semibold text-slate-600">
+          <span class="text-[#0284C7] font-bold">Uçak Bileti</span>
+          <span>Otobüs</span>
+          <span>Tren</span>
+          <span>Feribot</span>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
+            Fiyat Takibi
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CANLI SİMÜLASYON 2: KOYU (DARK / PETROL) NAVBAR MOCKUP -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+          <i class="fa-regular fa-moon text-sky-400 mr-1"></i> Alternatif Koyu Petrol Başlık Görünümü
+        </span>
+        <span class="text-[11px] text-slate-400">Yükseklik: 48px</span>
+      </div>
+      <div class="rounded-2xl border border-slate-800 bg-[#0C4A60] shadow-md p-3.5 flex items-center justify-between text-white">
+        
+        <!-- Marka & Logo Alanı -->
+        <div class="flex items-center space-x-3.5">
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <img id="liveNavIconDark" src="/static/img/responsive_logos/opt_a_aero_shield.svg" alt="Seçilen İkon" class="w-11 h-11 object-contain drop-shadow-sm transition-all duration-300">
+          </div>
+          <div>
+            <div class="brand-font text-xl font-black tracking-tight text-white flex items-center gap-1.5 leading-none">
+              HAKİKİ <span class="text-[#38BDF8]">BİLET</span>
+            </div>
+            <p class="text-[9.5px] text-[#FBBF24] font-bold tracking-wider uppercase mt-1">Hakiki Fiyat, Hakiki Bilet</p>
+          </div>
+        </div>
+
+        <div class="hidden sm:flex items-center gap-5 text-xs font-medium text-slate-200">
+          <span class="text-[#38BDF8] font-bold">Uçak</span>
+          <span>Otobüs</span>
+          <span>Tren</span>
+          <span>Feribot</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CANLI SİMÜLASYON 3: FARKLI BOYUTLARDA NASIL GÖRÜNÜR? (32px, 40px, 48px) -->
+    <div>
+      <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+        Farklı Cihaz & Ekran Boyutlarında Keskinlik Testi
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        
+        <!-- 32px (Mobil Başlık) -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center flex flex-col items-center">
+          <span class="text-xs font-bold text-slate-600 mb-2">Mobil Ekran (32px)</span>
+          <div class="w-8 h-8 flex items-center justify-center mb-2">
+            <img id="testSize32" src="/static/img/responsive_logos/opt_a_aero_shield.svg" class="w-full h-full object-contain">
+          </div>
+          <span class="text-[11px] text-emerald-600 font-semibold">Küçücük ekranda bile jilet gibi net</span>
+        </div>
+
+        <!-- 40px (Tablet / Kompakt) -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center flex flex-col items-center">
+          <span class="text-xs font-bold text-slate-600 mb-2">Tablet / Kompakt (40px)</span>
+          <div class="w-10 h-10 flex items-center justify-center mb-2">
+            <img id="testSize40" src="/static/img/responsive_logos/opt_a_aero_shield.svg" class="w-full h-full object-contain">
+          </div>
+          <span class="text-[11px] text-emerald-600 font-semibold">Sembol ve uçak anında fark ediliyor</span>
+        </div>
+
+        <!-- 48px (Masaüstü Standart) -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center flex flex-col items-center">
+          <span class="text-xs font-bold text-slate-600 mb-2">Masaüstü Navbar (48px)</span>
+          <div class="w-12 h-12 flex items-center justify-center mb-2">
+            <img id="testSize48" src="/static/img/responsive_logos/opt_a_aero_shield.svg" class="w-full h-full object-contain">
+          </div>
+          <span class="text-[11px] text-emerald-600 font-semibold">Kusursuz kurumsal duruş</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEÇİLEN ALTERNATİFİN ANLAMI VE TASARIM DETAYI -->
+  <div id="optionDetailsCard" class="bg-slate-900 text-white rounded-3xl p-6 md:p-8 mb-12 shadow-md">
+    <div class="flex items-start gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-[#0284C7]/20 text-[#38BDF8] flex items-center justify-center text-2xl flex-shrink-0">
+        <i class="fa-solid fa-compass-drafting"></i>
+      </div>
+      <div>
+        <h3 id="optTitle" class="brand-font text-xl font-bold mb-1">Seçili Alternatif: A — Aero Shield (Kalkan & Yükselen Jet)</h3>
+        <p id="optDesc" class="text-sm text-slate-300 leading-relaxed mb-3">
+          <strong>Tasarım Felsefesi:</strong> Hakiki Bilet'in "güvenilir ve hakiki" kimliğini simgeleyen koruyucu kalkan geometrisi içinde, 45 derece açıyla gökyüzüne tırmanan dinamik bir jet uçağı. Altında Akdeniz turkuazı dalga eğrisi ve köşesinde altın pusula yıldızı yer alır.
+        </p>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="px-3 py-1 rounded-full bg-white/10 text-slate-200">#0C4A60 Derin Petrol</span>
+          <span class="px-3 py-1 rounded-full bg-[#0284C7]/40 text-[#38BDF8]">#0284C7 Okyanus Mavisi</span>
+          <span class="px-3 py-1 rounded-full bg-[#D97706]/30 text-amber-300">#D97706 Bronz Vurgu</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT ETKİLEŞİMİ -->
+  <script>
+    const optionsData = {
+      'a': {
+        src: '/static/img/responsive_logos/opt_a_aero_shield.svg',
+        title: 'Seçili Alternatif: A — Aero Shield (Kalkan & Yükselen Jet)',
+        desc: '<strong>Tasarım Felsefesi:</strong> Hakiki Bilet\'in "güvenilir ve hakiki" kimliğini simgeleyen koruyucu kalkan geometrisi içinde, 45 derece açıyla gökyüzüne tırmanan dinamik bir jet uçağı. Altında Akdeniz turkuazı dalga eğrisi ve köşesinde altın pusula yıldızı yer alır. Küçük boyutta en güçlü kontrastı veren alternatiftir.'
+      },
+      'b': {
+        src: '/static/img/responsive_logos/opt_b_galata_flight.svg',
+        title: 'Seçili Alternatif: B — Galata & Sky Jet (Tarih ve Ulaşım)',
+        desc: '<strong>Tasarım Felsefesi:</strong> Orijinal logodaki Galata Kulesi mirasını korur; ancak 10 mikro detay yerine sadece kule külahı ve kavis çizen jet uçağına odaklanır. Altındaki turkuaz deniz hattı İstanbul Boğazı\'nı ve seyahati temsil eder.'
+      },
+      'c': {
+        src: '/static/img/responsive_logos/opt_c_ticket_orbit.svg',
+        title: 'Seçili Alternatif: C — Ticket Orbit (Bilet Rozeti & Uçuş Yörüngesi)',
+        desc: '<strong>Tasarım Felsefesi:</strong> Modern seyahat biletlerinin yuvarlatılmış geometrisini taşır. Merkezdeki jet uçağı etrafında dönen renkli yörünge halkası (orbit), çok modlu seyahat aramasını (uçak, otobüs, tren, vapur) simgeler.'
+      },
+      'd': {
+        src: '/static/img/responsive_logos/opt_d_monogram_h.svg',
+        title: 'Seçili Alternatif: D — Monogram H & Uçak Kanadı',
+        desc: '<strong>Tasarım Felsefesi:</strong> "H" harfinin mimari sağlamlığı ile uçak kanadının dinamizmini birleştiren ultra-modern tipografik monogram. Lüks havayolları ve global teknoloji platformlarının benimsediği minimalist tasarım dili.'
+      }
+    };
+
+    function selectOption(key) {
+      const data = optionsData[key];
+      if (!data) return;
+
+      // Görselleri güncelle
+      document.getElementById('comparisonTarget').src = data.src;
+      document.getElementById('liveNavIconLight').src = data.src;
+      document.getElementById('liveNavIconDark').src = data.src;
+      document.getElementById('testSize32').src = data.src;
+      document.getElementById('testSize40').src = data.src;
+      document.getElementById('testSize48').src = data.src;
+
+      // Açıklama kartını güncelle
+      document.getElementById('optTitle').innerHTML = data.title;
+      document.getElementById('optDesc').innerHTML = data.desc;
+
+      // Buton aktiflik stilleri
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('active-pill');
+        btn.classList.add('bg-slate-50', 'text-slate-700');
+      });
+      const activeBtn = document.getElementById('btn-' + key);
+      activeBtn.classList.remove('bg-slate-50', 'text-slate-700');
+      activeBtn.classList.add('active-pill');
+    }
+  </script>
+
+</body>
+</html>

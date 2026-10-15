@@ -27,10 +27,14 @@ class Settings:
     AFFILIATE_ENUYGUN_SUBID: str = os.getenv("AFFILIATE_ENUYGUN_SUBID", "hakikibilet")
     AFFILIATE_OBILET_SUBID: str = os.getenv("AFFILIATE_OBILET_SUBID", "hakikibilet")
     AFFILIATE_YOLCU360_SUBID: str = os.getenv("AFFILIATE_YOLCU360_SUBID", "hakikibilet")
-    AFFILIATE_TRAVELPAYOUTS_MARKER: str = os.getenv("AFFILIATE_TRAVELPAYOUTS_MARKER", "hakikibilet")
+    AFFILIATE_TRAVELPAYOUTS_MARKER: str = os.getenv("AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
     AFFILIATE_FERRY_SUBID: str = os.getenv("AFFILIATE_FERRY_SUBID", "hakikibilet")
-    AFFILIATE_BOOKING_AID: str = os.getenv("AFFILIATE_BOOKING_AID", "hakikibilet")
+    AFFILIATE_BOOKING_AID: str = os.getenv("AFFILIATE_BOOKING_AID", "585474")
     AFFILIATE_AGODA_CID: str = os.getenv("AFFILIATE_AGODA_CID", "hakikibilet")
+
+    # RapidAPI Booking.com Canlı Otel Entegrasyonu
+    RAPIDAPI_BOOKING_KEY: str = os.getenv("RAPIDAPI_BOOKING_KEY", "148a35e0b3msh6fee0694743036ap1fba10jsn5361646b970c")
+    RAPIDAPI_BOOKING_HOST: str = os.getenv("RAPIDAPI_BOOKING_HOST", "apidojo-booking-v1.p.rapidapi.com")
     # Hukuki Yasal Metinler & TÜRSAB Muafiyeti (Metasearch / Karşılaştırma Beyanı)
     LEGAL_DISCLAIMER: str = (
         "Hakiki Bilet (hakikibilet.com) bağımsız bir seyahat ve etkinlik bilet fiyat karşılaştırma ve yönlendirme platformudur. "
@@ -38,7 +42,7 @@ class Settings:
         "işlemleri kullanıcının yönlendirildiği yetkili acente veya resmi taşıyıcı firmanın güvenli altyapısında tamamlanır."
     )
 
-    # Bakım / Lansman Öncesi Modu (True olduğunda dışarıya vitrin sayfası, yöneticiye tam site açılır)
+    # Bakım / Lansman Öncesi Modu (Varsayılan olarak kapalı beta; Render'da da korumalıdır)
     MAINTENANCE_MODE: bool = os.getenv("MAINTENANCE_MODE", "true").lower() in ("true", "1", "yes")
     MAINTENANCE_BYPASS_KEY: str = os.getenv("MAINTENANCE_BYPASS_KEY", "hakiki2026")
 

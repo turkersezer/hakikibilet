@@ -1,13 +1,14 @@
 """
 Türkiye Şehirleri, Havalimanı (IATA) Kodları, TCDD Gar Kodları, En Yakın Hub Bilgileri ve Koordinatları
 """
+import re
 
 TURKEY_CITIES = [
     {"name": "İstanbul", "slug": "istanbul", "iata": "IST", "alt_iata": "SAW", "train_station": "İstanbul (Söğütlüçeşme/Halkalı)", "has_airport": True, "has_train": True, "lat": 41.0082, "lng": 28.9784},
     {"name": "Ankara", "slug": "ankara", "iata": "ESB", "train_station": "Ankara Gar (YHT)", "has_airport": True, "has_train": True, "lat": 39.9334, "lng": 32.8597},
     {"name": "İzmir", "slug": "izmir", "iata": "ADB", "train_station": "İzmir (Basmane)", "has_airport": True, "has_train": True, "lat": 38.4237, "lng": 27.1428},
     {"name": "Antalya", "slug": "antalya", "iata": "AYT", "train_station": None, "has_airport": True, "has_train": False, "lat": 36.8969, "lng": 30.7133},
-    {"name": "Adana", "slug": "adana", "iata": "ADA", "train_station": "Adana Gar", "has_airport": True, "has_train": True, "lat": 37.0000, "lng": 35.3213},
+    {"name": "Adana", "slug": "adana", "iata": "COV", "alt_iata": "ADA", "train_station": "Adana Gar", "has_airport": True, "has_train": True, "lat": 37.0000, "lng": 35.3213},
     {"name": "Trabzon", "slug": "trabzon", "iata": "TZX", "train_station": None, "has_airport": True, "has_train": False, "lat": 41.0027, "lng": 39.7168},
     {"name": "Bursa", "slug": "bursa", "iata": "YEI", "train_station": None, "has_airport": True, "has_train": False, "lat": 40.1885, "lng": 29.0610},
     {"name": "Eskişehir", "slug": "eskisehir", "iata": "AOE", "train_station": "Eskişehir Gar (YHT)", "has_airport": True, "has_train": True, "lat": 39.7767, "lng": 30.5206},
@@ -155,6 +156,7 @@ INTERNATIONAL_CITIES = [
     {"name": "Londra (LHR/STN)", "slug": "londra", "country": "İngiltere", "region": "Avrupa", "iata": "LHR", "alt_iata": "STN", "train_station": "London St Pancras Int (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Roma (FCO)", "slug": "roma", "country": "İtalya", "region": "Avrupa", "iata": "FCO", "alt_iata": "CIA", "train_station": "Roma Termini (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Milano (MXP)", "slug": "milano", "country": "İtalya", "region": "Avrupa", "iata": "MXP", "alt_iata": "LIN", "train_station": "Milano Centrale (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Venedik (VCE)", "slug": "venedik", "country": "İtalya", "region": "Avrupa", "iata": "VCE", "train_station": "Venezia Santa Lucia (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Berlin (BER)", "slug": "berlin", "country": "Almanya", "region": "Avrupa", "iata": "BER", "train_station": "Berlin Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Amsterdam (AMS)", "slug": "amsterdam", "country": "Hollanda", "region": "Avrupa", "iata": "AMS", "train_station": "Amsterdam Centraal (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Brüksel (BRU)", "slug": "bruksel", "country": "Belçika", "region": "Avrupa", "iata": "BRU", "alt_iata": "CRL", "train_station": "Bruxelles-Midi (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
@@ -166,6 +168,8 @@ INTERNATIONAL_CITIES = [
     {"name": "Frankfurt (FRA)", "slug": "frankfurt", "country": "Almanya", "region": "Avrupa", "iata": "FRA", "train_station": "Frankfurt (Main) Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Münih (MUC)", "slug": "munih", "country": "Almanya", "region": "Avrupa", "iata": "MUC", "train_station": "München Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Zürih (ZRH)", "slug": "zurih", "country": "İsviçre", "region": "Avrupa", "iata": "ZRH", "train_station": "Zürich HB (SBB)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Nice (NCE)", "slug": "nice", "country": "Fransa", "region": "Avrupa", "iata": "NCE", "train_station": "Gare de Nice-Ville (TER Monaco)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Monaco / Monte Carlo", "slug": "monaco", "country": "Monaco", "region": "Avrupa", "iata": "NCE", "train_station": "Gare de Monaco-Monte Carlo", "has_airport": True, "nearest_airport_iata": "NCE", "nearest_airport_name": "Nice Côte d'Azur (NCE)", "has_train": True, "is_international": True},
 
     # 🚌 Komşu Ülkeler (Uçak + Karayolu Otobüs Seferleri Aktif)
     {"name": "Selanik (SKG)", "slug": "selanik", "country": "Yunanistan", "region": "Balkanlar", "iata": "SKG", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
@@ -226,19 +230,40 @@ def find_city(city_name: str):
 def find_location(location_name: str):
     if not location_name:
         return None
-    loc_clean = location_name.strip().lower()
+    raw = location_name.strip()
+    loc_clean = raw.lower()
     
+    # 0. Parantez içindeki IATA / Liman Kodlarını öncelikli kontrol et (Örn: "İstanbul (IST / SAW)", "Antalya (AYT)")
+    codes = re.findall(r'\b[A-Za-z]{3}\b', raw)
+    for code in codes:
+        c_code = code.upper()
+        for c in ALL_LOCATIONS:
+            if (c.get("iata") == c_code or 
+                c.get("alt_iata") == c_code or 
+                c.get("port_code") == c_code):
+                return c
+
     # 1. Tam eşleşme (name, slug veya iata)
     for c in ALL_LOCATIONS:
         if (c.get("name", "").lower() == loc_clean or 
             c.get("slug", "").lower() == loc_clean or 
             (c.get("iata") and c.get("iata", "").lower() == loc_clean)):
             return c
+
+    # 2. Parantezleri temizleyip eşleştir (Örn: "Antalya (AYT)" -> "antalya")
+    base_name = re.sub(r'\(.*?\)', '', loc_clean).strip()
+    if base_name:
+        for c in ALL_LOCATIONS:
+            c_name = c.get("name", "").lower()
+            c_slug = c.get("slug", "").lower()
+            if base_name == c_name or base_name == c_slug:
+                return c
             
-    # 2. Başlangıç veya alt dize eşleşmesi
+    # 3. Başlangıç veya alt dize eşleşmesi (çift yönlü esnek eşleşme)
     for c in ALL_LOCATIONS:
         c_name = c.get("name", "").lower()
-        if loc_clean in c_name or c_name.startswith(loc_clean):
+        if (loc_clean in c_name or c_name in loc_clean or
+            (base_name and (base_name in c_name or c_name in base_name))):
             return c
             
     return None

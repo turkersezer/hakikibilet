@@ -10,3 +10,5 @@ data/*.db
 .env
 .DS_Store
 *.log
+scratch_*.py
+scratch/

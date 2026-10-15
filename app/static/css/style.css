@@ -1,17 +1,66 @@
-/* Ucuz Bilet Bul — Custom Styling */
+/* ==========================================================================
+   HAKİKİ BİLET — KURUMSAL TASARIM SİSTEMİ (DESIGN SYSTEM)
+   Kreatif Direktör Standartları: Göz Yormayan, Minimalist ve Akdeniz Tonları
+   ========================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap');
+
+:root {
+    --brand-petrol: #0C4A60;       /* Derin Akdeniz Petrolü (Güven & Otorite) */
+    --brand-teal: #0284C7;         /* Berrak Deniz & Gökyüzü Mavisi */
+    --brand-cyan: #38BDF8;         /* Açık Arktik / Havacılık Mavisi */
+    --brand-terracotta: #EA580C;   /* Galata & Tarihi Mimari Sıcaklığı */
+    --brand-gold: #D97706;         /* Güneş & Orijinal Mühür Pirinci */
+    --brand-emerald: #10B981;      /* Ege Palmiye & Doğa Yeşili */
+    
+    --bg-canvas: #F8FAFC;          /* Göz Dinlendiren Alabaster Nötr Zemin */
+    --bg-surface: #FFFFFF;         /* Saf Beyaz Kartlar */
+    --text-heading: #0F172A;       /* Başlıklar için tok antrasit */
+    --text-body: #334155;          /* Uzun okumalar için dinlendirici slate */
+    --text-muted: #64748B;         /* İkincil açıklamalar */
+    --border-soft: #E2E8F0;        /* Narin kenarlıklar */
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-canvas);
+    color: var(--text-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.brand-font {
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Aktif Ulaşım Sekmeleri (Akdeniz Petrol & Teal Gradyanı) */
 .active-tab {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    background: linear-gradient(135deg, #0C4A60 0%, #0284C7 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 14px rgba(12, 74, 96, 0.25);
+    border-color: transparent !important;
 }
 
 .active-filter {
-    background-color: #2563eb !important;
+    background-color: #0C4A60 !important;
     color: #ffffff !important;
 }
 
-/* Smooth fade-in */
+/* Narin Kartlar */
+.calm-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04), 0 2px 4px -1px rgba(15, 23, 42, 0.02);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.calm-card:hover {
+    transform: translateY(-2px);
+    border-color: #CBD5E1;
+    box-shadow: 0 12px 28px -4px rgba(12, 74, 96, 0.08), 0 4px 8px -2px rgba(12, 74, 96, 0.04);
+}
+
+/* Pürüzsüz Fade-In */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -27,18 +76,18 @@
     animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Custom scrollbars */
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: #F8FAFC;
 }
 ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: #CBD5E1;
     border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: #0284C7;
 }

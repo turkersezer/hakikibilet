@@ -9,6 +9,9 @@ class SearchRequest(BaseModel):
     return_date: Optional[str] = None
     trip_type: str = "one_way"  # 'one_way' or 'round_trip'
     passengers: int = 1
+    adults: Optional[int] = 1
+    children: Optional[int] = 0
+    infants: Optional[int] = 0
     transport_type: str = "all"  # 'flight', 'train', 'bus', 'car', 'all'
     cabin_class: str = "economy"  # 'economy' or 'business'
     calendar_range: int = 7  # 7, 15, or 30 days
@@ -68,3 +71,8 @@ class TestNotificationRequest(BaseModel):
     price: Optional[float] = 399.00
     regular_price: Optional[float] = 850.00
     link: Optional[str] = "https://www.enuygun.com"
+
+class EarlyAccessRequest(BaseModel):
+    email: str
+    kvkk_consent: bool = True
+

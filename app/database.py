@@ -124,6 +124,18 @@ async def init_db():
         );
         """)
 
+        # 6. Prelaunch Subscribers Table (Lansman Öncesi Erken Kayıt)
+        await conn.execute("""
+        CREATE TABLE IF NOT EXISTS prelaunch_subscribers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            ip_address TEXT,
+            user_agent TEXT,
+            kvkk_consent INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
         await conn.commit()
         
         # Temizle ve Doğrulanmış Radar & Resmi Duyurular ile Güncelle

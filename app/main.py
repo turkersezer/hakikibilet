@@ -5,12 +5,14 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from contextlib import asynccontextmanager
 import os
 import json
+import re
 
 from app.config import settings
 from app.database import init_db, get_db
 from app.cities import TURKEY_CITIES, ALL_LOCATIONS, find_city, get_cities_by_transport
 from app.models import (
-    SearchRequest, CarSearchRequest, TrackRouteRequest, UserSettingsUpdate, TestNotificationRequest
+    SearchRequest, CarSearchRequest, TrackRouteRequest, UserSettingsUpdate, TestNotificationRequest,
+    EarlyAccessRequest
 )
 from app.services.search_service import SearchService
 from app.services.campaign_service import CampaignService
@@ -52,14 +54,16 @@ templates = Jinja2Templates(directory=templates_dir)
 async def maintenance_middleware(request: Request, call_next):
     path = request.url.path
     
-    # Yasal uyum sayfaları, statik dosyalar, favicon ve robots her zaman herkese açık (Affiliate denetimi için)
-    legal_paths = ("/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
+    # Yasal uyum sayfaları, doğrudan lansman vitrini, erken kayıt API'si, statik dosyalar, favicon ve robots her zaman herkese açık
+    legal_paths = ("/lansman", "/api/erken-kayit", "/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
     if path.startswith("/static") or path in ("/favicon.ico", "/robots.txt") or path in legal_paths:
         return await call_next(request)
         
     # URL parametresiyle doğrudan yönetici girişi: ?onizleme=hakiki2026 veya ?preview=hakiki2026
     query_key = request.query_params.get("onizleme") or request.query_params.get("preview")
     if query_key == settings.MAINTENANCE_BYPASS_KEY:
+        if path.startswith("/api"):
+            return await call_next(request)
         clean_url = str(request.url.remove_query_params(["onizleme", "preview"]))
         response = RedirectResponse(url=clean_url)
         response.set_cookie(
@@ -126,6 +130,22 @@ async def admin_lock():
     response.delete_cookie(key="hakiki_preview_access")
     return response
 
+@app.get("/lansman", response_class=HTMLResponse)
+@app.get("/coming-soon", response_class=HTMLResponse)
+async def view_coming_soon_page(request: Request):
+    """Her zaman doğrudan lansman öncesi ekranını (coming_soon.html) sunar"""
+    return templates.TemplateResponse(
+        request=request,
+        name="coming_soon.html",
+        context={
+            "app_name": settings.APP_NAME,
+            "app_slogan": settings.APP_SLOGAN,
+            "app_domain": settings.APP_DOMAIN,
+            "legal_disclaimer": settings.LEGAL_DISCLAIMER
+        }
+    )
+
+
 # ==================== HUKUK & YASAL UYUM MERKEZİ ROTALARI ====================
 
 @app.get("/yasal-uyari", response_class=HTMLResponse)
@@ -168,9 +188,32 @@ async def home_page(request: Request):
     radar_deals = await CampaignService.get_radar_deals()
     announcements = await CampaignService.get_official_announcements()
     curated_events = SearchService.get_curated_events()
+    template_name = "index.html" if request.query_params.get("v") == "1" else "index_v2.html"
     return templates.TemplateResponse(
         request=request,
-        name="index.html",
+        name=template_name,
+        context={
+            "app_name": settings.APP_NAME,
+            "app_slogan": settings.APP_SLOGAN,
+            "app_domain": settings.APP_DOMAIN,
+            "cities": ALL_LOCATIONS,
+            "radar_deals": radar_deals,
+            "announcements": announcements,
+            "deals": radar_deals,
+            "curated_events": curated_events,
+            "legal_disclaimer": settings.LEGAL_DISCLAIMER
+        }
+    )
+
+@app.get("/v2", response_class=HTMLResponse)
+async def home_page_v2(request: Request):
+    """Yeni Nesil Sekmeli Portal (V2)"""
+    radar_deals = await CampaignService.get_radar_deals()
+    announcements = await CampaignService.get_official_announcements()
+    curated_events = SearchService.get_curated_events()
+    return templates.TemplateResponse(
+        request=request,
+        name="index_v2.html",
         context={
             "app_name": settings.APP_NAME,
             "app_slogan": settings.APP_SLOGAN,
@@ -231,12 +274,20 @@ async def search_tickets(req: SearchRequest):
     MODÜL 1: Bilet Arama ve Parametreli Deep Linkler (Tek Yön, Gidiş-Dönüş, Gezgin Modu)
     Skyscanner, Google Flights, Enuygun, TCDD, Obilet, Kamil Koç
     """
+    adults = req.adults if req.adults is not None else req.passengers
+    children = req.children if req.children is not None else 0
+    infants = req.infants if req.infants is not None else 0
+    total_pax = max(1, adults + children + infants)
+
     result = SearchService.search_all_tickets(
         origin_city=req.origin,
         dest_city=req.destination,
         departure_date=req.departure_date,
         return_date=req.return_date,
-        passengers=req.passengers,
+        passengers=total_pax,
+        adults=adults,
+        children=children,
+        infants=infants,
         transport_type=req.transport_type,
         trip_type=req.trip_type,
         night_only=req.night_only,
@@ -372,3 +423,73 @@ async def trigger_cron_now():
     """Zamanlayıcıyı (Cron Job) Anında Tetikle"""
     await scheduled_price_and_campaign_check()
     return {"success": True, "message": "Cron fiyat ve kampanya taraması anında çalıştırıldı."}
+
+# ==================== LANSMAN ÖNCESİ ERKEN ERİŞİM & KAYIT API ====================
+
+@app.post("/api/erken-kayit")
+async def register_early_access(payload: EarlyAccessRequest, request: Request, db=Depends(get_db)):
+    """Ziyaretçiyi erken erişim bültenine kaydeder"""
+    email = payload.email.strip().lower()
+    
+    # E-posta format kontrolü
+    email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    if not re.match(email_regex, email):
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "Lütfen geçerli bir e-posta adresi giriniz."}
+        )
+        
+    if not payload.kvkk_consent:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "Lütfen KVKK Aydınlatma Metni'ni onaylayınız."}
+        )
+        
+    client_ip = request.client.host if request.client else None
+    user_agent = request.headers.get("user-agent", "")[:255]
+    
+    try:
+        # Zaten kayıtlı mı?
+        cursor = await db.execute("SELECT id FROM prelaunch_subscribers WHERE email = ?", (email,))
+        existing = await cursor.fetchone()
+        
+        if existing:
+            return {
+                "success": True,
+                "already_registered": True,
+                "message": "Harika! E-posta adresiniz zaten erken erişim listemizde kayıtlı. Lansman gününde ilk siz haberdar olacaksınız!"
+            }
+            
+        await db.execute(
+            "INSERT INTO prelaunch_subscribers (email, ip_address, user_agent, kvkk_consent) VALUES (?, ?, ?, ?)",
+            (email, client_ip, user_agent, 1 if payload.kvkk_consent else 0)
+        )
+        await db.commit()
+        
+        return {
+            "success": True,
+            "already_registered": False,
+            "message": "Tebrikler! Erken erişim listemize başarıyla kaydoldunuz. Kapılar açıldığında ilk haberdar olan sınırlı kitle arasında yerinizi aldınız."
+        }
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"Kayıt işlemi sırasında bir hata oluştu: {str(e)}"}
+        )
+
+@app.get("/api/admin/erken-kayit-listesi")
+async def get_early_access_subscribers(request: Request, db=Depends(get_db)):
+    """Yönetici için erken kayıt listesini listeler"""
+    cookie = request.cookies.get("hakiki_preview_access")
+    param = request.query_params.get("onizleme") or request.query_params.get("preview")
+    if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
+        raise HTTPException(status_code=403, detail="Bu listeyi görüntülemek için yetkiniz bulunmamaktadır.")
+        
+    cursor = await db.execute("SELECT id, email, created_at, ip_address FROM prelaunch_subscribers ORDER BY created_at DESC")
+    rows = await cursor.fetchall()
+    subscribers = [
+        {"id": r["id"], "email": r["email"], "created_at": r["created_at"], "ip": r["ip_address"]}
+        for r in rows
+    ]
+    return {"total": len(subscribers), "subscribers": subscribers}
+

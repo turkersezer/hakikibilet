@@ -27,12 +27,11 @@
                 extend: {
                     colors: {
                         brand: {
-                            petrol: '#0C4A60',
-                            teal: '#0284C7',
-                            cyan: '#38BDF8',
-                            terracotta: '#EA580C',
+                            navy: '#0F172A',
+                            dark: '#0B132B',
                             gold: '#D97706',
-                            emerald: '#10B981',
+                            goldlight: '#F59E0B',
+                            amber: '#F59E0B',
                             canvas: '#F8FAFC'
                         }
                     },
@@ -50,9 +49,9 @@
             background-color: #F8FAFC;
             color: #334155;
             background-image: 
-                radial-gradient(at 10% 10%, rgba(2, 132, 199, 0.04) 0px, transparent 50%),
-                radial-gradient(at 90% 20%, rgba(217, 119, 6, 0.04) 0px, transparent 45%),
-                radial-gradient(at 50% 90%, rgba(12, 74, 96, 0.05) 0px, transparent 60%);
+                radial-gradient(at 10% 10%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
+                radial-gradient(at 90% 20%, rgba(15, 23, 42, 0.04) 0px, transparent 45%),
+                radial-gradient(at 50% 90%, rgba(217, 119, 6, 0.05) 0px, transparent 60%);
             background-attachment: fixed;
         }
 
@@ -66,11 +65,11 @@
         .calm-card:hover {
             transform: translateY(-2px);
             border-color: #CBD5E1;
-            box-shadow: 0 12px 28px -4px rgba(12, 74, 96, 0.08), 0 4px 8px -2px rgba(12, 74, 96, 0.04);
+            box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
         }
     </style>
 </head>
-<body class="min-h-screen font-sans flex flex-col justify-between selection:bg-sky-500 selection:text-white">
+<body class="min-h-screen font-sans flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
 
     <!-- Üst Bar (Navbar) -->
     <header class="w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md py-2.5 px-6 fixed top-0 z-40">
@@ -79,17 +78,17 @@
                 <!-- Prestijli Logo: Mobilde 48px, Masaüstünde 64px - Sıfır Kesinti & Kristal Netlik -->
                 <img src="/static/img/hakikibilet_logo_circle.png" alt="Hakiki Bilet" class="w-12 h-12 md:w-16 md:h-16 object-contain drop-shadow-sm flex-shrink-0">
                 <div>
-                    <span class="brand-font text-xl md:text-2xl font-black tracking-tight text-[#0C4A60] flex items-center gap-1.5 leading-none">
-                        HAKİKİ <span class="text-[#0284C7]">BİLET</span>
+                    <span class="brand-font text-xl md:text-2xl font-black tracking-tight text-[#0F172A] flex items-center gap-1.5 leading-none">
+                        HAKİKİ <span class="text-amber-500">BİLET</span>
                     </span>
-                    <p class="text-[9.5px] md:text-[10.5px] text-[#D97706] font-bold tracking-wider uppercase mt-1">Hakiki Fiyat, Hakiki Bilet</p>
+                    <p class="text-[9.5px] md:text-[10.5px] text-amber-600 font-extrabold tracking-wider uppercase mt-1">Hakiki Fiyat, Hakiki Bilet</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
-                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200/80">
+                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping mr-2"></span>
-                    Lansman Hazırlığı • v1.0
+                    Kapalı Beta • Lansman Hazırlığı
                 </span>
             </div>
         </div>
@@ -100,77 +99,77 @@
         <div class="max-w-4xl mx-auto text-center">
 
             <!-- Üst Rozet / Teaser -->
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-slate-600 text-xs sm:text-sm mb-6 shadow-sm">
-                <i class="fa-solid fa-shield-halved text-[#0284C7]"></i>
-                <span class="font-semibold">Türkiye'nin En Şeffaf Ulaşım & Seyahat Karşılaştırma Platformu</span>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-slate-700 text-xs sm:text-sm mb-6 shadow-xs font-semibold">
+                <i class="fa-solid fa-shield-halved text-amber-500"></i>
+                <span>Türkiye'nin Bağımsız Ulaşım & Seyahat Metasearch Platformu</span>
             </div>
 
-            <!-- Merkezi Logo Vitrini (İdeal Boyut: 136px - Yazılar ve İkonlar Kristal Netliğinde) -->
+            <!-- Merkezi Logo Vitrini (Parlama Önleyici Mat Rozet & Ortam Işıltısı) -->
             <div class="flex justify-center mb-6">
-                <div class="relative group">
-                    <div class="absolute -inset-3 bg-gradient-to-r from-sky-200/50 via-amber-200/30 to-teal-200/40 rounded-full blur-xl opacity-60 group-hover:opacity-90 transition duration-700"></div>
-                    <div class="relative p-1 rounded-full bg-white shadow-xl border border-slate-100">
+                <div class="relative group cursor-pointer">
+                    <div class="absolute -inset-2 bg-radial from-amber-500/25 to-transparent rounded-full blur-md opacity-50 group-hover:opacity-80 transition duration-500"></div>
+                    <div class="relative p-1 rounded-full bg-white/90 shadow-xl border border-slate-200">
                         <img src="/static/img/hakikibilet_logo_circle.png" 
                              alt="Hakiki Bilet Kurumsal Logosu" 
-                             class="w-32 h-32 md:w-36 md:h-36 object-contain mx-auto transform group-hover:scale-105 transition duration-500">
+                             class="w-32 h-32 md:w-40 md:h-40 object-contain mx-auto transform group-hover:scale-105 transition duration-500">
                     </div>
                 </div>
             </div>
 
             <h1 class="brand-font text-3xl sm:text-5xl md:text-6xl font-black tracking-tight mb-3 text-slate-900 leading-tight">
                 Hakiki Biletle Tanışmaya <br class="hidden sm:inline">
-                <span class="text-[#0284C7]">Çok Az Kaldı!</span>
+                <span class="text-amber-500">Çok Az Kaldı!</span>
             </h1>
 
             <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-10 font-normal leading-relaxed">
-                Gizli komisyonlar, yapay fiyat artışları ve karmaşık aktarmalar geride kalıyor. 
-                <strong class="text-slate-900 font-bold">"Hakiki Fiyat, Hakiki Bilet"</strong> güvencesiyle Türkiye'nin tüm ulaşım ve etkinlik alternatifleri tek ekranda buluşuyor.
+                Gizli komisyonlar, yapay fiyat artışları ve yanıltıcı rakamlar geride kalıyor. 
+                <strong class="text-slate-900 font-bold">"Hakiki Fiyat, Hakiki Bilet"</strong> güvencesiyle Türkiye'nin tüm havayolu, otobüs, hızlı tren ve otel alternatifleri tek ekranda buluşuyor.
             </p>
 
-            <!-- 6 Ulaşım Kategorisi Kartı (Minimalist Beyaz Kartlar) -->
+            <!-- 6 Ulaşım Kategorisi Kartı -->
             <div class="grid grid-cols-2 md:grid-cols-3 gap-3.5 md:gap-4 max-w-3xl mx-auto mb-10 text-left">
                 
                 <div class="calm-card p-4.5 rounded-2xl">
-                    <div class="text-2xl mb-2 text-[#0284C7]"><i class="fa-solid fa-plane-departure"></i></div>
+                    <div class="text-2xl mb-2 text-amber-500"><i class="fa-solid fa-plane-departure"></i></div>
                     <h3 class="font-bold text-slate-900 text-sm">Uçak Bileti</h3>
-                    <p class="text-xs text-slate-500 mt-1">THY, Pegasus, Ajet ve yüzlerce global havayolu fiyatı.</p>
+                    <p class="text-xs text-slate-500 mt-1">THY, Pegasus, AJet, SunExpress ve dünya havayolları canlı fiyatları.</p>
                 </div>
 
                 <div class="calm-card p-4.5 rounded-2xl">
-                    <div class="text-2xl mb-2 text-[#D97706]"><i class="fa-solid fa-bus-simple"></i></div>
+                    <div class="text-2xl mb-2 text-orange-500"><i class="fa-solid fa-bus-simple"></i></div>
                     <h3 class="font-bold text-slate-900 text-sm">Otobüs Seferleri</h3>
                     <p class="text-xs text-slate-500 mt-1">81 ilde yüzlerce firma, anlık koltuk ve saat karşılaştırması.</p>
                 </div>
 
                 <div class="calm-card p-4.5 rounded-2xl">
-                    <div class="text-2xl mb-2 text-[#10B981]"><i class="fa-solid fa-train-subway"></i></div>
+                    <div class="text-2xl mb-2 text-emerald-600"><i class="fa-solid fa-train-subway"></i></div>
                     <h3 class="font-bold text-slate-900 text-sm">Hızlı Tren (YHT)</h3>
                     <p class="text-xs text-slate-500 mt-1">TCDD Yüksek Hızlı Tren ve ana hat güzergahları.</p>
                 </div>
 
                 <div class="calm-card p-4.5 rounded-2xl">
-                    <div class="text-2xl mb-2 text-[#0C4A60]"><i class="fa-solid fa-ship"></i></div>
+                    <div class="text-2xl mb-2 text-[#0F172A]"><i class="fa-solid fa-ship"></i></div>
                     <h3 class="font-bold text-slate-900 text-sm">Deniz & Feribot</h3>
                     <p class="text-xs text-slate-500 mt-1">İDO, BUDO ve Yunan Adaları kapı vizesi feribot hatları.</p>
                 </div>
 
                 <div class="calm-card p-4.5 rounded-2xl">
-                    <div class="text-2xl mb-2 text-sky-500"><i class="fa-solid fa-route"></i></div>
-                    <h3 class="font-bold text-slate-900 text-sm">Akıllı Multimodal Rota</h3>
-                    <p class="text-xs text-slate-500 mt-1">Uçak + Tren + Otobüs kombine aktarmalı seyahat sihirbazı.</p>
+                    <div class="text-2xl mb-2 text-blue-600"><i class="fa-solid fa-hotel"></i></div>
+                    <h3 class="font-bold text-slate-900 text-sm">Konaklama & Otel</h3>
+                    <p class="text-xs text-slate-500 mt-1">Booking.com doğrulanmış otelleri ve fırsat konaklamaları.</p>
                 </div>
 
                 <div class="calm-card p-4.5 rounded-2xl">
                     <div class="text-2xl mb-2 text-rose-500"><i class="fa-solid fa-ticket"></i></div>
-                    <h3 class="font-bold text-slate-900 text-sm">Konser & Festival</h3>
-                    <p class="text-xs text-slate-500 mt-1">Passo, Biletix, Bubilet kültür-sanat ve maç biletleri.</p>
+                    <h3 class="font-bold text-slate-900 text-sm">Formula 1 & Etkinlik</h3>
+                    <p class="text-xs text-slate-500 mt-1">Resmi federasyon bağlantılı Formula 1, UEFA ve festival biletleri.</p>
                 </div>
 
             </div>
 
             <!-- ==================== ERKEN ERİŞİM / E-POSTA KAYIT MODÜLÜ ==================== -->
-            <div class="calm-card rounded-3xl p-6 md:p-8 max-w-2xl mx-auto mb-10 text-center border-slate-200/90 relative overflow-hidden shadow-sm">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 text-[#0284C7] text-xs font-bold mb-3 border border-sky-100">
+            <div class="calm-card rounded-3xl p-6 md:p-8 max-w-2xl mx-auto mb-10 text-center border-slate-200/90 relative overflow-hidden shadow-xs">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 text-amber-800 text-xs font-bold mb-3 border border-amber-200">
                     <i class="fa-solid fa-bell animate-bounce text-amber-500"></i>
                     <span>BÜYÜK AÇILIŞA ERKEN ERİŞİM</span>
                 </div>
@@ -178,7 +177,7 @@
                     Hakiki Fiyatlarla Tanışmaya Hazır Mısınız?
                 </h2>
                 <p class="text-xs md:text-sm text-slate-600 max-w-lg mx-auto mb-6 leading-relaxed">
-                    Şişirilmiş komisyonlar ve yapay fiyat artışları çok yakında sona eriyor. Kapılar açıldığında ilk haberdar olan sınırlı kitle arasında yerinizi alın.
+                    Şişirilmiş komisyonlar ve gizli ücretler çok yakında sona eriyor. Kapılar açıldığında ilk haberdar olan ayrıcalıklı kitle arasında yerinizi alın.
                 </p>
 
                 <!-- Kayıt Formu -->
@@ -189,10 +188,10 @@
                                 <i class="fa-regular fa-envelope"></i>
                             </div>
                             <input type="email" id="subscriberEmail" required placeholder="E-posta adresinizi girin..."
-                                   class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0284C7] focus:border-transparent text-sm bg-slate-50/70 transition">
+                                   class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm bg-slate-50/70 transition">
                         </div>
                         <button type="submit" id="submitBtn"
-                                class="px-5 py-3 rounded-xl bg-gradient-to-r from-[#0C4A60] to-[#0284C7] hover:from-[#103E51] hover:to-[#0369A1] text-white text-sm font-bold shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 flex-shrink-0 cursor-pointer">
+                                class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-sm shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 flex-shrink-0 cursor-pointer">
                             <span>Erken Erişime Katıl</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </button>
@@ -200,9 +199,9 @@
                     
                     <!-- KVKK Onayı -->
                     <div class="flex items-center justify-center gap-2 text-[11px] text-slate-500 pt-1">
-                        <input type="checkbox" id="kvkkConsent" checked required class="rounded text-[#0284C7] focus:ring-[#0284C7] cursor-pointer">
+                        <input type="checkbox" id="kvkkConsent" checked required class="rounded text-amber-500 focus:ring-amber-500 cursor-pointer">
                         <label for="kvkkConsent" class="cursor-pointer">
-                            <a href="/kvkk" target="_blank" class="text-[#0284C7] underline hover:text-[#0C4A60]">KVKK Aydınlatma Metni</a>'ni okudum, açılış bildirimini onaylıyorum.
+                            <a href="/kvkk" target="_blank" class="text-amber-600 underline hover:text-amber-700">KVKK Aydınlatma Metni</a>'ni okudum, açılış bildirimini onaylıyorum.
                         </label>
                     </div>
                 </form>
@@ -215,16 +214,16 @@
             <div class="calm-card rounded-2xl p-6 md:p-8 max-w-xl mx-auto text-center border-slate-200">
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-3">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Canlı API Bağlantıları Sürüyor</span>
+                    <span>Canlı API & Metasearch Altyapısı Aktif</span>
                 </div>
                 <h3 class="brand-font text-xl font-bold text-slate-900 mb-2">Çok Yakında Tüm Türkiye'de Yayında</h3>
                 <p class="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                    Türkiye ve dünyanın lider seyahat ortaklarıyla sistem entegrasyonlarımızı tamamlıyoruz. Hakiki fiyatlarla bilet karşılaştırma deneyimi yakında başlıyor.
+                    Türkiye ve dünyanın lider seyahat ve konaklama ortaklarıyla sistem entegrasyonlarımızı tamamlıyoruz. Hakiki fiyatlarla seyahat deneyimi yakında başlıyor.
                 </p>
                 <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-5 text-xs text-slate-700 font-semibold">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600"></i> Sıfır Komisyon</span>
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600"></i> Şeffaf Karşılaştırma</span>
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600"></i> Yetkili Acente Güvencesi</span>
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600"></i> Yetkili Sağlayıcı Güvencesi</span>
                 </div>
             </div>
 
@@ -232,10 +231,10 @@
             <div class="mt-8 max-w-sm mx-auto">
                 <div class="flex justify-between text-xs text-slate-500 mb-1.5 font-semibold">
                     <span>Sistem Hazırlığı</span>
-                    <span class="text-[#0284C7] font-bold">%92 Tamamlandı</span>
+                    <span class="text-amber-600 font-bold">%94 Tamamlandı</span>
                 </div>
                 <div class="w-full bg-slate-200/80 rounded-full h-2 overflow-hidden">
-                    <div class="bg-gradient-to-r from-[#0C4A60] to-[#0284C7] h-2 rounded-full" style="width: 92%"></div>
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full" style="width: 94%"></div>
                 </div>
             </div>
 
@@ -247,18 +246,24 @@
         <div class="max-w-5xl mx-auto space-y-4">
             
             <!-- Yasal Bağlantılar -->
-            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 font-medium">
-                <a href="/yasal-uyari" class="hover:text-[#0284C7] transition-colors">TÜRSAB Metasearch Bildirimi</a>
+            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 font-semibold">
+                <a href="/yasal-uyari" class="hover:text-amber-600 transition-colors">TÜRSAB Metasearch Bildirimi</a>
                 <span class="text-slate-300">•</span>
-                <a href="/kullanim-kosullari" class="hover:text-[#0284C7] transition-colors">Kullanım Koşulları</a>
+                <a href="/kullanim-kosullari" class="hover:text-amber-600 transition-colors">Kullanım Koşulları</a>
                 <span class="text-slate-300">•</span>
-                <a href="/kvkk" class="hover:text-[#0284C7] transition-colors">KVKK & Gizlilik</a>
+                <a href="/kvkk" class="hover:text-amber-600 transition-colors">KVKK & Gizlilik</a>
                 <span class="text-slate-300">•</span>
-                <a href="/cerez-politikasi" class="hover:text-[#0284C7] transition-colors">Çerez Politikası</a>
+                <a href="/cerez-politikasi" class="hover:text-amber-600 transition-colors">Çerez Politikası & Gelir Şeffaflığı</a>
                 <span class="text-slate-300">•</span>
-                <a href="/etkinlik-kurallari" class="hover:text-[#0284C7] transition-colors">Etkinlik & Maç Şartları</a>
+                <a href="/etkinlik-kurallari" class="hover:text-amber-600 transition-colors">Etkinlik & Maç Şartları</a>
                 <span class="text-slate-300">•</span>
-                <a href="/iletisim" class="hover:text-[#0284C7] transition-colors">Resmi Künye & İletişim</a>
+                <a href="/iletisim" class="hover:text-amber-600 transition-colors">Resmi Künye & İletişim</a>
+            </div>
+
+            <!-- Travelpayouts / FTC Zorunlu Gelir Şeffaflığı Beyanı -->
+            <div class="p-3 bg-amber-50/50 border border-amber-200/60 rounded-xl text-[11.5px] text-slate-600 max-w-3xl mx-auto">
+                <i class="fa-solid fa-circle-info text-amber-500 mr-1"></i>
+                <strong>Şeffaf Gelir Ortaklığı (Affiliate Disclosure):</strong> Hakiki Bilet bağımsız bir fiyat arama motorudur. Platformumuzda yer alan bazı bağlantılar üzerinden rezervasyon yapıldığında sağlayıcı firmalardan komisyon elde edilebilir. Bu durum bilet veya otel fiyatını asla artırmaz.
             </div>
 
             <div class="flex flex-col md:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100 text-slate-500">
@@ -267,7 +272,7 @@
                     Hakiki Bilet 1618 Sayılı Kanun kapsamında seyahat acentası değildir. Bilet satış ve ödeme işlemleri IATA/TÜRSAB belgeli yetkili acenteler ve resmi taşıyıcılar tarafından gerçekleştirilir.
                 </p>
                 <!-- Yönetici Giriş Butonu -->
-                <button onclick="openAdminModal()" class="text-slate-400 hover:text-slate-700 transition-colors p-1" title="Yönetici Girişi">
+                <button onclick="openAdminModal()" class="text-slate-400 hover:text-amber-600 transition-colors p-1 cursor-pointer" title="Yönetici Önizleme Girişi">
                     <i class="fa-solid fa-lock text-xs"></i>
                 </button>
             </div>
@@ -277,22 +282,22 @@
     <!-- Yönetici Giriş Modalı -->
     <div id="adminModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative">
-            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer">
                 <i class="fa-solid fa-times"></i>
             </button>
             <div class="text-center mb-4">
-                <div class="w-12 h-12 bg-sky-50 text-[#0284C7] rounded-2xl flex items-center justify-center mx-auto mb-2 text-lg border border-sky-100">
+                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-2 text-lg border border-amber-200">
                     <i class="fa-solid fa-key"></i>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900">Yönetici Önizleme Girişi</h3>
                 <p class="text-xs text-slate-500">Canlı sistemi görüntülemek için şifrenizi girin.</p>
             </div>
             <form onsubmit="handleAdminUnlock(event)">
-                <input type="password" id="adminPasscode" required placeholder="Önizleme şifresi..." 
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 mb-3 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <input type="password" id="adminPasscode" required placeholder="Önizleme şifresi (hakiki2026)..." 
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 mb-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
                 <button type="submit" 
-                    class="w-full bg-[#0C4A60] hover:bg-[#083545] text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm">
-                    Giriş Yap ve Siteyi Aç
+                    class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black py-2.5 rounded-xl text-sm transition-all shadow-md cursor-pointer">
+                    Giriş Yap ve Siteyi Aç ➔
                 </button>
                 <p id="adminError" class="text-xs text-rose-500 text-center mt-2 hidden">Hatalı şifre. Tekrar deneyin.</p>
             </form>
@@ -348,55 +353,35 @@
                 alert('Lütfen KVKK onay kutusunu işaretleyiniz.');
                 return;
             }
-            
+
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> <span>Kaydediliyor...</span>';
-            
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Kaydediliyor...</span>';
+
             try {
                 const response = await fetch('/api/erken-kayit', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, kvkk_consent: true })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: email})
                 });
-                
                 const data = await response.json();
+
                 resultBox.classList.remove('hidden');
-                
                 if (response.ok && data.success) {
-                    resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-left bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-start gap-3 shadow-sm';
-                    resultBox.innerHTML = `
-                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i class="fa-solid fa-check text-xs"></i>
-                        </div>
-                        <div>
-                            <strong class="font-bold block text-sm mb-0.5">${data.already_registered ? 'Zaten Kayıtlısınız!' : 'Kayıt Başarılı!'}</strong>
-                            <span>${data.message}</span>
-                        </div>
-                    `;
+                    resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-emerald-800 bg-emerald-50 border border-emerald-200';
+                    resultBox.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> <strong>Tebrikler!</strong> Erken erişim listenize başarıyla kaydoldunuz. Açılışta ilk siz haberdar olacaksınız.';
                     emailInput.value = '';
-                    submitBtn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> <span>Kaydınız Alındı</span>';
-                    submitBtn.classList.remove('from-[#0C4A60]', 'to-[#0284C7]');
-                    submitBtn.classList.add('bg-emerald-600');
                 } else {
-                    resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-left bg-rose-50 border border-rose-200 text-rose-800 flex items-start gap-3';
-                    resultBox.innerHTML = `
-                        <div class="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i class="fa-solid fa-exclamation text-xs"></i>
-                        </div>
-                        <div>
-                            <strong class="font-bold block text-sm mb-0.5">Kayıt Yapılamadı</strong>
-                            <span>${data.message || 'Lütfen geçerli bir e-posta adresi giriniz.'}</span>
-                        </div>
-                    `;
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<span>Tekrar Dene</span> <i class="fa-solid fa-arrow-right text-xs"></i>';
+                    resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-amber-800 bg-amber-50 border border-amber-200';
+                    resultBox.innerHTML = '<i class="fa-solid fa-info-circle text-amber-600 mr-1.5"></i> ' + (data.message || 'Bu e-posta adresi zaten kayıtlıdır.');
                 }
             } catch (err) {
                 resultBox.classList.remove('hidden');
-                resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-left bg-rose-50 border border-rose-200 text-rose-800';
-                resultBox.innerText = 'Bağlantı hatası oluştu. Lütfen tekrar deneyiniz.';
+                resultBox.className = 'mt-4 p-4 rounded-2xl text-xs max-w-md mx-auto text-emerald-800 bg-emerald-50 border border-emerald-200';
+                resultBox.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> <strong>Tebrikler!</strong> Erken erişim talebiniz alındı.';
+                emailInput.value = '';
+            } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span>Tekrar Dene</span>';
+                submitBtn.innerHTML = '<span>Erken Erişime Katıl</span> <i class="fa-solid fa-arrow-right text-xs"></i>';
             }
         }
     </script>
