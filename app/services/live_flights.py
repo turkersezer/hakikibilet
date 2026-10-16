@@ -14,7 +14,8 @@ Gelişmiş Özellikler:
 """
 
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
+import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import logging
@@ -23,6 +24,7 @@ from fast_flights.fetcher import fetch_flights_html
 from fast_flights.querying import create_query
 from fast_flights import FlightQuery, Passengers
 from app.cities import find_city
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -321,6 +323,33 @@ def fetch_live_flights_from_google(
             if not is_direct:
                 route_notice = f"Bu uçuş {first_leg[6]} aktarmalıdır. Toplam yolculuk süresi: {duration_str}."
 
+            # Travelpayouts / Aviasales Canlı Uçak Biletleme Linki (Marker: 585474)
+            tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+            dep_day = dep_dt.strftime("%d")
+            dep_month = dep_dt.strftime("%m")
+            ret_part = ""
+            if is_round and return_date:
+                try:
+                    ret_dt_temp = datetime.strptime(return_date, "%Y-%m-%d")
+                    ret_part = f"{ret_dt_temp.strftime('%d')}{ret_dt_temp.strftime('%m')}"
+                except Exception:
+                    ret_part = ""
+            tp_flight_link = f"https://www.aviasales.com.tr/search/{from_code}{dep_day}{dep_month}{to_code}{ret_part}{adults}?marker={tp_marker}"
+
+            # Booking.com Varış Şehri Canlı Otel Linki (Travelpayouts AID: 585474)
+            booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+            try:
+                hotel_ret = return_date if (is_round and return_date) else (dep_dt + timedelta(days=2)).strftime("%Y-%m-%d")
+            except Exception:
+                hotel_ret = departure_date
+            dest_hotel_link = (
+                f"https://www.booking.com/searchresults.html?"
+                f"ss={urllib.parse.quote(dest_city_name)}"
+                f"&checkin={departure_date}&checkout={hotel_ret}"
+                f"&group_adults={adults}&no_rooms=1"
+                f"&aid={booking_aid}"
+            )
+
             if "pegasus" in carrier_lower or carrier_code == "PC":
                 carrier_display = "Pegasus Airlines"
                 official_name = "Pegasus Resmi"
@@ -329,9 +358,10 @@ def fetch_live_flights_from_google(
                 direct_link = direct_agent_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": f"Enuygun (Pegasus {dep_time} Seferi - Doğrudan Al)", "url": direct_agent_link, "price": enuygun_price, "is_best": True},
-                    {"name": "Pegasus Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False},
-                    {"name": "Google Flights (Canlı Karşılaştırma)", "url": google_flights_link, "price": price, "is_best": False}
+                    {"name": f"Enuygun (Pegasus {dep_time} Seferi)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
+                    {"name": "Pegasus Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": "Google Flights Karşılaştırması", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
                 carrier_display = "AJet (AnadoluJet)"
@@ -341,9 +371,10 @@ def fetch_live_flights_from_google(
                 direct_link = direct_agent_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": f"Enuygun (AJet {dep_time} Seferi - Doğrudan Al)", "url": direct_agent_link, "price": enuygun_price, "is_best": True},
-                    {"name": "AJet Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False},
-                    {"name": "Google Flights / AJet Net", "url": google_flights_link, "price": price, "is_best": False}
+                    {"name": f"Enuygun (AJet {dep_time} Seferi)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
+                    {"name": "AJet Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": "Google Flights / AJet Net", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
                 carrier_display = "Türk Hava Yolları"
@@ -353,9 +384,10 @@ def fetch_live_flights_from_google(
                 direct_link = direct_agent_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": f"Enuygun (THY {dep_time} Seferi - Doğrudan Al)", "url": direct_agent_link, "price": enuygun_price, "is_best": True},
-                    {"name": "THY Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False},
-                    {"name": "Google Flights / THY Net", "url": google_flights_link, "price": price, "is_best": False}
+                    {"name": f"Enuygun (THY {dep_time} Seferi)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
+                    {"name": "THY Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": "Google Flights / THY Net", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "sunexpress" in carrier_lower or carrier_code == "XQ":
                 carrier_display = "SunExpress"
@@ -365,9 +397,10 @@ def fetch_live_flights_from_google(
                 direct_link = direct_agent_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": f"Enuygun (SunExpress {dep_time} Seferi - Doğrudan Al)", "url": direct_agent_link, "price": enuygun_price, "is_best": True},
-                    {"name": "SunExpress Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False},
-                    {"name": "Google Flights / SunExpress", "url": google_flights_link, "price": price, "is_best": False}
+                    {"name": f"Enuygun (SunExpress {dep_time} Seferi)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
+                    {"name": "SunExpress Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": "Google Flights / SunExpress", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             else:
                 carrier_display = airline_name
@@ -377,8 +410,9 @@ def fetch_live_flights_from_google(
                 direct_link = google_flights_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": "Google Flights (Canlı Karşılaştırma)", "url": google_flights_link, "price": price, "is_best": True},
-                    {"name": "Enuygun Bilet Ekranı", "url": agent_link, "price": enuygun_price, "is_best": False}
+                    {"name": "Aviasales / Travelpayouts (Global Partner)", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
+                    {"name": "Enuygun Bilet Ekranı", "url": agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Google Flights Karşılaştırması", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
 
             return_leg_dict = None
@@ -446,6 +480,8 @@ def fetch_live_flights_from_google(
                 "google_link": google_flights_link,
                 "direct_link": direct_link,
                 "booking_link": direct_link,
+                "travelpayouts_link": tp_flight_link,
+                "hotel_link": dest_hotel_link,
                 "providers": providers_list
             })
         except Exception as err:

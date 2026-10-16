@@ -170,6 +170,7 @@ function swapOriginDest() {
     const temp = originInput.value;
     originInput.value = destInput.value;
     destInput.value = temp;
+    updateAirportHints();
 
     if (swapBtn) {
         swapBtn.classList.add("rotate-180");
@@ -280,6 +281,57 @@ async function loadCitiesForTransport(transportMode, scope) {
     }
 }
 
+function updateAirportHints() {
+    const originInput = document.getElementById("transOrigin");
+    const destInput = document.getElementById("transDest");
+    const originHint = document.getElementById("originAirportHint");
+    const destHint = document.getElementById("destAirportHint");
+    if (!originInput) return;
+
+    if (currentTransportSubTab !== 'flight') {
+        if (originHint) originHint.classList.add("hidden");
+        if (destHint) destHint.classList.add("hidden");
+        return;
+    }
+
+    const originVal = (originInput.value || "").trim().toLowerCase();
+    const destVal = destInput ? (destInput.value || "").trim().toLowerCase() : "";
+
+    if (originHint) {
+        if (originVal.includes("sabiha") || originVal.includes("saw")) {
+            originHint.innerHTML = '<i class="fa-solid fa-plane-departure text-amber-600"></i><span>Sadece <strong>Sabiha Gökçen (SAW)</strong> seçildi • Anadolu Yakası (Pegasus & AJet)</span>';
+            originHint.classList.remove("hidden");
+        } else if (originVal.includes("istanbul havalimanı") || (originVal.includes("ist") && !originVal.includes("saw"))) {
+            originHint.innerHTML = '<i class="fa-solid fa-plane-departure text-amber-600"></i><span>Sadece <strong>İstanbul Havalimanı (IST)</strong> seçildi • Avrupa Yakası (THY & Dünya)</span>';
+            originHint.classList.remove("hidden");
+        } else if (originVal.includes("istanbul")) {
+            originHint.innerHTML = '<i class="fa-solid fa-circle-info text-amber-600"></i><span><strong>İstanbul (Tüm Havalimanları):</strong> SAW ve IST birlikte taranır, en ucuz bilet öne çıkar.</span>';
+            originHint.classList.remove("hidden");
+        } else {
+            originHint.classList.add("hidden");
+        }
+    }
+
+    if (destHint) {
+        if (destVal.includes("adana") || destVal.includes("çukurova") || destVal.includes("cov")) {
+            destHint.innerHTML = '<i class="fa-solid fa-location-dot text-amber-600"></i><span><strong>Çukurova Uluslararası (COV):</strong> Adana ve Mersin ortak yeni havalimanı</span>';
+            destHint.classList.remove("hidden");
+        } else if (destVal.includes("sabiha") || destVal.includes("saw")) {
+            destHint.innerHTML = '<i class="fa-solid fa-plane-arrival text-amber-600"></i><span>Sadece <strong>Sabiha Gökçen (SAW)</strong> varışlı</span>';
+            destHint.classList.remove("hidden");
+        } else if (destVal.includes("istanbul havalimanı") || (destVal.includes("ist") && !destVal.includes("saw"))) {
+            destHint.innerHTML = '<i class="fa-solid fa-plane-arrival text-amber-600"></i><span>Sadece <strong>İstanbul Havalimanı (IST)</strong> varışlı</span>';
+            destHint.classList.remove("hidden");
+        } else if (destVal.includes("istanbul")) {
+            destHint.innerHTML = '<i class="fa-solid fa-circle-info text-amber-600"></i><span><strong>İstanbul (Tüm Havalimanları):</strong> Her iki havalimanına inişler taranır.</span>';
+            destHint.classList.remove("hidden");
+        } else {
+            destHint.classList.add("hidden");
+        }
+    }
+}
+window.updateAirportHints = updateAirportHints;
+
 function populateDatalists(transportMode, scope) {
     const originList = document.getElementById("originCitiesList");
     const destList = document.getElementById("destCitiesList");
@@ -291,22 +343,42 @@ function populateDatalists(transportMode, scope) {
     if (transportMode === "car") prefix = "🚗";
 
     if (transportMode === 'flight') {
-        // Kalkış Havalimanları: Türkiye Havalimanları (veya kalkış yapılabilen merkezler)
-        const trAirports = verifiedCities.filter(c => !c.country || c.country === 'Türkiye' || !c.is_international);
-        const originHtml = trAirports.map(c => {
+        // Kalkış Havalimanları: İstanbul için çoklu net seçenekler + Türkiye Havalimanları
+        const specialOrigins = `
+            <option value="İstanbul">✈️ İstanbul - Tüm Havalimanları (IST, SAW)</option>
+            <option value="İstanbul Sabiha Gökçen (SAW)">✈️ Sabiha Gökçen Havalimanı (SAW) - Anadolu Yakası</option>
+            <option value="İstanbul Havalimanı (IST)">✈️ İstanbul Havalimanı (IST) - Avrupa Yakası</option>
+            <option value="Ankara (ESB)">✈️ Ankara Esenboğa Havalimanı (ESB)</option>
+            <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes Havalimanı (ADB)</option>
+            <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT)</option>
+            <option value="Adana / Çukurova (COV)">✈️ Adana / Çukurova Uluslararası (COV)</option>
+            <option value="Trabzon (TZX)">✈️ Trabzon Havalimanı (TZX)</option>
+            <option value="Bodrum (BJV)">✈️ Bodrum Milas Havalimanı (BJV)</option>
+            <option value="Dalaman (DLM)">✈️ Dalaman Havalimanı (DLM)</option>
+        `;
+        const trAirports = verifiedCities.filter(c => (!c.country || c.country === 'Türkiye' || !c.is_international) && !['istanbul', 'ankara', 'izmir', 'antalya', 'adana', 'trabzon', 'bodrum', 'dalaman'].includes(c.slug));
+        const originHtml = specialOrigins + trAirports.map(c => {
             const iataStr = c.iata ? ` (${c.iata})` : '';
             return `<option value="${c.name}">${prefix} ${c.name}${iataStr} Havalimanı</option>`;
         }).join("");
         if (originList) originList.innerHTML = originHtml;
 
         // Varış Havalimanları: Kapsama göre
-        const destHtml = verifiedCities.map(c => {
+        const specialDests = `
+            <option value="Adana / Çukurova (COV)">✈️ Adana / Çukurova Uluslararası Havalimanı (COV)</option>
+            <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT)</option>
+            <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes Havalimanı (ADB)</option>
+            <option value="İstanbul">✈️ İstanbul - Tüm Havalimanları (IST, SAW)</option>
+            <option value="İstanbul Sabiha Gökçen (SAW)">✈️ Sabiha Gökçen Havalimanı (SAW) - Anadolu Yakası</option>
+            <option value="İstanbul Havalimanı (IST)">✈️ İstanbul Havalimanı (IST) - Avrupa Yakası</option>
+        `;
+        const restDests = verifiedCities.filter(c => !['istanbul', 'antalya', 'izmir', 'adana'].includes(c.slug)).map(c => {
             const iataStr = c.iata ? ` (${c.iata})` : '';
             const countryStr = c.country ? ` • ${c.country}` : '';
             const icon = (c.is_international || (c.country && c.country !== 'Türkiye')) ? '🌍' : '🇹🇷';
             return `<option value="${c.name}">${icon} ${c.name}${iataStr}${countryStr}</option>`;
         }).join("");
-        if (destList) destList.innerHTML = destHtml;
+        if (destList) destList.innerHTML = specialDests + restDests;
     } else {
         const html = verifiedCities.map(c => {
             const iataStr = c.iata ? ` (${c.iata})` : '';
@@ -318,6 +390,7 @@ function populateDatalists(transportMode, scope) {
     }
 
     populateHotelDatalist(currentHotelScope);
+    updateAirportHints();
 }
 
 // Otel Kapsam Değişimi: Yurtdışı (Booking) vs Yurtiçi (Enuygun/Otelz)
@@ -464,6 +537,7 @@ async function switchTransportSubTab(subTab) {
             flightBar.classList.add("hidden");
         }
     }
+    updateAirportHints();
 }
 
 // 4. ULAŞIM ARAMASI ÇALIŞTIRMA (Uçak Odaklı, Kusursuz Yolcu & Kapsam Desteği)
@@ -585,52 +659,84 @@ function renderTransportResults(data, searchReq) {
     if (currentTransportSubTab === 'flight' && tickets.length > 1) {
         window.currentFlightSort = 'cheapest';
         window.currentFlightTimeFilter = 'all';
+        window.currentFlightAirportFilter = 'all';
+
+        const ports = new Set();
+        tickets.forEach(t => {
+            if (t.from_code) ports.add(t.from_code.toUpperCase());
+            if (t.to_code) ports.add(t.to_code.toUpperCase());
+        });
+        const hasSaw = ports.has('SAW');
+        const hasIst = ports.has('IST');
+        const isMultiAirportCity = (hasSaw && hasIst) || 
+            (searchReq.origin && searchReq.origin.toLowerCase().includes('istanbul')) ||
+            (searchReq.destination && searchReq.destination.toLowerCase().includes('istanbul'));
 
         html += `
-            <div class="bg-white border-2 border-slate-200/90 rounded-2xl p-3.5 sm:p-4 mb-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3.5">
-                <!-- 1. Sıralama Butonları (En Ucuz | En Hızlı | En Erken Kalkış | En Geç Kalkış) -->
-                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                    <span class="text-xs font-black text-slate-800 flex items-center gap-1.5 mr-1">
-                        <i class="fa-solid fa-arrow-down-wide-short text-amber-500"></i> Sırala:
-                    </span>
-                    <button type="button" onclick="setFlightSort('cheapest')" id="fltSort-cheapest" class="flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-black bg-slate-900 text-white shadow-xs transition cursor-pointer">
-                        💰 En Ucuz
-                    </button>
-                    <button type="button" onclick="setFlightSort('fastest')" id="fltSort-fastest" class="flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
-                        ⚡ En Hızlı
-                    </button>
-                    <button type="button" onclick="setFlightSort('earliest')" id="fltSort-earliest" class="flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
-                        🛫 En Erken Kalkış
-                    </button>
-                    <button type="button" onclick="setFlightSort('latest')" id="fltSort-latest" class="flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
-                        🛬 En Geç Kalkış
-                    </button>
+            <div class="bg-white border-2 border-slate-200/90 rounded-2xl p-3.5 sm:p-4 mb-6 shadow-xs flex flex-col gap-3.5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3.5">
+                    <!-- 1. Sıralama Butonları (En Ucuz | En Hızlı | En Erken Kalkış | En Geç Kalkış) -->
+                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span class="text-xs font-black text-slate-800 flex items-center gap-1.5 mr-1">
+                            <i class="fa-solid fa-arrow-down-wide-short text-amber-500"></i> Sırala:
+                        </span>
+                        <button type="button" onclick="setFlightSort('cheapest')" id="fltSort-cheapest" class="flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-black bg-slate-900 text-white shadow-xs transition cursor-pointer">
+                            💰 En Ucuz
+                        </button>
+                        <button type="button" onclick="setFlightSort('fastest')" id="fltSort-fastest" class="flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                            ⚡ En Hızlı
+                        </button>
+                        <button type="button" onclick="setFlightSort('earliest')" id="fltSort-earliest" class="flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                            🛫 En Erken Kalkış
+                        </button>
+                        <button type="button" onclick="setFlightSort('latest')" id="fltSort-latest" class="flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                            🛬 En Geç Kalkış
+                        </button>
+                    </div>
+
+                    <!-- 2. Zaman Dilimi Filtreleri (06-12 Sabah | 12-18 Öğle | 18+ Akşam) -->
+                    <div class="flex flex-wrap items-center gap-1.5 border-t md:border-t-0 pt-2.5 md:pt-0">
+                        <span class="text-[11px] font-black text-slate-500 mr-1 flex items-center gap-1">
+                            <i class="fa-regular fa-clock text-amber-500"></i> Kalkış Saati:
+                        </span>
+                        <button type="button" onclick="setFlightTimeFilter('all')" id="fltTime-all" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-black bg-amber-500 text-white shadow-xs transition cursor-pointer">
+                            Tümü
+                        </button>
+                        <button type="button" onclick="setFlightTimeFilter('night')" id="fltTime-night" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                            🌙 Gece (00-06)
+                        </button>
+                        <button type="button" onclick="setFlightTimeFilter('morning')" id="fltTime-morning" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                            🌅 Sabah (06-12)
+                        </button>
+                        <button type="button" onclick="setFlightTimeFilter('noon')" id="fltTime-noon" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                            ☀️ Öğle (12-18)
+                        </button>
+                        <button type="button" onclick="setFlightTimeFilter('evening')" id="fltTime-evening" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                            🌆 Akşam (18+)
+                        </button>
+                        <span id="fltCountBadge" class="ml-1 text-xs font-bold text-slate-400">
+                            (${tickets.length} uçuş)
+                        </span>
+                    </div>
                 </div>
 
-                <!-- 2. Zaman Dilimi Filtreleri (06-12 Sabah | 12-18 Öğle | 18+ Akşam) -->
-                <div class="flex flex-wrap items-center gap-1.5 border-t md:border-t-0 pt-2.5 md:pt-0">
-                    <span class="text-[11px] font-black text-slate-500 mr-1 flex items-center gap-1">
-                        <i class="fa-regular fa-clock text-amber-500"></i> Kalkış Saati:
-                    </span>
-                    <button type="button" onclick="setFlightTimeFilter('all')" id="fltTime-all" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-black bg-amber-500 text-white shadow-xs transition cursor-pointer">
-                        Tümü
-                    </button>
-                    <button type="button" onclick="setFlightTimeFilter('night')" id="fltTime-night" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
-                        🌙 Gece (00-06)
-                    </button>
-                    <button type="button" onclick="setFlightTimeFilter('morning')" id="fltTime-morning" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
-                        🌅 Sabah (06-12)
-                    </button>
-                    <button type="button" onclick="setFlightTimeFilter('noon')" id="fltTime-noon" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
-                        ☀️ Öğle (12-18)
-                    </button>
-                    <button type="button" onclick="setFlightTimeFilter('evening')" id="fltTime-evening" class="flt-time-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
-                        🌆 Akşam (18+)
-                    </button>
-                    <span id="fltCountBadge" class="ml-1 text-xs font-bold text-slate-400">
-                        (${tickets.length} uçuş)
-                    </span>
-                </div>
+                <!-- 3. Çoklu Havalimanı Filtresi (İstanbul SAW vs IST) -->
+                ${isMultiAirportCity ? `
+                    <div class="flex flex-wrap items-center gap-2 pt-2.5 border-t border-slate-100">
+                        <span class="text-[11px] font-black text-slate-700 mr-1 flex items-center gap-1">
+                            <i class="fa-solid fa-plane-arrival text-amber-500"></i> Havalimanı:
+                        </span>
+                        <button type="button" onclick="setFlightAirportFilter('all')" id="fltPort-all" class="flt-port-btn px-3 py-1 rounded-xl text-xs font-black bg-slate-900 text-white shadow-2xs transition cursor-pointer">
+                            Tüm Havalimanları (${tickets.length})
+                        </button>
+                        <button type="button" onclick="setFlightAirportFilter('SAW')" id="fltPort-SAW" class="flt-port-btn px-3 py-1 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                            Sabiha Gökçen (SAW) • Anadolu
+                        </button>
+                        <button type="button" onclick="setFlightAirportFilter('IST')" id="fltPort-IST" class="flt-port-btn px-3 py-1 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                            İstanbul Havalimanı (IST) • Avrupa
+                        </button>
+                    </div>
+                ` : ''}
             </div>
         `;
     }
@@ -666,7 +772,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
             : (ticket.transport_type === 'bus' 
                 ? `Obilet'te Seç` 
                 : (ticket.transport_type === 'flight' 
-                    ? `${ticket.carrier}'da Seç (${ticket.departure_time || 'Sefer'})` 
+                    ? `Bileti Al (${ticket.departure_time || 'Sefer'})` 
                     : `Bileti Al`));
 
         if (!isFlight) {
@@ -808,14 +914,14 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             <div class="text-[11px] text-slate-500 font-semibold truncate">${toCity}</div>
                         </div>
                         <div class="col-span-4 sm:col-span-6 px-1 text-center">
-                            <div class="text-xs font-bold text-slate-600 mb-1">${retLeg.duration || ticket.duration || '1 sa 15 dk'}</div>
-                            <div class="relative flex items-center justify-center my-0.5">
+                            <div class="text-xs font-bold text-slate-600 mb-1.5">${retLeg.duration || ticket.duration || '1 sa 15 dk'}</div>
+                            <div class="relative flex items-center justify-center my-1">
                                 <div class="w-full h-[2px] bg-slate-300"></div>
-                                <div class="absolute bg-white px-1.5 rounded-full border border-slate-300">
+                                <div class="absolute bg-white px-2 py-0.5 rounded-full border border-slate-300 shadow-2xs">
                                     <i class="fa-solid fa-plane text-blue-600 text-[10px] transform rotate-180"></i>
                                 </div>
                             </div>
-                            <div class="text-[10px] font-bold text-emerald-600 mt-0.5">
+                            <div class="text-[10.5px] font-bold text-emerald-600 mt-1.5">
                                 ${retLeg.is_direct !== false ? '✓ Direkt • Aktarmasız' : '1 Aktarma'}
                             </div>
                         </div>
@@ -872,14 +978,14 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     <div class="text-[11px] text-slate-500 font-semibold truncate">${fromCity}</div>
                                 </div>
                                 <div class="col-span-4 sm:col-span-6 px-1 text-center">
-                                    <div class="text-xs font-bold text-slate-600 mb-1">${ticket.duration || '1 sa 15 dk'}</div>
-                                    <div class="relative flex items-center justify-center my-0.5">
+                                    <div class="text-xs font-bold text-slate-600 mb-1.5">${ticket.duration || '1 sa 15 dk'}</div>
+                                    <div class="relative flex items-center justify-center my-1">
                                         <div class="w-full h-[2px] bg-slate-300"></div>
-                                        <div class="absolute bg-white px-1.5 rounded-full border border-slate-300">
+                                        <div class="absolute bg-white px-2 py-0.5 rounded-full border border-slate-300 shadow-2xs">
                                             <i class="fa-solid fa-plane text-amber-500 text-[10px]"></i>
                                         </div>
                                     </div>
-                                    <div class="text-[10px] font-bold ${ticket.is_direct !== false ? 'text-emerald-600' : 'text-amber-600'} mt-0.5">
+                                    <div class="text-[10.5px] font-bold ${ticket.is_direct !== false ? 'text-emerald-600' : 'text-amber-600'} mt-1.5">
                                         ${ticket.is_direct !== false ? '✓ Direkt • Aktarmasız' : '1 Aktarma'}
                                     </div>
                                 </div>
@@ -897,17 +1003,25 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <!-- Bagaj Rozetleri -->
                         ${baggageBadgeHtml}
 
-                        <!-- Fiyat Karşılaştırma / Sağlayıcı Seçenekleri -->
-                        ${ticket.providers && ticket.providers.length > 0 ? `
-                            <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2 text-[11px]">
-                                <span class="text-slate-400 font-bold text-[10px] uppercase">Fiyat Teyidi:</span>
-                                ${ticket.providers.map(p => `
-                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${p.is_best ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-black' : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 font-semibold'} transition">
+                        <!-- Biletleme ve Sağlayıcı Seçenekleri (Travelpayouts, Enuygun, Resmi Site, Booking) -->
+                        ${(ticket.providers && ticket.providers.length > 0) || ticket.hotel_link ? `
+                            <div class="pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-2 text-[11px]">
+                                <span class="text-slate-500 font-black text-[10px] uppercase flex items-center gap-1">
+                                    <i class="fa-solid fa-cart-shopping text-amber-500"></i> Biletleme Seçenekleri:
+                                </span>
+                                ${(ticket.providers || []).map(p => `
+                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${p.is_best ? 'bg-amber-50 text-amber-900 border border-amber-300 font-black shadow-2xs hover:bg-amber-100' : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 font-bold'} transition">
                                         <span>${p.name}</span>
-                                        <span class="${p.is_best ? 'text-emerald-700' : 'text-slate-900'} font-black">${p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç'}</span>
+                                        <span class="${p.is_best ? 'text-amber-800' : 'text-slate-900'} font-black">${p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç'}</span>
                                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                 `).join('')}
+                                ${ticket.hotel_link ? `
+                                    <a href="${ticket.hotel_link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100 font-bold transition">
+                                        <span>🏨 ${toCity} Otelleri (Booking.com)</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
+                                    </a>
+                                ` : ''}
                             </div>
                         ` : ''}
 
@@ -933,7 +1047,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         
                         <div class="hidden lg:flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
                             <i class="fa-solid fa-shield-check"></i>
-                            <span>Komisyonsuz Resmi Fiyat</span>
+                            <span>Resmi Havayolu Taban Fiyatı</span>
                         </div>
                     </div>
 
@@ -946,6 +1060,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
 // Hızlı Uçuş Sıralama ve Filtreleme Sistemi (En Ucuz | En Hızlı | En Erken Kalkış | En Geç Kalkış + Sabah / Öğle / Akşam)
 window.currentFlightSort = 'cheapest';
 window.currentFlightTimeFilter = 'all';
+window.currentFlightAirportFilter = 'all';
 
 function setFlightSort(sortKey) {
     window.currentFlightSort = sortKey;
@@ -954,6 +1069,11 @@ function setFlightSort(sortKey) {
 
 function setFlightTimeFilter(timeKey) {
     window.currentFlightTimeFilter = timeKey;
+    applyFlightSortAndFilter();
+}
+
+function setFlightAirportFilter(portKey) {
+    window.currentFlightAirportFilter = portKey;
     applyFlightSortAndFilter();
 }
 
@@ -968,6 +1088,23 @@ function sortFlightTickets(criterion) {
 function applyFlightSortAndFilter() {
     if (!window.lastTransportResults) return;
     let list = [...window.lastTransportResults];
+
+    // 0. Havalimanı Filtresi (SAW vs IST)
+    if (window.currentFlightAirportFilter === 'SAW') {
+        list = list.filter(t => 
+            (t.from_code && t.from_code.toUpperCase() === 'SAW') || 
+            (t.to_code && t.to_code.toUpperCase() === 'SAW') || 
+            (t.origin && t.origin.includes('SAW')) || 
+            (t.destination && t.destination.includes('SAW'))
+        );
+    } else if (window.currentFlightAirportFilter === 'IST') {
+        list = list.filter(t => 
+            (t.from_code && t.from_code.toUpperCase() === 'IST') || 
+            (t.to_code && t.to_code.toUpperCase() === 'IST') || 
+            (t.origin && t.origin.includes('IST')) || 
+            (t.destination && t.destination.includes('IST'))
+        );
+    }
 
     // 1. Saat Filtresi Uygula (00-06 Gece, 06-12 Sabah, 12-18 Öğle, 18+ Akşam)
     if (window.currentFlightTimeFilter === 'night') {
@@ -1039,6 +1176,15 @@ function applyFlightSortAndFilter() {
     const activeTimeBtn = document.getElementById(`fltTime-${window.currentFlightTimeFilter}`);
     if (activeTimeBtn) {
         activeTimeBtn.className = "flt-time-btn px-2.5 py-1 rounded-lg text-xs font-black bg-amber-500 text-white shadow-xs transition cursor-pointer";
+    }
+
+    // 5. Havalimanı Filtre Buton Stillerini Güncelle
+    document.querySelectorAll(".flt-port-btn").forEach(b => {
+        b.className = "flt-port-btn px-3 py-1 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer";
+    });
+    const activePortBtn = document.getElementById(`fltPort-${window.currentFlightAirportFilter}`);
+    if (activePortBtn) {
+        activePortBtn.className = "flt-port-btn px-3 py-1 rounded-xl text-xs font-black bg-slate-900 text-white shadow-2xs transition cursor-pointer";
     }
 
     // Sayaç Rozetini Güncelle
@@ -1653,6 +1799,18 @@ function setupEventListeners() {
     const hotelForm = document.getElementById("hotelSearchForm");
     if (hotelForm) hotelForm.addEventListener("submit", executeHotelSearch);
 
+    // Canlı Havalimanı & Metropol Rehberlik Rozetleri (İstanbul SAW/IST, Çukurova COV vb.)
+    const originInput = document.getElementById("transOrigin");
+    const destInput = document.getElementById("transDest");
+    if (originInput) {
+        originInput.addEventListener("input", updateAirportHints);
+        originInput.addEventListener("change", updateAirportHints);
+    }
+    if (destInput) {
+        destInput.addEventListener("input", updateAirportHints);
+        destInput.addEventListener("change", updateAirportHints);
+    }
+
     // Kapsam ve Uçuş Tipi Doğrudan Event Dinleyicileri (Inline bağımlılığını sıfırlama)
     const domScopeBtn = document.getElementById("flightScope-domestic");
     if (domScopeBtn) domScopeBtn.addEventListener("click", () => switchFlightScope('domestic'));
@@ -1694,6 +1852,49 @@ function setupEventListeners() {
             }
         }
     });
+
+    // Otomatik Arama Parametresi Desteği (?auto_search=1)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("auto_search") === "1") {
+        if (urlParams.get("origin")) document.getElementById("transOrigin").value = urlParams.get("origin");
+        if (urlParams.get("destination")) document.getElementById("transDest").value = urlParams.get("destination");
+        if (urlParams.get("dep_date")) document.getElementById("transDepDate").value = urlParams.get("dep_date");
+        updateAirportHints();
+        setTimeout(() => {
+            executeTransportSearch();
+        }, 500);
+    }
+}
+
+// Etkinlik & Festival Habercisi Abonelik Yöneticisi
+function handleRadarSubscribe(event) {
+    if (event) event.preventDefault();
+    const input = document.getElementById("radarEmailInput");
+    const form = document.getElementById("radarSubscribeForm");
+    if (!input || !form) return;
+    
+    const email = input.value.trim();
+    if (!email || !email.includes("@")) {
+        alert("Lütfen geçerli bir e-posta adresi giriniz.");
+        return;
+    }
+
+    try {
+        const stored = JSON.parse(localStorage.getItem("hakiki_radar_subscribers") || "[]");
+        if (!stored.includes(email)) {
+            stored.push(email);
+            localStorage.setItem("hakiki_radar_subscribers", JSON.stringify(stored));
+        }
+    } catch (e) {
+        console.warn("Storage error", e);
+    }
+
+    form.innerHTML = `
+        <div class="px-4 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-xs flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span>Tebrikler! Yeni festival & yarış takvimleri açıldığında ilk sizin haberiniz olacak.</span>
+        </div>
+    `;
 }
 
 // Global scope window bindings (Tüm inline HTML fonksiyon çağrılarını güvenceye alma)
@@ -1715,6 +1916,9 @@ window.executeHotelSearch = executeHotelSearch;
 window.sortFlightTickets = sortFlightTickets;
 window.setFlightSort = setFlightSort;
 window.setFlightTimeFilter = setFlightTimeFilter;
+window.setFlightAirportFilter = setFlightAirportFilter;
 window.applyFlightSortAndFilter = applyFlightSortAndFilter;
 window.generateTicketCardsHtml = generateTicketCardsHtml;
+window.updateAirportHints = updateAirportHints;
+window.handleRadarSubscribe = handleRadarSubscribe;
 

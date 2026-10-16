@@ -145,16 +145,40 @@ class SearchService:
             "reason": None if (origin_has_airport and dest_has_airport) else f"{origin_city_name if not origin_has_airport else dest_city_name} şehrinde aktif havalimanı bulunmamaktadır."
         }
         if flight_links["available"]:
+            # Pegasus ve AJet ana operasyon üssü Sabiha Gökçen (SAW) kilitlemesi:
+            # Kullanıcı genel "İstanbul" seçtiyse ve rota iç hat ise, Pegasus'u SAW koduna yönlendirerek
+            # IST üzerinden aktarmalı fahiş fiyat hatasını önle.
+            pgs_orig_code = "saw" if (origin_iata == "IST" and "havalimanı" not in origin_city_name.lower() and "havalimani" not in origin_city_name.lower()) else origin_iata.lower()
+            pgs_dest_code = "saw" if (dest_iata == "IST" and "havalimanı" not in dest_city_name.lower() and "havalimani" not in dest_city_name.lower()) else dest_iata.lower()
+            pegasus_route = f"{origin_slug}-{dest_slug}-{pgs_orig_code}a-{pgs_dest_code}a"
+
             enuygun_route = f"{origin_slug}-{dest_slug}-{origin_iata.lower()}a-{dest_iata.lower()}a"
+            # Travelpayouts / Aviasales Uçak Arama Deep Linki (Marker: 585474)
+            tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+            try:
+                dep_dt_obj = datetime.strptime(departure_date, "%Y-%m-%d")
+                dep_d = dep_dt_obj.strftime("%d")
+                dep_m = dep_dt_obj.strftime("%m")
+                ret_d_m = ""
+                if is_round and return_date:
+                    ret_dt_obj = datetime.strptime(return_date, "%Y-%m-%d")
+                    ret_d_m = f"{ret_dt_obj.strftime('%d')}{ret_dt_obj.strftime('%m')}"
+                tp_flight_url = f"https://www.aviasales.com.tr/search/{origin_iata}{dep_d}{dep_m}{dest_iata}{ret_d_m}{adults}?marker={tp_marker}"
+            except Exception:
+                tp_flight_url = f"https://www.aviasales.com.tr/?marker={tp_marker}"
+
+            flight_links["travelpayouts"] = tp_flight_url
+            flight_links["aviasales"] = tp_flight_url
+
             if is_round:
                 sky_ret = cls.format_date_for_skyscanner(return_date)
                 enuygun_ret = cls.format_date_for_enuygun(return_date)
-                flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
+                flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{pegasus_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/{sky_ret}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=1"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+through+{return_date}{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
                 flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}"
             else:
-                flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
+                flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{pegasus_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=0"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+one+way{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
                 flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}"
@@ -163,6 +187,8 @@ class SearchService:
             flight_links["skyscanner"] = None
             flight_links["google_flights"] = None
             flight_links["enuygun"] = None
+            flight_links["travelpayouts"] = None
+            flight_links["aviasales"] = None
 
         # 2. Tren Deep Linkleri (TCDD E-Bilet & Avrupa Trainline / Omio)
         train_links = {
@@ -325,7 +351,8 @@ class SearchService:
         """
         Gezgin Keşif Rehberi: 'Nereye Gitmeliyim? / Festival & Sezon Radarı'
         Tarihi kesinleşmiş, resmi satışta veya teyitli yaklaşan organizasyonlar.
-        Kullanıcı tek tıkla tıkladığında formu doldurur ve arama yapar.
+        Sıfır Tahmin Kuralı: Geçmiş tarihli veya teyitsiz hiçbir etkinlik gösterilmez.
+        Kalan gün sayısına göre akıllı aciliyet (FOMO) ve yeni takvim rozetleri dinamik hesaplanır.
         Otomatik olarak kronolojik (en yakın tarihli en üstte) sıralanır.
         """
         events = [
@@ -355,16 +382,67 @@ class SearchService:
                 "why": "Bütçe dostu, yakın ve kapı vizesiyle en pratik yurt dışı kaçamağı."
             },
             {
+                "id": "event-harbiye-zorlu",
+                "title": "Harbiye Açıkhava & Zorlu PSM Sahne Sezonu 🎭 🎶",
+                "city": "İstanbul (IST/SAW)",
+                "country": "Türkiye",
+                "category": "concert_theater",
+                "category_label": "Konser, Tiyatro & Sahne",
+                "dates": "14 Kas - 16 Kas",
+                "dep_date": "2026-11-14",
+                "ret_date": "2026-11-16",
+                "badge": "Resmi Biletix & Bubilet & Passo Satışı",
+                "transport_mode": "flight",
+                "is_new": True,
+                "tag": "Kültür & Müzik",
+                "desc": "İstanbul'un kalbinde dev müzikaller, senfoni konserleri ve tiyatro şöleni. Şehir dışından gelen gezginler için uçuş ve Taksim/Beşiktaş otelleri tek tıkla hazır.",
+                "hotel_range": "Booking.com Canlı Taksim & Şişli Otelleri",
+                "ticket_org": "Bubilet & Biletix & Passo Resmi Bilet Satışı",
+                "ticket_url": "https://www.bubilet.com.tr/istanbul",
+                "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "Standart Tiyatro / Konser Bileti", "price": "450 - 950 ₺", "desc": "Biletix / Bubilet resmi koltuk seçimi"},
+                    {"name": "Protokol & Sahne Önü", "price": "1.250 - 2.800 ₺", "desc": "Ön sıra VIP deneyimi"},
+                    {"name": "Şehir Dışı Kombine (Uçuş + Otel)", "price": "Fırsat", "desc": "Travelpayouts taban fiyat güvencesi"}
+                ],
+                "why": "Kültür-sanat tutkunlarının yıl boyu en çok ziyaret ettiği prestijli sahne takvimi."
+            },
+            {
+                "id": "event-aspendos",
+                "title": "Aspendos Antik Tiyatro Festivali & Opera 🩰 🏛️",
+                "city": "Antalya (AYT)",
+                "country": "Türkiye",
+                "category": "concert_theater",
+                "category_label": "Konser, Tiyatro & Sahne",
+                "dates": "11 Ara - 13 Ara",
+                "dep_date": "2026-12-11",
+                "ret_date": "2026-12-13",
+                "badge": "Devlet Opera & Balesi Teyitli",
+                "transport_mode": "flight",
+                "tag": "Tarih & Sanat",
+                "desc": "2000 yıllık Roma tiyatrosunun büyülü akustiğinde dünyaca ünlü operalar ve bale gösterileri. Antalya direkt uçuşları ve sahil otelleri.",
+                "hotel_range": "Booking.com Canlı Antalya & Belek Otelleri",
+                "ticket_org": "Biletinial Resmi T.C. Kültür ve Turizm Bakanlığı Bilet Portalı",
+                "ticket_url": "https://biletinial.com/tr-tr/tiyatro",
+                "image_url": "https://images.unsplash.com/photo-1469488865564-c2de10f69f96?auto=format&fit=crop&w=800&q=80",
+                "ticket_categories": [
+                    {"name": "1. Kategori Numaralı Koltuk", "price": "~400 ₺", "desc": "Sahneye hakim amfitiyatro koltuğu"},
+                    {"name": "2. Kategori Koltuk", "price": "~250 ₺", "desc": "Akustik merkez tribün"},
+                    {"name": "Öğrenci / İndirimli", "price": "~150 ₺", "desc": "Resmi kontenjan"}
+                ],
+                "why": "Dünyanın en iyi korunmuş antik tiyatrosunda eşsiz bir sanat ve seyahat deneyimi."
+            },
+            {
                 "id": "event-f1-monaco",
                 "title": "Formula 1 Monaco Grand Prix (Monte Carlo) 🏎️",
                 "city": "Nice (NCE)",
                 "country": "Fransa / Monaco",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
-                "dates": "23 May - 25 May",
-                "dep_date": "2027-05-23",
-                "ret_date": "2027-05-25",
-                "badge": "FIA Resmi Monaco Yarış Haftası",
+                "dates": "21 May - 24 May 2027",
+                "dep_date": "2027-05-21",
+                "ret_date": "2027-05-24",
+                "badge": "FIA Resmi Monaco Takvimi",
                 "transport_mode": "flight",
                 "tag": "Hız & Prestij (Ferrari)",
                 "desc": "Monte Carlo sokak pistinde Scuderia Ferrari ve F1 kükremesi. Nice (NCE) uçuşu + 20 dk sahil treniyle Monaco Garı'na doğrudan varış.",
@@ -386,9 +464,9 @@ class SearchService:
                 "country": "Almanya",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
-                "dates": "30 May - 01 Haz",
-                "dep_date": "2027-05-30",
-                "ret_date": "2027-06-01",
+                "dates": "29 May - 31 May 2027",
+                "dep_date": "2027-05-29",
+                "ret_date": "2027-05-31",
                 "badge": "Avrupa Kulüpler Zirvesi",
                 "transport_mode": "flight",
                 "tag": "Futbol Şöleni",
@@ -411,9 +489,9 @@ class SearchService:
                 "country": "İngiltere",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
-                "dates": "30 Haz - 06 Tem",
-                "dep_date": "2027-06-30",
-                "ret_date": "2027-07-06",
+                "dates": "28 Haz - 05 Tem 2027",
+                "dep_date": "2027-06-28",
+                "ret_date": "2027-07-05",
                 "badge": "Tenisin Mabedi",
                 "transport_mode": "flight",
                 "tag": "Grand Slam Geleneği",
@@ -436,7 +514,7 @@ class SearchService:
                 "country": "İngiltere",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
-                "dates": "04 Tem - 06 Tem",
+                "dates": "04 Tem - 06 Tem 2027",
                 "dep_date": "2027-07-04",
                 "ret_date": "2027-07-06",
                 "badge": "FIA Resmi Silverstone Takvimi",
@@ -461,9 +539,9 @@ class SearchService:
                 "country": "İtalya",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
-                "dates": "05 Eyl - 07 Eyl",
-                "dep_date": "2027-09-05",
-                "ret_date": "2027-09-07",
+                "dates": "03 Eyl - 05 Eyl 2027",
+                "dep_date": "2027-09-03",
+                "ret_date": "2027-09-05",
                 "badge": "Hız Tapınağı (Temple of Speed)",
                 "transport_mode": "flight",
                 "tag": "Tifosi Kırmızı Denizi (Ferrari SF-24)",
@@ -486,9 +564,9 @@ class SearchService:
                 "country": "Azerbaycan",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
-                "dates": "19 Eyl - 21 Eyl",
-                "dep_date": "2027-09-19",
-                "ret_date": "2027-09-21",
+                "dates": "17 Eyl - 19 Eyl 2027",
+                "dep_date": "2027-09-17",
+                "ret_date": "2027-09-19",
                 "badge": "Vizesiz • En Hızlı Şehir Pisti",
                 "transport_mode": "flight",
                 "tag": "Kardeş Ülke Heyecanı",
@@ -505,9 +583,53 @@ class SearchService:
                 "why": "Vizesiz ve en kolay ulaşılabilen, bol geçişli büyüleyici şehir yarışı."
             }
         ]
+        
+        # SIFIR TAHMİN & AKILLI ACİLİYET (FOMO) FİLTRESİ
+        today = datetime.now().date()
+        valid_events = []
+        for evt in events:
+            dep_str = evt.get("dep_date")
+            if not dep_str:
+                continue
+            try:
+                dep_dt = datetime.strptime(dep_str, "%Y-%m-%d").date()
+            except Exception:
+                continue
+            
+            # KESİNLİKLE GEÇMİŞ TARİHLİ ETKİNLİK GÖSTERİLMEZ
+            if dep_dt < today:
+                continue
+            
+            days_left = (dep_dt - today).days
+            evt["days_left"] = days_left
+            
+            # Akıllı Aciliyet (FOMO) ve Sayaç Rozetleri
+            if days_left <= 15:
+                evt["urgency_badge"] = f"🔥 Son {days_left} Gün • Kontenjanlar Tükenmek Üzere"
+                evt["urgency_level"] = "critical"
+                evt["urgency_class"] = "bg-rose-600 text-white animate-pulse"
+                evt["urgency_desc"] = "Uçak ve otel fiyatları son günlerde yükselir, yerinizi gecikmeden ayırtın."
+            elif days_left <= 30:
+                evt["urgency_badge"] = f"⏳ Son {days_left} Gün • Erken Fırsatı Kaçırmayın"
+                evt["urgency_level"] = "warning"
+                evt["urgency_class"] = "bg-amber-500 text-slate-950 font-black"
+                evt["urgency_desc"] = "Bilet ve konaklama fiyatları artmadan yerinizi ayırtın."
+            else:
+                evt["urgency_badge"] = "✈️ Erken Rezervasyon • Taban Fiyatlar Açık"
+                evt["urgency_level"] = "info"
+                evt["urgency_class"] = "bg-emerald-600 text-white"
+                evt["urgency_desc"] = "Resmi taban fiyatlarla en avantajlı planlama dönemi."
+                
+            if evt.get("is_new"):
+                evt["new_badge"] = "✨ YENİ TAKVİM AÇILDI"
+            else:
+                evt["new_badge"] = None
+
+            valid_events.append(evt)
+
         # Otomatik Kronolojik Sıralama (En yakın tarihli olan en başta!)
-        events.sort(key=lambda e: e.get("dep_date", "9999-99-99"))
-        return events
+        valid_events.sort(key=lambda e: e.get("dep_date", "9999-99-99"))
+        return valid_events
 
     @classmethod
     def build_smart_multimodal_plan(

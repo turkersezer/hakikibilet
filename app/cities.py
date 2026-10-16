@@ -4,6 +4,8 @@ Türkiye Şehirleri, Havalimanı (IATA) Kodları, TCDD Gar Kodları, En Yakın H
 import re
 
 TURKEY_CITIES = [
+    {"name": "İstanbul Sabiha Gökçen", "slug": "istanbul-sabiha-gokcen", "iata": "SAW", "train_station": "Pendik YHT (Havalimanı Bağlantılı)", "has_airport": True, "has_train": True, "lat": 40.8986, "lng": 29.3092},
+    {"name": "İstanbul Havalimanı", "slug": "istanbul-havalimani", "iata": "IST", "train_station": "İstanbul Havalimanı YHT / Gayrettepe Metro", "has_airport": True, "has_train": True, "lat": 41.2753, "lng": 28.7519},
     {"name": "İstanbul", "slug": "istanbul", "iata": "IST", "alt_iata": "SAW", "train_station": "İstanbul (Söğütlüçeşme/Halkalı)", "has_airport": True, "has_train": True, "lat": 41.0082, "lng": 28.9784},
     {"name": "Ankara", "slug": "ankara", "iata": "ESB", "train_station": "Ankara Gar (YHT)", "has_airport": True, "has_train": True, "lat": 39.9334, "lng": 32.8597},
     {"name": "İzmir", "slug": "izmir", "iata": "ADB", "train_station": "İzmir (Basmane)", "has_airport": True, "has_train": True, "lat": 38.4237, "lng": 27.1428},
@@ -233,7 +235,23 @@ def find_location(location_name: str):
     raw = location_name.strip()
     loc_clean = raw.lower()
     
-    # 0. Parantez içindeki IATA / Liman Kodlarını öncelikli kontrol et (Örn: "İstanbul (IST / SAW)", "Antalya (AYT)")
+    # 0. İstanbul çoklu havalimanı ayrıştırması
+    if "tüm havalimanları" in loc_clean or "tum havalimanlari" in loc_clean or ("ist" in loc_clean and "saw" in loc_clean):
+        for c in ALL_LOCATIONS:
+            if c.get("slug") == "istanbul":
+                return c
+
+    if "sabiha" in loc_clean or (re.search(r'\bsaw\b', loc_clean) and not re.search(r'\bist\b', loc_clean)):
+        for c in ALL_LOCATIONS:
+            if c.get("slug") == "istanbul-sabiha-gokcen":
+                return c
+
+    if "istanbul havalimanı" in loc_clean or "istanbul havalimani" in loc_clean or (re.search(r'\bist\b', loc_clean) and not re.search(r'\bsaw\b', loc_clean) and "istanbul" in loc_clean):
+        for c in ALL_LOCATIONS:
+            if c.get("slug") == "istanbul-havalimani":
+                return c
+
+    # 1. Parantez içindeki IATA / Liman Kodlarını öncelikli kontrol et (Örn: "Antalya (AYT)")
     codes = re.findall(r'\b[A-Za-z]{3}\b', raw)
     for code in codes:
         c_code = code.upper()

@@ -87,6 +87,10 @@ async def maintenance_middleware(request: Request, call_next):
     if path == "/admin/lock":
         return await call_next(request)
 
+    # Sağlık kontrolü (Render uykusunu önleyen UptimeRobot / Keep-alive ping'i için 200 döner)
+    if path in ("/api/health", "/health"):
+        return JSONResponse(content={"status": "ok", "service": "hakikibilet", "status_code": 200}, status_code=200)
+
     # Bakım modu devredeyse ve tarayıcıda yönetici çerezi yoksa vitrin sayfasını sun
     if settings.MAINTENANCE_MODE:
         preview_cookie = request.cookies.get("hakiki_preview_access")
