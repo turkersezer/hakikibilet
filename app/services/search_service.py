@@ -146,18 +146,17 @@ class SearchService:
         }
         if flight_links["available"]:
             enuygun_route = f"{origin_slug}-{dest_slug}-{origin_iata.lower()}a-{dest_iata.lower()}a"
-            pgs_ret = f"&returnDate={return_date}" if is_round else ""
-            flight_links["pegasus"] = f"https://web.flypgs.com/booking?departurePort={origin_iata}&arrivalPort={dest_iata}&departureDate={departure_date}&{pgs_pax}{pgs_ret}"
-
             if is_round:
                 sky_ret = cls.format_date_for_skyscanner(return_date)
                 enuygun_ret = cls.format_date_for_enuygun(return_date)
+                flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/{sky_ret}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=1"
-                flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+through+{return_date}{biz_extra_google}&curr={currency}"
+                flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+through+{return_date}{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
                 flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}"
             else:
+                flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=0"
-                flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}{biz_extra_google}&curr={currency}"
+                flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+one+way{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
                 flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}"
         else:
             flight_links["pegasus"] = None
@@ -805,7 +804,7 @@ class SearchService:
 
                     # Pegasus için İstanbul iç hatlarda SAW (Sabiha Gökçen) ana üssüdür
                     pgs_dep_code = "SAW" if (origin_name == "İstanbul" and not is_international) else orig_iata
-                    pgs_url = links["flight"]["pegasus"] or f"https://web.flypgs.com/booking?departurePort={pgs_dep_code}&arrivalPort={dst_iata}&departureDate={departure_date}&adultCount={adults}"
+                    pgs_url = links["flight"]["pegasus"] or links["flight"]["enuygun"]
 
                     def get_flight_benchmark_price(carrier_type: str, is_intl: bool, dest_slug_str: str, is_business: bool) -> tuple[float, float]:
                         if not is_intl:
