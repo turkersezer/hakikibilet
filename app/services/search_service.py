@@ -163,9 +163,9 @@ class SearchService:
                 if is_round and return_date:
                     ret_dt_obj = datetime.strptime(return_date, "%Y-%m-%d")
                     ret_d_m = f"{ret_dt_obj.strftime('%d')}{ret_dt_obj.strftime('%m')}"
-                tp_flight_url = f"https://www.aviasales.com.tr/search/{origin_iata}{dep_d}{dep_m}{dest_iata}{ret_d_m}{adults}?marker={tp_marker}"
+                tp_flight_url = f"https://www.aviasales.com/search/{origin_iata}{dep_d}{dep_m}{dest_iata}{ret_d_m}{adults}?marker={tp_marker}&currency={currency}"
             except Exception:
-                tp_flight_url = f"https://www.aviasales.com.tr/?marker={tp_marker}"
+                tp_flight_url = f"https://www.aviasales.com/?marker={tp_marker}&currency={currency}"
 
             flight_links["travelpayouts"] = tp_flight_url
             flight_links["aviasales"] = tp_flight_url

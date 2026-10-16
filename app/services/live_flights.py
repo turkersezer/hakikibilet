@@ -336,7 +336,7 @@ def fetch_live_flights_from_google(
                     ret_part = f"{ret_dt_temp.strftime('%d')}{ret_dt_temp.strftime('%m')}"
                 except Exception:
                     ret_part = ""
-            tp_flight_link = f"https://www.aviasales.com.tr/search/{from_code}{dep_day}{dep_month}{to_code}{ret_part}{adults}?marker={tp_marker}"
+            tp_flight_link = f"https://www.aviasales.com/search/{from_code}{dep_day}{dep_month}{to_code}{ret_part}{adults}?marker={tp_marker}&currency=TRY"
 
             # Booking.com Varış Şehri Canlı Otel Linki (Travelpayouts AID: 585474)
             booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
