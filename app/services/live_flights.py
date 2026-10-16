@@ -355,12 +355,12 @@ def fetch_live_flights_from_google(
                 official_name = "Pegasus Resmi"
                 official_link = "https://www.flypgs.com/"
                 badge = "Comfort Flex ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Pegasus Seferi")
-                direct_link = direct_agent_link
+                direct_link = tp_flight_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": f"Enuygun (Pegasus {dep_time} Seferi)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
                     {"name": "Pegasus Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": f"Enuygun (+53 ₺)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Google Flights Karşılaştırması", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
@@ -368,12 +368,12 @@ def fetch_live_flights_from_google(
                 official_name = "AJet Resmi"
                 official_link = "https://ajet.com/tr"
                 badge = "Business ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "AJet Seferi")
-                direct_link = direct_agent_link
+                direct_link = tp_flight_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": f"Enuygun (AJet {dep_time} Seferi)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
                     {"name": "AJet Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": f"Enuygun (+53 ₺)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Google Flights / AJet Net", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
@@ -381,12 +381,12 @@ def fetch_live_flights_from_google(
                 official_name = "THY Resmi"
                 official_link = "https://www.turkishairlines.com/tr-int/"
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "⭐ THY Konforu")
-                direct_link = direct_agent_link
+                direct_link = tp_flight_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": f"Enuygun (THY {dep_time} Seferi)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
                     {"name": "THY Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": f"Enuygun (+53 ₺)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Google Flights / THY Net", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "sunexpress" in carrier_lower or carrier_code == "XQ":
@@ -394,12 +394,12 @@ def fetch_live_flights_from_google(
                 official_name = "SunExpress (Enuygun)"
                 official_link = "https://www.sunexpress.com/tr/"
                 badge = "SunClassic" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "SunExpress Seferi")
-                direct_link = direct_agent_link
+                direct_link = tp_flight_link
                 final_ticket_price = price
                 providers_list = [
-                    {"name": f"Enuygun (SunExpress {dep_time} Seferi)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
                     {"name": "SunExpress Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": f"Enuygun (+53 ₺)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Google Flights / SunExpress", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             else:
@@ -407,7 +407,7 @@ def fetch_live_flights_from_google(
                 official_name = f"{airline_name} Resmi"
                 official_link = google_flights_link
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Ekonomik Uçuş")
-                direct_link = google_flights_link
+                direct_link = tp_flight_link
                 final_ticket_price = price
                 providers_list = [
                     {"name": "Aviasales / Travelpayouts (Global Partner)", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
