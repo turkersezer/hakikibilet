@@ -562,11 +562,11 @@
                     <!-- Aksiyon Butonları (Resmi Bilet & Ulaşım/Otel Planla) -->
                     <div class="p-4 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between gap-2">
                         <a href="{{ evt.ticket_url }}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-slate-700 hover:text-amber-600 transition flex items-center gap-1">
-                            <span>Resmi Bilet</span>
+                            <span>{% if evt.is_escape %}Feribot Seferi{% else %}Resmi Bilet{% endif %}</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
                         <button onclick="planEventTrip('{{ evt.city }}', '{{ evt.dep_date }}', '{{ evt.ret_date }}', '{{ evt.transport_mode }}')" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5">
-                            <span>Rotayı Planla</span>
+                            <span>{% if evt.is_escape %}Kaçamağı Planla{% else %}Rotayı Planla{% endif %}</span>
                             <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </button>
                     </div>

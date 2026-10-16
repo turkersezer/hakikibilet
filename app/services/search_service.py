@@ -363,13 +363,12 @@ class SearchService:
                 "country": "Yunanistan",
                 "category": "island",
                 "category_label": "Yunan Adaları & Deniz",
-                "dates": "24 Eki - 26 Eki",
-                "dep_date": "2026-10-24",
-                "ret_date": "2026-10-26",
-                "badge": "En Yakın Kaçış • Kapı Vizesi",
+                "is_escape": True,
+                "dates": "Hafta Sonu İçin İdeal",
+                "badge": "💡 Aklınızda Bulunsun",
                 "transport_mode": "ferry",
                 "tag": "Ege & Deniz",
-                "desc": "Çeşme'den 30 dakikada Sakız Adası. Damla sakızı köyleri, taze deniz ürünleri ve huzurlu koylar.",
+                "desc": "Çeşme'den 30 dakikada Sakız Adası. Cuma çıkışlı 2 günlük sakin ada kaçamağı, damla sakızı köyleri ve taze deniz ürünleri.",
                 "hotel_range": "Booking.com Canlı Teyitli Oteller",
                 "ticket_org": "Ertürk & Feribotlines Resmi Bilet Portalı",
                 "ticket_url": "https://www.erturk.com.tr/tr/",
@@ -588,6 +587,25 @@ class SearchService:
         today = datetime.now().date()
         valid_events = []
         for evt in events:
+            # Aklınızda Bulunsun / Hafta Sonu Kaçamak Rotaları (Yapay Tarih ve Sayaç Yoktur)
+            if evt.get("is_escape"):
+                # Kullanıcı arama yaptığında en yakın Cuma - Pazar gününü arama kutusuna hazırla
+                days_to_fri = (4 - today.weekday()) % 7
+                if days_to_fri == 0:
+                    days_to_fri = 7
+                next_fri = today + timedelta(days=days_to_fri)
+                next_sun = next_fri + timedelta(days=2)
+                evt["dep_date"] = next_fri.strftime("%Y-%m-%d")
+                evt["ret_date"] = next_sun.strftime("%Y-%m-%d")
+                evt["dates"] = "Hafta Sonu İçin İdeal"
+                evt["badge"] = "💡 Aklınızda Bulunsun"
+                evt["urgency_badge"] = "🏖️ Hafta Sonu Kaçamağı"
+                evt["urgency_level"] = "escape"
+                evt["urgency_class"] = "bg-amber-500 text-slate-950 font-black"
+                evt["urgency_desc"] = "Festival şartı yok; Cuma çıkışlı 2 günlük sakin ada kaçamağı için tavsiye edilir."
+                valid_events.append(evt)
+                continue
+
             dep_str = evt.get("dep_date")
             if not dep_str:
                 continue
