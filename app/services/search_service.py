@@ -177,16 +177,25 @@ class SearchService:
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/{sky_ret}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=1"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+through+{return_date}{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
                 flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}"
+                turna_ret_param = f"&donus={enuygun_ret}"
+                trip_ret_param = f"&rdate={return_date}"
             else:
                 flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{pegasus_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=0"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+one+way{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
                 flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}"
+                turna_ret_param = ""
+                trip_ret_param = ""
+
+            flight_links["turna"] = f"https://www.turna.com/ucak-bileti/{origin_slug}-{dest_slug}?gidis={enuygun_dep}{turna_ret_param}&yetiskin={adults}"
+            flight_links["trip"] = f"https://tr.trip.com/flights/{origin_slug}-to-{dest_slug}/tickets-{origin_iata.lower()}-{dest_iata.lower()}?dcity={origin_iata.lower()}&acity={dest_iata.lower()}&ddate={departure_date}{trip_ret_param}&curr={currency}"
         else:
             flight_links["pegasus"] = None
             flight_links["skyscanner"] = None
             flight_links["google_flights"] = None
             flight_links["enuygun"] = None
+            flight_links["turna"] = None
+            flight_links["trip"] = None
             flight_links["travelpayouts"] = None
             flight_links["aviasales"] = None
 
@@ -1064,16 +1073,16 @@ class SearchService:
                         "cabin_class": cabin_class,
                         "official_name": "Pegasus Resmi",
                         "official_link": "https://www.flypgs.com/",
-                        "agent_name": "Aviasales / Travelpayouts",
-                        "agent_link": tp_flight_url,
-                        "direct_link": tp_flight_url or pgs_url,
-                        "booking_link": tp_flight_url or pgs_url,
+                        "agent_name": "Enuygun",
+                        "agent_link": links["flight"]["enuygun"],
+                        "direct_link": links["flight"]["enuygun"],
+                        "booking_link": links["flight"]["enuygun"],
                         "hotel_link": dest_hotel_link,
                         "providers": [
-                            {"name": "Aviasales / Travelpayouts", "url": tp_flight_url or pgs_url, "price": pgs_price, "is_best": True, "channel": "travelpayouts"},
+                            {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(pgs_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
+                            {"name": "Turna.com", "url": links["flight"]["turna"], "price": pgs_price, "is_best": False, "channel": "turna"},
+                            {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": pgs_price, "is_best": False, "channel": "trip"},
                             {"name": "Pegasus Resmi Web Sitesi", "url": "https://www.flypgs.com/", "price": pgs_price, "is_best": False, "channel": "official"},
-                            {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(pgs_price + enuygun_fee, 2), "is_best": False, "channel": "agency"},
-                            {"name": "Google Flights Karşılaştırması", "url": links["flight"]["google_flights"], "price": pgs_price, "is_best": False, "channel": "meta"}
                         ]
                     })
 
@@ -1101,7 +1110,7 @@ class SearchService:
                                 "is_direct": is_direct_intl
                             }
 
-                        # Uluslararası THY / Skyscanner / Aviasales
+                        # Uluslararası THY / Enuygun / Turna / Trip.com
                         results.append({
                             "id": "fl-int-thy",
                             "transport_type": "flight",
@@ -1132,16 +1141,16 @@ class SearchService:
                             "cabin_class": cabin_class,
                             "official_name": "Türk Hava Yolları",
                             "official_link": "https://www.turkishairlines.com/tr-int/",
-                            "agent_name": "Aviasales / Travelpayouts",
-                            "agent_link": tp_flight_url,
-                            "direct_link": tp_flight_url or links["flight"]["google_flights"],
-                            "booking_link": tp_flight_url or links["flight"]["google_flights"],
+                            "agent_name": "Enuygun",
+                            "agent_link": links["flight"]["enuygun"],
+                            "direct_link": links["flight"]["enuygun"],
+                            "booking_link": links["flight"]["enuygun"],
                             "hotel_link": dest_hotel_link,
                             "providers": [
-                                {"name": "Aviasales / Travelpayouts", "url": tp_flight_url or links["flight"]["google_flights"], "price": thy_price, "is_best": True, "channel": "travelpayouts"},
+                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(thy_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
+                                {"name": "Turna.com", "url": links["flight"]["turna"], "price": thy_price, "is_best": False, "channel": "turna"},
+                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": thy_price, "is_best": False, "channel": "trip"},
                                 {"name": "THY Resmi Web Sitesi", "url": "https://www.turkishairlines.com/tr-int/", "price": thy_price, "is_best": False, "channel": "official"},
-                                {"name": "Skyscanner Sefer Matrisi", "url": links["flight"]["skyscanner"], "price": round(thy_price * 1.02, 2), "is_best": False, "channel": "meta"},
-                                {"name": "Google Flights Canlı Ekran", "url": links["flight"]["google_flights"], "price": thy_price, "is_best": False, "channel": "meta"}
                             ]
                         })
                     else:
@@ -1210,16 +1219,16 @@ class SearchService:
                             "cabin_class": cabin_class,
                             "official_name": "AJet Resmi",
                             "official_link": "https://ajet.com/tr",
-                            "agent_name": "Aviasales / Travelpayouts",
-                            "agent_link": tp_flight_url,
-                            "direct_link": tp_flight_url or links["flight"]["enuygun"],
-                            "booking_link": tp_flight_url or links["flight"]["enuygun"],
+                            "agent_name": "Enuygun",
+                            "agent_link": links["flight"]["enuygun"],
+                            "direct_link": links["flight"]["enuygun"],
+                            "booking_link": links["flight"]["enuygun"],
                             "hotel_link": dest_hotel_link,
                             "providers": [
-                                {"name": "Aviasales / Travelpayouts", "url": tp_flight_url or links["flight"]["enuygun"], "price": ajet_price, "is_best": True, "channel": "travelpayouts"},
+                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(ajet_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
+                                {"name": "Turna.com", "url": links["flight"]["turna"], "price": ajet_price, "is_best": False, "channel": "turna"},
+                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": ajet_price, "is_best": False, "channel": "trip"},
                                 {"name": "AJet Resmi Web Sitesi", "url": "https://ajet.com/tr", "price": ajet_price, "is_best": False, "channel": "official"},
-                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(ajet_price + enuygun_fee, 2), "is_best": False, "channel": "agency"},
-                                {"name": "Google Flights / AJet Net", "url": links["flight"]["google_flights"], "price": ajet_price, "is_best": False, "channel": "meta"}
                             ]
                         })
 
@@ -1253,16 +1262,16 @@ class SearchService:
                             "cabin_class": cabin_class,
                             "official_name": "Türk Hava Yolları",
                             "official_link": "https://www.turkishairlines.com/tr-int/",
-                            "agent_name": "Aviasales / Travelpayouts",
-                            "agent_link": tp_flight_url,
-                            "direct_link": tp_flight_url or links["flight"]["google_flights"],
-                            "booking_link": tp_flight_url or links["flight"]["google_flights"],
+                            "agent_name": "Enuygun",
+                            "agent_link": links["flight"]["enuygun"],
+                            "direct_link": links["flight"]["enuygun"],
+                            "booking_link": links["flight"]["enuygun"],
                             "hotel_link": dest_hotel_link,
                             "providers": [
-                                {"name": "Aviasales / Travelpayouts", "url": tp_flight_url or links["flight"]["google_flights"], "price": thy_dom_price, "is_best": True, "channel": "travelpayouts"},
+                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(thy_dom_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
+                                {"name": "Turna.com", "url": links["flight"]["turna"], "price": thy_dom_price, "is_best": False, "channel": "turna"},
+                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": thy_dom_price, "is_best": False, "channel": "trip"},
                                 {"name": "THY Resmi Web Sitesi", "url": "https://www.turkishairlines.com/tr-int/", "price": thy_dom_price, "is_best": False, "channel": "official"},
-                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(thy_dom_price + enuygun_fee, 2), "is_best": False, "channel": "agency"},
-                                {"name": "Google Flights Seçim Ekranı", "url": links["flight"]["google_flights"], "price": thy_dom_price, "is_best": False, "channel": "meta"}
                             ]
                         })
             else:
