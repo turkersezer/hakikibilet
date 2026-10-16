@@ -188,7 +188,10 @@ class SearchService:
                 trip_ret_param = ""
 
             flight_links["turna"] = f"https://www.turna.com/ucak-bileti/{origin_slug}-{dest_slug}?gidis={enuygun_dep}{turna_ret_param}&yetiskin={adults}"
-            flight_links["trip"] = f"https://tr.trip.com/flights/{origin_slug}-to-{dest_slug}/tickets-{origin_iata.lower()}-{dest_iata.lower()}?dcity={origin_iata.lower()}&acity={dest_iata.lower()}&ddate={departure_date}{trip_ret_param}&curr={currency}"
+            trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "")
+            trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "")
+            trip_aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
+            flight_links["trip"] = f"https://tr.trip.com/flights/{origin_slug}-to-{dest_slug}/tickets-{origin_iata.lower()}-{dest_iata.lower()}?dcity={origin_iata.lower()}&acity={dest_iata.lower()}&ddate={departure_date}{trip_ret_param}&curr={currency}{trip_aff_param}"
         else:
             flight_links["pegasus"] = None
             flight_links["skyscanner"] = None

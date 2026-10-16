@@ -332,7 +332,10 @@ def fetch_live_flights_from_google(
 
             # Trip.com Flights Canlı Uçak Biletleme Linki (Global IATA Güvencesi, Türkçe Ekran ve TL)
             trip_ret_param = f"&rdate={return_date}" if (is_round and return_date) else ""
-            trip_flight_link = f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{from_code.lower()}-{to_code.lower()}?dcity={from_code.lower()}&acity={to_code.lower()}&ddate={departure_date}{trip_ret_param}&curr=TRY"
+            trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "")
+            trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "")
+            trip_aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
+            trip_flight_link = f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{from_code.lower()}-{to_code.lower()}?dcity={from_code.lower()}&acity={to_code.lower()}&ddate={departure_date}{trip_ret_param}&curr=TRY{trip_aff_param}"
 
             # Booking.com Varış Şehri Canlı Otel Linki (Travelpayouts AID: 585474)
             booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
