@@ -305,8 +305,10 @@ def fetch_live_flights_from_google(
                 google_flights_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{departure_date}+one+way{biz_extra_google}&hl=tr&gl=tr&curr=TRY"
 
             is_intl = bool(origin_city.get("is_international") or dest_city.get("is_international"))
-            enuygun_fee = (53.0 * total_passengers) if not is_intl else 0.0
+            enuygun_mult = total_passengers * (2 if is_round else 1)
+            enuygun_fee = (53.0 * enuygun_mult) if not is_intl else 0.0
             enuygun_price = round(price + enuygun_fee, 2)
+            enuygun_label = f"Enuygun (+{int(enuygun_fee)} ₺)" if enuygun_fee > 0 else "Enuygun"
             final_ticket_price = price
 
             # Havayoluna özel Enuygun filtreli direkt link (kullanıcıyı doğrudan o havayolunun seferine götürür)
@@ -360,7 +362,7 @@ def fetch_live_flights_from_google(
                 providers_list = [
                     {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
                     {"name": "Pegasus Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    {"name": f"Enuygun (+53 ₺)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Google Flights Karşılaştırması", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
@@ -373,7 +375,7 @@ def fetch_live_flights_from_google(
                 providers_list = [
                     {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
                     {"name": "AJet Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    {"name": f"Enuygun (+53 ₺)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Google Flights / AJet Net", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
@@ -386,7 +388,7 @@ def fetch_live_flights_from_google(
                 providers_list = [
                     {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
                     {"name": "THY Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    {"name": f"Enuygun (+53 ₺)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Google Flights / THY Net", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             elif "sunexpress" in carrier_lower or carrier_code == "XQ":
@@ -399,7 +401,7 @@ def fetch_live_flights_from_google(
                 providers_list = [
                     {"name": "Aviasales / Travelpayouts", "url": tp_flight_link, "price": price, "is_best": True, "channel": "travelpayouts"},
                     {"name": "SunExpress Resmi Web Sitesi", "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    {"name": f"Enuygun (+53 ₺)", "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                     {"name": "Google Flights / SunExpress", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"}
                 ]
             else:

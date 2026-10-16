@@ -960,6 +960,12 @@ class SearchService:
                         f"&aid={booking_aid}"
                     )
 
+                    trip_mult = 2 if is_round else 1
+                    pax_count = max(1, total_pax)
+                    total_mult = trip_mult * pax_count
+                    enuygun_fee = (53.0 * total_mult) if not is_international else 0.0
+                    enuygun_label = f"Enuygun (+{int(enuygun_fee)} ₺)" if enuygun_fee > 0 else "Enuygun"
+
                     def get_flight_benchmark_price(carrier_type: str, is_intl: bool, dest_slug_str: str, is_business: bool) -> tuple[float, float]:
                         if not is_intl:
                             if carrier_type == "pegasus":
@@ -991,8 +997,9 @@ class SearchService:
                             else:
                                 base = (4900.0 if is_business else 2750.0) if carrier_type == "pegasus" else (7500.0 if is_business else 4150.0)
 
-                        converted_p = CurrencyService.convert(base, "TRY", currency)
-                        regular_p = CurrencyService.convert(round(base * 1.25, 2), "TRY", currency)
+                        base_calc = base * total_mult
+                        converted_p = CurrencyService.convert(base_calc, "TRY", currency)
+                        regular_p = CurrencyService.convert(round(base_calc * 1.25, 2), "TRY", currency)
                         return round(converted_p, 2), round(regular_p, 2)
 
                     pgs_price, pgs_reg = get_flight_benchmark_price("pegasus", is_international, dest_name, cabin_class == "business")
@@ -1065,7 +1072,7 @@ class SearchService:
                         "providers": [
                             {"name": "Aviasales / Travelpayouts", "url": tp_flight_url or pgs_url, "price": pgs_price, "is_best": True, "channel": "travelpayouts"},
                             {"name": "Pegasus Resmi Web Sitesi", "url": "https://www.flypgs.com/", "price": pgs_price, "is_best": False, "channel": "official"},
-                            {"name": "Enuygun (+53 ₺)", "url": links["flight"]["enuygun"], "price": round(pgs_price + (53.0 if not is_international else 0.0), 2), "is_best": False, "channel": "agency"},
+                            {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(pgs_price + enuygun_fee, 2), "is_best": False, "channel": "agency"},
                             {"name": "Google Flights Karşılaştırması", "url": links["flight"]["google_flights"], "price": pgs_price, "is_best": False, "channel": "meta"}
                         ]
                     })
@@ -1211,7 +1218,7 @@ class SearchService:
                             "providers": [
                                 {"name": "Aviasales / Travelpayouts", "url": tp_flight_url or links["flight"]["enuygun"], "price": ajet_price, "is_best": True, "channel": "travelpayouts"},
                                 {"name": "AJet Resmi Web Sitesi", "url": "https://ajet.com/tr", "price": ajet_price, "is_best": False, "channel": "official"},
-                                {"name": "Enuygun (+53 ₺)", "url": links["flight"]["enuygun"], "price": round(ajet_price + (53.0 if not is_international else 0.0), 2), "is_best": False, "channel": "agency"},
+                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(ajet_price + enuygun_fee, 2), "is_best": False, "channel": "agency"},
                                 {"name": "Google Flights / AJet Net", "url": links["flight"]["google_flights"], "price": ajet_price, "is_best": False, "channel": "meta"}
                             ]
                         })
@@ -1254,7 +1261,7 @@ class SearchService:
                             "providers": [
                                 {"name": "Aviasales / Travelpayouts", "url": tp_flight_url or links["flight"]["google_flights"], "price": thy_dom_price, "is_best": True, "channel": "travelpayouts"},
                                 {"name": "THY Resmi Web Sitesi", "url": "https://www.turkishairlines.com/tr-int/", "price": thy_dom_price, "is_best": False, "channel": "official"},
-                                {"name": "Enuygun (+53 ₺)", "url": links["flight"]["enuygun"], "price": round(thy_dom_price + 53.0, 2), "is_best": False, "channel": "agency"},
+                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(thy_dom_price + enuygun_fee, 2), "is_best": False, "channel": "agency"},
                                 {"name": "Google Flights Seçim Ekranı", "url": links["flight"]["google_flights"], "price": thy_dom_price, "is_best": False, "channel": "meta"}
                             ]
                         })

@@ -164,6 +164,7 @@ class TrainService:
 
         curr_symbol = CurrencyService.get_symbol(currency)
         tickets = []
+        train_mult = max(1, passengers) * (2 if is_round else 1)
 
         try:
             dep_dt = datetime.strptime(departure_date, "%Y-%m-%d")
@@ -192,7 +193,7 @@ class TrainService:
 
                 # Ankara Ekspresi pulman taban fiyatı 550 ₺, YHT 990 ₺
                 raw_price = 550.0 if is_anahat else base_yht
-                converted_price = CurrencyService.convert(raw_price * passengers, "TRY", currency)
+                converted_price = CurrencyService.convert(raw_price * train_mult, "TRY", currency)
                 final_p = round(converted_price, 2)
                 reg_p = round(final_p * 1.15, 2)
 
@@ -200,7 +201,7 @@ class TrainService:
 
                 # İndirim oranları MUTLAKA bu biletin kendi ham fiyatından hesaplanır
                 discounts_ticket = cls.get_discount_breakdown(raw_price)
-                discounts_converted = {k: round(CurrencyService.convert(v * passengers, "TRY", currency), 2) for k, v in discounts_ticket.items()}
+                discounts_converted = {k: round(CurrencyService.convert(v * train_mult, "TRY", currency), 2) for k, v in discounts_ticket.items()}
 
                 providers = [
                     {"name": "TCDD E-Bilet Resmi Ekranı", "url": tcdd_link, "price": final_p, "is_best": True}
@@ -249,9 +250,9 @@ class TrainService:
         # 2. TEK SEFERLİ ANAHAT TRENLERİ (Doğu Ekspresi, İzmir Mavi, vb.)
         if tariff and tariff.get("type") == "anahat_single":
             raw_p = tariff["price"]
-            conv_p = round(CurrencyService.convert(raw_p * passengers, "TRY", currency), 2)
+            conv_p = round(CurrencyService.convert(raw_p * train_mult, "TRY", currency), 2)
             disc = cls.get_discount_breakdown(raw_p)
-            disc_conv = {k: round(CurrencyService.convert(v * passengers, "TRY", currency), 2) for k, v in disc.items()}
+            disc_conv = {k: round(CurrencyService.convert(v * train_mult, "TRY", currency), 2) for k, v in disc.items()}
             is_nxt = tariff.get("next_day", False)
 
             tickets.append({
@@ -300,8 +301,8 @@ class TrainService:
             badge_str = tariff.get("badge", "Yüksek Hızlı Tren (YHT)")
 
             disc = cls.get_discount_breakdown(raw_p)
-            disc_conv = {k: round(CurrencyService.convert(v * passengers, "TRY", currency), 2) for k, v in disc.items()}
-            conv_p = round(CurrencyService.convert(raw_p * passengers, "TRY", currency), 2)
+            disc_conv = {k: round(CurrencyService.convert(v * train_mult, "TRY", currency), 2) for k, v in disc.items()}
+            conv_p = round(CurrencyService.convert(raw_p * train_mult, "TRY", currency), 2)
 
             # Bölgesel ise sık sefer, YHT ise saat başı seferler
             if is_bolgesel:

@@ -1036,7 +1036,9 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             <div class="text-2xl sm:text-3xl font-black text-[#0F172A] tracking-tight">
                                 ${ticket.price ? `${Number(ticket.price).toLocaleString('tr-TR')} ${ticket.currency || '₺'}` : 'Canlı Fiyat'}
                             </div>
-                            <div class="text-[10px] text-slate-500 font-medium mt-0.5">${totalPaxText} için toplam</div>
+                            <div class="text-[10px] text-slate-500 font-medium mt-0.5">
+                                ${totalPaxText} için toplam${isRoundTrip && ticket.price ? ` <span class="text-amber-700 font-semibold">(Tek yön ort. ~${Math.round(ticket.price / (searchReq.passengers || 1) / 2).toLocaleString('tr-TR')} ₺)</span>` : ''}
+                            </div>
                         </div>
 
                         <a href="${directLink}" target="_blank" rel="noopener noreferrer" 
