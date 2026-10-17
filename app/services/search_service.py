@@ -1083,7 +1083,7 @@ class SearchService:
                         "hotel_link": dest_hotel_link,
                         "providers": [
                             {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(pgs_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
-                            {"name": "Trip.com Flights (⭐ Partner)", "url": links["flight"]["trip"], "price": pgs_price, "is_best": False, "channel": "trip"},
+                            {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": pgs_price, "is_best": False, "channel": "trip"},
                             {"name": "Turna.com", "url": links["flight"]["turna"], "price": pgs_price, "is_best": False, "channel": "turna"},
                             {"name": "Pegasus Resmi Web Sitesi", "url": "https://www.flypgs.com/", "price": pgs_price, "is_best": False, "channel": "official"},
                         ]
@@ -1150,7 +1150,7 @@ class SearchService:
                             "booking_link": links["flight"]["enuygun"],
                             "hotel_link": dest_hotel_link,
                             "providers": [
-                                {"name": "Trip.com Flights (⭐ Global Partner)", "url": links["flight"]["trip"], "price": thy_price, "is_best": True, "channel": "trip"},
+                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": thy_price, "is_best": True, "channel": "trip"},
                                 {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(thy_price + enuygun_fee, 2), "is_best": False, "channel": "agency"},
                                 {"name": "Turna.com", "url": links["flight"]["turna"], "price": thy_price, "is_best": False, "channel": "turna"},
                                 {"name": "THY Resmi Web Sitesi", "url": "https://www.turkishairlines.com/tr-int/", "price": thy_price, "is_best": False, "channel": "official"},
@@ -1229,7 +1229,7 @@ class SearchService:
                             "hotel_link": dest_hotel_link,
                             "providers": [
                                 {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(ajet_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
-                                {"name": "Trip.com Flights (⭐ Partner)", "url": links["flight"]["trip"], "price": ajet_price, "is_best": False, "channel": "trip"},
+                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": ajet_price, "is_best": False, "channel": "trip"},
                                 {"name": "Turna.com", "url": links["flight"]["turna"], "price": ajet_price, "is_best": False, "channel": "turna"},
                                 {"name": "AJet Resmi Web Sitesi", "url": "https://ajet.com/tr", "price": ajet_price, "is_best": False, "channel": "official"},
                             ]
@@ -1272,7 +1272,7 @@ class SearchService:
                             "hotel_link": dest_hotel_link,
                             "providers": [
                                 {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(thy_dom_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
-                                {"name": "Trip.com Flights (⭐ Partner)", "url": links["flight"]["trip"], "price": thy_dom_price, "is_best": False, "channel": "trip"},
+                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": thy_dom_price, "is_best": False, "channel": "trip"},
                                 {"name": "Turna.com", "url": links["flight"]["turna"], "price": thy_dom_price, "is_best": False, "channel": "turna"},
                                 {"name": "THY Resmi Web Sitesi", "url": "https://www.turkishairlines.com/tr-int/", "price": thy_dom_price, "is_best": False, "channel": "official"},
                             ]

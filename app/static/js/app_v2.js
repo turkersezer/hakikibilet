@@ -1015,8 +1015,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     if (p.is_best) {
                                         pillClass = 'bg-amber-50 text-amber-900 border border-amber-300 font-black shadow-2xs hover:bg-amber-100';
                                     } else if (p.channel === 'trip' || (p.name && p.name.includes('Trip.com'))) {
-                                        pillClass = 'bg-sky-50 text-sky-950 border border-sky-300 font-black shadow-2xs hover:bg-sky-100';
-                                        icon = '<i class="fa-solid fa-star text-amber-500 text-[9px]"></i> ';
+                                        pillClass = 'bg-sky-50 text-sky-950 border border-sky-300 font-bold shadow-2xs hover:bg-sky-100';
+                                        icon = '<i class="fa-solid fa-plane text-sky-600 text-[9px]"></i> ';
                                     }
                                     return `
                                     <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition">

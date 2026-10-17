@@ -364,7 +364,7 @@ def fetch_live_flights_from_google(
                 final_ticket_price = price
                 if is_intl:
                     providers_list = [
-                        {"name": "Trip.com Flights (⭐ Global Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
+                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
                         {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                         {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
                         {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
@@ -372,7 +372,7 @@ def fetch_live_flights_from_google(
                 else:
                     providers_list = [
                         {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": True, "channel": "agency"},
-                        {"name": "Trip.com Flights (⭐ Partner)", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
+                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
                         {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
                         {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
                     ]
@@ -384,7 +384,7 @@ def fetch_live_flights_from_google(
                 final_ticket_price = price
                 if is_intl:
                     providers_list = [
-                        {"name": "Trip.com Flights (⭐ Global Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
+                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
                         {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                         {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
                         {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
@@ -392,7 +392,7 @@ def fetch_live_flights_from_google(
                 else:
                     providers_list = [
                         {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": True, "channel": "agency"},
-                        {"name": "Trip.com Flights (⭐ Partner)", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
+                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
                         {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
                         {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
                     ]
@@ -404,7 +404,7 @@ def fetch_live_flights_from_google(
                 final_ticket_price = price
                 if is_intl:
                     providers_list = [
-                        {"name": "Trip.com Flights (⭐ Global Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
+                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
                         {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                         {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
                         {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
@@ -412,7 +412,7 @@ def fetch_live_flights_from_google(
                 else:
                     providers_list = [
                         {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": True, "channel": "agency"},
-                        {"name": "Trip.com Flights (⭐ Partner)", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
+                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
                         {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
                         {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
                     ]
@@ -424,7 +424,7 @@ def fetch_live_flights_from_google(
                 final_ticket_price = price
                 if is_intl:
                     providers_list = [
-                        {"name": "Trip.com Flights (⭐ Global Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
+                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
                         {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
                         {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
                         {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
@@ -432,7 +432,7 @@ def fetch_live_flights_from_google(
                 else:
                     providers_list = [
                         {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": True, "channel": "agency"},
-                        {"name": "Trip.com Flights (⭐ Partner)", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
+                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
                         {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
                         {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
                     ]
