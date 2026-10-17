@@ -1019,20 +1019,26 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                         icon = '<i class="fa-solid fa-plane text-sky-600 text-[9px]"></i> ';
                                     }
                                     let priceText = '';
+                                    let scopeBadge = '';
                                     if (p.channel === 'official') {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺ (Resmi)` : 'Resmi Bilet';
+                                        priceText = p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Resmi Bilet';
+                                        scopeBadge = isRoundTrip ? '<span class="text-[9px] font-semibold opacity-70 ml-0.5">(Resmi Taban)</span>' : '';
                                     } else if (p.channel === 'agency') {
                                         priceText = p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç';
-                                    } else if (p.channel === 'trip' || p.channel === 'turna') {
-                                        priceText = p.price ? `~${Number(p.price).toLocaleString('tr-TR')} ₺ (Canlı)` : 'Canlı Fiyat';
+                                        scopeBadge = isRoundTrip ? '<span class="text-[9px] font-semibold opacity-70 ml-0.5">(Gidiş-Dönüş)</span>' : '';
+                                    } else if (p.channel === 'trip') {
+                                        priceText = 'Canlı Fiyatı Gör';
+                                        scopeBadge = '';
+                                    } else if (p.channel === 'turna') {
+                                        priceText = 'Canlı Fiyatı Gör';
+                                        scopeBadge = '';
                                     } else {
                                         priceText = p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç';
                                     }
-                                    const scopeNote = isRoundTrip ? '<span class="text-[9px] font-semibold opacity-70 ml-0.5">(Gidiş-Dönüş)</span>' : '';
                                     return `
-                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition" title="${p.name} üzerinden canlı sefer kontrolü">
+                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition" title="${p.name} üzerinden canlı sefer ve fiyat kontrolü">
                                         <span>${icon}${p.name}</span>
-                                        <span class="${p.is_best ? 'text-amber-800' : 'text-slate-900'} font-black">${priceText}${scopeNote}</span>
+                                        <span class="${p.is_best ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : 'text-slate-900')} font-black">${priceText}${scopeBadge}</span>
                                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                     `;
