@@ -1018,10 +1018,11 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                         pillClass = 'bg-sky-50 text-sky-950 border border-sky-300 font-bold shadow-2xs hover:bg-sky-100';
                                         icon = '<i class="fa-solid fa-plane text-sky-600 text-[9px]"></i> ';
                                     }
+                                    const scopeNote = isRoundTrip ? '<span class="text-[9px] font-semibold opacity-70 ml-0.5">(Gidiş-Dönüş)</span>' : '';
                                     return `
-                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition">
+                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition" title="${p.name} üzerinden biletleme ekranı">
                                         <span>${icon}${p.name}</span>
-                                        <span class="${p.is_best ? 'text-amber-800' : 'text-slate-900'} font-black">${p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç'}</span>
+                                        <span class="${p.is_best ? 'text-amber-800' : 'text-slate-900'} font-black">${p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç'}${scopeNote}</span>
                                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                     `;
