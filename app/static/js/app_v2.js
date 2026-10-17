@@ -1009,13 +1009,23 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 <span class="text-slate-500 font-black text-[10px] uppercase flex items-center gap-1">
                                     <i class="fa-solid fa-cart-shopping text-amber-500"></i> Biletleme Seçenekleri:
                                 </span>
-                                ${(ticket.providers || []).map(p => `
-                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${p.is_best ? 'bg-amber-50 text-amber-900 border border-amber-300 font-black shadow-2xs hover:bg-amber-100' : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 font-bold'} transition">
-                                        <span>${p.name}</span>
+                                ${(ticket.providers || []).map(p => {
+                                    let pillClass = 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 font-bold';
+                                    let icon = '';
+                                    if (p.is_best) {
+                                        pillClass = 'bg-amber-50 text-amber-900 border border-amber-300 font-black shadow-2xs hover:bg-amber-100';
+                                    } else if (p.channel === 'trip' || (p.name && p.name.includes('Trip.com'))) {
+                                        pillClass = 'bg-sky-50 text-sky-950 border border-sky-300 font-black shadow-2xs hover:bg-sky-100';
+                                        icon = '<i class="fa-solid fa-star text-amber-500 text-[9px]"></i> ';
+                                    }
+                                    return `
+                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition">
+                                        <span>${icon}${p.name}</span>
                                         <span class="${p.is_best ? 'text-amber-800' : 'text-slate-900'} font-black">${p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç'}</span>
                                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
-                                `).join('')}
+                                    `;
+                                }).join('')}
                                 ${ticket.hotel_link ? `
                                     <a href="${ticket.hotel_link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100 font-bold transition">
                                         <span>🏨 ${toCity} Otelleri (Booking.com)</span>
