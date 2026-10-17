@@ -158,11 +158,16 @@
                         <a href="mailto:info@hakikibilet.com" class="font-bold text-amber-700 underline underline-offset-2 hover:text-amber-900 inline-flex items-center gap-1">
                             <i class="fa-solid fa-envelope text-[11px]"></i> info@hakikibilet.com
                         </a> 
-                        adresimize iletiniz. İlginiz için teşekkür ederiz.
+                        adresimize iletiniz.
                     </span>
+                    <div class="mt-1.5 pt-1 border-t border-amber-200/70 text-[11px] text-slate-600 font-medium">
+                        <span class="font-black text-amber-800 uppercase text-[9.5px] bg-amber-100 px-1.5 py-0.5 rounded mr-1">EN</span>
+                        Public Beta: Compare live fares & book directly via verified carriers. For technical issues: 
+                        <a href="mailto:info@hakikibilet.com" class="font-bold text-amber-800 underline underline-offset-1 hover:text-amber-950">info@hakikibilet.com</a>
+                    </div>
                 </div>
             </div>
-            <button type="button" onclick="document.getElementById('betaNoticeBar').style.display='none'" class="text-slate-400 hover:text-slate-700 text-xs px-2.5 py-1 rounded-lg hover:bg-white/80 transition flex-shrink-0 flex items-center gap-1 font-bold" title="Bildirimi Kapat">
+            <button type="button" onclick="document.getElementById('betaNoticeBar').style.display='none'" class="text-slate-400 hover:text-slate-700 text-xs px-2.5 py-1 rounded-lg hover:bg-white/80 transition flex-shrink-0 flex items-center gap-1 font-bold" title="Bildirimi Kapat / Dismiss">
                 <span>Kapat</span>
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
@@ -182,21 +187,26 @@
             </div>
 
             <!-- Sağ Navigasyon Linkleri -->
-            <div class="flex items-center gap-4 sm:gap-6 text-xs font-bold text-slate-700">
+            <div class="flex items-center gap-3 sm:gap-5 text-xs font-bold text-slate-700">
                 <a href="#curatedRoutes" class="hover:text-amber-600 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-compass text-amber-500"></i>
-                    <span>Rota Keşfet</span>
+                    <span data-i18n="explore">Rota Keşfet</span>
                 </a>
                 <button type="button" onclick="alert('Fiyat alarmı sistemi kapalı beta sürecinde aktiftir. Seçtiğiniz rota için ucuz bilet düştüğünde kayıtlı e-posta adresinize anlık bildirim iletilir.')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
                     <i class="fa-solid fa-bell text-amber-500"></i>
-                    <span>Fiyat Alarmı</span>
+                    <span data-i18n="priceAlert">Fiyat Alarmı</span>
                 </button>
                 <button type="button" onclick="switchUnifiedTab('hotel')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
                     <i class="fa-solid fa-hotel text-amber-500"></i>
-                    <span>Oteller</span>
+                    <span data-i18n="hotels">Oteller</span>
                 </button>
-                <div class="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 font-black text-xs text-slate-800 shadow-2xs">
-                    ₺ TRY • TR
+                <div class="px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 font-black text-xs text-slate-800 shadow-2xs">
+                    ₺ TRY
+                </div>
+                <!-- Dil Değiştirici (TR / EN) -->
+                <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs font-black">
+                    <button type="button" onclick="setAppLanguage('tr')" id="langBtn-tr" class="px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition">🇹🇷 TR</button>
+                    <button type="button" onclick="setAppLanguage('en')" id="langBtn-en" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition">🇬🇧 EN</button>
                 </div>
             </div>
         </header>
