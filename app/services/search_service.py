@@ -372,16 +372,22 @@ class SearchService:
             {
                 "id": "event-chios",
                 "title": "Kapı Vizesiz Sakız Adası Kaçamağı 🏖️",
+                "title_en": "Visa-on-Arrival Chios Island Getaway 🏖️",
                 "city": "Sakız Adası (Chios)",
+                "city_en": "Chios Island",
                 "country": "Yunanistan",
+                "country_en": "Greece",
                 "category": "island",
                 "category_label": "Yunan Adaları & Deniz",
                 "is_escape": True,
                 "dates": "Hafta Sonu İçin İdeal",
+                "dates_en": "Ideal for Weekend",
                 "badge": "💡 Aklınızda Bulunsun",
+                "badge_en": "💡 Keep in Mind",
                 "transport_mode": "ferry",
                 "tag": "Ege & Deniz",
                 "desc": "Çeşme'den 30 dakikada Sakız Adası. Cuma çıkışlı 2 günlük sakin ada kaçamağı, damla sakızı köyleri ve taze deniz ürünleri.",
+                "desc_en": "Chios in 30 mins from Cesme. A 2-day tranquil island getaway departing Friday, exploring mastic villages and fresh seafood.",
                 "hotel_range": "Booking.com Canlı Teyitli Oteller",
                 "ticket_org": "Ertürk & Feribotlines Resmi Bilet Portalı",
                 "ticket_url": "https://www.erturk.com.tr/tr/",
@@ -396,18 +402,24 @@ class SearchService:
             {
                 "id": "event-harbiye-zorlu",
                 "title": "Harbiye Açıkhava & Zorlu PSM Sahne Sezonu 🎭 🎶",
+                "title_en": "Harbiye Open-Air & Zorlu PSM Stage Season 🎭 🎶",
                 "city": "İstanbul (IST/SAW)",
+                "city_en": "Istanbul (IST/SAW)",
                 "country": "Türkiye",
+                "country_en": "Turkey",
                 "category": "concert_theater",
                 "category_label": "Konser, Tiyatro & Sahne",
                 "dates": "14 Kas - 16 Kas",
+                "dates_en": "Nov 14 - Nov 16",
                 "dep_date": "2026-11-14",
                 "ret_date": "2026-11-16",
                 "badge": "Resmi Biletix & Bubilet & Passo Satışı",
+                "badge_en": "Official Biletix & Passo Box Office",
                 "transport_mode": "flight",
                 "is_new": True,
                 "tag": "Kültür & Müzik",
                 "desc": "İstanbul'un kalbinde dev müzikaller, senfoni konserleri ve tiyatro şöleni. Şehir dışından gelen gezginler için uçuş ve Taksim/Beşiktaş otelleri tek tıkla hazır.",
+                "desc_en": "Grand musicals, symphony concerts, and stage plays in the heart of Istanbul. Direct flights and Taksim/Besiktas hotels ready in one click.",
                 "hotel_range": "Booking.com Canlı Taksim & Şişli Otelleri",
                 "ticket_org": "Bubilet & Biletix & Passo Resmi Bilet Satışı",
                 "ticket_url": "https://www.bubilet.com.tr/istanbul",
@@ -422,17 +434,23 @@ class SearchService:
             {
                 "id": "event-aspendos",
                 "title": "Aspendos Antik Tiyatro Festivali & Opera 🩰 🏛️",
+                "title_en": "Aspendos Antique Theatre Opera & Ballet Festival 🩰 🏛️",
                 "city": "Antalya (AYT)",
+                "city_en": "Antalya (AYT)",
                 "country": "Türkiye",
+                "country_en": "Turkey",
                 "category": "concert_theater",
                 "category_label": "Konser, Tiyatro & Sahne",
                 "dates": "11 Ara - 13 Ara",
+                "dates_en": "Dec 11 - Dec 13",
                 "dep_date": "2026-12-11",
                 "ret_date": "2026-12-13",
                 "badge": "Devlet Opera & Balesi Teyitli",
+                "badge_en": "State Opera & Ballet Confirmed",
                 "transport_mode": "flight",
                 "tag": "Tarih & Sanat",
                 "desc": "2000 yıllık Roma tiyatrosunun büyülü akustiğinde dünyaca ünlü operalar ve bale gösterileri. Antalya direkt uçuşları ve sahil otelleri.",
+                "desc_en": "World-class operas and ballets in the 2,000-year-old Roman amphitheatre with magical acoustics. Direct Antalya flights & seaside hotels.",
                 "hotel_range": "Booking.com Canlı Antalya & Belek Otelleri",
                 "ticket_org": "Biletinial Resmi T.C. Kültür ve Turizm Bakanlığı Bilet Portalı",
                 "ticket_url": "https://biletinial.com/tr-tr/tiyatro",
@@ -447,17 +465,23 @@ class SearchService:
             {
                 "id": "event-f1-monaco",
                 "title": "Formula 1 Monaco Grand Prix (Monte Carlo) 🏎️",
+                "title_en": "Formula 1 Monaco Grand Prix (Monte Carlo) 🏎️",
                 "city": "Nice (NCE)",
+                "city_en": "Nice (NCE)",
                 "country": "Fransa / Monaco",
+                "country_en": "France / Monaco",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
                 "dates": "21 May - 24 May 2027",
+                "dates_en": "May 21 - May 24, 2027",
                 "dep_date": "2027-05-21",
                 "ret_date": "2027-05-24",
                 "badge": "FIA Resmi Monaco Takvimi",
+                "badge_en": "FIA Official Monaco Calendar",
                 "transport_mode": "flight",
                 "tag": "Hız & Prestij (Ferrari)",
                 "desc": "Monte Carlo sokak pistinde Scuderia Ferrari ve F1 kükremesi. Nice (NCE) uçuşu + 20 dk sahil treniyle Monaco Garı'na doğrudan varış.",
+                "desc_en": "Scuderia Ferrari and the roar of F1 through Monte Carlo streets. Flight to Nice (NCE) + 20-min scenic train to Monaco.",
                 "hotel_range": "Booking.com Canlı Nice & Monaco Otelleri",
                 "ticket_org": "Resmi FIA F1 Monaco Bilet & Koltuk Seçimi",
                 "ticket_url": "https://ticketing.formula1.com/monaco/",
@@ -472,17 +496,23 @@ class SearchService:
             {
                 "id": "event-ucl-final",
                 "title": "UEFA Şampiyonlar Ligi Finali Münih ⚽",
+                "title_en": "UEFA Champions League Final Munich ⚽",
                 "city": "Münih (MUC)",
+                "city_en": "Munich (MUC)",
                 "country": "Almanya",
+                "country_en": "Germany",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
                 "dates": "29 May - 31 May 2027",
+                "dates_en": "May 29 - May 31, 2027",
                 "dep_date": "2027-05-29",
                 "ret_date": "2027-05-31",
                 "badge": "Avrupa Kulüpler Zirvesi",
+                "badge_en": "European Club Championship",
                 "transport_mode": "flight",
                 "tag": "Futbol Şöleni",
                 "desc": "Allianz Arena'da Avrupa'nın en büyüğünü belirleyecek dev final maçı ve Münih taraftar festivali coşkusu.",
+                "desc_en": "The grand final match at Allianz Arena deciding European champions, plus fan festival excitement across Munich.",
                 "hotel_range": "Booking.com Canlı Münih Otelleri",
                 "ticket_org": "Resmi UEFA Bilet Portalı",
                 "ticket_url": "https://www.uefa.com/tickets/",
@@ -497,17 +527,23 @@ class SearchService:
             {
                 "id": "event-wimbledon",
                 "title": "Wimbledon Tenis Şampiyonası 🎾",
+                "title_en": "Wimbledon Tennis Championships 🎾",
                 "city": "Londra (LHR/STN)",
+                "city_en": "London (LHR/STN)",
                 "country": "İngiltere",
+                "country_en": "United Kingdom",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
                 "dates": "28 Haz - 05 Tem 2027",
+                "dates_en": "Jun 28 - Jul 05, 2027",
                 "dep_date": "2027-06-28",
                 "ret_date": "2027-07-05",
                 "badge": "Tenisin Mabedi",
+                "badge_en": "The Cathedral of Tennis",
                 "transport_mode": "flight",
                 "tag": "Grand Slam Geleneği",
                 "desc": "Çilek & krema geleneği, yemyeşil çim kortlar ve Centre Court'ta dünyanın en iyi raketleri.",
+                "desc_en": "Strawberries & cream tradition, lush grass courts, and world's best racquets on Centre Court.",
                 "hotel_range": "Booking.com Canlı Londra Otelleri",
                 "ticket_org": "Resmi Wimbledon Public Ballot & The Queue",
                 "ticket_url": "https://www.wimbledon.com",
@@ -522,17 +558,23 @@ class SearchService:
             {
                 "id": "event-f1-silverstone",
                 "title": "Formula 1 Britanya Grand Prix (Silverstone) 🏎️",
+                "title_en": "Formula 1 British Grand Prix (Silverstone) 🏎️",
                 "city": "Londra (LHR/STN)",
+                "city_en": "London (LHR/STN)",
                 "country": "İngiltere",
+                "country_en": "United Kingdom",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
                 "dates": "04 Tem - 06 Tem 2027",
+                "dates_en": "Jul 04 - Jul 06, 2027",
                 "dep_date": "2027-07-04",
                 "ret_date": "2027-07-06",
                 "badge": "FIA Resmi Silverstone Takvimi",
+                "badge_en": "FIA Official Silverstone Calendar",
                 "transport_mode": "flight",
                 "tag": "Motor Sporları Doğuşu (Ferrari)",
                 "desc": "Scuderia Ferrari'nin F1 tarihindeki ilk zaferini kazandığı efsanevi Silverstone pistinde yüksek hızlı virajlar ve motor festivali coşkusu.",
+                "desc_en": "Legendary Silverstone circuit where Ferrari claimed its first F1 victory, featuring high-speed sweeps and festival vibes.",
                 "hotel_range": "Booking.com Canlı Londra & Milton Keynes Otelleri",
                 "ticket_org": "Resmi Silverstone & FIA Bilet Portalı",
                 "ticket_url": "https://ticketing.formula1.com/great-britain/",
@@ -547,17 +589,23 @@ class SearchService:
             {
                 "id": "event-f1-monza",
                 "title": "Formula 1 İtalya Grand Prix (Monza) 🏎️",
+                "title_en": "Formula 1 Italian Grand Prix (Monza) 🏎️",
                 "city": "Milano (MXP)",
+                "city_en": "Milan (MXP)",
                 "country": "İtalya",
+                "country_en": "Italy",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
                 "dates": "03 Eyl - 05 Eyl 2027",
+                "dates_en": "Sep 03 - Sep 05, 2027",
                 "dep_date": "2027-09-03",
                 "ret_date": "2027-09-05",
                 "badge": "Hız Tapınağı (Temple of Speed)",
+                "badge_en": "Temple of Speed",
                 "transport_mode": "flight",
                 "tag": "Tifosi Kırmızı Denizi (Ferrari SF-24)",
                 "desc": "Scuderia Ferrari SF-24 taraftarlarının kırmızı denizi, 355 km/s hız rekorları. Milano uçuşu + Milano Garı'ndan 15 dk Monza treni.",
+                "desc_en": "The red sea of Scuderia Ferrari tifosi with 355 km/h speed records. Milan flight + 15-min train to Monza.",
                 "hotel_range": "Booking.com Canlı Milano Otelleri",
                 "ticket_org": "Resmi Autodromo Nazionale Monza & F1",
                 "ticket_url": "https://ticketing.formula1.com/italy/",
@@ -572,17 +620,23 @@ class SearchService:
             {
                 "id": "event-f1-baku",
                 "title": "Formula 1 Azerbaycan Grand Prix (Bakü) 🏎️",
+                "title_en": "Formula 1 Azerbaijan Grand Prix (Baku) 🏎️",
                 "city": "Bakü (GYD)",
+                "city_en": "Baku (GYD)",
                 "country": "Azerbaycan",
+                "country_en": "Azerbaijan",
                 "category": "sport",
                 "category_label": "Dünya Spor Zirveleri",
                 "dates": "17 Eyl - 19 Eyl 2027",
+                "dates_en": "Sep 17 - Sep 19, 2027",
                 "dep_date": "2027-09-17",
                 "ret_date": "2027-09-19",
                 "badge": "Vizesiz • En Hızlı Şehir Pisti",
+                "badge_en": "Fastest Street Circuit",
                 "transport_mode": "flight",
                 "tag": "Kardeş Ülke Heyecanı",
                 "desc": "Bakü Şehir Pisti'nde Hazar Denizi ve tarihi kale surları boyunca 340 km/s hızla soluksuz yarış heyecanı. Türk vatandaşlarına vizesiz ve direkt uçuşlu.",
+                "desc_en": "Breathtaking 340 km/h racing alongside Caspian shoreline and ancient castle walls on Baku City Circuit.",
                 "hotel_range": "Booking.com Canlı Bakü Sahil Otelleri",
                 "ticket_org": "Resmi Bakü City Circuit Biletleri",
                 "ticket_url": "https://ticketing.formula1.com/azerbaijan/",
@@ -611,11 +665,15 @@ class SearchService:
                 evt["dep_date"] = next_fri.strftime("%Y-%m-%d")
                 evt["ret_date"] = next_sun.strftime("%Y-%m-%d")
                 evt["dates"] = "Hafta Sonu İçin İdeal"
+                evt["dates_en"] = "Ideal for Weekend"
                 evt["badge"] = "💡 Aklınızda Bulunsun"
+                evt["badge_en"] = "💡 Keep in Mind"
                 evt["urgency_badge"] = "🏖️ Hafta Sonu Kaçamağı"
+                evt["urgency_badge_en"] = "🏖️ Weekend Getaway"
                 evt["urgency_level"] = "escape"
                 evt["urgency_class"] = "bg-amber-500 text-slate-950 font-black"
                 evt["urgency_desc"] = "Festival şartı yok; Cuma çıkışlı 2 günlük sakin ada kaçamağı için tavsiye edilir."
+                evt["urgency_desc_en"] = "Recommended for a peaceful 2-day island getaway departing Friday."
                 valid_events.append(evt)
                 continue
 
@@ -637,24 +695,32 @@ class SearchService:
             # Akıllı Aciliyet (FOMO) ve Sayaç Rozetleri
             if days_left <= 15:
                 evt["urgency_badge"] = f"🔥 Son {days_left} Gün • Kontenjanlar Tükenmek Üzere"
+                evt["urgency_badge_en"] = f"🔥 Last {days_left} Days • Seats Filling Fast"
                 evt["urgency_level"] = "critical"
                 evt["urgency_class"] = "bg-rose-600 text-white animate-pulse"
                 evt["urgency_desc"] = "Uçak ve otel fiyatları son günlerde yükselir, yerinizi gecikmeden ayırtın."
+                evt["urgency_desc_en"] = "Flight and hotel rates increase as dates approach, book early."
             elif days_left <= 30:
                 evt["urgency_badge"] = f"⏳ Son {days_left} Gün • Erken Fırsatı Kaçırmayın"
+                evt["urgency_badge_en"] = f"⏳ Last {days_left} Days • Grab Early Fares"
                 evt["urgency_level"] = "warning"
                 evt["urgency_class"] = "bg-amber-500 text-slate-950 font-black"
                 evt["urgency_desc"] = "Bilet ve konaklama fiyatları artmadan yerinizi ayırtın."
+                evt["urgency_desc_en"] = "Secure your tickets before hotel and flight rates surge."
             else:
                 evt["urgency_badge"] = "✈️ Erken Rezervasyon • Taban Fiyatlar Açık"
+                evt["urgency_badge_en"] = "✈️ Early Bird • Base Fares Available"
                 evt["urgency_level"] = "info"
                 evt["urgency_class"] = "bg-emerald-600 text-white"
                 evt["urgency_desc"] = "Resmi taban fiyatlarla en avantajlı planlama dönemi."
+                evt["urgency_desc_en"] = "Best booking window with official base prices."
                 
             if evt.get("is_new"):
                 evt["new_badge"] = "✨ YENİ TAKVİM AÇILDI"
+                evt["new_badge_en"] = "✨ NEW CALENDAR"
             else:
                 evt["new_badge"] = None
+                evt["new_badge_en"] = None
 
             valid_events.append(evt)
 

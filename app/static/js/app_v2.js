@@ -1711,12 +1711,14 @@ function renderEvents() {
         filtered = allCuratedEvents.filter(e => e.category === currentEventCategory);
     }
 
+    const isEn = (window.currentAppLang === 'en');
+
     if (filtered.length === 0) {
         container.innerHTML = `
             <div class="col-span-full p-12 text-center bg-white rounded-3xl border border-slate-200">
                 <i class="fa-solid fa-calendar-xmark text-4xl text-slate-400 mb-3"></i>
-                <div class="font-black text-slate-800 text-lg">Bu kategoride henüz kesinleşmiş resmi takvim etkinliği bulunmuyor.</div>
-                <div class="text-xs text-slate-500 mt-1 font-medium">Kırmızı çizgimiz gereği kulaktan dolma tarihler listelenmez, sadece federasyon onaylı etkinlikler eklenir.</div>
+                <div class="font-black text-slate-800 text-lg">${isEn ? 'No confirmed official calendar events in this category yet.' : 'Bu kategoride henüz kesinleşmiş resmi takvim etkinliği bulunmuyor.'}</div>
+                <div class="text-xs text-slate-500 mt-1 font-medium">${isEn ? 'In line with our verified policy, only federation-confirmed dates are listed.' : 'Kırmızı çizgimiz gereği kulaktan dolma tarihler listelenmez, sadece federasyon onaylı etkinlikler eklenir.'}</div>
             </div>
         `;
         return;
@@ -1724,23 +1726,34 @@ function renderEvents() {
 
     container.innerHTML = filtered.map(evt => {
         const coverImg = evt.image_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
+        const title = isEn ? (evt.title_en || evt.title) : evt.title;
+        const badge = isEn ? (evt.badge_en || evt.badge || 'Official Calendar') : (evt.badge || 'Resmi Takvim');
+        const dates = isEn ? (evt.dates_en || evt.dates) : evt.dates;
+        const city = isEn ? (evt.city_en || evt.city) : evt.city;
+        const country = isEn ? (evt.country_en || evt.country) : evt.country;
+        const desc = isEn ? (evt.desc_en || evt.desc) : evt.desc;
+        const isEscape = (evt.is_escape || evt.transport_mode === 'ferry');
+        const ticketBtnText = isEn ? (isEscape ? '🛳️ Ferry Timetable & Tickets ↗' : '🎟️ Official Tickets & Seats ↗') : (isEscape ? '🛳️ Feribot Seferi & Bilet Al ↗' : '🎟️ Doğrudan Koltuk & Tribün Seç ↗');
+        const planBtnText = isEn ? (isEscape ? '⛴️ Plan Island Getaway' : '✈️ Plan Travel & Hotels') : (isEscape ? '⛴️ Bu Kaçamağa Sefer & Otel Planla' : '✈️ Bu Etkinliğe Ulaşım & Otel Planla');
+        const categoryHeader = isEn ? 'Verified Category Fares:' : 'Doğrulanmış Kategori Fiyatları:';
+        const saleBadge = isEn ? 'Official Direct Sale' : 'Resmi Satış';
 
         return `
             <div class="bg-white border border-slate-200 hover:border-amber-400/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group">
                 <div>
                     <!-- Kartın HD Fotoğraf Alanı & Dinamik Etiketler -->
                     <div class="relative h-52 overflow-hidden">
-                        <img src="${coverImg}" alt="${evt.title}" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out">
+                        <img src="${coverImg}" alt="${title}" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent"></div>
                         
                         <!-- Üst Rozetler -->
                         <div class="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2">
                             <span class="px-3 py-1 rounded-full text-[10.5px] font-black uppercase tracking-wider bg-white/95 text-slate-900 shadow-md backdrop-blur-md">
-                                ${evt.badge || 'Resmi Takvim'}
+                                ${badge}
                             </span>
                             <span class="px-3 py-1 rounded-full text-[11px] font-black bg-amber-400 text-slate-950 shadow-md flex items-center gap-1.5">
                                 <i class="fa-regular fa-calendar"></i>
-                                <span>${evt.dates}</span>
+                                <span>${dates}</span>
                             </span>
                         </div>
 
@@ -1748,7 +1761,7 @@ function renderEvents() {
                         <div class="absolute bottom-3.5 left-4 right-4">
                             <div class="text-xs font-bold text-cyan-200 flex items-center gap-1.5 drop-shadow-sm">
                                 <i class="fa-solid fa-location-dot text-amber-400"></i>
-                                <span>${evt.city} • ${evt.country}</span>
+                                <span>${city} • ${country}</span>
                             </div>
                         </div>
                     </div>
@@ -1756,19 +1769,19 @@ function renderEvents() {
                     <!-- Kart Gövdesi & İlham Verici Açıklama -->
                     <div class="p-6">
                         <h3 class="text-xl font-black text-slate-900 group-hover:text-[#0284C7] transition-colors leading-tight mb-2.5">
-                            ${evt.title}
+                            ${title}
                         </h3>
 
                         <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed font-normal mb-3">
-                            ${evt.desc}
+                            ${desc}
                         </p>
 
-                        <!-- Kategori Bilet Fiyatları Dağılımı (Kullanıcı Talebi: Kategori Kategori Fiyatlar) -->
+                        <!-- Kategori Bilet Fiyatları Dağılımı -->
                         ${evt.ticket_categories && evt.ticket_categories.length > 0 ? `
                             <div class="mt-3 pt-3 border-t border-slate-100">
                                 <div class="text-[11px] font-black text-slate-700 mb-2 flex items-center justify-between">
-                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-tags text-amber-500"></i> Doğrulanmış Kategori Fiyatları:</span>
-                                    <span class="px-2 py-0.5 rounded text-[9.5px] font-black bg-emerald-100 text-emerald-800">Resmi Satış</span>
+                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-tags text-amber-500"></i> ${categoryHeader}</span>
+                                    <span class="px-2 py-0.5 rounded text-[9.5px] font-black bg-emerald-100 text-emerald-800">${saleBadge}</span>
                                 </div>
                                 <div class="space-y-1.5">
                                     ${evt.ticket_categories.map(cat => `
@@ -1789,12 +1802,12 @@ function renderEvents() {
                 <!-- Butonlar (Doğrudan Koltuk Seçimi + Ulaşım/Otel Planla) -->
                 <div class="p-5 border-t border-slate-100 bg-slate-50/70 space-y-2.5">
                     <a href="${evt.ticket_url}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-black text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2">
-                        <span>🎟️ Doğrudan Koltuk & Tribün Seç ↗</span>
+                        <span>${ticketBtnText}</span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                     </a>
 
                     <button onclick="planEventTrip('${evt.city}', '${evt.dep_date}', '${evt.ret_date}', '${evt.transport_mode}')" class="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                        <span>✈️ Bu Etkinliğe Ulaşım & Otel Planla</span>
+                        <span>${planBtnText}</span>
                         <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>
                 </div>

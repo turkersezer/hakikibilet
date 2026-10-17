@@ -585,12 +585,13 @@
                             
                             <!-- Üst Rozetler (Resmi Takvim + Yeni Rozeti) -->
                             <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1.5">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-900/90 text-white backdrop-blur-xs shadow-xs">
+                                <span class="event-card-badge px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-900/90 text-white backdrop-blur-xs shadow-xs"
+                                      data-badge-tr="{{ evt.badge }}" data-badge-en="{{ evt.badge_en or evt.badge }}">
                                     {{ evt.badge }}
                                 </span>
                                 {% if evt.new_badge %}
-                                <span class="px-2 py-0.5 rounded-full text-[9.5px] font-black bg-amber-400 text-slate-950 shadow-xs flex items-center gap-1">
-                                    <i class="fa-solid fa-sparkles"></i> Yeni
+                                <span class="event-card-new-badge px-2 py-0.5 rounded-full text-[9.5px] font-black bg-amber-400 text-slate-950 shadow-xs flex items-center gap-1">
+                                    <i class="fa-solid fa-sparkles"></i> <span data-i18n="newBadgeText">Yeni</span>
                                 </span>
                                 {% endif %}
                             </div>
@@ -599,10 +600,11 @@
                             <div class="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between gap-2">
                                 <div class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                                     <i class="fa-regular fa-calendar"></i>
-                                    <span>{{ evt.dates }}</span>
+                                    <span class="event-card-dates" data-dates-tr="{{ evt.dates }}" data-dates-en="{{ evt.dates_en or evt.dates }}">{{ evt.dates }}</span>
                                 </div>
                                 {% if evt.urgency_badge %}
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black {{ evt.urgency_class }} shadow-xs">
+                                <span class="event-card-urgency px-2 py-0.5 rounded-full text-[10px] font-black {{ evt.urgency_class }} shadow-xs"
+                                      data-urgency-tr="{{ evt.urgency_badge.split('•')[0] }}" data-urgency-en="{{ (evt.urgency_badge_en or evt.urgency_badge).split('•')[0] }}">
                                     {{ evt.urgency_badge.split('•')[0] }}
                                 </span>
                                 {% endif %}
@@ -613,19 +615,21 @@
                         <div class="p-4">
                             <div class="text-[11px] font-bold text-amber-700 mb-1 flex items-center gap-1.5">
                                 <i class="fa-solid fa-location-dot"></i>
-                                <span>{{ evt.city }} • {{ evt.country }}</span>
+                                <span class="event-card-loc" data-loc-tr="{{ evt.city }} • {{ evt.country }}" data-loc-en="{{ evt.city_en or evt.city }} • {{ evt.country_en or evt.country }}">{{ evt.city }} • {{ evt.country }}</span>
                             </div>
-                            <h3 class="font-black text-base text-slate-900 group-hover:text-amber-600 transition-colors leading-snug">
+                            <h3 class="event-card-title font-black text-base text-slate-900 group-hover:text-amber-600 transition-colors leading-snug"
+                                data-title-tr="{{ evt.title }}" data-title-en="{{ evt.title_en or evt.title }}">
                                 {{ evt.title }}
                             </h3>
-                            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                            <p class="event-card-desc text-xs text-slate-500 mt-1.5 leading-relaxed"
+                               data-desc-tr="{{ evt.desc }}" data-desc-en="{{ evt.desc_en or evt.desc }}">
                                 {{ evt.desc }}
                             </p>
                             
                             {% if evt.urgency_desc %}
                             <div class="mt-2.5 text-[10.5px] font-semibold text-slate-500 flex items-center gap-1">
                                 <i class="fa-solid fa-clock-rotate-left text-amber-500"></i>
-                                <span>{{ evt.urgency_desc }}</span>
+                                <span class="event-card-urgency-desc" data-udesc-tr="{{ evt.urgency_desc }}" data-udesc-en="{{ evt.urgency_desc_en or evt.urgency_desc }}">{{ evt.urgency_desc }}</span>
                             </div>
                             {% endif %}
                         </div>
@@ -634,11 +638,11 @@
                     <!-- Aksiyon Butonları (Resmi Bilet & Ulaşım/Otel Planla) -->
                     <div class="p-4 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between gap-2">
                         <a href="{{ evt.ticket_url }}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-slate-700 hover:text-amber-600 transition flex items-center gap-1">
-                            <span>{% if evt.is_escape %}Feribot Seferi{% else %}Resmi Bilet{% endif %}</span>
+                            <span class="event-card-ticket-btn" data-is-escape="{{ '1' if evt.is_escape else '0' }}">{% if evt.is_escape %}Feribot Seferi{% else %}Resmi Bilet{% endif %}</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
                         <button onclick="planEventTrip('{{ evt.city }}', '{{ evt.dep_date }}', '{{ evt.ret_date }}', '{{ evt.transport_mode }}')" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5">
-                            <span>{% if evt.is_escape %}Kaçamağı Planla{% else %}Rotayı Planla{% endif %}</span>
+                            <span class="event-card-plan-btn" data-is-escape="{{ '1' if evt.is_escape else '0' }}">{% if evt.is_escape %}Kaçamağı Planla{% else %}Rotayı Planla{% endif %}</span>
                             <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </button>
                     </div>
@@ -654,10 +658,10 @@
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-sm sm:text-base font-black text-white">Hakiki Bilet Etkinlik & Festival Habercisi</h3>
-                            <span class="px-2 py-0.5 rounded-full text-[9.5px] font-black bg-amber-400 text-slate-950 uppercase tracking-wider">Ücretsiz Radar</span>
+                            <h3 class="text-sm sm:text-base font-black text-white" data-i18n="radarTitle">Hakiki Bilet Etkinlik & Festival Habercisi</h3>
+                            <span class="px-2 py-0.5 rounded-full text-[9.5px] font-black bg-amber-400 text-slate-950 uppercase tracking-wider" data-i18n="radarBadge">Ücretsiz Radar</span>
                         </div>
-                        <p class="text-xs text-slate-300 mt-1 max-w-xl leading-relaxed font-normal">
+                        <p class="text-xs text-slate-300 mt-1 max-w-xl leading-relaxed font-normal" data-i18n="radarDesc">
                             Formula 1, UEFA finalleri, Harbiye konserleri veya küresel festival takvimleri açıldığında ilk sizin haberiniz olsun. Uçak ve otel fiyatları fırlamadan biletinizi ayırtın.
                         </p>
                     </div>
@@ -665,10 +669,10 @@
                 <form id="radarSubscribeForm" onsubmit="handleRadarSubscribe(event)" class="w-full md:w-auto flex flex-col sm:flex-row items-center gap-2 shrink-0">
                     <div class="relative w-full sm:w-64">
                         <i class="fa-regular fa-envelope absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-                        <input type="email" id="radarEmailInput" placeholder="E-posta adresiniz..." required class="w-full bg-slate-950/80 border border-slate-600 focus:border-amber-400 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none">
+                        <input type="email" id="radarEmailInput" placeholder="E-posta adresiniz..." required data-i18n-ph="radarEmailPh" class="w-full bg-slate-950/80 border border-slate-600 focus:border-amber-400 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none">
                     </div>
                     <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer">
-                        <span>Haberdar Et</span>
+                        <span data-i18n="radarBtn">Haberdar Et</span>
                         <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>
                 </form>
@@ -810,6 +814,12 @@
                 curatedTitle: "Doğrulanmış Rotalar & Canlı Etkinlik Takvimi",
                 curatedSub: "Resmi federasyon ve bilet sağlayıcıları tarafından teyit edilmiş güncel organizasyonlar.",
                 officialVerified: "%100 Resmi Teyitli",
+                radarTitle: "Hakiki Bilet Etkinlik & Festival Habercisi",
+                radarBadge: "Ücretsiz Radar",
+                radarDesc: "Formula 1, UEFA finalleri, Harbiye konserleri veya küresel festival takvimleri açıldığında ilk sizin haberiniz olsun. Uçak ve otel fiyatları fırlamadan biletinizi ayırtın.",
+                radarEmailPh: "E-posta adresiniz...",
+                radarBtn: "Haberdar Et",
+                newBadgeText: "Yeni",
                 footerTursab: "TÜRSAB Metasearch Bildirimi",
                 footerTerms: "Kullanım Koşulları",
                 footerPrivacy: "KVKK & Gizlilik",
@@ -879,6 +889,12 @@
                 curatedTitle: "Verified Routes & Live Event Calendar",
                 curatedSub: "Confirmed itineraries and travel calendar verified by official organizers.",
                 officialVerified: "100% Verified Fares",
+                radarTitle: "Hakiki Bilet Event & Festival Radar",
+                radarBadge: "Free Radar",
+                radarDesc: "Get notified the moment tickets open for Formula 1, UEFA finals, live concerts, or global festivals. Book your flights & hotels before prices surge.",
+                radarEmailPh: "Enter your email...",
+                radarBtn: "Notify Me",
+                newBadgeText: "New",
                 footerTursab: "TÜRSAB Metasearch Notice",
                 footerTerms: "Terms of Service",
                 footerPrivacy: "Privacy Policy & GDPR",
@@ -972,7 +988,47 @@
                 }
             }
 
-            // 8. Eğer ekranda arama sonuçları varsa, tekrar render et
+            // 8. Etkinlik Kartlarını Güncelle (Curated Event Cards)
+            const isEnglish = (lang === 'en');
+            document.querySelectorAll(".event-card-title").forEach(el => {
+                el.textContent = isEnglish ? (el.getAttribute("data-title-en") || el.getAttribute("data-title-tr")) : el.getAttribute("data-title-tr");
+            });
+            document.querySelectorAll(".event-card-desc").forEach(el => {
+                el.textContent = isEnglish ? (el.getAttribute("data-desc-en") || el.getAttribute("data-desc-tr")) : el.getAttribute("data-desc-tr");
+            });
+            document.querySelectorAll(".event-card-loc").forEach(el => {
+                el.textContent = isEnglish ? (el.getAttribute("data-loc-en") || el.getAttribute("data-loc-tr")) : el.getAttribute("data-loc-tr");
+            });
+            document.querySelectorAll(".event-card-dates").forEach(el => {
+                el.textContent = isEnglish ? (el.getAttribute("data-dates-en") || el.getAttribute("data-dates-tr")) : el.getAttribute("data-dates-tr");
+            });
+            document.querySelectorAll(".event-card-badge").forEach(el => {
+                el.textContent = isEnglish ? (el.getAttribute("data-badge-en") || el.getAttribute("data-badge-tr")) : el.getAttribute("data-badge-tr");
+            });
+            document.querySelectorAll(".event-card-urgency").forEach(el => {
+                el.textContent = isEnglish ? (el.getAttribute("data-urgency-en") || el.getAttribute("data-urgency-tr")) : el.getAttribute("data-urgency-tr");
+            });
+            document.querySelectorAll(".event-card-urgency-desc").forEach(el => {
+                el.textContent = isEnglish ? (el.getAttribute("data-udesc-en") || el.getAttribute("data-udesc-tr")) : el.getAttribute("data-udesc-tr");
+            });
+            document.querySelectorAll(".event-card-ticket-btn").forEach(el => {
+                const isEscape = el.getAttribute("data-is-escape") === '1';
+                el.textContent = isEnglish ? (isEscape ? "Ferry Schedule" : "Official Tickets") : (isEscape ? "Feribot Seferi" : "Resmi Bilet");
+            });
+            document.querySelectorAll(".event-card-plan-btn").forEach(el => {
+                const isEscape = el.getAttribute("data-is-escape") === '1';
+                el.textContent = isEnglish ? (isEscape ? "Plan Getaway" : "Plan Trip") : (isEscape ? "Kaçamağı Planla" : "Rotayı Planla");
+            });
+
+            // Eğer Etkinlik Keşif Modalı açıksa onu da güncelle
+            if (typeof window.renderCuratedEventsModal === 'function') {
+                const modal = document.getElementById("curatedEventsModal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    window.renderCuratedEventsModal();
+                }
+            }
+
+            // 9. Eğer ekranda arama sonuçları varsa, tekrar render et
             if (window.lastTransportResults && window.lastSearchReq && typeof window.renderTransportResults === 'function') {
                 window.renderTransportResults({ tickets: window.lastTransportResults }, window.lastSearchReq);
             }
@@ -991,6 +1047,6 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v2.js?v=20261017_05"></script>
+    <script src="/static/js/app_v2.js?v=20261017_06"></script>
 </body>
 </html>
