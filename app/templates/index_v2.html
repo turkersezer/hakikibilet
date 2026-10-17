@@ -145,6 +145,29 @@
 
     <div class="max-w-6xl w-full mx-auto flex-1">
         
+        <!-- ==================== AÇIK BETA & TEKNİK DESTEK BİLGİLENDİRME BANDI ==================== -->
+        <div id="betaNoticeBar" class="mb-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-300/80 rounded-2xl px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-800 shadow-sm backdrop-blur-sm transition-all">
+            <div class="flex items-start sm:items-center gap-3 text-xs leading-relaxed">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center flex-shrink-0 shadow-sm font-black text-sm">
+                    🚀
+                </div>
+                <div>
+                    <span class="inline-block bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md mr-1.5 shadow-2xs">Açık Beta / Ön Lansman</span>
+                    <span class="font-medium text-slate-700">
+                        Platformumuz test ve geliştirme sürecindedir. Seferleri canlı karşılaştırabilir, biletinizi resmi sağlayıcılar üzerinden güvenle satın alabilirsiniz. Yaşayabileceğiniz olası aksaklık veya teknik sorunları lütfen 
+                        <a href="mailto:info@hakikibilet.com" class="font-bold text-amber-700 underline underline-offset-2 hover:text-amber-900 inline-flex items-center gap-1">
+                            <i class="fa-solid fa-envelope text-[11px]"></i> info@hakikibilet.com
+                        </a> 
+                        adresimize iletiniz. İlginiz için teşekkür ederiz.
+                    </span>
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('betaNoticeBar').style.display='none'" class="text-slate-400 hover:text-slate-700 text-xs px-2.5 py-1 rounded-lg hover:bg-white/80 transition flex-shrink-0 flex items-center gap-1 font-bold" title="Bildirimi Kapat">
+                <span>Kapat</span>
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
         <!-- ==================== ÜST NAVBAR (MINIMALIST & PRESTIJ) ==================== -->
         <header class="navbar p-4 sm:px-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-4 text-center sm:text-left">

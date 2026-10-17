@@ -50,8 +50,8 @@ class Settings:
         "işlemleri kullanıcının yönlendirildiği yetkili acente veya resmi taşıyıcı firmanın güvenli altyapısında tamamlanır."
     )
 
-    # Bakım / Lansman Öncesi Modu (Varsayılan olarak kapalı beta; Render'da da korumalıdır)
-    MAINTENANCE_MODE: bool = os.getenv("MAINTENANCE_MODE", "true").lower() in ("true", "1", "yes")
+    # Bakım / Lansman Öncesi Modu (Canlı açık beta; istendiğinde Render ortam değişkeninden 'true' yapılabilir)
+    MAINTENANCE_MODE: bool = os.getenv("MAINTENANCE_MODE", "false").lower() in ("true", "1", "yes")
     MAINTENANCE_BYPASS_KEY: str = os.getenv("MAINTENANCE_BYPASS_KEY", "hakiki2026")
 
 settings = Settings()
