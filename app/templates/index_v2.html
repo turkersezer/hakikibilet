@@ -152,23 +152,18 @@
                     🚀
                 </div>
                 <div>
-                    <span class="inline-block bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md mr-1.5 shadow-2xs">Açık Beta / Ön Lansman</span>
-                    <span class="font-medium text-slate-700">
+                    <span id="betaNoticeBadge" data-i18n="betaBadge" class="inline-block bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md mr-1.5 shadow-2xs">Açık Beta / Ön Lansman</span>
+                    <span id="betaNoticeText" data-i18n="betaText" class="font-medium text-slate-700">
                         Platformumuz test ve geliştirme sürecindedir. Seferleri canlı karşılaştırabilir, biletinizi resmi sağlayıcılar üzerinden güvenle satın alabilirsiniz. Yaşayabileceğiniz olası aksaklık veya teknik sorunları lütfen 
                         <a href="mailto:info@hakikibilet.com" class="font-bold text-amber-700 underline underline-offset-2 hover:text-amber-900 inline-flex items-center gap-1">
                             <i class="fa-solid fa-envelope text-[11px]"></i> info@hakikibilet.com
                         </a> 
                         adresimize iletiniz.
                     </span>
-                    <div class="mt-1.5 pt-1 border-t border-amber-200/70 text-[11px] text-slate-600 font-medium">
-                        <span class="font-black text-amber-800 uppercase text-[9.5px] bg-amber-100 px-1.5 py-0.5 rounded mr-1">EN</span>
-                        Public Beta: Compare live fares & book directly via verified carriers. For technical issues: 
-                        <a href="mailto:info@hakikibilet.com" class="font-bold text-amber-800 underline underline-offset-1 hover:text-amber-950">info@hakikibilet.com</a>
-                    </div>
                 </div>
             </div>
             <button type="button" onclick="document.getElementById('betaNoticeBar').style.display='none'" class="text-slate-400 hover:text-slate-700 text-xs px-2.5 py-1 rounded-lg hover:bg-white/80 transition flex-shrink-0 flex items-center gap-1 font-bold" title="Bildirimi Kapat / Dismiss">
-                <span>Kapat</span>
+                <span data-i18n="close">Kapat</span>
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
@@ -180,8 +175,8 @@
                     <img src="/static/img/hakikibilet_logo_circle.png?v=20261015_03" alt="Hakiki Bilet" class="nav-logo-img flex-shrink-0 group-hover:scale-105 transition-transform">
                     <div>
                         <div class="brand-title">HAKİKİ <span class="text-amber-500">BİLET</span></div>
-                        <div class="brand-slogan">Hakiki Fiyat, Hakiki Bilet</div>
-                        <div class="brand-subtext hidden sm:block">Bağımsız Seyahat, Ulaşım ve Fiyat Karşılaştırma Portalı</div>
+                        <div class="brand-slogan" data-i18n="brandSlogan">Hakiki Fiyat, Hakiki Bilet</div>
+                        <div class="brand-subtext hidden sm:block" data-i18n="brandSubtext">Bağımsız Seyahat, Ulaşım ve Fiyat Karşılaştırma Portalı</div>
                     </div>
                 </a>
             </div>
@@ -192,7 +187,7 @@
                     <i class="fa-solid fa-compass text-amber-500"></i>
                     <span data-i18n="explore">Rota Keşfet</span>
                 </a>
-                <button type="button" onclick="alert('Fiyat alarmı sistemi kapalı beta sürecinde aktiftir. Seçtiğiniz rota için ucuz bilet düştüğünde kayıtlı e-posta adresinize anlık bildirim iletilir.')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
+                <button type="button" onclick="alert(window.currentAppLang === 'en' ? 'Price alert system is active in closed beta. Instant alerts will be sent to your email when cheap fares are found.' : 'Fiyat alarmı sistemi kapalı beta sürecinde aktiftir. Seçtiğiniz rota için ucuz bilet düştüğünde kayıtlı e-posta adresinize anlık bildirim iletilir.')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
                     <i class="fa-solid fa-bell text-amber-500"></i>
                     <span data-i18n="priceAlert">Fiyat Alarmı</span>
                 </button>
@@ -204,9 +199,9 @@
                     ₺ TRY
                 </div>
                 <!-- Dil Değiştirici (TR / EN) -->
-                <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs font-black">
-                    <button type="button" onclick="setAppLanguage('tr')" id="langBtn-tr" class="px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition">🇹🇷 TR</button>
-                    <button type="button" onclick="setAppLanguage('en')" id="langBtn-en" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition">🇬🇧 EN</button>
+                <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs font-black shadow-inner">
+                    <button type="button" onclick="setAppLanguage('tr')" id="langBtn-tr" class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition font-black ring-1 ring-slate-200">🇹🇷 TR</button>
+                    <button type="button" onclick="setAppLanguage('en')" id="langBtn-en" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition font-bold">🇬🇧 EN</button>
                 </div>
             </div>
         </header>
@@ -219,29 +214,29 @@
                 <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <button type="button" onclick="switchUnifiedTab('flight')" id="tabBtn-flight" class="tab-btn active">
                         <i class="fa-solid fa-plane"></i>
-                        <span>✈️ Uçak Bileti</span>
+                        <span data-i18n="tabFlight">✈️ Uçak Bileti</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('bus')" id="tabBtn-bus" class="tab-btn">
                         <i class="fa-solid fa-bus"></i>
-                        <span>🚌 Otobüs</span>
+                        <span data-i18n="tabBus">🚌 Otobüs</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('train')" id="tabBtn-train" class="tab-btn">
                         <i class="fa-solid fa-train"></i>
-                        <span>🚆 Tren</span>
+                        <span data-i18n="tabTrain">🚆 Tren</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('ferry')" id="tabBtn-ferry" class="tab-btn">
                         <i class="fa-solid fa-ship"></i>
-                        <span>⛴️ Feribot</span>
+                        <span data-i18n="tabFerry">⛴️ Feribot</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('hotel')" id="tabBtn-hotel" class="tab-btn">
                         <i class="fa-solid fa-hotel"></i>
-                        <span>🏨 Otel</span>
+                        <span data-i18n="tabHotel">🏨 Otel</span>
                     </button>
                 </div>
 
                 <div id="transportSubHint" class="text-xs font-bold text-slate-500 hidden md:flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-500"></i>
-                    <span>THY, Pegasus, AJet & Dünya Havayolları Canlı Bilet Karşılaştırması</span>
+                    <span data-i18n="transportSubHint">THY, Pegasus, AJet & Dünya Havayolları Canlı Bilet Karşılaştırması</span>
                 </div>
             </div>
 
@@ -252,11 +247,11 @@
                     <div class="inline-flex items-center gap-3">
                         <label class="inline-flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
                             <input type="radio" name="flightTripTypeRadio" id="radio-oneway" value="one_way" onchange="setFlightTripType('one_way')" class="text-slate-900 focus:ring-slate-900">
-                            <span>Tek Yön</span>
+                            <span data-i18n="oneWay">Tek Yön</span>
                         </label>
                         <label class="inline-flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
                             <input type="radio" name="flightTripTypeRadio" id="radio-round" value="round" checked onchange="setFlightTripType('round')" class="text-slate-900 focus:ring-slate-900">
-                            <span>Gidiş - Dönüş</span>
+                            <span data-i18n="roundTrip">Gidiş - Dönüş</span>
                         </label>
                     </div>
 
@@ -266,18 +261,18 @@
                     <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
                         <button type="button" id="flightScope-domestic" onclick="switchFlightScope('domestic')"
                                 class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs transition">
-                            🇹🇷 Yurtiçi
+                            <span data-i18n="domestic">🇹🇷 Yurtiçi</span>
                         </button>
                         <button type="button" id="flightScope-intl" onclick="switchFlightScope('international')"
                                 class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition">
-                            🌍 Yurtdışı
+                            <span data-i18n="intl">🌍 Yurtdışı</span>
                         </button>
                     </div>
                 </div>
 
                 <div id="flightScopeSummary" class="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
                     <i class="fa-solid fa-plane-departure text-amber-500"></i>
-                    <span>Türkiye İçi 55+ Teyitli Havalimanı</span>
+                    <span data-i18n="scopeDomesticSummary">Türkiye İçi 55+ Teyitli Havalimanı</span>
                 </div>
             </div>
 
@@ -291,9 +286,10 @@
                             <div class="input-box">
                                 <label id="originFieldLabel" class="input-label">
                                     <i class="fa-solid fa-plane-departure text-amber-500"></i>
-                                    <span>Nereden</span>
+                                    <span data-i18n="origin">Nereden</span>
                                 </label>
                                 <input type="text" id="transOrigin" list="originCitiesList" placeholder="Örn: İstanbul (IST / SAW)" value="İstanbul" required
+                                       data-i18n-ph="originPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="originCitiesList"></datalist>
                             </div>
@@ -310,9 +306,10 @@
                             <div class="input-box">
                                 <label id="destFieldLabel" class="input-label">
                                     <i class="fa-solid fa-plane-arrival text-amber-500"></i>
-                                    <span>Nereye</span>
+                                    <span data-i18n="dest">Nereye</span>
                                 </label>
                                 <input type="text" id="transDest" list="destCitiesList" placeholder="Örn: Adana / Çukurova, Antalya" value="" required
+                                       data-i18n-ph="destDomesticPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="destCitiesList"></datalist>
                             </div>
@@ -324,7 +321,7 @@
                             <div class="input-box">
                                 <label id="depDateLabel" class="input-label">
                                     <i class="fa-solid fa-calendar-day text-amber-500"></i>
-                                    <span>Gidiş Tarihi</span>
+                                    <span data-i18n="depDate">Gidiş Tarihi</span>
                                 </label>
                                 <input type="date" id="transDepDate" required
                                        class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none cursor-pointer">
@@ -336,7 +333,7 @@
                             <div class="input-box">
                                 <label id="returnDateLabel" class="input-label">
                                     <i class="fa-solid fa-calendar-check text-amber-500"></i>
-                                    <span>Dönüş Tarihi</span>
+                                    <span data-i18n="retDate">Dönüş Tarihi</span>
                                 </label>
                                 <input type="date" id="transRetDate"
                                        class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none cursor-pointer">
@@ -348,7 +345,7 @@
                             <div class="input-box cursor-pointer" onclick="togglePaxDropdown(event)">
                                 <label class="input-label">
                                     <i class="fa-solid fa-user-group text-amber-500"></i>
-                                    <span>Yolcu & Sınıf</span>
+                                    <span data-i18n="paxLabel">Yolcu & Sınıf</span>
                                 </label>
                                 <div class="flex items-center justify-between">
                                     <span id="paxDisplayLabel" class="font-bold text-xs sm:text-sm text-slate-900 truncate">1 Yetişkin</span>
@@ -359,15 +356,15 @@
                             <!-- Popover Menü -->
                             <div id="paxDropdownMenu" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 z-50">
                                 <div class="text-xs font-black text-slate-900 border-b border-slate-100 pb-2 mb-2.5 flex items-center justify-between">
-                                    <span>Yolcu Sayısı</span>
-                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">Maks. 9</span>
+                                    <span data-i18n="paxCount">Yolcu Sayısı</span>
+                                    <span data-i18n="paxMax" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">Maks. 9</span>
                                 </div>
 
                                 <!-- Yetişkin -->
                                 <div class="flex items-center justify-between py-2 border-b border-slate-100 text-xs">
                                     <div>
-                                        <div class="font-black text-slate-900">Yetişkin</div>
-                                        <div class="text-[10px] text-slate-400">12+ Yaş</div>
+                                        <div class="font-black text-slate-900" data-i18n="paxAdult">Yetişkin</div>
+                                        <div class="text-[10px] text-slate-400" data-i18n="paxAdultAge">12+ Yaş</div>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <button type="button" onclick="modifyPax('adults', -1, event)" class="w-7 h-7 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-200 font-black text-xs text-slate-700 flex items-center justify-center">-</button>
@@ -379,8 +376,8 @@
                                 <!-- Çocuk -->
                                 <div class="flex items-center justify-between py-2 border-b border-slate-100 text-xs">
                                     <div>
-                                        <div class="font-black text-slate-900">Çocuk</div>
-                                        <div class="text-[10px] text-slate-400">2 - 11 Yaş</div>
+                                        <div class="font-black text-slate-900" data-i18n="paxChild">Çocuk</div>
+                                        <div class="text-[10px] text-slate-400" data-i18n="paxChildAge">2 - 11 Yaş</div>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <button type="button" onclick="modifyPax('children', -1, event)" class="w-7 h-7 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-200 font-black text-xs text-slate-700 flex items-center justify-center">-</button>
@@ -392,8 +389,8 @@
                                 <!-- Bebek -->
                                 <div class="flex items-center justify-between py-2 border-b border-slate-100 text-xs">
                                     <div>
-                                        <div class="font-black text-slate-900">Bebek</div>
-                                        <div class="text-[10px] text-slate-400">0 - 2 Yaş</div>
+                                        <div class="font-black text-slate-900" data-i18n="paxInfant">Bebek</div>
+                                        <div class="text-[10px] text-slate-400" data-i18n="paxInfantAge">0 - 2 Yaş</div>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <button type="button" onclick="modifyPax('infants', -1, event)" class="w-7 h-7 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-200 font-black text-xs text-slate-700 flex items-center justify-center">-</button>
@@ -404,21 +401,21 @@
 
                                 <!-- Kabin Sınıfı -->
                                 <div class="pt-2.5 pb-1">
-                                    <div class="text-[10px] font-black uppercase text-slate-400 mb-1.5">Kabin</div>
+                                    <div class="text-[10px] font-black uppercase text-slate-400 mb-1.5" data-i18n="cabin">Kabin</div>
                                     <div class="grid grid-cols-2 gap-1.5">
                                         <button type="button" id="cabinBtn-economy" onclick="selectFlightCabin('economy')"
                                                 class="py-1.5 px-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs text-center">
-                                            Ekonomi
+                                            <span data-i18n="economy">Ekonomi</span>
                                         </button>
                                         <button type="button" id="cabinBtn-business" onclick="selectFlightCabin('business')"
                                                 class="py-1.5 px-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 text-center">
-                                            Business
+                                            <span data-i18n="business">Business</span>
                                         </button>
                                     </div>
                                 </div>
 
                                 <button type="button" onclick="closePaxDropdown(event)" class="w-full mt-3 py-2 bg-slate-900 hover:bg-black text-white font-black text-xs rounded-xl transition">
-                                    Uygula
+                                    <span data-i18n="apply">Uygula</span>
                                 </button>
                             </div>
                         </div>
@@ -429,11 +426,11 @@
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-3 border-t border-slate-100">
                         <div class="text-xs text-slate-500 flex items-center gap-2 font-medium">
                             <i class="fa-solid fa-shield-halved text-emerald-600"></i>
-                            <span>Resmi havayolu ve acente derin linki ile komisyonsuz, doğrudan rezervasyon.</span>
+                            <span data-i18n="bookingGuarantee">Resmi havayolu ve acente derin linki ile komisyonsuz, doğrudan rezervasyon.</span>
                         </div>
                         <button type="submit" class="search-btn w-full sm:w-auto">
                             <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                            <span id="searchSubmitBtnText">Uçuşları Bul →</span>
+                            <span id="searchSubmitBtnText" data-i18n="searchBtnFlight">Uçuşları Bul →</span>
                         </button>
                     </div>
                 </form>
@@ -448,9 +445,10 @@
                             <div class="input-box">
                                 <label class="input-label">
                                     <i class="fa-solid fa-city text-amber-500"></i>
-                                    <span>Nereye Gidiyorsunuz?</span>
+                                    <span data-i18n="hotelWhere">Nereye Gidiyorsunuz?</span>
                                 </label>
                                 <input type="text" id="hotelCity" list="hotelCitiesList" placeholder="Şehir, Ada veya Bölge (Örn: Nice, Antalya, Paris)" required
+                                       data-i18n-ph="hotelCityPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="hotelCitiesList"></datalist>
                             </div>
@@ -461,7 +459,7 @@
                             <div class="input-box">
                                 <label class="input-label">
                                     <i class="fa-solid fa-calendar-day text-amber-500"></i>
-                                    <span>Giriş Tarihi</span>
+                                    <span data-i18n="checkinDate">Giriş Tarihi</span>
                                 </label>
                                 <input type="date" id="hotelCheckin" required
                                        class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none cursor-pointer">
@@ -473,7 +471,7 @@
                             <div class="input-box">
                                 <label class="input-label">
                                     <i class="fa-solid fa-calendar-check text-amber-500"></i>
-                                    <span>Çıkış Tarihi</span>
+                                    <span data-i18n="checkoutDate">Çıkış Tarihi</span>
                                 </label>
                                 <input type="date" id="hotelCheckout" required
                                        class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none cursor-pointer">
@@ -485,7 +483,7 @@
                             <div class="input-box">
                                 <label class="input-label">
                                     <i class="fa-solid fa-users text-amber-500"></i>
-                                    <span>Misafir & Oda</span>
+                                    <span data-i18n="guestsAndRooms">Misafir & Oda</span>
                                 </label>
                                 <select id="hotelGuests" class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none">
                                     <option value="1">1 Yetişkin (1 Oda)</option>
@@ -500,11 +498,11 @@
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-3 border-t border-slate-100">
                         <div class="text-xs text-slate-500 flex items-center gap-2 font-medium">
                             <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                            <span>Booking.com & Enuygun canlı verisi üzerinden anlık oda fiyatları listelenir.</span>
+                            <span data-i18n="hotelGuarantee">Booking.com & Enuygun canlı verisi üzerinden anlık oda fiyatları listelenir.</span>
                         </div>
                         <button type="submit" class="search-btn w-full sm:w-auto">
                             <i class="fa-solid fa-bed text-xs"></i>
-                            <span>Otelleri ve Fiyatları Bul →</span>
+                            <span data-i18n="searchBtnHotel">Otelleri ve Fiyatları Bul →</span>
                         </button>
                     </div>
                 </form>
@@ -524,8 +522,8 @@
                         <i class="fa-solid fa-list-check"></i>
                     </span>
                     <div>
-                        <div class="font-black text-slate-900 text-xs sm:text-sm">Karşılaştırılan Popüler Bilet Sağlayıcıları ve Taşıyıcılar</div>
-                        <div class="text-[10.5px] text-slate-500 font-medium">IATA akreditasyonlu bilet portalları ve resmi taşıyıcı ağları canlı taranır</div>
+                        <div class="font-black text-slate-900 text-xs sm:text-sm" data-i18n="providersTitle">Karşılaştırılan Popüler Bilet Sağlayıcıları ve Taşıyıcılar</div>
+                        <div class="text-[10.5px] text-slate-500 font-medium" data-i18n="providersSub">IATA akreditasyonlu bilet portalları ve resmi taşıyıcı ağları canlı taranır</div>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 text-xs font-bold">
@@ -533,7 +531,7 @@
                     <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-300 text-sky-950 font-black shadow-xs">
                         <i class="fa-solid fa-earth-americas text-sky-600"></i>
                         <span>Trip.com Flights</span>
-                        <span class="text-[9px] uppercase tracking-wider bg-sky-600 text-white px-1.5 py-0.5 rounded-md font-black shadow-2xs">IATA Portalı</span>
+                        <span class="text-[9px] uppercase tracking-wider bg-sky-600 text-white px-1.5 py-0.5 rounded-md font-black shadow-2xs" data-i18n="iataPortalBadge">IATA Portalı</span>
                     </div>
                     <!-- THY -->
                     <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-bold hover:bg-slate-100 transition">
@@ -565,13 +563,13 @@
                 <div>
                     <h2 class="text-lg font-black text-slate-900 flex items-center gap-2">
                         <i class="fa-solid fa-compass text-amber-500"></i>
-                        <span>Doğrulanmış Rotalar & Canlı Etkinlik Takvimi</span>
+                        <span data-i18n="curatedTitle">Doğrulanmış Rotalar & Canlı Etkinlik Takvimi</span>
                     </h2>
-                    <p class="text-xs text-slate-500 mt-0.5 font-medium">Resmi federasyon ve bilet sağlayıcıları tarafından teyit edilmiş güncel organizasyonlar.</p>
+                    <p class="text-xs text-slate-500 mt-0.5 font-medium" data-i18n="curatedSub">Resmi federasyon ve bilet sağlayıcıları tarafından teyit edilmiş güncel organizasyonlar.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200">
-                        <i class="fa-solid fa-shield-halved text-amber-600"></i> %100 Resmi Teyitli
+                        <i class="fa-solid fa-shield-halved text-amber-600"></i> <span data-i18n="officialVerified">%100 Resmi Teyitli</span>
                     </span>
                 </div>
             </div>
@@ -681,26 +679,26 @@
         <footer class="text-center text-xs text-slate-500 space-y-3 pb-8 pt-4 border-t border-slate-200">
             <!-- Yasal Bağlantılar -->
             <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-600 font-semibold">
-                <a href="/yasal-uyari" target="_blank" class="hover:text-amber-600 transition">TÜRSAB Metasearch Bildirimi</a>
+                <a href="/yasal-uyari" target="_blank" class="hover:text-amber-600 transition" data-i18n="footerTursab">TÜRSAB Metasearch Bildirimi</a>
                 <span class="text-slate-300">•</span>
-                <a href="/kullanim-kosullari" target="_blank" class="hover:text-amber-600 transition">Kullanım Koşulları</a>
+                <a href="/kullanim-kosullari" target="_blank" class="hover:text-amber-600 transition" data-i18n="footerTerms">Kullanım Koşulları</a>
                 <span class="text-slate-300">•</span>
-                <a href="/kvkk" target="_blank" class="hover:text-amber-600 transition">KVKK & Gizlilik</a>
+                <a href="/kvkk" target="_blank" class="hover:text-amber-600 transition" data-i18n="footerPrivacy">KVKK & Gizlilik</a>
                 <span class="text-slate-300">•</span>
-                <a href="/cerez-politikasi" target="_blank" class="hover:text-amber-600 transition">Çerez Politikası</a>
+                <a href="/cerez-politikasi" target="_blank" class="hover:text-amber-600 transition" data-i18n="footerCookies">Çerez Politikası</a>
                 <span class="text-slate-300">•</span>
-                <a href="/etkinlik-kurallari" target="_blank" class="hover:text-amber-600 transition">Etkinlik Şartları</a>
+                <a href="/etkinlik-kurallari" target="_blank" class="hover:text-amber-600 transition" data-i18n="footerEventTerms">Etkinlik Şartları</a>
                 <span class="text-slate-300">•</span>
-                <a href="/iletisim" target="_blank" class="hover:text-amber-600 transition">İletişim & Künye</a>
+                <a href="/iletisim" target="_blank" class="hover:text-amber-600 transition" data-i18n="footerContact">İletişim & Künye</a>
             </div>
 
             <!-- Gelir Şeffaflığı Notu -->
-            <div class="p-3 bg-amber-50/80 border border-amber-200/70 rounded-xl text-[11px] text-slate-700 max-w-2xl mx-auto leading-relaxed">
+            <div class="p-3 bg-amber-50/80 border border-amber-200/70 rounded-xl text-[11px] text-slate-700 max-w-2xl mx-auto leading-relaxed" data-i18n="footerDisclaimer">
                 <i class="fa-solid fa-circle-info text-amber-500 mr-1"></i>
                 <strong>Şeffaf Metasearch Güvencesi:</strong> Hakiki Bilet bağımsız bir fiyat arama motorudur. Doğrudan bilet satışı yapmaz, ödeme tahsil etmez. Satın alma işlemleri yönlendirilen resmi acente veya havayolunun kendi güvenli sisteminde gerçekleşir.
             </div>
 
-            <p class="text-[11px] text-slate-400">
+            <p class="text-[11px] text-slate-400" data-i18n="footerCopyright">
                 © 2026 Hakiki Bilet (hakikibilet.com) • Tüm Hakları Saklıdır.
             </p>
         </footer>
@@ -751,116 +749,233 @@
         window.switchUnifiedTab = switchUnifiedTab;
 
         // ==================== DİL MOTORU (TR / EN I18N) ====================
-        const APP_TRANSLATIONS = {
+        window.APP_TRANSLATIONS = {
             tr: {
+                betaBadge: "Açık Beta / Ön Lansman",
+                betaText: `Platformumuz test ve geliştirme sürecindedir. Seferleri canlı karşılaştırabilir, biletinizi resmi sağlayıcılar üzerinden güvenle satın alabilirsiniz. Yaşayabileceğiniz olası aksaklık veya teknik sorunları lütfen <a href="mailto:info@hakikibilet.com" class="font-bold text-amber-700 underline underline-offset-2 hover:text-amber-900 inline-flex items-center gap-1"><i class="fa-solid fa-envelope text-[11px]"></i> info@hakikibilet.com</a> adresimize iletiniz.`,
+                close: "Kapat",
+                brandSlogan: "Hakiki Fiyat, Hakiki Bilet",
+                brandSubtext: "Bağımsız Seyahat, Ulaşım ve Fiyat Karşılaştırma Portalı",
                 explore: "Rota Keşfet",
                 priceAlert: "Fiyat Alarmı",
                 hotels: "Oteller",
-                brandSubtext: "Bağımsız Seyahat, Ulaşım ve Fiyat Karşılaştırma Portalı",
                 tabFlight: "✈️ Uçak Bileti",
                 tabBus: "🚌 Otobüs",
                 tabTrain: "🚆 Tren",
                 tabFerry: "⛴️ Feribot",
                 tabHotel: "🏨 Otel",
+                transportSubHint: "THY, Pegasus, AJet & Dünya Havayolları Canlı Bilet Karşılaştırması",
                 oneWay: "Tek Yön",
                 roundTrip: "Gidiş - Dönüş",
                 domestic: "🇹🇷 Yurtiçi",
                 intl: "🌍 Yurtdışı",
+                scopeDomesticSummary: "Türkiye İçi 55+ Teyitli Havalimanı",
+                scopeIntlSummary: "Dünya Metropolleri & Popüler Havalimanları",
                 origin: "Nereden",
+                originPh: "Örn: İstanbul (IST / SAW)",
                 dest: "Nereye",
+                destDomesticPh: "Örn: Adana / Çukurova, Antalya",
+                destIntlPh: "Dünya havalimanları (Örn: Paris, Londra, Roma, Berlin, Dubai)",
+                swapTitle: "Kalkış ve Varış Noktalarını Değiştir",
                 depDate: "Gidiş Tarihi",
                 retDate: "Dönüş Tarihi",
                 paxLabel: "Yolcu & Sınıf",
+                paxCount: "Yolcu Sayısı",
+                paxMax: "Maks. 9",
+                paxAdult: "Yetişkin",
+                paxAdultAge: "12+ Yaş",
+                paxChild: "Çocuk",
+                paxChildAge: "2 - 11 Yaş",
+                paxInfant: "Bebek",
+                paxInfantAge: "0 - 2 Yaş",
+                cabin: "Kabin",
+                economy: "Ekonomi",
+                business: "Business",
+                apply: "Uygula",
+                bookingGuarantee: "Resmi havayolu ve acente derin linki ile komisyonsuz, doğrudan rezervasyon.",
                 searchBtnFlight: "Uçuşları Bul →",
-                searchBtnHotel: "Otelleri ve Fiyatları Bul →"
+                searchBtnBus: "Otobüs Seferlerini Bul →",
+                searchBtnTrain: "Tren Seferlerini Bul →",
+                searchBtnFerry: "Feribot Seferlerini Bul →",
+                searchBtnHotel: "Otelleri ve Fiyatları Bul →",
+                hotelWhere: "Nereye Gidiyorsunuz?",
+                hotelCityPh: "Şehir, Ada veya Bölge (Örn: Nice, Antalya, Paris)",
+                checkinDate: "Giriş Tarihi",
+                checkoutDate: "Çıkış Tarihi",
+                guestsAndRooms: "Misafir & Oda",
+                hotelGuarantee: "Booking.com & Enuygun canlı verisi üzerinden anlık oda fiyatları listelenir.",
+                providersTitle: "Karşılaştırılan Popüler Bilet Sağlayıcıları ve Taşıyıcılar",
+                providersSub: "IATA akreditasyonlu bilet portalları ve resmi taşıyıcı ağları canlı taranır",
+                iataPortalBadge: "IATA Portalı",
+                curatedTitle: "Doğrulanmış Rotalar & Canlı Etkinlik Takvimi",
+                curatedSub: "Resmi federasyon ve bilet sağlayıcıları tarafından teyit edilmiş güncel organizasyonlar.",
+                officialVerified: "%100 Resmi Teyitli",
+                footerTursab: "TÜRSAB Metasearch Bildirimi",
+                footerTerms: "Kullanım Koşulları",
+                footerPrivacy: "KVKK & Gizlilik",
+                footerCookies: "Çerez Politikası",
+                footerEventTerms: "Etkinlik Şartları",
+                footerContact: "İletişim & Künye",
+                footerDisclaimer: `<i class="fa-solid fa-circle-info text-amber-500 mr-1"></i><strong>Şeffaf Metasearch Güvencesi:</strong> Hakiki Bilet bağımsız bir fiyat arama motorudur. Doğrudan bilet satışı yapmaz, ödeme tahsil etmez. Satın alma işlemleri yönlendirilen resmi acente veya havayolunun kendi güvenli sisteminde gerçekleşir.`,
+                footerCopyright: "© 2026 Hakiki Bilet (hakikibilet.com) • Tüm Hakları Saklıdır."
             },
             en: {
+                betaBadge: "Public Beta / Early Access",
+                betaText: `Our platform is currently in testing and development. You can compare real-time fares and securely book tickets via verified providers. For any feedback or technical issues, please contact <a href="mailto:info@hakikibilet.com" class="font-bold text-amber-700 underline underline-offset-2 hover:text-amber-900 inline-flex items-center gap-1"><i class="fa-solid fa-envelope text-[11px]"></i> info@hakikibilet.com</a>.`,
+                close: "Dismiss",
+                brandSlogan: "Genuine Fares, Real Tickets",
+                brandSubtext: "Independent Travel, Transport & Real-Time Price Comparison Portal",
                 explore: "Explore Routes",
                 priceAlert: "Price Alerts",
                 hotels: "Hotels",
-                brandSubtext: "Independent Travel & Real-Time Fare Comparison Engine",
                 tabFlight: "✈️ Flights",
                 tabBus: "🚌 Bus",
-                tabTrain: "🚆 Train",
-                tabFerry: "⛴️ Ferry",
+                tabTrain: "🚆 Trains",
+                tabFerry: "⛴️ Ferries",
                 tabHotel: "🏨 Hotels",
+                transportSubHint: "Real-Time Comparison: Turkish Airlines, Pegasus, AJet & Global Airlines",
                 oneWay: "One-Way",
                 roundTrip: "Round-Trip",
                 domestic: "🇹🇷 Domestic",
                 intl: "🌍 International",
+                scopeDomesticSummary: "55+ Verified Airports Across Turkey",
+                scopeIntlSummary: "Global Hubs & International Airports",
                 origin: "From",
+                originPh: "e.g. Istanbul (IST / SAW)",
                 dest: "To",
+                destDomesticPh: "e.g. Antalya, Izmir, Ankara, Trabzon",
+                destIntlPh: "Global airports (e.g. London, Paris, Rome, Berlin, Dubai)",
+                swapTitle: "Swap Origin & Destination",
                 depDate: "Departure Date",
                 retDate: "Return Date",
                 paxLabel: "Passengers & Class",
+                paxCount: "Number of Passengers",
+                paxMax: "Max 9",
+                paxAdult: "Adult",
+                paxAdultAge: "Age 12+",
+                paxChild: "Child",
+                paxChildAge: "Age 2 - 11",
+                paxInfant: "Infant",
+                paxInfantAge: "Age 0 - 2",
+                cabin: "Cabin",
+                economy: "Economy",
+                business: "Business",
+                apply: "Apply",
+                bookingGuarantee: "Direct, commission-free booking via official airline and agency deep links.",
                 searchBtnFlight: "Find Flights →",
-                searchBtnHotel: "Find Hotels & Fares →"
+                searchBtnBus: "Find Bus Routes →",
+                searchBtnTrain: "Find Trains →",
+                searchBtnFerry: "Find Ferries →",
+                searchBtnHotel: "Find Hotels & Rates →",
+                hotelWhere: "Where are you going?",
+                hotelCityPh: "City, island or region (e.g. Nice, Antalya, Paris)",
+                checkinDate: "Check-in Date",
+                checkoutDate: "Check-out Date",
+                guestsAndRooms: "Guests & Rooms",
+                hotelGuarantee: "Real-time room rates compared from Booking.com & Enuygun.",
+                providersTitle: "Compared Travel Providers & Airline Networks",
+                providersSub: "Live comparison across IATA-accredited ticket portals and official airline systems",
+                iataPortalBadge: "IATA Portal",
+                curatedTitle: "Verified Routes & Live Event Calendar",
+                curatedSub: "Confirmed itineraries and travel calendar verified by official organizers.",
+                officialVerified: "100% Verified Fares",
+                footerTursab: "TÜRSAB Metasearch Notice",
+                footerTerms: "Terms of Service",
+                footerPrivacy: "Privacy Policy & GDPR",
+                footerCookies: "Cookie Policy",
+                footerEventTerms: "Booking Guidelines",
+                footerContact: "Contact & Imprint",
+                footerDisclaimer: `<i class="fa-solid fa-circle-info text-amber-500 mr-1"></i><strong>Transparent Metasearch Engine:</strong> Hakiki Bilet is an independent travel fare aggregator. We do not sell tickets directly or process payments. Bookings are completed securely on the official partner airline or agency platform.`,
+                footerCopyright: "© 2026 Hakiki Bilet (hakikibilet.com) • All Rights Reserved."
             }
         };
 
         function setAppLanguage(lang) {
+            lang = (lang === 'en') ? 'en' : 'tr';
             window.currentAppLang = lang;
             try { localStorage.setItem("hakiki_lang", lang); } catch (e) {}
 
+            // 1. Dil butonlarının görsel durumu
             const trBtn = document.getElementById("langBtn-tr");
             const enBtn = document.getElementById("langBtn-en");
             if (trBtn && enBtn) {
                 if (lang === 'en') {
-                    enBtn.className = "px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition font-black";
-                    trBtn.className = "px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition font-bold";
+                    enBtn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition font-black ring-1 ring-slate-200";
+                    trBtn.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition font-bold bg-transparent ring-0 shadow-none";
                 } else {
-                    trBtn.className = "px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition font-black";
-                    enBtn.className = "px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition font-bold";
+                    trBtn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition font-black ring-1 ring-slate-200";
+                    enBtn.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition font-bold bg-transparent ring-0 shadow-none";
                 }
             }
 
-            const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.tr;
+            const t = window.APP_TRANSLATIONS[lang] || window.APP_TRANSLATIONS.tr;
+
+            // 2. data-i18n olan tüm öğeleri güncelle
             document.querySelectorAll("[data-i18n]").forEach(el => {
                 const key = el.getAttribute("data-i18n");
-                if (t[key]) el.textContent = t[key];
+                if (t[key] !== undefined) {
+                    if (key === 'betaText' || key === 'footerDisclaimer') {
+                        el.innerHTML = t[key];
+                    } else {
+                        el.textContent = t[key];
+                    }
+                }
             });
 
-            // Alt slogan / Subtext
-            const subtext = document.querySelector(".brand-subtext");
-            if (subtext) subtext.textContent = t.brandSubtext;
+            // 3. data-i18n-ph olan input placeholder'ları güncelle
+            document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+                const key = el.getAttribute("data-i18n-ph");
+                if (t[key] !== undefined) {
+                    el.setAttribute("placeholder", t[key]);
+                }
+            });
 
-            // Tab Butonları
-            const tabF = document.querySelector("#tabBtn-flight span");
-            const tabB = document.querySelector("#tabBtn-bus span");
-            const tabT = document.querySelector("#tabBtn-train span");
-            const tabFe = document.querySelector("#tabBtn-ferry span");
-            const tabH = document.querySelector("#tabBtn-hotel span");
-            if (tabF) tabF.textContent = t.tabFlight;
-            if (tabB) tabB.textContent = t.tabBus;
-            if (tabT) tabT.textContent = t.tabTrain;
-            if (tabFe) tabFe.textContent = t.tabFerry;
-            if (tabH) tabH.textContent = t.tabHotel;
+            // 4. Özel input placeholder durumları (Kapsama göre varış alanı)
+            const destInput = document.getElementById("transDest");
+            if (destInput) {
+                const isDom = (window.currentFlightScope || 'domestic') === 'domestic';
+                destInput.placeholder = isDom ? t.destDomesticPh : t.destIntlPh;
+            }
+            const originInput = document.getElementById("transOrigin");
+            if (originInput && !originInput.value) {
+                originInput.placeholder = t.originPh;
+            }
 
-            // Arama Butonları
+            // 5. Uçuş Kapsam Özeti
+            const scopeSummary = document.getElementById("flightScopeSummary");
+            if (scopeSummary) {
+                const isDom = (window.currentFlightScope || 'domestic') === 'domestic';
+                const summaryText = isDom ? t.scopeDomesticSummary : t.scopeIntlSummary;
+                const iconClass = isDom ? 'fa-plane-departure' : 'fa-globe';
+                scopeSummary.innerHTML = `<i class="fa-solid ${iconClass} text-amber-500"></i><span>${summaryText}</span>`;
+            }
+
+            // 6. Yolcu özeti güncellemesi
+            if (typeof window.updatePaxSummaryDisplay === 'function') {
+                window.updatePaxSummaryDisplay();
+            }
+
+            // 7. Arama butonu aktif sekmeye göre
             const searchBtn = document.getElementById("searchSubmitBtnText");
-            if (searchBtn) searchBtn.textContent = t.searchBtnFlight;
+            if (searchBtn) {
+                const currentMode = window.currentTransportSubTab || 'flight';
+                if (window.currentMasterTab === 'hotel') {
+                    searchBtn.textContent = t.searchBtnHotel;
+                } else if (currentMode === 'flight') {
+                    searchBtn.textContent = t.searchBtnFlight;
+                } else if (currentMode === 'bus') {
+                    searchBtn.textContent = t.searchBtnBus;
+                } else if (currentMode === 'train') {
+                    searchBtn.textContent = t.searchBtnTrain;
+                } else if (currentMode === 'ferry') {
+                    searchBtn.textContent = t.searchBtnFerry;
+                }
+            }
 
-            // Etiketler
-            const oLabel = document.querySelector("#originFieldLabel span");
-            const dLabel = document.querySelector("#destFieldLabel span");
-            const depLabel = document.querySelector("#depDateLabel span");
-            const retLabel = document.querySelector("#returnDateLabel span");
-            if (oLabel) oLabel.textContent = t.origin;
-            if (dLabel) dLabel.textContent = t.dest;
-            if (depLabel) depLabel.textContent = t.depDate;
-            if (retLabel) retLabel.textContent = t.retDate;
-
-            // Radyo Butonları (Tek Yön / Gidiş-Dönüş)
-            const radioOne = document.querySelector("#radio-oneway + span");
-            const radioRound = document.querySelector("#radio-round + span");
-            if (radioOne) radioOne.textContent = t.oneWay;
-            if (radioRound) radioRound.textContent = t.roundTrip;
-
-            // Kapsam (Yurtiçi / Yurtdışı)
-            const scopeDom = document.getElementById("flightScope-domestic");
-            const scopeIntl = document.getElementById("flightScope-intl");
-            if (scopeDom) scopeDom.textContent = t.domestic;
-            if (scopeIntl) scopeIntl.textContent = t.intl;
+            // 8. Eğer ekranda arama sonuçları varsa, tekrar render et
+            if (window.lastTransportResults && window.lastSearchReq && typeof window.renderTransportResults === 'function') {
+                window.renderTransportResults({ tickets: window.lastTransportResults }, window.lastSearchReq);
+            }
         }
         window.setAppLanguage = setAppLanguage;
 
@@ -876,6 +991,6 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v2.js?v=20261017_03"></script>
+    <script src="/static/js/app_v2.js?v=20261017_05"></script>
 </body>
 </html>

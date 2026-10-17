@@ -69,6 +69,7 @@ async function switchFlightScope(scope) {
     const intlBtn = document.getElementById("flightScope-intl");
     const summaryBadge = document.getElementById("flightScopeSummary");
     const destInput = document.getElementById("transDest");
+    const isEn = window.currentAppLang === 'en';
 
     if (scope === 'domestic') {
         if (domBtn) {
@@ -78,10 +79,10 @@ async function switchFlightScope(scope) {
             intlBtn.className = "flight-scope-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5";
         }
         if (summaryBadge) {
-            summaryBadge.innerHTML = '<i class="fa-solid fa-plane-departure text-amber-500"></i><span>Türkiye İçi 55+ Teyitli Havalimanı</span>';
+            summaryBadge.innerHTML = `<i class="fa-solid fa-plane-departure text-amber-500"></i><span>${isEn ? '55+ Verified Airports Across Turkey' : 'Türkiye İçi 55+ Teyitli Havalimanı'}</span>`;
         }
         if (destInput) {
-            destInput.placeholder = "Nereye uçmak istiyorsunuz? (Örn: Antalya, İzmir, Ankara, Trabzon)";
+            destInput.placeholder = isEn ? "Where do you want to fly? (e.g. Antalya, Izmir, Ankara)" : "Nereye uçmak istiyorsunuz? (Örn: Antalya, İzmir, Ankara, Trabzon)";
         }
     } else {
         if (intlBtn) {
@@ -91,10 +92,10 @@ async function switchFlightScope(scope) {
             domBtn.className = "flight-scope-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5";
         }
         if (summaryBadge) {
-            summaryBadge.innerHTML = '<i class="fa-solid fa-globe text-amber-500"></i><span>Dünya Metropolleri & Popüler Havalimanları</span>';
+            summaryBadge.innerHTML = `<i class="fa-solid fa-globe text-amber-500"></i><span>${isEn ? 'Global Hubs & International Airports' : 'Dünya Metropolleri & Popüler Havalimanları'}</span>`;
         }
         if (destInput) {
-            destInput.placeholder = "Dünya havalimanları (Örn: Paris, Londra, Roma, Berlin, Dubai)";
+            destInput.placeholder = isEn ? "Global airports (e.g. Paris, London, Rome, Berlin, Dubai)" : "Dünya havalimanları (Örn: Paris, Londra, Roma, Berlin, Dubai)";
         }
     }
 
@@ -254,14 +255,21 @@ function updatePaxSummaryDisplay() {
     const label = document.getElementById("paxDisplayLabel");
     if (!label) return;
 
+    const isEn = window.currentAppLang === 'en';
     const parts = [];
-    parts.push(`${flightPax.adults} Yetişkin`);
-    if (flightPax.children > 0) parts.push(`${flightPax.children} Çocuk`);
-    if (flightPax.infants > 0) parts.push(`${flightPax.infants} Bebek`);
+    const adultWord = isEn ? (flightPax.adults > 1 ? "Adults" : "Adult") : "Yetişkin";
+    const childWord = isEn ? (flightPax.children > 1 ? "Children" : "Child") : "Çocuk";
+    const infantWord = isEn ? (flightPax.infants > 1 ? "Infants" : "Infant") : "Bebek";
+
+    parts.push(`${flightPax.adults} ${adultWord}`);
+    if (flightPax.children > 0) parts.push(`${flightPax.children} ${childWord}`);
+    if (flightPax.infants > 0) parts.push(`${flightPax.infants} ${infantWord}`);
 
     let str = parts.join(", ");
     if (currentFlightCabin === 'business') {
         str += " • Business";
+    } else if (isEn) {
+        str += " • Economy";
     }
     label.textContent = str;
 }
@@ -620,16 +628,25 @@ function renderTransportResults(data, searchReq) {
 
     let html = '';
 
+    const isEn = window.currentAppLang === 'en';
     // Uçuş Bilgi ve Kriter Özeti Çubuğu
-    const paxSummaryText = `${searchReq.adults || 1} Yetişkin${searchReq.children ? ', ' + searchReq.children + ' Çocuk' : ''}${searchReq.infants ? ', ' + searchReq.infants + ' Bebek' : ''} • ${searchReq.cabin_class === 'business' ? 'Business' : 'Ekonomi'}`;
-    const tripTypeText = searchReq.trip_type === 'round_trip' ? `Gidiş - Dönüş (${searchReq.departure_date} ⇄ ${searchReq.return_date})` : `Tek Yön (${searchReq.departure_date})`;
+    const adultWord = isEn ? ((searchReq.adults || 1) > 1 ? "Adults" : "Adult") : "Yetişkin";
+    const childWord = isEn ? (searchReq.children > 1 ? "Children" : "Child") : "Çocuk";
+    const infantWord = isEn ? (searchReq.infants > 1 ? "Infants" : "Infant") : "Bebek";
+    const paxSummaryText = `${searchReq.adults || 1} ${adultWord}${searchReq.children ? ', ' + searchReq.children + ' ' + childWord : ''}${searchReq.infants ? ', ' + searchReq.infants + ' ' + infantWord : ''} • ${searchReq.cabin_class === 'business' ? 'Business' : (isEn ? 'Economy' : 'Ekonomi')}`;
+    const tripTypeText = searchReq.trip_type === 'round_trip' 
+        ? `${isEn ? 'Round-Trip' : 'Gidiş - Dönüş'} (${searchReq.departure_date} ⇄ ${searchReq.return_date})` 
+        : `${isEn ? 'One-Way' : 'Tek Yön'} (${searchReq.departure_date})`;
+    const scopeLabel = currentFlightScope === 'domestic' 
+        ? (isEn ? '🇹🇷 Domestic Flight' : '🇹🇷 Yurtiçi Uçuş') 
+        : (isEn ? '🌍 International Flight' : '🌍 Yurtdışı Uçuş');
 
     html += `
         <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-5 sm:p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl border border-slate-700">
             <div>
                 <div class="flex flex-wrap items-center gap-2 mb-2">
                     <span class="px-3 py-1 rounded-full text-[10.5px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-2xs">
-                        ${currentFlightScope === 'domestic' ? '🇹🇷 Yurtiçi Uçuş' : '🌍 Yurtdışı Uçuş'}
+                        ${scopeLabel}
                     </span>
                     <span class="px-3 py-1 rounded-full text-[10.5px] font-bold bg-white/10 text-amber-200 border border-white/10">
                         ${tripTypeText}
@@ -642,14 +659,14 @@ function renderTransportResults(data, searchReq) {
                 </h3>
             </div>
             <div class="text-left md:text-right border-t md:border-t-0 pt-3 md:pt-0 w-full md:w-auto">
-                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Seçili Yolcular & Sınıf</div>
+                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">${isEn ? 'Selected Passengers & Class' : 'Seçili Yolcular & Sınıf'}</div>
                 <div class="text-sm font-black text-amber-300 flex items-center md:justify-end gap-1.5 mt-0.5">
                     <i class="fa-solid fa-user-group text-xs"></i>
                     <span>${paxSummaryText}</span>
                 </div>
                 <div class="text-[10px] text-emerald-400 font-bold mt-1 flex items-center md:justify-end gap-1">
                     <i class="fa-solid fa-lock text-[9px]"></i>
-                    <span>Doğrudan Taşıyıcı Derin Linki</span>
+                    <span>${isEn ? 'Direct Carrier Deep Link' : 'Doğrudan Taşıyıcı Derin Linki'}</span>
                 </div>
             </div>
         </div>
@@ -762,18 +779,21 @@ function renderTransportResults(data, searchReq) {
 // Bilet Kartlarını Profesyonel Formatla Üret (Google Flights & Skyscanner Standardı)
 function generateTicketCardsHtml(tickets, searchReq) {
     const isRoundTrip = (searchReq.trip_type === 'round_trip');
-    const totalPaxText = `${searchReq.passengers || 1} Yolcu`;
+    const isEn = window.currentAppLang === 'en';
+    const totalPaxText = `${searchReq.passengers || 1} ${isEn ? (searchReq.passengers > 1 ? 'Passengers' : 'Passenger') : 'Yolcu'}`;
 
     return tickets.map(ticket => {
         const isFlight = (ticket.transport_type === 'flight');
         const directLink = ticket.direct_link || ticket.booking_link || ticket.official_link || '#';
-        const actionButtonText = ticket.transport_type === 'train' 
-            ? `TCDD'de Aç (${ticket.flight_number || 'Sefer'})` 
-            : (ticket.transport_type === 'bus' 
-                ? `Obilet'te Seç` 
-                : (ticket.transport_type === 'flight' 
-                    ? `Bileti Al (${ticket.departure_time || 'Sefer'})` 
-                    : `Bileti Al`));
+        const actionButtonText = isEn 
+            ? `Select Deal (${ticket.departure_time || 'Depart'})`
+            : (ticket.transport_type === 'train' 
+                ? `TCDD'de Aç (${ticket.flight_number || 'Sefer'})` 
+                : (ticket.transport_type === 'bus' 
+                    ? `Obilet'te Seç` 
+                    : (ticket.transport_type === 'flight' 
+                        ? `Bileti Al (${ticket.departure_time || 'Sefer'})` 
+                        : `Bileti Al`)));
 
         if (!isFlight) {
             // Otobüs, Tren, Feribot Kartı
@@ -1021,31 +1041,31 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     let priceText = '';
                                     let scopeBadge = '';
                                     if (p.channel === 'official') {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Resmi Bilet';
-                                        scopeBadge = isRoundTrip ? '<span class="text-[9px] font-semibold opacity-70 ml-0.5">(Resmi Taban)</span>' : '';
+                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Official' : 'Resmi Bilet');
+                                        scopeBadge = isRoundTrip ? `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Base' : 'Resmi Taban'})</span>` : '';
                                     } else if (p.channel === 'agency') {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç';
-                                        scopeBadge = isRoundTrip ? '<span class="text-[9px] font-semibold opacity-70 ml-0.5">(Gidiş-Dönüş)</span>' : '';
+                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Select' : 'Seç');
+                                        scopeBadge = isRoundTrip ? `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Round-Trip' : 'Gidiş-Dönüş'})</span>` : '';
                                     } else if (p.channel === 'trip') {
-                                        priceText = 'Canlı Fiyatı Gör';
+                                        priceText = isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör';
                                         scopeBadge = '';
                                     } else if (p.channel === 'turna') {
-                                        priceText = 'Canlı Fiyatı Gör';
+                                        priceText = isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör';
                                         scopeBadge = '';
                                     } else {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString('tr-TR')} ₺` : 'Seç';
+                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Select' : 'Seç');
                                     }
                                     return `
                                     <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition" title="${p.name} üzerinden canlı sefer ve fiyat kontrolü">
-                                        <span>${icon}${p.name}</span>
-                                        <span class="${p.is_best ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : 'text-slate-900')} font-black">${priceText}${scopeBadge}</span>
-                                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
+                                         <span>${icon}${p.name}</span>
+                                         <span class="${p.is_best ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : 'text-slate-900')} font-black">${priceText}${scopeBadge}</span>
+                                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                     `;
                                 }).join('')}
                                 ${ticket.hotel_link ? `
                                     <a href="${ticket.hotel_link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100 font-bold transition">
-                                        <span>🏨 ${toCity} Otelleri (Booking.com)</span>
+                                        <span>🏨 ${toCity} ${isEn ? 'Hotels (Booking.com)' : 'Otelleri (Booking.com)'}</span>
                                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                 ` : ''}
@@ -1058,13 +1078,13 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     <div class="lg:w-64 border-t lg:border-t-0 lg:border-l border-slate-200/90 pt-4 lg:pt-0 lg:pl-6 flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-3">
                         <div class="text-left lg:text-right">
                             <div class="text-[10.5px] font-black uppercase tracking-wider text-slate-400">
-                                ${isRoundTrip ? 'Gidiş-Dönüş Toplam' : 'Tek Yön Net Fiyat'}
+                                ${isRoundTrip ? (isEn ? 'Round-Trip Total' : 'Gidiş-Dönüş Toplam') : (isEn ? 'One-Way Net Fare' : 'Tek Yön Net Fiyat')}
                             </div>
                             <div class="text-2xl sm:text-3xl font-black text-[#0F172A] tracking-tight">
-                                ${ticket.price ? `${Number(ticket.price).toLocaleString('tr-TR')} ${ticket.currency || '₺'}` : 'Canlı Fiyat'}
+                                ${ticket.price ? `${Number(ticket.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${ticket.currency || '₺'}` : (isEn ? 'Live Fare' : 'Canlı Fiyat')}
                             </div>
                             <div class="text-[10px] text-slate-500 font-medium mt-0.5">
-                                ${totalPaxText} için toplam${isRoundTrip && ticket.price ? ` <span class="text-amber-700 font-semibold">(Tek yön ort. ~${Math.round(ticket.price / (searchReq.passengers || 1) / 2).toLocaleString('tr-TR')} ₺)</span>` : ''}
+                                ${totalPaxText} ${isEn ? 'total' : 'için toplam'}${isRoundTrip && ticket.price ? ` <span class="text-amber-700 font-semibold">(${isEn ? 'One-way avg.' : 'Tek yön ort.'} ~${Math.round(ticket.price / (searchReq.passengers || 1) / 2).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺)</span>` : ''}
                             </div>
                         </div>
 
@@ -1077,9 +1097,9 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <div class="hidden lg:flex flex-col items-end gap-0.5 text-[9.5px] text-slate-400">
                             <div class="flex items-center gap-1 text-emerald-600 font-bold">
                                 <i class="fa-solid fa-shield-check"></i>
-                                <span>Doğrulanmış Taban Fiyat</span>
+                                <span>${isEn ? 'Verified Base Fare' : 'Doğrulanmış Taban Fiyat'}</span>
                             </div>
-                            <span class="italic text-slate-400">*Acente servis bedeli veya kur farkına göre bilet ekranında anlık değişebilir.</span>
+                            <span class="italic text-slate-400">${isEn ? '*Fare may vary during provider checkout due to currency or fees.' : '*Acente servis bedeli veya kur farkına göre bilet ekranında anlık değişebilir.'}</span>
                         </div>
                     </div>
 
@@ -1954,113 +1974,16 @@ window.generateTicketCardsHtml = generateTicketCardsHtml;
 window.updateAirportHints = updateAirportHints;
 window.handleRadarSubscribe = handleRadarSubscribe;
 
-// ==================== ÇOKLU DİL MOTORU (TR / EN I18N) ====================
-const APP_TRANSLATIONS = {
-    tr: {
-        explore: "Rota Keşfet",
-        priceAlert: "Fiyat Alarmı",
-        hotels: "Oteller",
-        tabFlight: "✈️ Uçak Bileti",
-        tabBus: "🚌 Otobüs",
-        tabTrain: "🚆 Tren",
-        tabFerry: "⛴️ Feribot",
-        tabHotel: "🏨 Otel",
-        oneWay: "Tek Yön",
-        roundTrip: "Gidiş - Dönüş",
-        domestic: "🇹🇷 Yurtiçi",
-        intl: "🌍 Yurtdışı",
-        origin: "Nereden",
-        dest: "Nereye",
-        depDate: "Gidiş Tarihi",
-        retDate: "Dönüş Tarihi",
-        paxLabel: "Yolcu & Sınıf",
-        searchBtnFlight: "Uçuşları Bul →",
-        searchBtnHotel: "Otelleri ve Fiyatları Bul →",
-        brandSubtext: "Bağımsız Seyahat, Ulaşım ve Fiyat Karşılaştırma Portalı"
-    },
-    en: {
-        explore: "Explore Routes",
-        priceAlert: "Price Alerts",
-        hotels: "Hotels",
-        tabFlight: "✈️ Flights",
-        tabBus: "🚌 Bus",
-        tabTrain: "🚆 Train",
-        tabFerry: "⛴️ Ferry",
-        tabHotel: "🏨 Hotel",
-        oneWay: "One-Way",
-        roundTrip: "Round-Trip",
-        domestic: "🇹🇷 Domestic",
-        intl: "🌍 International",
-        origin: "From",
-        dest: "To",
-        depDate: "Departure Date",
-        retDate: "Return Date",
-        paxLabel: "Passengers & Class",
-        searchBtnFlight: "Find Flights →",
-        searchBtnHotel: "Find Hotels & Fares →",
-        brandSubtext: "Independent Travel & Real-Time Fare Comparison Meta-Engine"
-    }
-};
-
-function setAppLanguage(lang) {
-    window.currentAppLang = lang;
-    try {
-        localStorage.setItem("hakiki_lang", lang);
-    } catch (e) {}
-
-    const trBtn = document.getElementById("langBtn-tr");
-    const enBtn = document.getElementById("langBtn-en");
-    if (trBtn && enBtn) {
-        if (lang === 'en') {
-            enBtn.className = "px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition";
-            trBtn.className = "px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition";
-        } else {
-            trBtn.className = "px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition";
-            enBtn.className = "px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition";
-        }
-    }
-
-    const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.tr;
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (t[key]) el.textContent = t[key];
-    });
-
-    // Ana Tab Butonları
-    const tabFlight = document.querySelector("#tabBtn-flight span");
-    const tabBus = document.querySelector("#tabBtn-bus span");
-    const tabTrain = document.querySelector("#tabBtn-train span");
-    const tabFerry = document.querySelector("#tabBtn-ferry span");
-    const tabHotel = document.querySelector("#tabBtn-hotel span");
-    if (tabFlight) tabFlight.textContent = t.tabFlight;
-    if (tabBus) tabBus.textContent = t.tabBus;
-    if (tabTrain) tabTrain.textContent = t.tabTrain;
-    if (tabFerry) tabFerry.textContent = t.tabFerry;
-    if (tabHotel) tabHotel.textContent = t.tabHotel;
-
-    // Arama Butonları
-    const searchBtn = document.getElementById("searchSubmitBtnText");
-    if (searchBtn) searchBtn.textContent = t.searchBtnFlight;
-
-    // Etiketler
-    const originLabel = document.querySelector("#originFieldLabel span");
-    const destLabel = document.querySelector("#destFieldLabel span");
-    const depDateLabel = document.querySelector("#depDateLabel span");
-    const retDateLabel = document.querySelector("#returnDateLabel span");
-    if (originLabel) originLabel.textContent = t.origin;
-    if (destLabel) destLabel.textContent = t.dest;
-    if (depDateLabel) depDateLabel.textContent = t.depDate;
-    if (retDateLabel) retDateLabel.textContent = t.retDate;
-}
-
-window.setAppLanguage = setAppLanguage;
-
-// Sayfa açıldığında dil tercihini yükle
+// ==================== DİL MOTORU DESTEĞİ ====================
+// Dil motoru index_v2.html içerisindeki window.APP_TRANSLATIONS ve window.setAppLanguage tarafından yönetilmektedir.
+// Sayfa açılışında kaydedilmiş dil tercihi uygulanır.
 document.addEventListener("DOMContentLoaded", () => {
-    const saved = localStorage.getItem("hakiki_lang");
-    if (saved && saved === 'en') {
-        setAppLanguage('en');
-    }
+    try {
+        const saved = localStorage.getItem("hakiki_lang");
+        if (saved && typeof window.setAppLanguage === 'function') {
+            window.setAppLanguage(saved);
+        }
+    } catch (e) {}
 });
 
 
