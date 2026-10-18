@@ -37,8 +37,8 @@ class Settings:
     AFFILIATE_FERRY_SUBID: str = os.getenv("AFFILIATE_FERRY_SUBID", "hakikibilet")
     AFFILIATE_BOOKING_AID: str = os.getenv("AFFILIATE_BOOKING_AID", "585474")
     AFFILIATE_AGODA_CID: str = os.getenv("AFFILIATE_AGODA_CID", "hakikibilet")
-    AFFILIATE_TRIP_ALLIANCE_ID: str = os.getenv("AFFILIATE_TRIP_ALLIANCE_ID", "")
-    AFFILIATE_TRIP_SID: str = os.getenv("AFFILIATE_TRIP_SID", "hakikibilet")
+    AFFILIATE_TRIP_ALLIANCE_ID: str = os.getenv("AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
+    AFFILIATE_TRIP_SID: str = os.getenv("AFFILIATE_TRIP_SID", "333747492")
 
     # RapidAPI Booking.com Canlı Otel Entegrasyonu
     RAPIDAPI_BOOKING_KEY: str = os.getenv("RAPIDAPI_BOOKING_KEY", "148a35e0b3msh6fee0694743036ap1fba10jsn5361646b970c")
