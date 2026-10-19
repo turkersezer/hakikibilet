@@ -800,10 +800,19 @@ function generateTicketCardsHtml(tickets, searchReq) {
                 } else if (winnerChannel === 'agency') {
                     flightActionText = isEn ? `Book on ${winnerLabel} (${formattedTicketPrice})` : `${winnerLabel}'dan Al (${formattedTicketPrice})`;
                 } else {
-                    flightActionText = isEn ? `Book Official (${formattedTicketPrice})` : `Bileti Al (${formattedTicketPrice})`;
+                    let carrierBrand = 'Resmi Web';
+                    if (ticket.carrier) {
+                        const cl = ticket.carrier.toLowerCase();
+                        if (cl.includes('pegasus')) carrierBrand = "Pegasus'tan";
+                        else if (cl.includes('ajet') || cl.includes('anadolu')) carrierBrand = "AJet'ten";
+                        else if (cl.includes('türk') || cl.includes('thy')) carrierBrand = "THY'den";
+                        else if (cl.includes('sunexpress')) carrierBrand = "SunExpress'ten";
+                        else carrierBrand = `${ticket.carrier}'den`;
+                    }
+                    flightActionText = isEn ? `Book Official (${formattedTicketPrice})` : `${carrierBrand} Al (${formattedTicketPrice})`;
                 }
             } else {
-                flightActionText = isEn ? 'View Live Fares on Trip.com →' : 'Trip.com ile Canlı Seferleri Gör →';
+                flightActionText = isEn ? 'View Live Fares →' : 'Canlı Seferleri Gör →';
             }
         }
 

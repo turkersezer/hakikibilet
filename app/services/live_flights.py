@@ -377,7 +377,8 @@ def fetch_live_flights_from_google(
             trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "")
             trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "")
             trip_aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
-            trip_flight_link = f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{from_code.lower()}-{to_code.lower()}?flighttype={trip_flighttype}&dcity={from_code.lower()}&acity={to_code.lower()}&ddate={departure_date}{trip_ret_param}&curr=TRY{trip_aff_param}"
+            trip_airline_param = f"&airline={carrier_code}&airlineCode={carrier_code}" if carrier_code else ""
+            trip_flight_link = f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{from_code.lower()}-{to_code.lower()}?flighttype={trip_flighttype}&dcity={from_code.lower()}&acity={to_code.lower()}&ddate={departure_date}{trip_ret_param}&curr=TRY{trip_airline_param}{trip_aff_param}"
 
             # Booking.com Varış Şehri Canlı Otel Linki (Travelpayouts AID: 585474)
             booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
@@ -437,9 +438,12 @@ def fetch_live_flights_from_google(
             enuygun_live = ota_for_flight.get("agency")
             kiwi_live = ota_for_flight.get("kiwi")
 
-            # Trip.com: OTA/Travelpayouts indirimli fiyat bulduysa onu kullanır,
-            # aksi halde Trip.com'un IATA resmi tarife fiyatını (price) baz alarak eşitlik yarışına sokar.
-            trip_price = float(trip_live["price"]) if (trip_live and trip_live.get("price") and float(trip_live["price"]) > 0) else float(price)
+            # KESİN DOĞRULUK KURALI:
+            # Trip.com (veya herhangi bir acente) için yalnızca API'den doğrulanmış canlı fiyat geldiyse
+            # yarışmaya sokulur. Asla havayolu taban fiyatı (price) varsayılan olarak kopyalanmaz!
+            # Fiyat teyit edilmemişse 'None' atanır; böylece resmi havayolu (Pegasus, THY vb.) hak ettiği
+            # gibi 1. sırayı alır ve kullanıcıya yanıltıcı fiyat vaat edilmez.
+            trip_price = float(trip_live["price"]) if (trip_live and trip_live.get("price") and float(trip_live["price"]) > 0) else None
             trip_url = trip_live.get("url") if (trip_live and trip_live.get("url")) else trip_flight_link
 
             raw_providers = [
