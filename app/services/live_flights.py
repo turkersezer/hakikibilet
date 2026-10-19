@@ -13,8 +13,10 @@ Gelişmiş Özellikler:
   ve leg[17] üzerinden uçak modelini (Airbus A321, Boeing 737) anlık ayrıştırır.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime, timedelta
+import time
+import copy
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
@@ -31,12 +33,72 @@ logger = logging.getLogger(__name__)
 MONTHS_TR = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
 DAYS_TR = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
 
+# 15 Dakikalık Akıllı Uçuş Önbelleği (Aynı rotayı arayan kullanıcılar için hız ve IP koruması)
+_FLIGHT_CACHE: Dict[str, Dict[str, Any]] = {}
+FLIGHT_CACHE_TTL_SECONDS = 900  # 15 dakika
+
+# Gelir Modeli Komisyon Öncelik Puanları (Fiyatlar eşit olduğunda en yüksek puanlı ortak kazanır)
+PROVIDER_COMMISSION_PRIORITY = {
+    "trip": 100,      # Trip.com (Onaylı Resmi Gelir Ortağı - En Yüksek Öncelik)
+    "kiwi": 85,       # Kiwi / Travelpayouts
+    "agency": 50,     # Enuygun / OTA
+    "official": 10,   # Resmi Havayolu Web Sitesi
+    "meta": 5,        # Google Flights
+}
+
+
 def format_tr_date(dt: datetime) -> str:
     return f"{dt.day} {MONTHS_TR[dt.month - 1]} {DAYS_TR[dt.weekday()]}"
+
 
 def parse_time(t_list) -> tuple:
     padded = [*(t_list or []), None, None]
     return (padded[0] or 0, padded[1] or 0)
+
+
+def select_winning_offer(providers: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Optional[Dict[str, Any]]]:
+    """
+    Kazanan Teklif (Winner Offer) ve Eşit Fiyat (Tie-Breaker) Karar Motoru:
+    1. Yalnızca gerçek, doğrulanmış canlı fiyatı olan (price > 0) sağlayıcıları fiyat yarışmasına sokar.
+    2. En ucuz fiyatı veren sağlayıcı kazanır (price ASC).
+    3. Fiyatlar kuruşu kuruşuna eşitse, gelir modelimize göre komisyon önceliği (commission_priority)
+       en yüksek olan sağlayıcı (ör. Trip.com) otomatik olarak 1. sıraya ve Ana 'Bileti Al' butonuna yerleşir.
+    4. Henüz canlı fiyatı çekilmemiş alternatif kanallar (price=None) uydurma fiyat yazılmadan altta sıralanır.
+    """
+    priced = []
+    unpriced = []
+    for p in providers:
+        p_copy = dict(p)
+        channel = p_copy.get("channel", "meta")
+        if "commission_priority" not in p_copy:
+            p_copy["commission_priority"] = PROVIDER_COMMISSION_PRIORITY.get(channel, 0)
+        raw_p = p_copy.get("price")
+        if raw_p is not None and float(raw_p) > 0:
+            p_copy["price"] = round(float(raw_p), 2)
+            p_copy["verified_live"] = True
+            priced.append(p_copy)
+        else:
+            p_copy["price"] = None
+            p_copy["verified_live"] = False
+            unpriced.append(p_copy)
+
+    # Fiyatı olanları: Önce EN DÜŞÜK FİYAT, eşitlikte EN YÜKSEK KOMİSYON ÖNCELİĞİ ile sırala
+    priced.sort(key=lambda x: (x["price"], -int(x.get("commission_priority", 0))))
+    # Fiyatı henüz olmayan alternatif kanalları komisyon önceliğine göre sırala
+    unpriced.sort(key=lambda x: -int(x.get("commission_priority", 0)))
+
+    ordered = priced + unpriced
+    winner = None
+    for idx, item in enumerate(ordered):
+        if priced:
+            item["is_best"] = (idx == 0)
+        else:
+            item["is_best"] = (idx == 0)
+        if item["is_best"]:
+            winner = item
+
+    return ordered, winner
+
 
 def is_flight_item(item: Any) -> bool:
     """
@@ -60,12 +122,14 @@ def is_flight_item(item: Any) -> bool:
         and len(leg[6]) == 3
     )
 
+
 def extract_flights_from_payload(payload: Any) -> List[Any]:
     """
     Payload ağacındaki tüm dalları (en ucuz fırsat biletleri, standart seferler ve yeni kategoriler)
     rekürsif olarak tarar ve tüm uçuş nesnelerini çıkarır.
     """
     items = []
+
     def scan_recursive(obj):
         if is_flight_item(obj):
             items.append(obj)
@@ -76,103 +140,22 @@ def extract_flights_from_payload(payload: Any) -> List[Any]:
         elif isinstance(obj, dict):
             for v in obj.values():
                 scan_recursive(v)
+
     scan_recursive(payload)
     return items
 
-def fetch_live_flights_from_google(
-    origin_city_name: str,
-    dest_city_name: str,
-    departure_date: str,
-    return_date: Optional[str] = None,
-    passengers: int = 1,
-    trip_type: str = "one_way",
-    cabin_class: str = "economy",
-    adults: int = 1,
-    children: int = 0,
-    infants: int = 0
-) -> List[Dict[str, Any]]:
-    """
-    Google Flights altyapısını kullanarak canlı havayolu seferlerini, net fiyatlarını ve kabin sınıfını çeker.
-    Tüm kategorileri ve havalimanı çiftlerini tarayarak eksiksiz sefer listesi döndürür.
-    """
-    origin_city = find_city(origin_city_name)
-    dest_city = find_city(dest_city_name)
 
-    if not origin_city or not dest_city:
-        return []
-
-    if not origin_city.get("has_airport") or not dest_city.get("has_airport"):
-        return []
-
-    # Yolcu sayılarını normalize et
-    adults = max(1, adults or passengers or 1)
-    children = max(0, children or 0)
-    infants = max(0, infants or 0)
-    total_passengers = adults + children + infants
-
-    # Çoklu havalimanı desteği (ör. İstanbul için hem SAW hem IST)
-    def get_airport_codes(city: Dict[str, Any]) -> List[str]:
-        codes = []
-        if city.get("iata"):
-            codes.append(city["iata"])
-        if city.get("alt_iata") and city["alt_iata"] not in codes:
-            codes.append(city["alt_iata"])
-        return codes
-
-    orig_codes = get_airport_codes(origin_city)
-    dest_codes = get_airport_codes(dest_city)
-
-    is_round = (trip_type == "round_trip" and return_date)
-    is_round_str = "round-trip" if is_round else "one-way"
-    seat_mode = "business" if cabin_class == "business" else "economy"
-
-    def query_single_pair(orig_code: str, dest_code: str):
-        try:
-            flight_queries = [FlightQuery(date=departure_date, from_airport=orig_code, to_airport=dest_code)]
-            if is_round and return_date:
-                flight_queries.append(FlightQuery(date=return_date, from_airport=dest_code, to_airport=orig_code))
-
-            q = create_query(
-                flights=flight_queries,
-                seat=seat_mode,
-                trip=is_round_str,
-                passengers=Passengers(adults=adults, children=children, infants_in_seat=0, infants_on_lap=infants),
-                currency="TRY",
-                language="tr"
-            )
-            html = fetch_flights_html(q)
-            parser = LexborHTMLParser(html)
-            script = parser.css_first('script.ds\\:1')
-            if not script:
-                return []
-            data_str = script.text().split('data:', 1)[1].rsplit(',', 1)[0]
-            payload = json.loads(data_str)
-            return extract_flights_from_payload(payload)
-        except Exception as e:
-            logger.warning(f"Live flight error for {orig_code}->{dest_code}: {e}")
-            return []
-
-    pairs = [(o, d) for o in orig_codes for d in dest_codes]
-    all_raw_flights = []
-
-    # Paralel isteklerle tüm havalimanı kombinasyonlarını tara
-    with ThreadPoolExecutor(max_workers=max(1, len(pairs))) as executor:
-        futures = [executor.submit(query_single_pair, o, d) for o, d in pairs]
-        for f in as_completed(futures):
-            all_raw_flights.extend(f.result())
-
-    if not all_raw_flights:
-        return []
-
-    # Ham seferleri ayrıştır ve mükerrerleri tekilleştir (en uygun fiyatı koru)
-    unique_flights = {}
-    for itm in all_raw_flights:
+def _parse_unique_flights(raw_items: List[Any]) -> List[Dict[str, Any]]:
+    """Ham Google Flights öğelerini ayrıştırır, mükerrerleri tekilleştirir ve fiyata göre sıralar."""
+    unique_flights: Dict[tuple, Dict[str, Any]] = {}
+    for itm in raw_items:
         try:
             f0, price_block = itm[0], itm[1]
             raw_price = price_block[0][1] if price_block and price_block[0] else None
             if raw_price is None:
                 continue
             price = float(raw_price)
+            booking_token = price_block[1] if len(price_block) > 1 and isinstance(price_block[1], str) else None
 
             legs = f0[2]
             if not legs or not isinstance(legs[0], list):
@@ -206,12 +189,21 @@ def fetch_live_flights_from_google(
 
             flight_no = f"{carrier_code} {fn_code}".strip() if (carrier_code and fn_code) else f"{from_code}-{to_code}"
 
+            total_duration_mins = sum(
+                (leg[11] if len(leg) > 11 and isinstance(leg[11], int) else 75)
+                for leg in legs
+            )
+            hours = total_duration_mins // 60
+            mins = total_duration_mins % 60
+            duration_str = f"{hours} sa {mins} dk" if hours > 0 else f"{mins} dk"
+
             sig = (airline_name, from_code, to_code, dep_time, arr_time)
             if sig not in unique_flights or price < unique_flights[sig]["price"]:
                 unique_flights[sig] = {
                     "f0": f0,
                     "legs": legs,
                     "price": price,
+                    "booking_token": booking_token,
                     "from_code": from_code,
                     "to_code": to_code,
                     "dep_t": dep_t,
@@ -221,22 +213,132 @@ def fetch_live_flights_from_google(
                     "carrier_code": carrier_code,
                     "fn_code": fn_code,
                     "airline_name": airline_name,
-                    "flight_no": flight_no
+                    "flight_no": flight_no,
+                    "total_duration_mins": total_duration_mins,
+                    "duration_str": duration_str,
+                    "is_direct": (len(legs) == 1),
                 }
         except Exception as err:
             logger.warning(f"Error parsing raw flight item: {err}")
             continue
 
-    # Tüm biletleri en ucuzdan en pahalıya, aynı fiyattakileri ise en erken kalkış saatine göre sırala (Örn: 00:20 önce gelsin)
-    sorted_raw = sorted(unique_flights.values(), key=lambda x: (x["price"], x["dep_t"][0] * 60 + x["dep_t"][1]))
+    return sorted(unique_flights.values(), key=lambda x: (x["price"], x["dep_t"][0] * 60 + x["dep_t"][1]))
 
-    results: List[Dict[str, Any]] = []
+
+def fetch_live_flights_from_google(
+    origin_city_name: str,
+    dest_city_name: str,
+    departure_date: str,
+    return_date: Optional[str] = None,
+    passengers: int = 1,
+    trip_type: str = "one_way",
+    cabin_class: str = "economy",
+    adults: int = 1,
+    children: int = 0,
+    infants: int = 0
+) -> List[Dict[str, Any]]:
+    """
+    Google Flights altyapısını kullanarak canlı havayolu seferlerini, net fiyatlarını ve kabin sınıfını çeker.
+    Tüm kategorileri ve havalimanı çiftlerini tarayarak eksiksiz sefer listesi döndürür.
+    """
+    origin_city = find_city(origin_city_name)
+    dest_city = find_city(dest_city_name)
+
+    if not origin_city or not dest_city:
+        return []
+
+    if not origin_city.get("has_airport") or not dest_city.get("has_airport"):
+        return []
+
+    # Yolcu sayılarını normalize et
+    adults = max(1, adults or passengers or 1)
+    children = max(0, children or 0)
+    infants = max(0, infants or 0)
+
     orig_slug = origin_city.get("slug", origin_city_name.lower())
     dest_slug = dest_city.get("slug", dest_city_name.lower())
+    is_round = (trip_type == "round_trip" and bool(return_date))
+    seat_mode = "business" if cabin_class == "business" else "economy"
+
+    # 1. Önbellek (Cache) Kontrolü (15 Dakika TTL)
+    cache_key = f"{orig_slug}:{dest_slug}:{departure_date}:{return_date or ''}:{'rt' if is_round else 'ow'}:{seat_mode}:{adults}:{children}:{infants}"
+    now_ts = time.time()
+    cached_entry = _FLIGHT_CACHE.get(cache_key)
+    if cached_entry and (now_ts - cached_entry["ts"] < FLIGHT_CACHE_TTL_SECONDS):
+        return copy.deepcopy(cached_entry["data"])
+
+    # Çoklu havalimanı desteği (ör. İstanbul için hem SAW hem IST)
+    def get_airport_codes(city: Dict[str, Any]) -> List[str]:
+        codes = []
+        if city.get("iata"):
+            codes.append(city["iata"])
+        if city.get("alt_iata") and city["alt_iata"] not in codes:
+            codes.append(city["alt_iata"])
+        return codes
+
+    orig_codes = get_airport_codes(origin_city)
+    dest_codes = get_airport_codes(dest_city)
+    is_round_str = "round-trip" if is_round else "one-way"
+
+    def query_single_pair(orig_code: str, dest_code: str, leg_date: str, mode_str: str, ret_dt_str: Optional[str] = None):
+        try:
+            flight_queries = [FlightQuery(date=leg_date, from_airport=orig_code, to_airport=dest_code)]
+            if mode_str == "round-trip" and ret_dt_str:
+                flight_queries.append(FlightQuery(date=ret_dt_str, from_airport=dest_code, to_airport=orig_code))
+
+            q = create_query(
+                flights=flight_queries,
+                seat=seat_mode,
+                trip=mode_str,
+                passengers=Passengers(adults=adults, children=children, infants_in_seat=0, infants_on_lap=infants),
+                currency="TRY",
+                language="tr"
+            )
+            html = fetch_flights_html(q)
+            parser = LexborHTMLParser(html)
+            script = parser.css_first('script.ds\\:1')
+            if not script:
+                return []
+            data_str = script.text().split('data:', 1)[1].rsplit(',', 1)[0]
+            payload = json.loads(data_str)
+            return extract_flights_from_payload(payload)
+        except Exception as e:
+            logger.warning(f"Live flight error for {orig_code}->{dest_code} ({leg_date}): {e}")
+            return []
+
+    pairs = [(o, d) for o in orig_codes for d in dest_codes]
+    all_raw_flights = []
+    all_raw_return_flights = []
+
+    # Paralel isteklerle hem gidiş (veya gidiş-dönüş) hem de gerçek dönüş seferlerini aynı anda tara
+    max_workers = max(1, len(pairs) * (2 if is_round else 1))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        outbound_futures = [
+            executor.submit(query_single_pair, o, d, departure_date, is_round_str, return_date if is_round else None)
+            for o, d in pairs
+        ]
+        return_futures = []
+        if is_round and return_date:
+            return_futures = [
+                executor.submit(query_single_pair, d, o, return_date, "one-way", None)
+                for o, d in pairs
+            ]
+
+        for f in as_completed(outbound_futures):
+            all_raw_flights.extend(f.result())
+        for f in as_completed(return_futures):
+            all_raw_return_flights.extend(f.result())
+
+    if not all_raw_flights:
+        return []
+
+    sorted_raw = _parse_unique_flights(all_raw_flights)
+    parsed_return_flights = _parse_unique_flights(all_raw_return_flights) if (is_round and all_raw_return_flights) else []
+
+    results: List[Dict[str, Any]] = []
 
     for idx, item in enumerate(sorted_raw):
         try:
-            f0 = item["f0"]
             legs = item["legs"]
             first_leg = legs[0]
             last_leg = legs[-1]
@@ -244,12 +346,13 @@ def fetch_live_flights_from_google(
             from_code = item["from_code"]
             to_code = item["to_code"]
             dep_t = item["dep_t"]
-            arr_t = item["arr_t"]
             dep_time = item["dep_time"]
             arr_time = item["arr_time"]
             carrier_code = item["carrier_code"]
             airline_name = item["airline_name"]
             flight_no = item["flight_no"]
+            duration_str = item["duration_str"]
+            is_direct = item["is_direct"]
 
             # Tarihler
             if len(first_leg) > 20 and isinstance(first_leg[20], list) and len(first_leg[20]) == 3:
@@ -265,24 +368,13 @@ def fetch_live_flights_from_google(
             dep_date_formatted = format_tr_date(dep_dt)
             arr_date_formatted = format_tr_date(arr_dt)
             is_next_day = (arr_dt.date() > dep_dt.date())
-
-            # Uçuş süresi
-            total_duration_mins = sum(
-                (leg[11] if len(leg) > 11 and isinstance(leg[11], int) else 75)
-                for leg in legs
-            )
-            hours = total_duration_mins // 60
-            mins = total_duration_mins % 60
-            duration_str = f"{hours} sa {mins} dk" if hours > 0 else f"{mins} dk"
-
-            is_direct = (len(legs) == 1)
             is_night_trip = (dep_t[0] >= 22 or dep_t[0] <= 5)
 
             carrier_lower = airline_name.lower()
             plane_type = first_leg[17] if (len(first_leg) > 17 and isinstance(first_leg[17], str) and first_leg[17]) else "Uçak"
             is_biz = (seat_mode == "business")
 
-            # Rezervasyon ve acente linkleri
+            # Rezervasyon ve acente derin linkleri (Doğrudan sefer seçim ekranına gider)
             enuygun_dep_date = datetime.strptime(departure_date, "%Y-%m-%d").strftime("%d.%m.%Y")
             enuygun_route = f"{orig_slug}-{dest_slug}-{from_code.lower()}a-{to_code.lower()}a"
             enuygun_pax_params = f"yetiskin={adults}"
@@ -298,37 +390,18 @@ def fetch_live_flights_from_google(
             if is_biz:
                 agent_link += "&sinif=business"
 
+            airline_filter = f"&havayolu={carrier_code}" if carrier_code in ("PC", "TK", "VF", "XQ") else ""
+            direct_agent_link = f"{agent_link}{airline_filter}"
+
             biz_extra_google = "+business" if is_biz else ""
             if is_round and return_date:
                 google_flights_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{departure_date}+through+{return_date}{biz_extra_google}&hl=tr&gl=tr&curr=TRY"
             else:
                 google_flights_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{departure_date}+one+way{biz_extra_google}&hl=tr&gl=tr&curr=TRY"
 
-            is_intl = bool(origin_city.get("is_international") or dest_city.get("is_international"))
-            enuygun_mult = total_passengers * (2 if is_round else 1)
-            enuygun_fee = (53.0 * enuygun_mult) if not is_intl else 0.0
-            enuygun_price = round(price + enuygun_fee, 2)
-            enuygun_label = f"Enuygun (+{int(enuygun_fee)} ₺)" if enuygun_fee > 0 else "Enuygun"
-            final_ticket_price = price
-
-            # Havayoluna özel Enuygun filtreli direkt link (kullanıcıyı doğrudan o havayolunun seferine götürür)
-            airline_filter = f"&havayolu={carrier_code}" if carrier_code in ("PC", "TK", "VF", "XQ") else ""
-            direct_agent_link = f"{agent_link}{airline_filter}"
-
-            pgs_pax_params = f"adultCount={adults}"
-            if children > 0:
-                pgs_pax_params += f"&childCount={children}"
-            if infants > 0:
-                pgs_pax_params += f"&infantCount={infants}"
-
             route_notice = None
             if not is_direct:
                 route_notice = f"Bu uçuş {first_leg[6]} aktarmalıdır. Toplam yolculuk süresi: {duration_str}."
-
-            # Turna.com Canlı Uçak Biletleme Linki (Eksiksiz Türkçe Sefer Ekranı)
-            turna_dep_param = datetime.strptime(departure_date, "%Y-%m-%d").strftime("%d.%m.%Y")
-            turna_ret_param = f"&donus={datetime.strptime(return_date, '%Y-%m-%d').strftime('%d.%m.%Y')}" if (is_round and return_date) else ""
-            turna_flight_link = f"https://www.turna.com/ucak-bileti/{orig_slug}-{dest_slug}?gidis={turna_dep_param}{turna_ret_param}&yetiskin={adults}"
 
             # Trip.com Flights Canlı Uçak Biletleme Linki (Global IATA Güvencesi, Türkçe Ekran ve TL)
             trip_flighttype = "rt" if (is_round and return_date) else "ow"
@@ -352,97 +425,113 @@ def fetch_live_flights_from_google(
                 f"&aid={booking_aid}"
             )
 
-            # Tüm uçuşlarda (yurt içi ve yurt dışı) birincil komisyonlu rezervasyon kapısı: Trip.com (Alliance ID: 11051531)
-            direct_link = trip_flight_link
-
+            # Havayolu kimliği ve resmi bilet seçim linkleri
             if "pegasus" in carrier_lower or carrier_code == "PC":
                 carrier_display = "Pegasus Airlines"
                 official_name = "Pegasus Resmi Web"
                 official_link = "https://www.flypgs.com/"
                 badge = "Comfort Flex ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Pegasus Seferi")
-                final_ticket_price = price
-                providers_list = [
-                    {"name": "Trip.com (⭐ Resmi Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                    {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                ]
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
                 carrier_display = "AJet (AnadoluJet)"
                 official_name = "AJet Resmi Web"
-                official_link = "https://ajet.com/tr"
+                ajet_ret = f"&returnDate={return_date}" if (is_round and return_date) else ""
+                official_link = f"https://ajet.com/tr/bilet-al?from={from_code}&to={to_code}&departureDate={departure_date}{ajet_ret}&adult={adults}"
                 badge = "Business ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "AJet Seferi")
-                final_ticket_price = price
-                providers_list = [
-                    {"name": "Trip.com (⭐ Resmi Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                    {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                ]
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
                 carrier_display = "Türk Hava Yolları"
                 official_name = "THY Resmi Web"
                 official_link = "https://www.turkishairlines.com/tr-int/"
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "⭐ THY Konforu")
-                final_ticket_price = price
-                providers_list = [
-                    {"name": "Trip.com (⭐ Resmi Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                    {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                ]
             elif "sunexpress" in carrier_lower or carrier_code == "XQ":
                 carrier_display = "SunExpress"
                 official_name = "SunExpress Resmi"
                 official_link = "https://www.sunexpress.com/tr/"
                 badge = "SunClassic" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "SunExpress Seferi")
-                final_ticket_price = price
-                providers_list = [
-                    {"name": "Trip.com (⭐ Resmi Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                    {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                ]
             else:
                 carrier_display = airline_name
                 official_name = f"{airline_name} Resmi"
                 official_link = google_flights_link
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Ekonomik Uçuş")
-                final_ticket_price = price
-                providers_list = [
-                    {"name": "Trip.com Flights (⭐ Global Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                    {"name": "Google Flights Karşılaştırması", "url": google_flights_link, "price": price, "is_best": False, "channel": "meta"},
-                ]
 
+            # KESİN ANAYASA KURALI 2.1:
+            # Sadece gerçekten canlı çekilmiş fiyatlar 'price' alanına yazılır.
+            # Turna.com tamamen kaldırılmıştır; Enuygun (+53 TL) uydurma formülü silinmiştir.
+            raw_providers = [
+                {
+                    "name": official_name,
+                    "url": official_link,
+                    "price": price,
+                    "channel": "official",
+                    "commission_priority": PROVIDER_COMMISSION_PRIORITY["official"],
+                },
+                {
+                    "name": "Trip.com",
+                    "url": trip_flight_link,
+                    "price": None,  # Faz 1B Çoklu Acente API bağlandığında canlı Trip.com fiyatı buraya akacak
+                    "channel": "trip",
+                    "commission_priority": PROVIDER_COMMISSION_PRIORITY["trip"],
+                },
+                {
+                    "name": "Enuygun",
+                    "url": direct_agent_link,
+                    "price": None,  # Faz 1B Çoklu Acente API bağlandığında canlı Enuygun fiyatı buraya akacak
+                    "channel": "agency",
+                    "commission_priority": PROVIDER_COMMISSION_PRIORITY["agency"],
+                },
+            ]
+
+            providers_list, winner_offer = select_winning_offer(raw_providers)
+            final_ticket_price = winner_offer["price"] if (winner_offer and winner_offer.get("price")) else price
+            direct_link = winner_offer["url"] if winner_offer else official_link
+            winner_name = winner_offer["name"] if winner_offer else official_name
+            winner_channel = winner_offer.get("channel", "official") if winner_offer else "official"
+
+            # Gidiş-Dönüş Aramalarında GERÇEK Canlı Dönüş Seferi Eşleştirmesi (Asla sabit 19:40-20:55 basılmaz!)
             return_leg_dict = None
-            if is_round and return_date:
+            if is_round and return_date and parsed_return_flights:
                 try:
                     ret_dt = datetime.strptime(return_date, "%Y-%m-%d")
                     ret_date_formatted = format_tr_date(ret_dt)
                 except Exception:
                     ret_date_formatted = return_date
 
-                r_dep_time = "19:40"
-                r_arr_time = "20:55"
-                r_dur_mins = total_duration_mins
-                r_hours = r_dur_mins // 60
-                r_mins = r_dur_mins % 60
-                r_dur_str = f"{r_hours} sa {r_mins} dk" if r_hours > 0 else f"{r_mins} dk"
+                # Önce aynı havalimanı çifti ve aynı havayolunun gerçek dönüş seferini ara
+                same_pair_same_carrier = [
+                    rf for rf in parsed_return_flights
+                    if rf["from_code"] == to_code and rf["to_code"] == from_code and rf["carrier_code"] == carrier_code
+                ]
+                same_pair_any_carrier = [
+                    rf for rf in parsed_return_flights
+                    if rf["from_code"] == to_code and rf["to_code"] == from_code
+                ]
+                same_carrier_any_pair = [
+                    rf for rf in parsed_return_flights
+                    if rf["carrier_code"] == carrier_code
+                ]
+
+                chosen_ret = (
+                    same_pair_same_carrier[0]
+                    if same_pair_same_carrier
+                    else (
+                        same_pair_any_carrier[0]
+                        if same_pair_any_carrier
+                        else (same_carrier_any_pair[0] if same_carrier_any_pair else parsed_return_flights[0])
+                    )
+                )
 
                 return_leg_dict = {
-                    "origin": f"{dest_city_name} ({to_code})",
-                    "destination": f"{origin_city_name} ({from_code})",
-                    "from_code": to_code,
-                    "to_code": from_code,
-                    "departure_time": r_dep_time,
-                    "arrival_time": r_arr_time,
+                    "origin": f"{dest_city_name} ({chosen_ret['from_code']})",
+                    "destination": f"{origin_city_name} ({chosen_ret['to_code']})",
+                    "from_code": chosen_ret["from_code"],
+                    "to_code": chosen_ret["to_code"],
+                    "departure_time": chosen_ret["dep_time"],
+                    "arrival_time": chosen_ret["arr_time"],
                     "departure_date": return_date,
                     "departure_date_formatted": ret_date_formatted,
-                    "flight_number": f"{carrier_code} {to_code}-{from_code}" if carrier_code else "Dönüş Seferi",
-                    "duration": r_dur_str,
-                    "is_direct": is_direct
+                    "flight_number": chosen_ret["flight_no"],
+                    "carrier": chosen_ret["airline_name"],
+                    "duration": chosen_ret["duration_str"],
+                    "is_direct": chosen_ret["is_direct"],
                 }
 
             results.append({
@@ -477,10 +566,12 @@ def fetch_live_flights_from_google(
                 "official_name": official_name,
                 "official_link": official_link,
                 "agent_name": "Enuygun",
-                "agent_link": agent_link,
+                "agent_link": direct_agent_link,
                 "google_link": google_flights_link,
                 "direct_link": direct_link,
                 "booking_link": direct_link,
+                "winner_name": winner_name,
+                "winner_channel": winner_channel,
                 "travelpayouts_link": trip_flight_link,
                 "hotel_link": dest_hotel_link,
                 "providers": providers_list
@@ -488,5 +579,11 @@ def fetch_live_flights_from_google(
         except Exception as err:
             logger.warning(f"Error building flight card: {err}")
             continue
+
+    if results:
+        _FLIGHT_CACHE[cache_key] = {
+            "ts": time.time(),
+            "data": copy.deepcopy(results),
+        }
 
     return results

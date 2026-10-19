@@ -177,17 +177,14 @@ class SearchService:
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/{sky_ret}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=1"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+through+{return_date}{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
                 flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}"
-                turna_ret_param = f"&donus={enuygun_ret}"
                 trip_ret_param = f"&rdate={return_date}"
             else:
                 flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{pegasus_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=0"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+one+way{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
                 flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}"
-                turna_ret_param = ""
                 trip_ret_param = ""
 
-            flight_links["turna"] = f"https://www.turna.com/ucak-bileti/{origin_slug}-{dest_slug}?gidis={enuygun_dep}{turna_ret_param}&yetiskin={adults}"
             trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "")
             trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "")
             trip_aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
@@ -198,7 +195,6 @@ class SearchService:
             flight_links["skyscanner"] = None
             flight_links["google_flights"] = None
             flight_links["enuygun"] = None
-            flight_links["turna"] = None
             flight_links["trip"] = None
             flight_links["travelpayouts"] = None
             flight_links["aviasales"] = None
@@ -1007,6 +1003,9 @@ class SearchService:
                                 lf["price"] = round(CurrencyService.convert(lf["price"], "TRY", currency), 2)
                                 if lf.get("regular_price"):
                                     lf["regular_price"] = round(CurrencyService.convert(lf["regular_price"], "TRY", currency), 2)
+                                for p in lf.get("providers") or []:
+                                    if p.get("price") is not None:
+                                        p["price"] = round(CurrencyService.convert(p["price"], "TRY", currency), 2)
                                 lf["currency"] = curr_symbol
                                 lf["currency_code"] = currency
                             lf["has_live_price"] = True

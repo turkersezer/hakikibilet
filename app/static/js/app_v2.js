@@ -785,14 +785,34 @@ function generateTicketCardsHtml(tickets, searchReq) {
     return tickets.map(ticket => {
         const isFlight = (ticket.transport_type === 'flight');
         const directLink = ticket.direct_link || ticket.booking_link || ticket.official_link || '#';
-        const actionButtonText = isEn 
-            ? (ticket.price ? `Book on Trip.com (${Number(ticket.price).toLocaleString('en-US')} ₺)` : 'View Live Fares on Trip.com →')
-            : (ticket.transport_type === 'train' 
-                ? `TCDD'de Aç (${ticket.flight_number || 'Sefer'})` 
-                : (ticket.transport_type === 'bus' 
-                    ? `Obilet'te Seç` 
-                    : (ticket.transport_type === 'flight' 
-                        ? (ticket.price ? `Trip.com'dan Al (${Number(ticket.price).toLocaleString('tr-TR')} ₺)` : 'Trip.com ile Canlı Seferleri Gör →') 
+        const currSym = ticket.currency || '₺';
+        const formattedTicketPrice = ticket.price ? `${Number(ticket.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${currSym}` : '';
+        const winnerChannel = ticket.winner_channel || 'official';
+        const winnerLabel = ticket.winner_name || ticket.official_name || ticket.carrier || 'Resmi Kanal';
+
+        let flightActionText = '';
+        if (isFlight) {
+            if (ticket.price) {
+                if (winnerChannel === 'trip') {
+                    flightActionText = isEn ? `Book on Trip.com (${formattedTicketPrice})` : `Trip.com'dan Al (${formattedTicketPrice})`;
+                } else if (winnerChannel === 'agency') {
+                    flightActionText = isEn ? `Book on ${winnerLabel} (${formattedTicketPrice})` : `${winnerLabel}'dan Al (${formattedTicketPrice})`;
+                } else {
+                    flightActionText = isEn ? `Book Official (${formattedTicketPrice})` : `Bileti Al (${formattedTicketPrice})`;
+                }
+            } else {
+                flightActionText = isEn ? 'View Live Fares on Trip.com →' : 'Trip.com ile Canlı Seferleri Gör →';
+            }
+        }
+
+        const actionButtonText = isFlight
+            ? flightActionText
+            : (isEn
+                ? 'Select Ticket →'
+                : (ticket.transport_type === 'train'
+                    ? `TCDD'de Aç (${ticket.flight_number || 'Sefer'})`
+                    : (ticket.transport_type === 'bus'
+                        ? `Obilet'te Seç`
                         : `Bileti Al`)));
 
         if (!isFlight) {
@@ -901,21 +921,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
             `;
         }
 
-        // 2. Bacak: Dönüş Uçuşu Bloğu (Gidiş-Dönüş Aramalarında)
+        // 2. Bacak: Dönüş Uçuşu Bloğu (Yalnızca gerçek canlı dönüş seferi çekildiyse gösterilir, uydurma saat basılmaz)
         let returnLegHtml = '';
-        if (isRoundTrip) {
-            const retLeg = ticket.return_leg || {
-                origin: `${toCity} (${toCode})`,
-                destination: `${fromCity} (${fromCode})`,
-                from_code: toCode,
-                to_code: fromCode,
-                departure_time: '20:15',
-                arrival_time: '21:30',
-                departure_date_formatted: searchReq.return_date,
-                flight_number: ticket.flight_number ? ticket.flight_number.replace(/\d+/, m => parseInt(m) + 3) : 'Dönüş',
-                duration: ticket.duration || '1 sa 15 dk',
-                is_direct: true
-            };
+        if (isRoundTrip && ticket.return_leg) {
+            const retLeg = ticket.return_leg;
 
             returnLegHtml = `
                 <div class="bg-slate-50/80 p-3.5 sm:p-4 rounded-2xl border border-slate-200">
@@ -929,12 +938,12 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     </div>
                     <div class="grid grid-cols-12 items-center gap-2">
                         <div class="col-span-4 sm:col-span-3 text-left">
-                            <div class="text-xl sm:text-2xl font-black text-slate-900 leading-none">${retLeg.departure_time || '20:15'}</div>
+                            <div class="text-xl sm:text-2xl font-black text-slate-900 leading-none">${retLeg.departure_time}</div>
                             <div class="text-xs font-black text-blue-700 mt-1 truncate">${retLeg.from_code || toCode}</div>
                             <div class="text-[11px] text-slate-500 font-semibold truncate">${toCity}</div>
                         </div>
                         <div class="col-span-4 sm:col-span-6 px-1 text-center">
-                            <div class="text-xs font-bold text-slate-600 mb-1.5">${retLeg.duration || ticket.duration || '1 sa 15 dk'}</div>
+                            <div class="text-xs font-bold text-slate-600 mb-1.5">${retLeg.duration || ticket.duration}</div>
                             <div class="relative flex items-center justify-center my-1">
                                 <div class="w-full h-[2px] bg-slate-300"></div>
                                 <div class="absolute bg-white px-2 py-0.5 rounded-full border border-slate-300 shadow-2xs">
@@ -946,7 +955,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             </div>
                         </div>
                         <div class="col-span-4 sm:col-span-3 text-right">
-                            <div class="text-xl sm:text-2xl font-black text-slate-900 leading-none">${retLeg.arrival_time || '21:30'}</div>
+                            <div class="text-xl sm:text-2xl font-black text-slate-900 leading-none">${retLeg.arrival_time}</div>
                             <div class="text-xs font-black text-blue-700 mt-1 truncate">${retLeg.to_code || fromCode}</div>
                             <div class="text-[11px] text-slate-500 font-semibold truncate">${fromCity}</div>
                         </div>
@@ -1023,16 +1032,17 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <!-- Bagaj Rozetleri -->
                         ${baggageBadgeHtml}
 
-                        <!-- Biletleme ve Sağlayıcı Seçenekleri (Travelpayouts, Enuygun, Resmi Site, Booking) -->
+                        <!-- Biletleme ve Sağlayıcı Seçenekleri (Yalnızca Doğrulanmış Fiyatlar veya Doğrudan Sefer Ekranı) -->
                         ${(ticket.providers && ticket.providers.length > 0) || ticket.hotel_link ? `
                             <div class="pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-2 text-[11px]">
                                 <span class="text-slate-500 font-black text-[10px] uppercase flex items-center gap-1">
                                     <i class="fa-solid fa-cart-shopping text-amber-500"></i> Biletleme Seçenekleri:
                                 </span>
                                 ${(ticket.providers || []).map(p => {
+                                    const hasVerifiedPrice = (p.price !== null && p.price !== undefined && Number(p.price) > 0);
                                     let pillClass = 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 font-bold';
                                     let icon = '';
-                                    if (p.is_best) {
+                                    if (p.is_best && hasVerifiedPrice) {
                                         pillClass = 'bg-amber-50 text-amber-900 border border-amber-300 font-black shadow-2xs hover:bg-amber-100';
                                     } else if (p.channel === 'trip' || (p.name && p.name.includes('Trip.com'))) {
                                         pillClass = 'bg-sky-50 text-sky-950 border border-sky-300 font-bold shadow-2xs hover:bg-sky-100';
@@ -1040,25 +1050,22 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     }
                                     let priceText = '';
                                     let scopeBadge = '';
-                                    if (p.channel === 'official') {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Official' : 'Resmi Bilet');
-                                        scopeBadge = isRoundTrip ? `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Base' : 'Resmi Taban'})</span>` : '';
-                                    } else if (p.channel === 'agency') {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Select' : 'Seç');
-                                        scopeBadge = isRoundTrip ? `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Round-Trip' : 'Gidiş-Dönüş'})</span>` : '';
+                                    if (hasVerifiedPrice) {
+                                        priceText = `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${currSym}`;
+                                        if (p.channel === 'official' && isRoundTrip) {
+                                            scopeBadge = `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Round-Trip' : 'Gidiş-Dönüş'})</span>`;
+                                        }
                                     } else if (p.channel === 'trip') {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Live Fare' : 'Canlı Fiyat');
-                                        scopeBadge = isRoundTrip ? `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Round-Trip' : 'Gidiş-Dönüş'})</span>` : '';
-                                    } else if (p.channel === 'turna') {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör');
-                                        scopeBadge = '';
+                                        priceText = isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör';
+                                    } else if (p.channel === 'agency') {
+                                        priceText = isEn ? 'View on Enuygun' : 'Seferi Gör';
                                     } else {
-                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Select' : 'Seç');
+                                        priceText = isEn ? 'Select' : 'Seç';
                                     }
                                     return `
                                     <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition" title="${p.name} üzerinden canlı sefer ve fiyat kontrolü">
                                          <span>${icon}${p.name}</span>
-                                         <span class="${p.is_best ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : 'text-slate-900')} font-black">${priceText}${scopeBadge}</span>
+                                         <span class="${(p.is_best && hasVerifiedPrice) ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : 'text-slate-900')} font-black">${priceText}${scopeBadge}</span>
                                          <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                     `;
