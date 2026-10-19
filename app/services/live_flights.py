@@ -402,8 +402,7 @@ def fetch_live_flights_from_google(
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
                 carrier_display = "AJet (AnadoluJet)"
                 official_name = "AJet Resmi Web"
-                ajet_ret = f"&returnDate={return_date}" if (is_round and return_date) else ""
-                official_link = f"https://ajet.com/tr/bilet-al?from={from_code}&to={to_code}&departureDate={departure_date}{ajet_ret}&adult={adults}"
+                official_link = "https://ajet.com/tr"
                 badge = "Business ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "AJet Seferi")
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
                 carrier_display = "Türk Hava Yolları"
