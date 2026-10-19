@@ -22,8 +22,12 @@ logger = logging.getLogger(__name__)
 CACHE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "trip_fare_cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
+import threading
+
 _TRIP_MEMORY_CACHE: Dict[str, Dict[str, Any]] = {}
-CACHE_TTL_SECONDS = 86400  # 24 Saat guncellik
+CACHE_TTL_SECONDS = 7200  # 2 Saat (Trip.com Anti-Bot / WhaleGuard koruması ve güncel fiyat dengesi)
+_PROBE_LOCK = threading.Lock()
+_ACTIVE_PROBES: set = set()
 
 
 def _get_cache_filepath(orig_code: str, dest_code: str, dep_date: str, ret_date: Optional[str] = None) -> str:
@@ -65,12 +69,27 @@ def parse_trip_flightlist_json(
         policies = it.get("policies") or []
         if not policies:
             continue
-        price_obj = policies[0].get("price") or {}
-        total_price = price_obj.get("totalPrice") or price_obj.get("averagePrice")
-        if not total_price or float(total_price) <= 0:
+
+        candidate_prices = []
+        for pol in policies:
+            p_obj = pol.get("price") or {}
+            # 1. discountAverage (Özel İndirimli / Kampanyalı Fiyat)
+            more_p = p_obj.get("morePrice") or {}
+            if more_p.get("discountAverage") and float(more_p["discountAverage"]) > 0:
+                candidate_prices.append(float(more_p["discountAverage"]))
+            # 2. totalPrice / averagePrice
+            tp = p_obj.get("totalPrice") or p_obj.get("averagePrice")
+            if tp and float(tp) > 0:
+                candidate_prices.append(float(tp))
+            # 3. adult salePrice + tax
+            adult_p = p_obj.get("adult") or {}
+            if adult_p.get("totalPrice") and float(adult_p["totalPrice"]) > 0:
+                candidate_prices.append(float(adult_p["totalPrice"]))
+
+        if not candidate_prices:
             continue
 
-        clean_price = round(float(total_price), 2)
+        clean_price = round(min(candidate_prices), 2)
         airline_filter = f"&airline={airline_code}&airlineCode={airline_code}" if airline_code else ""
         
         orig_c = find_city(from_code)
@@ -281,7 +300,12 @@ def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) 
 
 
 def _bg_refresh_trip(orig: str, dest: str, date: str, cache_key: str, cache_file: str):
-    """Arka planda Trip.com canlı tekliflerini yeniler ve önbelleğe yazar."""
+    """Arka planda Trip.com canlı tekliflerini yeniler ve önbelleğe yazar (Çift tarayıcı kilidi korumalı)."""
+    with _PROBE_LOCK:
+        if cache_key in _ACTIVE_PROBES:
+            return
+        _ACTIVE_PROBES.add(cache_key)
+
     try:
         fresh_offers = probe_trip_fares_via_browser(orig, dest, date)
         if fresh_offers:
@@ -290,6 +314,9 @@ def _bg_refresh_trip(orig: str, dest: str, date: str, cache_key: str, cache_file
                 json.dump({"ts": time.time(), "offers": fresh_offers}, f, ensure_ascii=False, indent=2)
     except Exception as e:
         logger.debug(f"Background Trip refresh error: {e}")
+    finally:
+        with _PROBE_LOCK:
+            _ACTIVE_PROBES.discard(cache_key)
 
 
 def fetch_trip_live_offers(
@@ -307,7 +334,6 @@ def fetch_trip_live_offers(
 
     all_offers: Dict[str, Dict[str, Any]] = {}
     now_ts = time.time()
-    import threading
 
     for orig_raw in orig_codes:
         o_code = orig_raw.strip().upper()
@@ -334,7 +360,7 @@ def fetch_trip_live_offers(
                     if age < CACHE_TTL_SECONDS and cached_disk:
                         _TRIP_MEMORY_CACHE[cache_key] = {"ts": disk_entry.get("ts", now_ts), "data": cached_disk}
                         all_offers.update(cached_disk)
-                        # 30 dakikadan eskiyse arka planda sessizce guncelle
+                        # 30 dakikadan eskiyse arka planda sessizce taze guncelleme baslat
                         if age > 1800:
                             threading.Thread(
                                 target=_bg_refresh_trip,

@@ -415,30 +415,29 @@ def fetch_live_flights_from_google(
                 skyscanner_flight_link = f"https://www.skyscanner.com.tr/transport/flights/{from_code.lower()}/{to_code.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency=TRY&locale=tr-TR&rtn=0"
 
             # Havayolu kimliği ve resmi bilet seçim linkleri (Rota, Tarih ve Yolcu ile Önceden Doldurulmuş)
-            ret_param = f"%20through%20{return_date}" if (is_round and return_date) else ""
             if "pegasus" in carrier_lower or carrier_code == "PC":
                 carrier_display = "Pegasus Airlines"
                 official_name = "Pegasus Resmi Web"
-                official_link = f"https://www.google.com/travel/flights?q=Flights%20to%20{to_code}%20from%20{from_code}%20on%20{departure_date}{ret_param}%20Pegasus&curr=TRY"
+                official_link = "https://www.flypgs.com/"
                 badge = "Comfort Flex ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Pegasus Seferi")
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
                 carrier_display = "AJet (AnadoluJet)"
-                official_name = "AJet Resmi (Rezervasyon)"
-                official_link = f"https://www.google.com/travel/flights?q=Flights%20to%20{to_code}%20from%20{from_code}%20on%20{departure_date}{ret_param}%20AJet&curr=TRY"
+                official_name = "AJet Resmi Web"
+                official_link = "https://www.ajet.com/tr"
                 badge = "Business ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "AJet Seferi")
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
                 carrier_display = "Türk Hava Yolları"
                 official_name = "THY Resmi Web"
-                official_link = f"https://www.google.com/travel/flights?q=Flights%20to%20{to_code}%20from%20{from_code}%20on%20{departure_date}{ret_param}%20Turkish%20Airlines&curr=TRY"
+                official_link = "https://www.turkishairlines.com/tr-int/"
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "⭐ THY Konforu")
             elif "sunexpress" in carrier_lower or carrier_code == "XQ":
                 carrier_display = "SunExpress"
                 official_name = "SunExpress Resmi"
-                official_link = f"https://www.google.com/travel/flights?q=Flights%20to%20{to_code}%20from%20{from_code}%20on%20{departure_date}{ret_param}%20SunExpress&curr=TRY"
+                official_link = "https://www.sunexpress.com/tr/"
                 badge = "SunClassic" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "SunExpress Seferi")
             else:
                 carrier_display = airline_name
-                official_name = f"{airline_name} Resmi"
+                official_name = f"{airline_name} Resmi Web"
                 official_link = google_flights_link
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Ekonomik Uçuş")
 
