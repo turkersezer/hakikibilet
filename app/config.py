@@ -101,6 +101,15 @@ class Settings:
             "fixed_try": 0.0,
             "tie_breaker_rank": int(os.getenv("COMM_BUBILET_RANK", "65")),
         },
+        "skyscanner": {
+            "name": "Skyscanner",
+            "active_affiliate": os.getenv("COMM_SKYSCANNER_ACTIVE", "false").lower() in ("true", "1", "yes"),
+            "model": "percentage",
+            "domestic_rate": 0.0,
+            "international_rate": 0.0,
+            "fixed_try": 0.0,
+            "tie_breaker_rank": int(os.getenv("COMM_SKYSCANNER_RANK", "60")),
+        },
         "official": {
             "name": "Resmi Taşıyıcı / Havayolu",
             "active_affiliate": False,

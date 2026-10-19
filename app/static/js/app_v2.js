@@ -1061,6 +1061,12 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     } else if (p.channel === 'kiwi') {
                                         pillClass = 'bg-teal-50 text-teal-950 border border-teal-300 font-bold shadow-2xs hover:bg-teal-100';
                                         icon = '<i class="fa-solid fa-bolt text-teal-600 text-[9px]"></i> ';
+                                    } else if (p.channel === 'booking') {
+                                        pillClass = 'bg-blue-50 text-blue-950 border border-blue-300 font-bold shadow-2xs hover:bg-blue-100';
+                                        icon = '<i class="fa-solid fa-plane-departure text-blue-700 text-[9px]"></i> ';
+                                    } else if (p.channel === 'skyscanner') {
+                                        pillClass = 'bg-cyan-50 text-cyan-950 border border-cyan-300 font-bold shadow-2xs hover:bg-cyan-100';
+                                        icon = '<i class="fa-solid fa-compass text-cyan-700 text-[9px]"></i> ';
                                     }
                                     let priceText = '';
                                     if (hasVerifiedPrice) {
@@ -1069,13 +1075,17 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                         priceText = isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör';
                                     } else if (p.channel === 'agency') {
                                         priceText = isEn ? 'View on Enuygun' : 'Seferi Gör';
+                                    } else if (p.channel === 'booking') {
+                                        priceText = isEn ? 'Check Fare' : 'Fiyata Bak';
+                                    } else if (p.channel === 'skyscanner') {
+                                        priceText = isEn ? 'Verify' : 'Teyit Et';
                                     } else {
                                         priceText = isEn ? 'Select' : 'Seç';
                                     }
                                     return `
                                     <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition" title="${p.name} üzerinden canlı sefer ve fiyat kontrolü">
                                          <span>${icon}${p.name}</span>
-                                         <span class="${(p.is_best && hasVerifiedPrice) ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : (p.channel === 'kiwi' ? 'text-teal-800' : 'text-slate-900'))} font-black">${priceText}</span>
+                                         <span class="${(p.is_best && hasVerifiedPrice) ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : (p.channel === 'kiwi' ? 'text-teal-800' : (p.channel === 'booking' ? 'text-blue-800' : (p.channel === 'skyscanner' ? 'text-cyan-800' : 'text-slate-900'))))} font-black">${priceText}</span>
                                          <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                     `;

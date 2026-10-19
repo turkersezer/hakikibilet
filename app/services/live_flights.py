@@ -394,6 +394,34 @@ def fetch_live_flights_from_google(
                 f"&aid={booking_aid}"
             )
 
+            # Booking.com Flights Canlı Uçuş Arama Linki (Travelpayouts AID: 585474)
+            booking_trip_type = "round_trip" if is_round else "one_way"
+            booking_ret_param = f"&return={return_date}" if (is_round and return_date) else ""
+            booking_cabin = "BUSINESS" if is_biz else "ECONOMY"
+            booking_flight_link = (
+                f"https://www.booking.com/flights/index.html?"
+                f"aid={booking_aid}"
+                f"&type={booking_trip_type}"
+                f"&from={from_code.upper()}"
+                f"&to={to_code.upper()}"
+                f"&depart={departure_date}{booking_ret_param}"
+                f"&adults={adults}"
+                f"&cabinClass={booking_cabin}"
+            )
+
+            # Skyscanner Canlı Uçuş Karşılaştırma Linki
+            sky_dep = dep_dt.strftime("%y%m%d") if dep_dt else departure_date.replace("-", "")[2:]
+            sky_cabin = "business" if is_biz else "economy"
+            sky_pax = f"adultsv2={adults}"
+            if is_round and return_date:
+                try:
+                    sky_ret = datetime.strptime(return_date, "%Y-%m-%d").strftime("%y%m%d")
+                except Exception:
+                    sky_ret = return_date.replace("-", "")[2:]
+                skyscanner_flight_link = f"https://www.skyscanner.com.tr/transport/flights/{from_code.lower()}/{to_code.lower()}/{sky_dep}/{sky_ret}/?{sky_pax}&cabinclass={sky_cabin}&currency=TRY&locale=tr-TR&rtn=1"
+            else:
+                skyscanner_flight_link = f"https://www.skyscanner.com.tr/transport/flights/{from_code.lower()}/{to_code.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency=TRY&locale=tr-TR&rtn=0"
+
             # Havayolu kimliği ve resmi bilet seçim linkleri
             if "pegasus" in carrier_lower or carrier_code == "PC":
                 carrier_display = "Pegasus Airlines"
@@ -494,6 +522,26 @@ def fetch_live_flights_from_google(
                         "channel": "agency",
                     }
                 )
+
+            # Booking.com Flights (Travelpayouts AID: 585474)
+            raw_providers.append(
+                {
+                    "name": "Booking.com Flights",
+                    "url": booking_flight_link,
+                    "price": None,
+                    "channel": "booking",
+                }
+            )
+
+            # Skyscanner
+            raw_providers.append(
+                {
+                    "name": "Skyscanner",
+                    "url": skyscanner_flight_link,
+                    "price": None,
+                    "channel": "skyscanner",
+                }
+            )
 
             providers_list, winner_offer = select_winning_offer(
                 raw_providers,
