@@ -401,8 +401,8 @@ def fetch_live_flights_from_google(
                 badge = "Comfort Flex ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Pegasus Seferi")
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
                 carrier_display = "AJet (AnadoluJet)"
-                official_name = "AJet Resmi Web"
-                official_link = "https://ajet.com/tr"
+                official_name = "AJet Resmi (Rezervasyon)"
+                official_link = google_flights_link
                 badge = "Business ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "AJet Seferi")
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
                 carrier_display = "Türk Hava Yolları"
