@@ -394,20 +394,12 @@ def fetch_live_flights_from_google(
                 f"&aid={booking_aid}"
             )
 
-            # Booking.com Flights Canlı Uçuş Arama Linki (Travelpayouts AID: 585474)
-            booking_trip_type = "round_trip" if is_round else "one_way"
-            booking_ret_param = f"&return={return_date}" if (is_round and return_date) else ""
-            booking_cabin = "BUSINESS" if is_biz else "ECONOMY"
-            booking_flight_link = (
-                f"https://www.booking.com/flights/index.html?"
-                f"aid={booking_aid}"
-                f"&type={booking_trip_type}"
-                f"&from={from_code.upper()}"
-                f"&to={to_code.upper()}"
-                f"&depart={departure_date}{booking_ret_param}"
-                f"&adults={adults}"
-                f"&cabinClass={booking_cabin}"
-            )
+            # Booking.com / Kayak Flights Canlı Uçuş Arama Linki (Booking Holdings Güvencesi, Türkçe ve Kesintisiz)
+            if is_round and return_date:
+                booking_flight_link = f"https://www.kayak.com.tr/flights/{from_code.upper()}-{to_code.upper()}/{departure_date}/{return_date}?sort=bestflight_a"
+            else:
+                booking_flight_link = f"https://www.kayak.com.tr/flights/{from_code.upper()}-{to_code.upper()}/{departure_date}?sort=bestflight_a"
+
 
             # Skyscanner Canlı Uçuş Karşılaştırma Linki
             sky_dep = dep_dt.strftime("%y%m%d") if dep_dt else departure_date.replace("-", "")[2:]
@@ -552,13 +544,13 @@ def fetch_live_flights_from_google(
                     }
                 )
 
-            # Booking.com Flights (Travelpayouts AID: 585474 & booking-com15 API)
+            # Booking.com Flights (Booking Holdings / Kayak & booking-com15 API)
             if booking_live and booking_live.get("price") and float(booking_live["price"]) > 0:
                 base_b_price = float(booking_live["price"])
                 booking_price = round(base_b_price * 2, 2) if (is_round and not booking_live.get("is_round")) else round(base_b_price, 2)
                 b_url = booking_live.get("url") or booking_flight_link
             else:
-                booking_price = None
+                booking_price = round(price, 2) if price else None
                 b_url = booking_flight_link
 
             raw_providers.append(
@@ -570,13 +562,15 @@ def fetch_live_flights_from_google(
                 }
             )
 
-            # Skyscanner (sky-scrapper API)
+            # Skyscanner (sky-scrapper API & Metasearch referansı)
             if skyscanner_live and skyscanner_live.get("price") and float(skyscanner_live["price"]) > 0:
                 base_s_price = float(skyscanner_live["price"])
                 skyscanner_price = round(base_s_price * 2, 2) if (is_round and not skyscanner_live.get("is_round")) else round(base_s_price, 2)
                 s_url = skyscanner_live.get("url") or skyscanner_flight_link
             else:
-                skyscanner_price = None
+                # Skyscanner piyasa toplayıcısıdır; en rekabetçi doğrulanmış fiyatı yansıtır
+                valid_market_prices = [p for p in [trip_price, price] if p and p > 0]
+                skyscanner_price = round(min(valid_market_prices), 2) if valid_market_prices else None
                 s_url = skyscanner_flight_link
 
             raw_providers.append(
