@@ -12,6 +12,7 @@ import os
 import json
 import time
 import logging
+import re
 from typing import Dict, Any, List, Optional
 from app.config import settings
 from app.cities import find_city
@@ -106,9 +107,76 @@ def parse_trip_flightlist_json(
     return offers
 
 
-def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) -> Optional[Dict[str, Any]]:
+def parse_trip_dom_text(body_text: str, orig_code: str, dest_code: str, dep_date: str) -> Dict[str, Dict[str, Any]]:
     """
-    Playwright Stealth (Edge) kullanarak Trip.com'dan canlı arama yapar ve JSON sonucunu döner.
+    Trip.com'un dinamik yüklenen sayfasından havayolu, kalkış saati ve indirimli net TL fiyatlarını
+    ayrıştırır ve biletleme motorunun eşleşebileceği formatta sunar.
+    """
+    lines = [l.strip() for l in body_text.splitlines() if l.strip()]
+    offers: Dict[str, Dict[str, Any]] = {}
+
+    orig_c = find_city(orig_code)
+    dest_c = find_city(dest_code)
+    orig_slug = orig_c.get("slug") if orig_c else orig_code.lower()
+    dest_slug = dest_c.get("slug") if dest_c else dest_code.lower()
+
+    trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
+    trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
+    aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
+
+    for i in range(len(lines)):
+        carrier = None
+        line_cur = lines[i]
+        if line_cur == "AJet" or "AJet " in line_cur:
+            carrier = "VF"
+        elif "Pegasus" in line_cur:
+            carrier = "PC"
+        elif "Türk Hava Yolları" in line_cur or "Turkish" in line_cur:
+            carrier = "TK"
+        elif "SunExpress" in line_cur:
+            carrier = "XQ"
+
+        if carrier and i + 1 < len(lines):
+            dep_m = re.match(r"^([0-2][0-9]:[0-5][0-9])$", lines[i + 1])
+            if dep_m:
+                dep_time = dep_m.group(1)
+                price = None
+                for j in range(i + 2, min(len(lines), i + 20)):
+                    if j > i + 3 and any(a in lines[j] for a in ["AJet", "Pegasus", "Türk Hava Yolları", "SunExpress"]):
+                        break
+                    p_match = re.search(r"([0-9]{1,3}(?:\.[0-9]{3})*(?:,[0-9]{2})?|[0-9]+)\s*TL", lines[j])
+                    if p_match:
+                        val_str = p_match.group(1).replace(".", "").replace(",", ".")
+                        try:
+                            val = float(val_str)
+                            if val > 200:
+                                price = val
+                                break
+                        except ValueError:
+                            pass
+                if price:
+                    trip_flight_url = (
+                        f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{orig_code.lower()}-{dest_code.lower()}?"
+                        f"flighttype=ow&dcity={orig_code.lower()}&acity={dest_code.lower()}&ddate={dep_date}&curr=TRY&airline={carrier}&airlineCode={carrier}{aff_param}"
+                    )
+                    item = {
+                        "name": "Trip.com",
+                        "price": price,
+                        "url": trip_flight_url,
+                        "channel": "trip",
+                        "dep_time": dep_time,
+                    }
+                    t_key = f"TIME:{orig_code.upper()}:{dest_code.upper()}:{dep_time}:{carrier}"
+                    if t_key not in offers or price < offers[t_key]["trip"]["price"]:
+                        offers[t_key] = {"trip": item}
+
+    return offers
+
+
+def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) -> Dict[str, Dict[str, Any]]:
+    """
+    Playwright Stealth (Edge) kullanarak Trip.com'dan canlı fırsatları (AJet sübvansiyonlu biletler vb.)
+    doğrudan sayfa DOM akışından çeker ve doğrulanmış canlı teklifleri döner.
     """
     try:
         from playwright.sync_api import sync_playwright
@@ -118,15 +186,18 @@ def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) 
         orig_slug = orig_c.get("slug") if orig_c else orig_code.lower()
         dest_slug = dest_c.get("slug") if dest_c else dest_code.lower()
 
+        trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
+        trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
+        aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
+
         args = [
             "--disable-blink-features=AutomationControlled",
             "--no-sandbox",
         ]
         url = (
             f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{orig_code.lower()}-{dest_code.lower()}?"
-            f"flighttype=ow&dcity={orig_code.lower()}&acity={dest_code.lower()}&ddate={dep_date}&curr=TRY"
+            f"flighttype=ow&dcity={orig_code.lower()}&acity={dest_code.lower()}&ddate={dep_date}&curr=TRY&airline=VF&airlineCode=VF{aff_param}"
         )
-        captured_data = []
 
         with sync_playwright() as p:
             b = p.chromium.launch(channel="msedge", headless=True, args=args)
@@ -138,41 +209,19 @@ def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) 
             ctx.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
             page = ctx.new_page()
 
-            def on_resp(r):
-                if "FlightListSearch" in r.url:
-                    try:
-                        txt = r.text()
-                        if txt and "itineraryList" in txt:
-                            captured_data.append(json.loads(txt))
-                    except Exception:
-                        pass
+            page.goto(url, wait_until="domcontentloaded", timeout=25000)
+            page.wait_for_timeout(4500)
 
-            page.on("response", on_resp)
-            page.goto(url, wait_until="domcontentloaded", timeout=20000)
-            page.wait_for_timeout(2500)
-
-            # Arama butonu tıkla
-            try:
-                btn = page.locator('button:has-text("Ara"), div:has-text("Ara")').first
-                if btn:
-                    btn.click()
-            except Exception:
-                pass
-
-            # Yanıtın gelmesi için kısa bekleme
-            for _ in range(8):
-                if captured_data:
-                    break
-                page.wait_for_timeout(1000)
-
+            body_text = page.inner_text("body")
             b.close()
 
-        if captured_data:
-            return captured_data[0]
+            if body_text:
+                return parse_trip_dom_text(body_text, orig_code, dest_code, dep_date)
+
     except Exception as exc:
         logger.warning(f"Trip.com browser probe warning: {exc}")
 
-    return None
+    return {}
 
 
 def fetch_trip_live_offers(
@@ -222,13 +271,11 @@ def fetch_trip_live_offers(
             # 3. Canlı Sorgu (Arka planda asenkron çalıştır, kullanıcı aramasını bloke etme)
             def _bg_probe(orig=o_code, dest=d_code, date=departure_date, c_key=cache_key, c_file=cache_file):
                 try:
-                    raw_json = probe_trip_fares_via_browser(orig, dest, date)
-                    if raw_json:
-                        parsed_offers = parse_trip_flightlist_json(raw_json, orig, dest, date)
-                        if parsed_offers:
-                            _TRIP_MEMORY_CACHE[c_key] = {"ts": time.time(), "data": parsed_offers}
-                            with open(c_file, "w", encoding="utf-8") as f:
-                                json.dump({"ts": time.time(), "offers": parsed_offers}, f, ensure_ascii=False, indent=2)
+                    parsed_offers = probe_trip_fares_via_browser(orig, dest, date)
+                    if parsed_offers:
+                        _TRIP_MEMORY_CACHE[c_key] = {"ts": time.time(), "data": parsed_offers}
+                        with open(c_file, "w", encoding="utf-8") as f:
+                            json.dump({"ts": time.time(), "offers": parsed_offers}, f, ensure_ascii=False, indent=2)
                 except Exception as e:
                     logger.debug(f"Background Trip probe error: {e}")
 
