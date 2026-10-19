@@ -1,76 +1,1192 @@
 {
-  "ts": 1792425652.74747,
+  "ts": 1792434569.040286,
   "offers": {
-    "TIME:IST:ADB:09:00:VF": {
+    "PC2198": {
       "trip": {
         "name": "Trip.com",
-        "price": 1371.0,
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "TIME:IST:ADB:20:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "SHORT:20:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "TIME:SAW:ADB:20:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "PC2120": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "TIME:IST:ADB:17:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "SHORT:17:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "TIME:SAW:ADB:17:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "PC2204": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "TIME:IST:ADB:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "SHORT:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "TIME:SAW:ADB:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "PC2186": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:IST:ADB:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "SHORT:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:SAW:ADB:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "PC2184": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "TIME:IST:ADB:07:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "SHORT:07:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "TIME:SAW:ADB:07:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "PC2182": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:05"
+      }
+    },
+    "TIME:IST:ADB:06:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:05"
+      }
+    },
+    "SHORT:06:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:05"
+      }
+    },
+    "TIME:SAW:ADB:06:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:05"
+      }
+    },
+    "PC2190": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1409.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "TIME:IST:ADB:13:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1409.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "SHORT:13:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1409.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "TIME:SAW:ADB:13:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1409.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "PC2188": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:15"
+      }
+    },
+    "TIME:IST:ADB:10:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:15"
+      }
+    },
+    "SHORT:10:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:15"
+      }
+    },
+    "TIME:SAW:ADB:10:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:15"
+      }
+    },
+    "PC4104": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "TIME:IST:ADB:19:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "SHORT:19:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "TIME:SAW:ADB:19:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "PC4202": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1431.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "TIME:IST:ADB:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1431.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "SHORT:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1431.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "TIME:SAW:ADB:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1431.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "PC2200": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1557.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:35"
+      }
+    },
+    "TIME:IST:ADB:22:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1557.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:35"
+      }
+    },
+    "SHORT:22:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1557.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:35"
+      }
+    },
+    "TIME:SAW:ADB:22:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1557.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:35"
+      }
+    },
+    "PC2194": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1632.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:05"
+      }
+    },
+    "TIME:IST:ADB:18:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1632.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:05"
+      }
+    },
+    "SHORT:18:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1632.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:05"
+      }
+    },
+    "TIME:SAW:ADB:18:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1632.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:05"
+      }
+    },
+    "PC3301": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1706.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "TIME:IST:ADB:13:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1706.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "SHORT:13:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1706.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "TIME:SAW:ADB:13:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1706.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "PC3307": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2032.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "TIME:IST:ADB:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2032.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "SHORT:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2032.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "TIME:SAW:ADB:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2032.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "PC3305": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2047.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:45"
+      }
+    },
+    "TIME:IST:ADB:08:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2047.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:45"
+      }
+    },
+    "SHORT:08:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2047.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:45"
+      }
+    },
+    "TIME:SAW:ADB:08:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2047.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:45"
+      }
+    },
+    "TK2310": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TIME:IST:ADB:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "SHORT:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TIME:SAW:ADB:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TK2312": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:IST:ADB:08:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "SHORT:08:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:SAW:ADB:08:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TK2332": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:00"
+      }
+    },
+    "TIME:IST:ADB:17:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:00"
+      }
+    },
+    "SHORT:17:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:00"
+      }
+    },
+    "TIME:SAW:ADB:17:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:00"
+      }
+    },
+    "TK2344": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:00"
+      }
+    },
+    "TIME:IST:ADB:23:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:00"
+      }
+    },
+    "SHORT:23:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:00"
+      }
+    },
+    "TIME:SAW:ADB:23:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2321.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:00"
+      }
+    },
+    "TK2336": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:00"
+      }
+    },
+    "TIME:IST:ADB:19:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:00"
+      }
+    },
+    "SHORT:19:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:00"
+      }
+    },
+    "TIME:SAW:ADB:19:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:00"
+      }
+    },
+    "TK2322": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:00"
+      }
+    },
+    "TIME:IST:ADB:12:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:00"
+      }
+    },
+    "SHORT:12:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:00"
+      }
+    },
+    "TIME:SAW:ADB:12:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2328.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:00"
+      }
+    },
+    "TK2318": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2662.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:IST:ADB:10:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2662.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2662.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:SAW:ADB:10:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2662.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TK2326": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2669.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:00"
+      }
+    },
+    "TIME:IST:ADB:14:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2669.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:00"
+      }
+    },
+    "SHORT:14:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2669.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:00"
+      }
+    },
+    "TIME:SAW:ADB:14:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2669.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:00"
+      }
+    },
+    "TK2320": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2677.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "TIME:IST:ADB:11:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2677.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "SHORT:11:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2677.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "TIME:SAW:ADB:11:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2677.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "TK2330": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2973.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:00"
+      }
+    },
+    "TIME:IST:ADB:16:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2973.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:00"
+      }
+    },
+    "SHORT:16:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2973.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:00"
+      }
+    },
+    "TIME:SAW:ADB:16:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2973.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:00"
+      }
+    },
+    "TK2334": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2973.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:00"
+      }
+    },
+    "TIME:IST:ADB:18:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2973.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:00"
+      }
+    },
+    "SHORT:18:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2973.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:00"
+      }
+    },
+    "TIME:SAW:ADB:18:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2973.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:00"
+      }
+    },
+    "TK2340": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4812.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "TIME:IST:ADB:21:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4812.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "SHORT:21:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4812.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "TIME:SAW:ADB:21:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4812.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "VF3064": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1417.0,
         "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
         "dep_time": "09:00"
       }
     },
-    "TIME:IST:ADB:13:00:VF": {
+    "TIME:IST:ADB:09:00:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 1371.0,
+        "price": 1417.0,
         "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
-        "dep_time": "13:00"
+        "dep_time": "09:00"
       }
     },
-    "TIME:IST:ADB:20:45:VF": {
+    "SHORT:09:00:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 1371.0,
+        "price": 1417.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:SAW:ADB:09:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1417.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "VF3070": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
         "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
         "dep_time": "20:45"
       }
     },
-    "TIME:IST:ADB:00:05:VF": {
+    "TIME:IST:ADB:20:45:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 1437.0,
+        "price": 1424.0,
         "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
-        "dep_time": "00:05"
+        "dep_time": "20:45"
       }
     },
-    "TIME:IST:ADB:19:15:VF": {
+    "SHORT:20:45:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 1694.0,
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "TIME:SAW:ADB:20:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "VF3076": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1730.0,
         "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
         "dep_time": "19:15"
       }
     },
-    "TIME:IST:ADB:10:00:PC": {
+    "TIME:IST:ADB:19:15:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 2845.0,
-        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
-        "channel": "trip",
-        "dep_time": "10:00"
-      }
-    },
-    "TIME:IST:ADB:10:00:VF": {
-      "trip": {
-        "name": "Trip.com",
-        "price": 2759.0,
+        "price": 1730.0,
         "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
-        "dep_time": "10:00"
+        "dep_time": "19:15"
       }
     },
-    "TIME:IST:ADB:18:10:PC": {
+    "SHORT:19:15:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 2964.0,
-        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "price": 1730.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
-        "dep_time": "18:10"
+        "dep_time": "19:15"
+      }
+    },
+    "TIME:SAW:ADB:19:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1730.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:15"
+      }
+    },
+    "VF3072": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1758.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "TIME:IST:ADB:00:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1758.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "SHORT:00:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1758.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "TIME:SAW:ADB:00:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1758.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "VF3066": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1772.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "TIME:IST:ADB:13:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1772.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "SHORT:13:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1772.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "TIME:SAW:ADB:13:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1772.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "TK2354": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7355.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "02:00"
+      }
+    },
+    "TIME:IST:ADB:02:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7355.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "02:00"
+      }
+    },
+    "SHORT:02:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7355.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "02:00"
+      }
+    },
+    "TIME:SAW:ADB:02:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7355.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-izmir/tickets-ist-adb?flighttype=ow&dcity=ist&acity=adb&ddate=2026-11-02&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "02:00"
       }
     }
   }

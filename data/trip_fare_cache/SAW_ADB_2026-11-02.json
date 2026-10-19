@@ -1,67 +1,769 @@
 {
-  "ts": 1792425661.2028236,
+  "ts": 1792434569.0199332,
   "offers": {
-    "TIME:SAW:ADB:09:00:VF": {
+    "PC2186": {
       "trip": {
         "name": "Trip.com",
-        "price": 1371.0,
-        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "price": 1387.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
         "channel": "trip",
-        "dep_time": "09:00"
+        "dep_time": "08:25"
       }
     },
-    "TIME:SAW:ADB:13:00:VF": {
+    "TIME:SAW:ADB:08:25:PC": {
       "trip": {
         "name": "Trip.com",
-        "price": 1371.0,
-        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "price": 1387.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
         "channel": "trip",
-        "dep_time": "13:00"
+        "dep_time": "08:25"
       }
     },
-    "TIME:SAW:ADB:20:45:VF": {
+    "SHORT:08:25:PC": {
       "trip": {
         "name": "Trip.com",
-        "price": 1371.0,
+        "price": 1387.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:IST:ADB:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1387.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "PC4202": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "TIME:SAW:ADB:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "SHORT:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "TIME:IST:ADB:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "PC2204": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "TIME:SAW:ADB:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "SHORT:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "TIME:IST:ADB:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1394.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "PC4104": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "TIME:SAW:ADB:19:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "SHORT:19:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "TIME:IST:ADB:19:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "PC2188": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:15"
+      }
+    },
+    "TIME:SAW:ADB:10:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:15"
+      }
+    },
+    "SHORT:10:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:15"
+      }
+    },
+    "TIME:IST:ADB:10:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:15"
+      }
+    },
+    "PC2120": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "TIME:SAW:ADB:17:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "SHORT:17:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "TIME:IST:ADB:17:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "PC2198": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "TIME:SAW:ADB:20:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "SHORT:20:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "TIME:IST:ADB:20:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "PC2182": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:05"
+      }
+    },
+    "TIME:SAW:ADB:06:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:05"
+      }
+    },
+    "SHORT:06:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:05"
+      }
+    },
+    "TIME:IST:ADB:06:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:05"
+      }
+    },
+    "PC2184": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1417.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "TIME:SAW:ADB:07:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1417.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "SHORT:07:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1417.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "TIME:IST:ADB:07:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1417.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "PC2190": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "TIME:SAW:ADB:13:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "SHORT:13:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "TIME:IST:ADB:13:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1424.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "PC2200": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1557.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:35"
+      }
+    },
+    "TIME:SAW:ADB:22:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1557.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:35"
+      }
+    },
+    "SHORT:22:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1557.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:35"
+      }
+    },
+    "TIME:IST:ADB:22:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1557.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:35"
+      }
+    },
+    "VF3070": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
         "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
         "dep_time": "20:45"
       }
     },
-    "TIME:SAW:ADB:00:05:VF": {
+    "TIME:SAW:ADB:20:45:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 1437.0,
+        "price": 1402.0,
         "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
-        "dep_time": "00:05"
+        "dep_time": "20:45"
       }
     },
-    "TIME:SAW:ADB:19:15:VF": {
+    "SHORT:20:45:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 1694.0,
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "TIME:IST:ADB:20:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1402.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "VF3064": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1409.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:SAW:ADB:09:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1409.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "SHORT:09:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1409.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:IST:ADB:09:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1409.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "PC2194": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1624.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:05"
+      }
+    },
+    "TIME:SAW:ADB:18:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1624.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:05"
+      }
+    },
+    "SHORT:18:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1624.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:05"
+      }
+    },
+    "TIME:IST:ADB:18:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1624.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:05"
+      }
+    },
+    "VF3076": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1691.0,
         "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
         "dep_time": "19:15"
       }
     },
-    "TIME:SAW:ADB:10:00:VF": {
+    "TIME:SAW:ADB:19:15:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 2759.0,
+        "price": 1691.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:15"
+      }
+    },
+    "SHORT:19:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1691.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:15"
+      }
+    },
+    "TIME:IST:ADB:19:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1691.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:15"
+      }
+    },
+    "VF3072": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1698.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "TIME:SAW:ADB:00:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1698.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "SHORT:00:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1698.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "TIME:IST:ADB:00:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9438.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "VF3066": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1730.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "TIME:SAW:ADB:13:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1730.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "SHORT:13:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1730.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "TIME:IST:ADB:13:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1730.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "VF3002": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2907.0,
         "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
         "dep_time": "10:00"
       }
     },
-    "TIME:SAW:ADB:08:00:VF": {
+    "TIME:SAW:ADB:10:00:VF": {
       "trip": {
         "name": "Trip.com",
-        "price": 2759.0,
+        "price": 2907.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2907.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:IST:ADB:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2907.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "VF3012": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2803.0,
         "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
         "channel": "trip",
         "dep_time": "08:00"
+      }
+    },
+    "TIME:SAW:ADB:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2803.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "SHORT:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2803.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:IST:ADB:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2803.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "VF3006": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2773.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:10"
+      }
+    },
+    "TIME:SAW:ADB:18:10:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2773.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:10"
+      }
+    },
+    "SHORT:18:10:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2773.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:10"
+      }
+    },
+    "TIME:IST:ADB:18:10:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2773.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:10"
+      }
+    },
+    "VF3010": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9438.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "VF3008": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8836.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:SAW:ADB:21:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8836.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "SHORT:21:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8836.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:IST:ADB:21:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8836.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-izmir/tickets-saw-adb?flighttype=ow&dcity=saw&acity=adb&ddate=2026-11-02&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
       }
     }
   }
