@@ -15,9 +15,10 @@ ekranına giden (deep-link) bağlantıları yerleştirir:
    - TRAVELPAYOUTS_API_TOKEN tanımlandığında ek acente fiyatlarını ve affiliate linklerini birleştirir.
 """
 
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import re
+import time
 import logging
 import requests
 from app.config import settings
@@ -26,6 +27,23 @@ from app.cities import find_city
 logger = logging.getLogger(__name__)
 
 KIWI_GRAPHQL_URL = "https://api.skypicker.com/umbrella/v2/graphql"
+
+# Akıllı Önbellek (Kota Koruyucu - 15 Dakika TTL)
+_OTA_CACHE: Dict[str, Tuple[float, Any]] = {}
+_OTA_CACHE_TTL = 900  # 15 dakika (900 saniye)
+
+
+def _get_from_cache(cache_key: str):
+    now = time.time()
+    if cache_key in _OTA_CACHE:
+        ts, data = _OTA_CACHE[cache_key]
+        if now - ts < _OTA_CACHE_TTL:
+            return data
+    return None
+
+
+def _save_to_cache(cache_key: str, data: Any):
+    _OTA_CACHE[cache_key] = (time.time(), data)
 
 
 def normalize_flight_key(flight_no: str) -> str:
@@ -337,7 +355,7 @@ def _resolve_sky_entity(orig_code: str, api_key: str, api_host: str) -> Tuple[st
     return c_up, ""
 
 
-def fetch_rapidapi_multi_ota_offers(
+def fetch_rapidapi_skyscanner_offers(
     orig_codes: List[str],
     dest_codes: List[str],
     departure_date: str,
@@ -346,13 +364,23 @@ def fetch_rapidapi_multi_ota_offers(
     adults: int = 1,
 ) -> Dict[str, Dict[str, Dict[str, Any]]]:
     """
-    RapidAPI (sky-scrapper.p.rapidapi.com veya google-flights2.p.rapidapi.com) aboneliği aktif olduğunda
-    Trip.com, Enuygun, Skyscanner vb. acentelerin sefer bazlı canlı fiyatlarını çeker.
+    RapidAPI Sky-Scrapper (Skyscanner Live Gateway) üzerinden doğrulanmış canlı uçuş fiyatlarını çeker.
+    15 dakikalık akıllı önbellek ile API kotasını korur.
     """
+    if not orig_codes or not dest_codes or not departure_date:
+        return {}
+
+    o_code = orig_codes[0].upper()
+    d_code = dest_codes[0].upper()
+    cache_key = f"SKY:{o_code}:{d_code}:{departure_date}:{return_date or ''}:{seat_mode}:{adults}"
+    cached = _get_from_cache(cache_key)
+    if cached is not None:
+        return cached
+
     offers_map: Dict[str, Dict[str, Dict[str, Any]]] = {}
     api_key = getattr(settings, "RAPIDAPI_FLIGHTS_KEY", "")
     api_host = getattr(settings, "RAPIDAPI_FLIGHTS_HOST", "sky-scrapper.p.rapidapi.com")
-    if not api_key or not orig_codes or not dest_codes:
+    if not api_key:
         return offers_map
 
     headers = {
@@ -360,67 +388,75 @@ def fetch_rapidapi_multi_ota_offers(
         "x-rapidapi-host": api_host,
     }
 
-    # ==================== SKY-SCRAPPER (SKYSCANNER MULTI-OTA ADAPTER) ====================
-    if "sky-scrapper" in api_host:
-        try:
-            o_code = orig_codes[0]
-            d_code = dest_codes[0]
-            # İstanbul için ISTA şehir kodunu tercih et
-            if o_code in ("SAW", "IST"):
-                o_sky, o_entity = "ISTA", "27542903"
-            else:
-                o_sky, o_entity = _resolve_sky_entity(o_code, api_key, api_host)
+    try:
+        # İstanbul için ISTA şehir kodunu tercih et
+        if o_code in ("SAW", "IST"):
+            o_sky, o_entity = "ISTA", "27542903"
+        else:
+            o_sky, o_entity = _resolve_sky_entity(o_code, api_key, api_host)
 
-            if d_code in ("SAW", "IST"):
-                d_sky, d_entity = "ISTA", "27542903"
-            else:
-                d_sky, d_entity = _resolve_sky_entity(d_code, api_key, api_host)
+        if d_code in ("SAW", "IST"):
+            d_sky, d_entity = "ISTA", "27542903"
+        else:
+            d_sky, d_entity = _resolve_sky_entity(d_code, api_key, api_host)
 
-            if not o_entity or not d_entity:
-                return offers_map
+        if not o_entity or not d_entity:
+            return offers_map
 
-            params = {
-                "originSkyId": o_sky,
-                "destinationSkyId": d_sky,
-                "originEntityId": o_entity,
-                "destinationEntityId": d_entity,
-                "date": departure_date,
-                "currency": "TRY",
-                "market": "tr-TR",
-                "countryCode": "TR",
-                "adults": str(adults),
-                "cabinClass": "business" if seat_mode == "business" else "economy",
-            }
-            if return_date:
-                params["returnDate"] = return_date
+        params = {
+            "originSkyId": o_sky,
+            "destinationSkyId": d_sky,
+            "originEntityId": o_entity,
+            "destinationEntityId": d_entity,
+            "date": departure_date,
+            "currency": "TRY",
+            "market": "tr-TR",
+            "countryCode": "TR",
+            "adults": str(adults),
+            "cabinClass": "business" if seat_mode == "business" else "economy",
+        }
+        if return_date:
+            params["returnDate"] = return_date
 
-            resp = requests.get(
-                f"https://{api_host}/api/v2/flights/searchFlights",
-                headers=headers,
-                params=params,
-                timeout=3.5,
+        resp = requests.get(
+            f"https://{api_host}/api/v2/flights/searchFlights",
+            headers=headers,
+            params=params,
+            timeout=5.0,
+        )
+        if resp.status_code != 200:
+            return offers_map
+
+        itins = (resp.json().get("data") or {}).get("itineraries") or []
+        sky_dep = departure_date.replace("-", "")[2:]
+        if return_date:
+            sky_ret = return_date.replace("-", "")[2:]
+            skyscanner_base_url = (
+                f"https://www.skyscanner.com.tr/transport/flights/{o_code.lower()}/{d_code.lower()}/{sky_dep}/{sky_ret}/?"
+                f"adultsv2={adults}&cabinclass={'business' if seat_mode == 'business' else 'economy'}&currency=TRY&locale=tr-TR&rtn=1"
             )
-            if resp.status_code != 200:
-                return offers_map
+        else:
+            skyscanner_base_url = (
+                f"https://www.skyscanner.com.tr/transport/flights/{o_code.lower()}/{d_code.lower()}/{sky_dep}/?"
+                f"adultsv2={adults}&cabinclass={'business' if seat_mode == 'business' else 'economy'}&currency=TRY&locale=tr-TR&rtn=0"
+            )
 
-            itins = (resp.json().get("data") or {}).get("itineraries") or []
-            trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
-            trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
+        for it in itins:
+            legs = it.get("legs") or []
+            if not legs:
+                continue
+            first_leg = legs[0]
+            segs = first_leg.get("segments") or []
+            if not segs:
+                continue
+            first_seg = segs[0]
+            flight_num = str(first_seg.get("flightNumber") or "").strip()
 
-            for it in itins:
-                legs = it.get("legs") or []
-                if not legs:
-                    continue
-                first_leg = legs[0]
-                segs = first_leg.get("segments") or []
-                if not segs:
-                    continue
-                first_seg = segs[0]
-                flight_num = str(first_seg.get("flightNumber") or "").strip()
-
+            marketing_carrier = first_seg.get("marketingCarrier") or {}
+            carrier_code = str(marketing_carrier.get("displayCode") or "").upper().strip()
+            if not carrier_code:
                 carrier_obj = (first_leg.get("carriers", {}).get("marketing") or [{}])[0]
                 carrier_name = str(carrier_obj.get("name") or "").lower()
-                carrier_code = ""
                 for k, v in CARRIER_NAME_MAP.items():
                     if k in carrier_name:
                         carrier_code = v
@@ -428,130 +464,185 @@ def fetch_rapidapi_multi_ota_offers(
                 if not carrier_code:
                     carrier_code = str(carrier_obj.get("alternateId") or "PC").strip().upper()
 
-                raw_price = (it.get("price") or {}).get("raw")
-                if not raw_price or float(raw_price) <= 0:
-                    continue
+            raw_price = (it.get("price") or {}).get("raw")
+            if not raw_price or float(raw_price) <= 0:
+                continue
 
-                clean_price = round(float(raw_price), 2)
-                f_key = normalize_flight_key(f"{carrier_code}{flight_num}")
+            clean_price = round(float(raw_price), 2)
+            f_key = normalize_flight_key(f"{carrier_code}{flight_num}")
 
-                dep_dt_str = str(first_leg.get("departure") or "")
-                dep_time = dep_dt_str[11:16] if len(dep_dt_str) >= 16 else None
-                orig_c = find_city(o_code)
-                dest_c = find_city(d_code)
-                orig_slug = orig_c.get("slug") if orig_c else o_code.lower()
-                dest_slug = dest_c.get("slug") if dest_c else d_code.lower()
-                carrier_filter = f"&airline={carrier_code}&airlineCode={carrier_code}" if carrier_code else ""
-                trip_url = (
-                    f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{o_code.lower()}-{d_code.lower()}?"
-                    f"flighttype=ow&dcity={o_code.lower()}&acity={d_code.lower()}&ddate={departure_date}"
-                    f"&curr=TRY{carrier_filter}&Allianceid={trip_alliance}&SID={trip_sid}"
-                )
+            dep_dt_str = str(first_leg.get("departure") or "")
+            dep_time = dep_dt_str[11:16] if len(dep_dt_str) >= 16 else None
 
-                offer_item = {
-                    "name": "Trip.com",
-                    "price": clean_price,
-                    "url": trip_url,
-                    "channel": "trip",
-                    "dep_time": dep_time,
-                }
+            offer_item = {
+                "name": "Skyscanner",
+                "price": clean_price,
+                "url": skyscanner_base_url,
+                "channel": "skyscanner",
+                "dep_time": dep_time,
+            }
 
-                _merge_offer(offers_map, f_key, "trip", offer_item)
+            _merge_offer(offers_map, f_key, "skyscanner", offer_item)
 
-                orig_disp = str((first_leg.get("origin") or {}).get("displayCode") or o_code).upper()
-                dest_disp = str((first_leg.get("destination") or {}).get("displayCode") or d_code).upper()
-                if dep_time:
-                    time_key = f"TIME:{orig_disp}:{dest_disp}:{dep_time}:{carrier_code}"
-                    _merge_offer(offers_map, time_key, "trip", offer_item)
+            orig_disp = str((first_leg.get("origin") or {}).get("displayCode") or o_code).upper()
+            dest_disp = str((first_leg.get("destination") or {}).get("displayCode") or d_code).upper()
+            if dep_time:
+                time_key = f"TIME:{orig_disp}:{dest_disp}:{dep_time}:{carrier_code}"
+                _merge_offer(offers_map, time_key, "skyscanner", offer_item)
 
-        except Exception as exc:
-            logger.debug(f"Sky-Scrapper Multi-OTA error: {exc}")
+        _save_to_cache(cache_key, offers_map)
+    except Exception as exc:
+        logger.debug(f"Skyscanner API live offer fetch error: {exc}")
 
+    return offers_map
+
+
+def fetch_rapidapi_booking_offers(
+    orig_codes: List[str],
+    dest_codes: List[str],
+    departure_date: str,
+    return_date: Optional[str] = None,
+    seat_mode: str = "economy",
+    adults: int = 1,
+) -> Dict[str, Dict[str, Dict[str, Any]]]:
+    """
+    RapidAPI booking-com15 (Booking.com Flights API) üzerinden doğrulanmış canlı uçuş fiyatlarını çeker.
+    15 dakikalık akıllı önbellek ile API kotasını korur.
+    """
+    if not orig_codes or not dest_codes or not departure_date:
+        return {}
+
+    o_code = orig_codes[0].upper()
+    d_code = dest_codes[0].upper()
+    cache_key = f"BOOKING:{o_code}:{d_code}:{departure_date}:{return_date or ''}:{seat_mode}:{adults}"
+    cached = _get_from_cache(cache_key)
+    if cached is not None:
+        return cached
+
+    offers_map: Dict[str, Dict[str, Dict[str, Any]]] = {}
+    api_key = getattr(settings, "RAPIDAPI_BOOKING_KEY", "")
+    api_host = getattr(settings, "RAPIDAPI_BOOKING_HOST", "booking-com15.p.rapidapi.com")
+    if not api_key:
         return offers_map
 
-    # ==================== GOOGLE-FLIGHTS2 FALLBACK ADAPTER ====================
+    headers = {
+        "x-rapidapi-key": api_key,
+        "x-rapidapi-host": api_host,
+    }
+
     try:
+        from_id = "IST.CITY" if o_code in ("IST", "SAW", "ISTA") else f"{o_code}.AIRPORT"
+        to_id = "IST.CITY" if d_code in ("IST", "SAW", "ISTA") else f"{d_code}.AIRPORT"
+        booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+
         params = {
-            "departure_id": orig_codes[0],
-            "arrival_id": dest_codes[0],
-            "outbound_date": departure_date,
-            "currency": "TRY",
-            "language_code": "tr",
-            "country_code": "TR",
+            "fromId": from_id,
+            "toId": to_id,
+            "departDate": departure_date,
+            "pageNo": "1",
             "adults": str(adults),
-            "travel_class": "BUSINESS" if seat_mode == "business" else "ECONOMY",
+            "currency_code": "TRY",
+            "cabinClass": "BUSINESS" if seat_mode == "business" else "ECONOMY",
         }
         if return_date:
-            params["return_date"] = return_date
+            params["returnDate"] = return_date
 
         resp = requests.get(
-            f"https://{api_host}/api/v1/searchFlights",
+            f"https://{api_host}/api/v1/flights/searchFlights",
             headers=headers,
             params=params,
-            timeout=3.0,
+            timeout=5.0,
         )
         if resp.status_code != 200:
             return offers_map
 
-        payload = resp.json()
-        data_block = payload.get("data") or {}
-        itineraries = (data_block.get("itineraries") or {}).get("topFlights", []) + (
-            (data_block.get("itineraries") or {}).get("otherFlights", [])
-        )
+        payload = resp.json() or {}
+        flight_offers = (payload.get("data") or {}).get("flightOffers") or []
 
-        for it in itineraries:
-            if not isinstance(it, dict):
-                continue
-            flights_list = it.get("flights") or []
-            if not flights_list:
-                continue
-            first_leg = flights_list[0] or {}
-            f_num = first_leg.get("flight_number") or ""
-            f_key = normalize_flight_key(f_num)
-            if not f_key:
+        booking_trip_type = "round_trip" if return_date else "one_way"
+        booking_ret_param = f"&return={return_date}" if return_date else ""
+        booking_cabin = "BUSINESS" if seat_mode == "business" else "ECONOMY"
+
+        for offer in flight_offers:
+            price_breakdown = offer.get("priceBreakdown") or {}
+            total_rounded = price_breakdown.get("totalRounded") or {}
+            total_obj = price_breakdown.get("total") or {}
+            raw_units = total_rounded.get("units") or total_obj.get("units")
+            if not raw_units or float(raw_units) <= 0:
                 continue
 
-            booking_options = it.get("booking_options") or it.get("pricing_options") or []
-            for opt in booking_options:
-                if not isinstance(opt, dict):
-                    continue
-                agent_name = str(opt.get("agent_name") or opt.get("provider") or "").strip()
-                agent_lower = agent_name.lower()
-                opt_price = opt.get("price")
-                opt_url = opt.get("booking_url") or opt.get("url") or ""
-                if not opt_price or float(opt_price) <= 0:
-                    continue
+            price_val = round(float(raw_units), 2)
+            segments = offer.get("segments") or []
+            if not segments:
+                continue
+            first_seg = segments[0]
+            legs = first_seg.get("legs") or []
+            if not legs:
+                continue
 
-                if "trip.com" in agent_lower or agent_lower == "trip":
-                    channel = "trip"
-                    display_name = "Trip.com"
-                elif "enuygun" in agent_lower or "wingie" in agent_lower:
-                    channel = "agency"
-                    display_name = "Enuygun"
-                elif "kiwi" in agent_lower:
-                    channel = "kiwi"
-                    display_name = "Kiwi.com"
-                elif "booking" in agent_lower:
-                    channel = "booking"
-                    display_name = "Booking.com"
-                else:
-                    continue
+            flight_info = legs[0].get("flightInfo") or {}
+            carrier_info = flight_info.get("carrierInfo") or {}
+            carrier_code = str(carrier_info.get("operatingCarrier") or carrier_info.get("marketingCarrier") or "").upper().strip()
+            flight_num = str(flight_info.get("flightNumber") or "").strip()
+            if not carrier_code or not flight_num:
+                continue
 
-                _merge_offer(
-                    offers_map,
-                    f_key,
-                    channel,
-                    {
-                        "name": display_name,
-                        "price": float(opt_price),
-                        "url": opt_url,
-                        "channel": channel,
-                    },
-                )
+            f_key = normalize_flight_key(f"{carrier_code}{flight_num}")
+            dep_time_raw = str(first_seg.get("departureTime") or "")
+            dep_time = dep_time_raw[11:16] if len(dep_time_raw) >= 16 else None
+
+            orig_actual = str((first_seg.get("departureAirport") or {}).get("code") or o_code).upper()
+            dest_actual = str((first_seg.get("arrivalAirport") or {}).get("code") or d_code).upper()
+
+            booking_offer_url = (
+                f"https://www.booking.com/flights/index.html?"
+                f"aid={booking_aid}"
+                f"&type={booking_trip_type}"
+                f"&from={orig_actual}"
+                f"&to={dest_actual}"
+                f"&depart={departure_date}{booking_ret_param}"
+                f"&adults={adults}"
+                f"&cabinClass={booking_cabin}"
+            )
+
+            offer_item = {
+                "name": "Booking.com Flights",
+                "price": price_val,
+                "url": booking_offer_url,
+                "channel": "booking",
+                "dep_time": dep_time,
+            }
+
+            _merge_offer(offers_map, f_key, "booking", offer_item)
+
+            if dep_time:
+                time_key = f"TIME:{orig_actual}:{dest_actual}:{dep_time}:{carrier_code}"
+                _merge_offer(offers_map, time_key, "booking", offer_item)
+
+        _save_to_cache(cache_key, offers_map)
     except Exception as exc:
-        logger.debug(f"RapidAPI Multi-OTA warning: {exc}")
+        logger.debug(f"Booking.com Flights live offer fetch error: {exc}")
 
     return offers_map
+
+
+def fetch_rapidapi_multi_ota_offers(
+    orig_codes: List[str],
+    dest_codes: List[str],
+    departure_date: str,
+    return_date: Optional[str] = None,
+    seat_mode: str = "economy",
+    adults: int = 1,
+) -> Dict[str, Dict[str, Dict[str, Any]]]:
+    """Geriye dönük uyumluluk için Skyscanner servisini çağırır."""
+    return fetch_rapidapi_skyscanner_offers(
+        orig_codes=orig_codes,
+        dest_codes=dest_codes,
+        departure_date=departure_date,
+        return_date=return_date,
+        seat_mode=seat_mode,
+        adults=adults,
+    )
 
 
 def fetch_travelpayouts_offers(
@@ -632,7 +723,7 @@ def fetch_multi_ota_flight_map(
     """
     combined_map: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         from app.services.trip_fare_service import fetch_trip_live_offers
         futures = [
             executor.submit(
@@ -640,6 +731,24 @@ def fetch_multi_ota_flight_map(
                 orig_codes,
                 dest_codes,
                 departure_date,
+            ),
+            executor.submit(
+                fetch_rapidapi_skyscanner_offers,
+                orig_codes,
+                dest_codes,
+                departure_date,
+                return_date,
+                seat_mode,
+                adults,
+            ),
+            executor.submit(
+                fetch_rapidapi_booking_offers,
+                orig_codes,
+                dest_codes,
+                departure_date,
+                return_date,
+                seat_mode,
+                adults,
             ),
             executor.submit(
                 fetch_kiwi_live_offers,
@@ -651,15 +760,6 @@ def fetch_multi_ota_flight_map(
                 adults,
                 children,
                 infants,
-            ),
-            executor.submit(
-                fetch_rapidapi_multi_ota_offers,
-                orig_codes,
-                dest_codes,
-                departure_date,
-                return_date,
-                seat_mode,
-                adults,
             ),
             executor.submit(
                 fetch_travelpayouts_offers,

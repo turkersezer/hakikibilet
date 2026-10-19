@@ -465,6 +465,8 @@ def fetch_live_flights_from_google(
             trip_live = ota_for_flight.get("trip")
             enuygun_live = ota_for_flight.get("agency")
             kiwi_live = ota_for_flight.get("kiwi")
+            booking_live = ota_for_flight.get("booking")
+            skyscanner_live = ota_for_flight.get("skyscanner")
 
             # KESİN DOĞRULUK KURALI:
             # Trip.com (veya herhangi bir acente) için yalnızca API'den doğrulanmış canlı fiyat geldiyse
@@ -523,22 +525,38 @@ def fetch_live_flights_from_google(
                     }
                 )
 
-            # Booking.com Flights (Travelpayouts AID: 585474)
+            # Booking.com Flights (Travelpayouts AID: 585474 & booking-com15 API)
+            if booking_live and booking_live.get("price") and float(booking_live["price"]) > 0:
+                base_b_price = float(booking_live["price"])
+                booking_price = round(base_b_price * 2, 2) if (is_round and not booking_live.get("is_round")) else round(base_b_price, 2)
+                b_url = booking_live.get("url") or booking_flight_link
+            else:
+                booking_price = None
+                b_url = booking_flight_link
+
             raw_providers.append(
                 {
                     "name": "Booking.com Flights",
-                    "url": booking_flight_link,
-                    "price": None,
+                    "url": b_url,
+                    "price": booking_price,
                     "channel": "booking",
                 }
             )
 
-            # Skyscanner
+            # Skyscanner (sky-scrapper API)
+            if skyscanner_live and skyscanner_live.get("price") and float(skyscanner_live["price"]) > 0:
+                base_s_price = float(skyscanner_live["price"])
+                skyscanner_price = round(base_s_price * 2, 2) if (is_round and not skyscanner_live.get("is_round")) else round(base_s_price, 2)
+                s_url = skyscanner_live.get("url") or skyscanner_flight_link
+            else:
+                skyscanner_price = None
+                s_url = skyscanner_flight_link
+
             raw_providers.append(
                 {
                     "name": "Skyscanner",
-                    "url": skyscanner_flight_link,
-                    "price": None,
+                    "url": s_url,
+                    "price": skyscanner_price,
                     "channel": "skyscanner",
                 }
             )
