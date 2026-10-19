@@ -437,6 +437,11 @@ def fetch_live_flights_from_google(
             enuygun_live = ota_for_flight.get("agency")
             kiwi_live = ota_for_flight.get("kiwi")
 
+            # Trip.com: OTA/Travelpayouts indirimli fiyat bulduysa onu kullanır,
+            # aksi halde Trip.com'un IATA resmi tarife fiyatını (price) baz alarak eşitlik yarışına sokar.
+            trip_price = float(trip_live["price"]) if (trip_live and trip_live.get("price") and float(trip_live["price"]) > 0) else float(price)
+            trip_url = trip_live.get("url") if (trip_live and trip_live.get("url")) else trip_flight_link
+
             raw_providers = [
                 {
                     "name": official_name,
@@ -446,15 +451,9 @@ def fetch_live_flights_from_google(
                 },
                 {
                     "name": "Trip.com",
-                    "url": (trip_live.get("url") if (trip_live and trip_live.get("url")) else trip_flight_link),
-                    "price": (trip_live.get("price") if trip_live else None),
+                    "url": trip_url,
+                    "price": trip_price,
                     "channel": "trip",
-                },
-                {
-                    "name": "Enuygun",
-                    "url": (enuygun_live.get("url") if (enuygun_live and enuygun_live.get("url")) else direct_agent_link),
-                    "price": (enuygun_live.get("price") if enuygun_live else None),
-                    "channel": "agency",
                 },
             ]
 
@@ -466,6 +465,17 @@ def fetch_live_flights_from_google(
                         "url": kiwi_live.get("url") or trip_flight_link,
                         "price": float(kiwi_live["price"]),
                         "channel": "kiwi",
+                    }
+                )
+
+            # Enuygun'dan canlı fiyat geldiyse ekle
+            if enuygun_live and enuygun_live.get("price") and float(enuygun_live["price"]) > 0:
+                raw_providers.append(
+                    {
+                        "name": "Enuygun",
+                        "url": enuygun_live.get("url") or direct_agent_link,
+                        "price": float(enuygun_live["price"]),
+                        "channel": "agency",
                     }
                 )
 
