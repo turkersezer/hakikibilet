@@ -795,6 +795,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
             if (ticket.price) {
                 if (winnerChannel === 'trip') {
                     flightActionText = isEn ? `Book on Trip.com (${formattedTicketPrice})` : `Trip.com'dan Al (${formattedTicketPrice})`;
+                } else if (winnerChannel === 'kiwi') {
+                    flightActionText = isEn ? `Book on Kiwi.com (${formattedTicketPrice})` : `Kiwi.com'dan Al (${formattedTicketPrice})`;
                 } else if (winnerChannel === 'agency') {
                     flightActionText = isEn ? `Book on ${winnerLabel} (${formattedTicketPrice})` : `${winnerLabel}'dan Al (${formattedTicketPrice})`;
                 } else {
@@ -1047,6 +1049,9 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     } else if (p.channel === 'trip' || (p.name && p.name.includes('Trip.com'))) {
                                         pillClass = 'bg-sky-50 text-sky-950 border border-sky-300 font-bold shadow-2xs hover:bg-sky-100';
                                         icon = '<i class="fa-solid fa-plane text-sky-600 text-[9px]"></i> ';
+                                    } else if (p.channel === 'kiwi') {
+                                        pillClass = 'bg-teal-50 text-teal-950 border border-teal-300 font-bold shadow-2xs hover:bg-teal-100';
+                                        icon = '<i class="fa-solid fa-bolt text-teal-600 text-[9px]"></i> ';
                                     }
                                     let priceText = '';
                                     let scopeBadge = '';
@@ -1065,7 +1070,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     return `
                                     <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition" title="${p.name} üzerinden canlı sefer ve fiyat kontrolü">
                                          <span>${icon}${p.name}</span>
-                                         <span class="${(p.is_best && hasVerifiedPrice) ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : 'text-slate-900')} font-black">${priceText}${scopeBadge}</span>
+                                         <span class="${(p.is_best && hasVerifiedPrice) ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : (p.channel === 'kiwi' ? 'text-teal-800' : 'text-slate-900'))} font-black">${priceText}${scopeBadge}</span>
                                          <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                     `;

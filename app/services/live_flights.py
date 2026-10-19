@@ -28,6 +28,7 @@ from fast_flights import FlightQuery, Passengers
 from app.cities import find_city
 from app.config import settings
 from app.services.commission_service import select_winning_offer, calculate_expected_commission
+from app.services.multi_ota_service import fetch_multi_ota_flight_map, normalize_flight_key
 
 logger = logging.getLogger(__name__)
 
@@ -258,9 +259,11 @@ def fetch_live_flights_from_google(
     pairs = [(o, d) for o in orig_codes for d in dest_codes]
     all_raw_flights = []
     all_raw_return_flights = []
+    multi_ota_map: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    # Paralel isteklerle hem gidiş (veya gidiş-dönüş) hem de gerçek dönüş seferlerini aynı anda tara
-    max_workers = max(1, len(pairs) * (2 if is_round else 1))
+    # Paralel isteklerle hem gidiş (veya gidiş-dönüş), hem gerçek dönüş seferlerini,
+    # hem de Çoklu Acente (Multi-OTA: Kiwi + RapidAPI + Travelpayouts) canlı fiyatlarını aynı anda tara
+    max_workers = max(2, len(pairs) * (2 if is_round else 1) + 1)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         outbound_futures = [
             executor.submit(query_single_pair, o, d, departure_date, is_round_str, return_date if is_round else None)
@@ -272,11 +275,27 @@ def fetch_live_flights_from_google(
                 executor.submit(query_single_pair, d, o, return_date, "one-way", None)
                 for o, d in pairs
             ]
+        multi_ota_future = executor.submit(
+            fetch_multi_ota_flight_map,
+            orig_codes,
+            dest_codes,
+            departure_date,
+            return_date if is_round else None,
+            seat_mode,
+            adults,
+            children,
+            infants,
+        )
 
         for f in as_completed(outbound_futures):
             all_raw_flights.extend(f.result())
         for f in as_completed(return_futures):
             all_raw_return_flights.extend(f.result())
+        try:
+            multi_ota_map = multi_ota_future.result() or {}
+        except Exception as ota_err:
+            logger.debug(f"Multi-OTA map error: {ota_err}")
+            multi_ota_map = {}
 
     if not all_raw_flights:
         return []
@@ -405,9 +424,20 @@ def fetch_live_flights_from_google(
             # KESİN ANAYASA KURALI 2.1:
             # Sadece gerçekten canlı çekilmiş fiyatlar 'price' alanına yazılır.
             # Turna.com tamamen kaldırılmıştır; Enuygun (+53 TL) uydurma formülü silinmiştir.
-            # Eşit fiyatta hangi ortağın kazanacağı app/services/commission_service.py üzerinden
-            # o anki aktif ortaklık ve net TL komisyon oranlarına göre dinamik hesaplanır.
+            # Çoklu Acente (Multi-OTA) motorundan bu sefer (ör. PC2182) için gelen canlı fiyatları eşleştir:
             is_intl_route = bool(origin_city.get("is_international") or dest_city.get("is_international"))
+            f_key = normalize_flight_key(flight_no)
+            time_key = f"TIME:{from_code}:{to_code}:{dep_time}:{carrier_code}"
+            ota_for_flight: Dict[str, Dict[str, Any]] = {}
+            if time_key in multi_ota_map:
+                ota_for_flight.update(multi_ota_map[time_key])
+            if f_key and f_key in multi_ota_map:
+                ota_for_flight.update(multi_ota_map[f_key])
+
+            trip_live = ota_for_flight.get("trip")
+            enuygun_live = ota_for_flight.get("agency")
+            kiwi_live = ota_for_flight.get("kiwi")
+
             raw_providers = [
                 {
                     "name": official_name,
@@ -417,17 +447,28 @@ def fetch_live_flights_from_google(
                 },
                 {
                     "name": "Trip.com",
-                    "url": trip_flight_link,
-                    "price": None,  # Faz 1B Çoklu Acente API bağlandığında canlı Trip.com fiyatı buraya akacak
+                    "url": (trip_live.get("url") if (trip_live and trip_live.get("url")) else trip_flight_link),
+                    "price": (trip_live.get("price") if trip_live else None),
                     "channel": "trip",
                 },
                 {
                     "name": "Enuygun",
-                    "url": direct_agent_link,
-                    "price": None,  # Faz 1B Çoklu Acente API bağlandığında canlı Enuygun fiyatı buraya akacak
+                    "url": (enuygun_live.get("url") if (enuygun_live and enuygun_live.get("url")) else direct_agent_link),
+                    "price": (enuygun_live.get("price") if enuygun_live else None),
                     "channel": "agency",
                 },
             ]
+
+            # Kiwi.com'dan bu sefer için doğrulanmış canlı fiyat ve doğrudan ödeme ekranı linki geldiyse yarışmaya ekle
+            if kiwi_live and kiwi_live.get("price") and float(kiwi_live["price"]) > 0:
+                raw_providers.append(
+                    {
+                        "name": "Kiwi.com",
+                        "url": kiwi_live.get("url") or trip_flight_link,
+                        "price": float(kiwi_live["price"]),
+                        "channel": "kiwi",
+                    }
+                )
 
             providers_list, winner_offer = select_winning_offer(
                 raw_providers,
@@ -534,6 +575,7 @@ def fetch_live_flights_from_google(
             continue
 
     if results:
+        results.sort(key=lambda r: float(r.get("price") or 999999999))
         _FLIGHT_CACHE[cache_key] = {
             "ts": time.time(),
             "data": copy.deepcopy(results),

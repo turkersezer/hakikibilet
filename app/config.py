@@ -124,6 +124,12 @@ class Settings:
     # RapidAPI Booking.com Canlı Otel Entegrasyonu
     RAPIDAPI_BOOKING_KEY: str = os.getenv("RAPIDAPI_BOOKING_KEY", "148a35e0b3msh6fee0694743036ap1fba10jsn5361646b970c")
     RAPIDAPI_BOOKING_HOST: str = os.getenv("RAPIDAPI_BOOKING_HOST", "apidojo-booking-v1.p.rapidapi.com")
+
+    # Hibrit Çoklu Acente (Multi-OTA) Canlı Uçuş Fiyat Entegrasyonları (Faz 1B)
+    RAPIDAPI_FLIGHTS_KEY: str = os.getenv("RAPIDAPI_FLIGHTS_KEY", os.getenv("RAPIDAPI_BOOKING_KEY", "148a35e0b3msh6fee0694743036ap1fba10jsn5361646b970c"))
+    RAPIDAPI_FLIGHTS_HOST: str = os.getenv("RAPIDAPI_FLIGHTS_HOST", "google-flights2.p.rapidapi.com")
+    TRAVELPAYOUTS_API_TOKEN: str = os.getenv("TRAVELPAYOUTS_API_TOKEN", "")
+    KIWI_AFFILIATE_ID: str = os.getenv("KIWI_AFFILIATE_ID", "hakikibilet")
     # Hukuki Yasal Metinler & TÜRSAB Muafiyeti (Metasearch / Karşılaştırma Beyanı)
     LEGAL_DISCLAIMER: str = (
         "Hakiki Bilet (hakikibilet.com) bağımsız bir seyahat ve etkinlik bilet fiyat karşılaştırma ve yönlendirme platformudur. "
