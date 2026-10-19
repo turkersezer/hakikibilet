@@ -786,13 +786,13 @@ function generateTicketCardsHtml(tickets, searchReq) {
         const isFlight = (ticket.transport_type === 'flight');
         const directLink = ticket.direct_link || ticket.booking_link || ticket.official_link || '#';
         const actionButtonText = isEn 
-            ? (ticket.price ? `Select Deal (${ticket.departure_time || 'Depart'})` : 'View Live Fares on Trip.com →')
+            ? (ticket.price ? `Book on Trip.com (${Number(ticket.price).toLocaleString('en-US')} ₺)` : 'View Live Fares on Trip.com →')
             : (ticket.transport_type === 'train' 
                 ? `TCDD'de Aç (${ticket.flight_number || 'Sefer'})` 
                 : (ticket.transport_type === 'bus' 
                     ? `Obilet'te Seç` 
                     : (ticket.transport_type === 'flight' 
-                        ? (ticket.price ? `Bileti Al (${ticket.departure_time || 'Sefer'})` : 'Trip.com ile Canlı Seferleri Gör →') 
+                        ? (ticket.price ? `Trip.com'dan Al (${Number(ticket.price).toLocaleString('tr-TR')} ₺)` : 'Trip.com ile Canlı Seferleri Gör →') 
                         : `Bileti Al`)));
 
         if (!isFlight) {
@@ -1047,10 +1047,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                         priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Select' : 'Seç');
                                         scopeBadge = isRoundTrip ? `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Round-Trip' : 'Gidiş-Dönüş'})</span>` : '';
                                     } else if (p.channel === 'trip') {
-                                        priceText = isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör';
-                                        scopeBadge = '';
+                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Live Fare' : 'Canlı Fiyat');
+                                        scopeBadge = isRoundTrip ? `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Round-Trip' : 'Gidiş-Dönüş'})</span>` : '';
                                     } else if (p.channel === 'turna') {
-                                        priceText = isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör';
+                                        priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör');
                                         scopeBadge = '';
                                     } else {
                                         priceText = p.price ? `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺` : (isEn ? 'Select' : 'Seç');
