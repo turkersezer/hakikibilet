@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Query, HTTPException, Depends
+from fastapi import FastAPI, Request, Query, HTTPException, Depends, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse, Response
@@ -513,16 +513,22 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
 # ==================== BÜLTEN & ERKEN ERİŞİM ABONELİKTEN ÇIKMA (UNSUBSCRIBE) ====================
 
 @app.get("/bulten/ayril", response_class=HTMLResponse)
-async def unsubscribe_page(request: Request, email: str = Query("", description="Ayrılacak e-posta"), db=Depends(get_db)):
-    """Erken erişim ve bülten listesinden güvenli tek tıkla çıkış sayfası"""
+async def unsubscribe_page(request: Request, email: str = Query("", description="Ayrılacak e-posta"), onayla: int = Query(0, description="Onay bayrağı"), db=Depends(get_db)):
+    """Erken erişim ve bülten listesinden çıkış sayfası (Bot/Crawler korumalı)"""
     clean_email = email.strip().lower()
-    if clean_email:
+    unsubscribed = False
+    
+    # Kurumsal e-posta güvenlik robotlarının (Microsoft SafeLinks, Proofpoint vb.)
+    # linkleri arka planda otomatik tararken kullanıcıyı yanlışlıkla listeden çıkarmasını engellemek için:
+    # Sadece kullanıcı sayfadaki onay butonuna bastığında (onayla=1) işlem tamamlanır.
+    if clean_email and onayla == 1:
         try:
             await db.execute(
                 "UPDATE prelaunch_subscribers SET is_active = 0, unsubscribed_at = CURRENT_TIMESTAMP WHERE email = ?",
                 (clean_email,)
             )
             await db.commit()
+            unsubscribed = True
         except Exception:
             pass
             
@@ -533,7 +539,36 @@ async def unsubscribe_page(request: Request, email: str = Query("", description=
             "app_name": settings.APP_NAME,
             "app_slogan": settings.APP_SLOGAN,
             "app_domain": settings.APP_DOMAIN,
-            "email": clean_email or "Belirtilmedi"
+            "email": clean_email or "Belirtilmedi",
+            "unsubscribed": unsubscribed
+        }
+    )
+
+@app.post("/bulten/ayril", response_class=HTMLResponse)
+async def unsubscribe_post(request: Request, email: str = Form(""), db=Depends(get_db)):
+    """Butona tıklandığında POST isteğiyle güvenli abonelik iptali"""
+    clean_email = email.strip().lower()
+    unsubscribed = False
+    if clean_email:
+        try:
+            await db.execute(
+                "UPDATE prelaunch_subscribers SET is_active = 0, unsubscribed_at = CURRENT_TIMESTAMP WHERE email = ?",
+                (clean_email,)
+            )
+            await db.commit()
+            unsubscribed = True
+        except Exception:
+            pass
+            
+    return templates.TemplateResponse(
+        request=request,
+        name="unsubscribe.html",
+        context={
+            "app_name": settings.APP_NAME,
+            "app_slogan": settings.APP_SLOGAN,
+            "app_domain": settings.APP_DOMAIN,
+            "email": clean_email or "Belirtilmedi",
+            "unsubscribed": unsubscribed
         }
     )
 

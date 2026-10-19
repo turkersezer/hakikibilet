@@ -37,7 +37,8 @@
     <main class="flex-1 flex items-center justify-center py-16 px-4">
         <div class="max-w-md w-full mx-auto bg-white border border-slate-200/90 rounded-3xl p-8 shadow-xl text-center">
             
-            <!-- İkon -->
+            {% if unsubscribed %}
+            <!-- Abonelikten Ayrılma Başarılı Ekranı -->
             <div class="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto mb-5 text-2xl shadow-sm">
                 <i class="fa-solid fa-envelope-circle-check"></i>
             </div>
@@ -61,6 +62,36 @@
             <p class="text-[11px] text-slate-400 mt-4">
                 Fikrinizi değiştirirseniz ana sayfadaki formdan dilediğiniz zaman tekrar kayıt olabilirsiniz.
             </p>
+            {% else %}
+            <!-- Onay Ekranı (Kurumsal Robotların Yanlışlıkla Çıkarmasını Önler) -->
+            <div class="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto mb-5 text-2xl shadow-sm">
+                <i class="fa-solid fa-envelope-circle-xmark"></i>
+            </div>
+
+            <h1 class="brand-font text-2xl font-black text-slate-900 mb-2">Listeden Ayrılmak İstiyor musunuz?</h1>
+            
+            <p class="text-xs sm:text-sm text-slate-600 mb-6 leading-relaxed">
+                <strong class="text-slate-900 font-bold break-all">{{ email }}</strong> adresini Hakiki Bilet erken erişim ve kampanya listesinden çıkarmak üzeresiniz.
+            </p>
+
+            <form action="/bulten/ayril" method="POST" class="space-y-3">
+                <input type="hidden" name="email" value="{{ email }}">
+                
+                <button type="submit" class="inline-flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md transition">
+                    <i class="fa-solid fa-user-xmark text-xs"></i>
+                    <span>Evet, Listeden Ayrılmayı Onayla</span>
+                </button>
+                
+                <a href="/" class="inline-flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <span>Vazgeç, Listede Kalmaya Devam Et</span>
+                </a>
+            </form>
+            
+            <p class="text-[11px] text-slate-400 mt-5">
+                Bu onay adımı, kurumsal güvenlik tarayıcılarının sizi istemeden listeden çıkarmasını önlemek için uygulanmaktadır.
+            </p>
+            {% endif %}
         </div>
     </main>
 
