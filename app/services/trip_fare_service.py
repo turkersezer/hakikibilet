@@ -268,18 +268,15 @@ def fetch_trip_live_offers(
                 except Exception as err:
                     logger.debug(f"Disk cache read error for Trip: {err}")
 
-            # 3. Canlı Sorgu (Arka planda asenkron çalıştır, kullanıcı aramasını bloke etme)
-            def _bg_probe(orig=o_code, dest=d_code, date=departure_date, c_key=cache_key, c_file=cache_file):
-                try:
-                    parsed_offers = probe_trip_fares_via_browser(orig, dest, date)
-                    if parsed_offers:
-                        _TRIP_MEMORY_CACHE[c_key] = {"ts": time.time(), "data": parsed_offers}
-                        with open(c_file, "w", encoding="utf-8") as f:
-                            json.dump({"ts": time.time(), "offers": parsed_offers}, f, ensure_ascii=False, indent=2)
-                except Exception as e:
-                    logger.debug(f"Background Trip probe error: {e}")
-
-            import threading
-            threading.Thread(target=_bg_probe, daemon=True).start()
+            # 3. Canlı Sorgu (ThreadPool iş parçacığında doğrudan çalıştır ve önbelleğe al)
+            try:
+                parsed_offers = probe_trip_fares_via_browser(o_code, d_code, departure_date)
+                if parsed_offers:
+                    _TRIP_MEMORY_CACHE[cache_key] = {"ts": time.time(), "data": parsed_offers}
+                    all_offers.update(parsed_offers)
+                    with open(cache_file, "w", encoding="utf-8") as f:
+                        json.dump({"ts": time.time(), "offers": parsed_offers}, f, ensure_ascii=False, indent=2)
+            except Exception as e:
+                logger.debug(f"Direct Trip probe error: {e}")
 
     return all_offers
