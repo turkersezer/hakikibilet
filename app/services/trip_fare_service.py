@@ -167,15 +167,18 @@ def parse_trip_dom_text(body_text: str, orig_code: str, dest_code: str, dep_date
                         "dep_time": dep_time,
                     }
                     t_key = f"TIME:{orig_code.upper()}:{dest_code.upper()}:{dep_time}:{carrier}"
+                    short_key = f"SHORT:{dep_time}:{carrier}"
                     if t_key not in offers or price < offers[t_key]["trip"]["price"]:
                         offers[t_key] = {"trip": item}
+                    if short_key not in offers or price < offers[short_key]["trip"]["price"]:
+                        offers[short_key] = {"trip": item}
 
     return offers
 
 
 def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) -> Dict[str, Dict[str, Any]]:
     """
-    Playwright Stealth (Edge) kullanarak Trip.com'dan canlı fırsatları (AJet sübvansiyonlu biletler vb.)
+    Playwright Stealth (Edge) kullanarak Trip.com'dan canlı fırsatları (Pegasus, AJet, THY vb.)
     doğrudan sayfa DOM akışından çeker ve doğrulanmış canlı teklifleri döner.
     """
     try:
@@ -196,7 +199,7 @@ def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) 
         ]
         url = (
             f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{orig_code.lower()}-{dest_code.lower()}?"
-            f"flighttype=ow&dcity={orig_code.lower()}&acity={dest_code.lower()}&ddate={dep_date}&curr=TRY&airline=VF&airlineCode=VF{aff_param}"
+            f"flighttype=ow&dcity={orig_code.lower()}&acity={dest_code.lower()}&ddate={dep_date}&curr=TRY{aff_param}"
         )
 
         with sync_playwright() as p:

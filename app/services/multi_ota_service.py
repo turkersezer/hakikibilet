@@ -486,9 +486,13 @@ def fetch_rapidapi_skyscanner_offers(
 
             orig_disp = str((first_leg.get("origin") or {}).get("displayCode") or o_code).upper()
             dest_disp = str((first_leg.get("destination") or {}).get("displayCode") or d_code).upper()
+            seg_orig = str((first_seg.get("origin") or {}).get("displayCode") or orig_disp).upper()
+            seg_dest = str((first_seg.get("destination") or {}).get("displayCode") or dest_disp).upper()
+
             if dep_time:
-                time_key = f"TIME:{orig_disp}:{dest_disp}:{dep_time}:{carrier_code}"
-                _merge_offer(offers_map, time_key, "skyscanner", offer_item)
+                _merge_offer(offers_map, f"TIME:{orig_disp}:{dest_disp}:{dep_time}:{carrier_code}", "skyscanner", offer_item)
+                _merge_offer(offers_map, f"TIME:{seg_orig}:{seg_dest}:{dep_time}:{carrier_code}", "skyscanner", offer_item)
+                _merge_offer(offers_map, f"SHORT:{dep_time}:{carrier_code}", "skyscanner", offer_item)
 
         _save_to_cache(cache_key, offers_map)
     except Exception as exc:
@@ -618,6 +622,7 @@ def fetch_rapidapi_booking_offers(
             if dep_time:
                 time_key = f"TIME:{orig_actual}:{dest_actual}:{dep_time}:{carrier_code}"
                 _merge_offer(offers_map, time_key, "booking", offer_item)
+                _merge_offer(offers_map, f"SHORT:{dep_time}:{carrier_code}", "booking", offer_item)
 
         _save_to_cache(cache_key, offers_map)
     except Exception as exc:

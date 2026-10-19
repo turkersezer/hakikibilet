@@ -456,11 +456,37 @@ def fetch_live_flights_from_google(
             is_intl_route = bool(origin_city.get("is_international") or dest_city.get("is_international"))
             f_key = normalize_flight_key(flight_no)
             time_key = f"TIME:{from_code}:{to_code}:{dep_time}:{carrier_code}"
+            short_time_key = f"SHORT:{dep_time}:{carrier_code}"
+            city_time_key = f"TIME:IST:{to_code}:{dep_time}:{carrier_code}"
+            city_dest_time_key = f"TIME:{from_code}:IST:{dep_time}:{carrier_code}"
+
             ota_for_flight: Dict[str, Dict[str, Any]] = {}
+            if short_time_key in multi_ota_map:
+                ota_for_flight.update(multi_ota_map[short_time_key])
+            if city_time_key in multi_ota_map:
+                ota_for_flight.update(multi_ota_map[city_time_key])
+            if city_dest_time_key in multi_ota_map:
+                ota_for_flight.update(multi_ota_map[city_dest_time_key])
             if time_key in multi_ota_map:
                 ota_for_flight.update(multi_ota_map[time_key])
             if f_key and f_key in multi_ota_map:
                 ota_for_flight.update(multi_ota_map[f_key])
+
+            # Toleranslı saat kontrolü (+/- 10 dakika içindeki aynı havayolu seferi)
+            if dep_time and carrier_code:
+                try:
+                    f_h, f_m = map(int, dep_time.split(":"))
+                    f_total = f_h * 60 + f_m
+                    for m_k, m_channels in multi_ota_map.items():
+                        if m_k.startswith("SHORT:") and m_k.endswith(f":{carrier_code}"):
+                            parts = m_k.split(":")
+                            c_total = int(parts[1]) * 60 + int(parts[2])
+                            if abs(c_total - f_total) <= 10:
+                                for ch, off in m_channels.items():
+                                    if ch not in ota_for_flight:
+                                        ota_for_flight[ch] = off
+                except Exception:
+                    pass
 
             trip_live = ota_for_flight.get("trip")
             enuygun_live = ota_for_flight.get("agency")

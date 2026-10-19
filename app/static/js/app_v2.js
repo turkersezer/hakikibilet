@@ -570,10 +570,77 @@ async function executeTransportSearch(e) {
 
     const resultsArea = document.getElementById("transportResultsArea");
     resultsArea.innerHTML = `
-        <div class="p-12 text-center bg-gradient-to-b from-amber-50/50 to-white rounded-3xl border border-amber-200/60 shadow-xs">
-            <div class="inline-block w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <div class="text-lg font-black text-slate-800">${origin} ➔ ${destination} Seferleri Sorgulanıyor...</div>
-            <div class="text-xs text-slate-500 mt-1.5 font-medium">Pegasus, THY, AJet ve biletleme kanallarının teyitli verileri anlık taranıyor.</div>
+        <style>
+            @keyframes flyAcrossPlane {
+                0% { left: 4%; transform: translateY(0px) rotate(45deg) scale(0.95); }
+                50% { left: 48%; transform: translateY(-8px) rotate(42deg) scale(1.1); }
+                100% { left: calc(96% - 36px); transform: translateY(0px) rotate(45deg) scale(0.95); }
+            }
+            @keyframes streamTrail {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+            }
+            @keyframes pulseCloud {
+                0%, 100% { opacity: 0.3; transform: scale(1); }
+                50% { opacity: 0.6; transform: scale(1.15); }
+            }
+            .hakiki-plane-flyer {
+                position: absolute;
+                top: -16px;
+                animation: flyAcrossPlane 2.4s ease-in-out infinite alternate;
+            }
+            .hakiki-route-trail {
+                animation: streamTrail 1.8s linear infinite;
+            }
+        </style>
+        <div class="p-8 sm:p-12 text-center bg-gradient-to-br from-slate-950 via-[#0B1728] to-slate-900 rounded-3xl border border-sky-500/30 shadow-2xl relative overflow-hidden my-6">
+            <!-- Arka Plan Radar Ağı & Yumuşak Parıltı -->
+            <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#38bdf8 1px, transparent 1px); background-size: 28px 28px;"></div>
+            <div class="absolute -top-12 -left-12 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Uçuş Yolu & Süzülen Uçak -->
+            <div class="relative max-w-md mx-auto my-6 px-4">
+                <!-- Rota Çizgisi -->
+                <div class="h-1.5 w-full bg-slate-800/80 rounded-full relative overflow-hidden border border-sky-900/50">
+                    <div class="hakiki-route-trail h-full w-full bg-gradient-to-r from-transparent via-amber-400 to-sky-400"></div>
+                </div>
+
+                <!-- Uçan Uçak Figürü -->
+                <div class="hakiki-plane-flyer">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/40 ring-2 ring-white/30">
+                        <i class="fa-solid fa-plane text-lg text-slate-950"></i>
+                    </div>
+                </div>
+
+                <!-- Kalkış & Varış Nokta Rozetleri -->
+                <div class="flex items-center justify-between text-xs font-black mt-5 text-sky-200">
+                    <span class="flex items-center gap-1.5 bg-slate-900/90 border border-sky-400/30 px-3.5 py-1.5 rounded-xl shadow-xs">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span class="text-white">${origin}</span>
+                    </span>
+                    <span class="flex items-center gap-1.5 bg-slate-900/90 border border-amber-400/30 px-3.5 py-1.5 rounded-xl shadow-xs">
+                        <i class="fa-solid fa-location-dot text-amber-400"></i>
+                        <span class="text-amber-300">${destination}</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Bilgilendirme Metinleri -->
+            <div class="relative z-10 space-y-2 mt-4">
+                <div class="text-lg sm:text-xl font-black text-white flex items-center justify-center gap-2">
+                    <span>${origin}</span>
+                    <i class="fa-solid fa-arrow-right-long text-amber-400 text-sm"></i>
+                    <span>${destination}</span>
+                </div>
+                <div class="text-xs sm:text-sm text-amber-300 font-extrabold flex items-center justify-center gap-2">
+                    <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>Canlı Seferler & Hakiki Fiyatlar Taranıyor...</span>
+                </div>
+                <div class="text-[11px] sm:text-xs text-slate-400 font-medium max-w-lg mx-auto">
+                    Trip.com, Skyscanner, Booking.com, THY, Pegasus ve AJet resmi acente biletleri anlık taranıyor.
+                </div>
+            </div>
         </div>
     `;
     resultsArea.classList.remove("hidden");
