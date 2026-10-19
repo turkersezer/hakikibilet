@@ -589,6 +589,12 @@ def fetch_live_flights_from_google(
 
     if results:
         results.sort(key=lambda r: float(r.get("price") or 999999999))
+        for r_idx, r in enumerate(results):
+            if r_idx == 0:
+                r["badge"] = "💰 En Uygun Fiyat"
+            elif r.get("badge") == "💰 En Uygun Fiyat":
+                carrier_short = (r.get("carrier") or "").split()[0]
+                r["badge"] = f"{carrier_short} Seferi"
         _FLIGHT_CACHE[cache_key] = {
             "ts": time.time(),
             "data": copy.deepcopy(results),
