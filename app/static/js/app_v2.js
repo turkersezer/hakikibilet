@@ -786,13 +786,13 @@ function generateTicketCardsHtml(tickets, searchReq) {
         const isFlight = (ticket.transport_type === 'flight');
         const directLink = ticket.direct_link || ticket.booking_link || ticket.official_link || '#';
         const actionButtonText = isEn 
-            ? `Select Deal (${ticket.departure_time || 'Depart'})`
+            ? (ticket.price ? `Select Deal (${ticket.departure_time || 'Depart'})` : 'View Live Fares on Trip.com →')
             : (ticket.transport_type === 'train' 
                 ? `TCDD'de Aç (${ticket.flight_number || 'Sefer'})` 
                 : (ticket.transport_type === 'bus' 
                     ? `Obilet'te Seç` 
                     : (ticket.transport_type === 'flight' 
-                        ? `Bileti Al (${ticket.departure_time || 'Sefer'})` 
+                        ? (ticket.price ? `Bileti Al (${ticket.departure_time || 'Sefer'})` : 'Trip.com ile Canlı Seferleri Gör →') 
                         : `Bileti Al`)));
 
         if (!isFlight) {
@@ -1097,9 +1097,9 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <div class="hidden lg:flex flex-col items-end gap-0.5 text-[9.5px] text-slate-400">
                             <div class="flex items-center gap-1 text-emerald-600 font-bold">
                                 <i class="fa-solid fa-shield-check"></i>
-                                <span>${isEn ? 'Verified Base Fare' : 'Doğrulanmış Taban Fiyat'}</span>
+                                <span>${isEn ? 'Official Partner Booking' : 'Resmi Partner Yönlendirmesi'}</span>
                             </div>
-                            <span class="italic text-slate-400">${isEn ? '*Fare may vary during provider checkout due to currency or fees.' : '*Acente servis bedeli veya kur farkına göre bilet ekranında anlık değişebilir.'}</span>
+                            <span class="italic text-slate-400">${isEn ? '*Direct checkout via Trip.com & official airline portal.' : '*Trip.com ve resmi havayolu güvencesiyle doğrudan rezervasyon.'}</span>
                         </div>
                     </div>
 
@@ -1571,7 +1571,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                             <span class="font-black text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
                                 🏨 2. Seçenek: Tüm Otelleri Karşılaştır
                             </span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-900 border border-blue-200">Garantili Canlı Arama</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-900 border border-blue-200">Canlı Otel Arama</span>
                         </div>
                         <p class="text-[11px] text-slate-600 leading-relaxed font-normal">
                             ${city} genelindeki tüm müsait otel, pansiyon ve butik konaklama seçeneklerini tarihleriniz ve ${guests} misafir için önceden doldurulmuş ekranda inceleyin.

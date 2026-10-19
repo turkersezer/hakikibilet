@@ -1020,11 +1020,8 @@ class SearchService:
                     orig_iata = (origin.get('iata') if origin else None) or 'SAW'
                     dst_iata = (dest.get('iata') if dest else None) or 'ESB'
                     is_international = bool(origin and origin.get("is_international") or dest and dest.get("is_international"))
-
-                    # Pegasus için İstanbul iç hatlarda SAW (Sabiha Gökçen) ana üssüdür
-                    pgs_dep_code = "SAW" if (origin_name == "İstanbul" and not is_international) else orig_iata
-                    pgs_url = links["flight"]["pegasus"] or links["flight"]["enuygun"]
-                    tp_flight_url = links["flight"].get("travelpayouts") or links["flight"].get("aviasales")
+                    trip_url = links["flight"]["trip"]
+                    google_url = links["flight"]["google_flights"]
                     booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
                     try:
                         dep_dt_calc = datetime.strptime(departure_date, "%Y-%m-%d")
@@ -1039,311 +1036,47 @@ class SearchService:
                         f"&aid={booking_aid}"
                     )
 
-                    trip_mult = 2 if is_round else 1
-                    pax_count = max(1, total_pax)
-                    total_mult = trip_mult * pax_count
-                    enuygun_fee = (53.0 * total_mult) if not is_international else 0.0
-                    enuygun_label = f"Enuygun (+{int(enuygun_fee)} ₺)" if enuygun_fee > 0 else "Enuygun"
-
-                    def get_flight_benchmark_price(carrier_type: str, is_intl: bool, dest_slug_str: str, is_business: bool) -> tuple[float, float]:
-                        if not is_intl:
-                            if carrier_type == "pegasus":
-                                base = 2190.0 if is_business else 1398.0
-                            elif carrier_type == "ajet":
-                                base = 1950.0 if is_business else 1455.0
-                            else:  # thy
-                                base = 3650.0 if is_business else 2150.0
-                        else:
-                            d = dest_slug_str.lower()
-                            if any(x in d for x in ["paris", "londra", "amsterdam"]):
-                                base = (5500.0 if is_business else 3250.0) if carrier_type == "pegasus" else (8500.0 if is_business else 4650.0)
-                            elif any(x in d for x in ["roma", "milano"]):
-                                base = (4400.0 if is_business else 2450.0) if carrier_type == "pegasus" else (6800.0 if is_business else 3750.0)
-                            elif any(x in d for x in ["berlin", "munih", "frankfurt"]):
-                                base = (4600.0 if is_business else 2650.0) if carrier_type == "pegasus" else (7100.0 if is_business else 3950.0)
-                            elif any(x in d for x in ["barselona", "madrid"]):
-                                base = (5200.0 if is_business else 3150.0) if carrier_type == "pegasus" else (7800.0 if is_business else 4400.0)
-                            elif any(x in d for x in ["viyana", "prag", "budapeste"]):
-                                base = (4100.0 if is_business else 2350.0) if carrier_type == "pegasus" else (6200.0 if is_business else 3450.0)
-                            elif any(x in d for x in ["new-york", "toronto", "montreal"]):
-                                base = (19500.0 if is_business else 9800.0) if carrier_type == "pegasus" else (26500.0 if is_business else 13900.0)
-                            elif any(x in d for x in ["dubai", "doha", "riyad", "cidde"]):
-                                base = (6800.0 if is_business else 3850.0) if carrier_type == "pegasus" else (9800.0 if is_business else 5600.0)
-                            elif any(x in d for x in ["tokyo", "singapur", "seul", "bangkok", "bali"]):
-                                base = (21000.0 if is_business else 12500.0) if carrier_type == "pegasus" else (29500.0 if is_business else 17900.0)
-                            elif any(x in d for x in ["selanik", "atina", "sofya", "batum", "baku", "uskup"]):
-                                base = (3200.0 if is_business else 1850.0) if carrier_type == "pegasus" else (4800.0 if is_business else 2750.0)
-                            else:
-                                base = (4900.0 if is_business else 2750.0) if carrier_type == "pegasus" else (7500.0 if is_business else 4150.0)
-
-                        base_calc = base * total_mult
-                        converted_p = CurrencyService.convert(base_calc, "TRY", currency)
-                        regular_p = CurrencyService.convert(round(base_calc * 1.25, 2), "TRY", currency)
-                        return round(converted_p, 2), round(regular_p, 2)
-
-                    pgs_price, pgs_reg = get_flight_benchmark_price("pegasus", is_international, dest_name, cabin_class == "business")
-
-                    # Pegasus Seferi
-                    if is_international:
-                        is_pgs_direct = orig_iata in ('IST', 'SAW', 'AYT', 'ADB')
-                        pgs_badge = "🌍 Uluslararası Direkt Uçuş ⭐" if is_pgs_direct else "1 Aktarma • Sabiha Gökçen (SAW) Aktarmalı"
-                        pgs_dur = "3 sa 50 dk" if is_pgs_direct else "7 sa 45 dk"
-                        pgs_carrier = "Pegasus Airlines" if is_pgs_direct else "Pegasus (SAW Aktarmalı)"
-                        pgs_notice = None if is_pgs_direct else f"Bu Pegasus uçuşu Sabiha Gökçen (SAW) aktarmalıdır. Tek PNR ile bagajınız doğrudan {dest_name} havalimanına aktarılır."
-                        pgs_direct = is_pgs_direct
-                    else:
-                        pgs_badge = "Comfort Flex ⭐" if cabin_class == "business" else "Direkt Uçuş"
-                        pgs_dur = "1 sa 10 dk"
-                        pgs_carrier = "Pegasus Airlines"
-                        pgs_notice = None
-                        pgs_direct = True
-                    ret_leg_pgs = None
-                    if is_round and return_date:
-                        ret_leg_pgs = {
-                            "origin": f"{dest_name} ({dst_iata})",
-                            "destination": f"{origin_name} ({pgs_dep_code})",
-                            "from_code": dst_iata,
-                            "to_code": pgs_dep_code,
-                            "departure_time": "19:15",
-                            "arrival_time": "20:30" if not is_international else "23:05",
-                            "departure_date": return_date,
-                            "departure_date_formatted": ret_date_formatted,
-                            "flight_number": "PC 2185",
-                            "duration": pgs_dur,
-                            "is_direct": pgs_direct
-                        }
-
+                    # Şeffaf ve Dürüst Canlı Sefer Kartı (Uydurma sefer, saat veya sabit fiyat kesinlikle üretilmez)
                     results.append({
-                        "id": "fl-pgs",
+                        "id": "fl-trip-live",
                         "transport_type": "flight",
-                        "carrier": pgs_carrier,
+                        "carrier": "Trip.com Canlı Uçuş Arama",
                         "carrier_logo": "✈️",
-                        "flight_number": "PC 2182",
-                        "origin": f"{origin_name} ({pgs_dep_code})",
+                        "flight_number": f"{orig_iata} ➔ {dst_iata}",
+                        "origin": f"{origin_name} ({orig_iata})",
                         "destination": f"{dest_name} ({dst_iata})",
-                        "from_code": pgs_dep_code,
+                        "from_code": orig_iata,
                         "to_code": dst_iata,
-                        "departure_time": "08:20",
-                        "arrival_time": "12:10" if is_international else "09:30",
+                        "departure_time": "Tüm Gün Seferleri",
+                        "arrival_time": "Canlı",
                         "departure_date_formatted": dep_date_formatted,
                         "arrival_date_formatted": dep_date_formatted,
                         "is_next_day": False,
-                        "duration": pgs_dur,
-                        "is_direct": pgs_direct,
+                        "duration": "Direkt & Aktarmalı Seferler",
+                        "is_direct": True,
                         "is_night_trip": False,
-                        "return_leg": ret_leg_pgs,
-                        "price": pgs_price,
-                        "has_live_price": True,
-                        "price_status_text": "Doğrulanmış Taban Fiyat",
-                        "regular_price": pgs_reg,
+                        "return_leg": None,
+                        "price": None,
+                        "has_live_price": False,
+                        "price_status_text": "Trip.com Canlı Sefer Sorgula",
+                        "regular_price": None,
                         "currency": curr_symbol,
                         "currency_code": currency,
-                        "badge": pgs_badge,
-                        "route_notice": pgs_notice,
+                        "badge": "⭐ Resmi Gelir Ortağı",
+                        "route_notice": f"{origin_name} - {dest_name} rotasında seçtiğiniz tarih için anlık müsaitlik ve tüm havayolu fiyatlarını Trip.com canlı ekranında listeleyin.",
                         "cabin_class": cabin_class,
-                        "official_name": "Pegasus Resmi",
-                        "official_link": "https://www.flypgs.com/",
-                        "agent_name": "Enuygun",
-                        "agent_link": links["flight"]["enuygun"],
-                        "direct_link": links["flight"]["enuygun"],
-                        "booking_link": links["flight"]["enuygun"],
+                        "official_name": "Resmi Havayolu Sorgula",
+                        "official_link": "https://www.turkishairlines.com/",
+                        "agent_name": "Trip.com",
+                        "agent_link": trip_url,
+                        "direct_link": trip_url,
+                        "booking_link": trip_url,
                         "hotel_link": dest_hotel_link,
                         "providers": [
-                            {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(pgs_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
-                            {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": pgs_price, "is_best": False, "channel": "trip"},
-                            {"name": "Turna.com", "url": links["flight"]["turna"], "price": pgs_price, "is_best": False, "channel": "turna"},
-                            {"name": "Pegasus Resmi Web Sitesi", "url": "https://www.flypgs.com/", "price": pgs_price, "is_best": False, "channel": "official"},
+                            {"name": "Trip.com (En Uygun Canlı Fiyatlar)", "url": trip_url, "price": None, "is_best": True, "channel": "trip"},
+                            {"name": "Google Flights Karşılaştırması", "url": google_url, "price": None, "is_best": False, "channel": "meta"}
                         ]
                     })
-
-                    if is_international:
-                        thy_price, thy_reg = get_flight_benchmark_price("thy", is_international, dest_name, cabin_class == "business")
-                        is_direct_intl = orig_iata in ('IST', 'SAW')
-                        flight_badge = "🌍 Uluslararası Direkt Uçuş ⭐" if is_direct_intl else "1 Aktarma • İstanbul (IST) Aktarmalı"
-                        carrier_name = "Türk Hava Yolları" if is_direct_intl else "Türk Hava Yolları (Aktarmalı)"
-                        flight_dur = "3 sa 45 dk" if is_direct_intl else "8 sa 30 dk"
-                        route_notice = None if is_direct_intl else f"Bu uçuş İstanbul (IST) aktarmalıdır. Tek PNR bilet olup bagajınız doğrudan {dest_name} varışına kadar aktarılır."
-
-                        ret_leg_thy = None
-                        if is_round and return_date:
-                            ret_leg_thy = {
-                                "origin": f"{dest_name} ({dst_iata})",
-                                "destination": f"{origin_name} ({orig_iata})",
-                                "from_code": dst_iata,
-                                "to_code": orig_iata,
-                                "departure_time": "18:25",
-                                "arrival_time": "22:10" if is_direct_intl else "03:45",
-                                "departure_date": return_date,
-                                "departure_date_formatted": ret_date_formatted,
-                                "flight_number": f"TK {dst_iata}-{orig_iata}",
-                                "duration": flight_dur,
-                                "is_direct": is_direct_intl
-                            }
-
-                        # Uluslararası THY / Enuygun / Turna / Trip.com
-                        results.append({
-                            "id": "fl-int-thy",
-                            "transport_type": "flight",
-                            "carrier": carrier_name,
-                            "carrier_logo": "✈️",
-                            "flight_number": f"TK {orig_iata}-{dst_iata}",
-                            "origin": f"{origin_name} ({orig_iata})",
-                            "destination": f"{dest_name} ({dst_iata})",
-                            "from_code": orig_iata,
-                            "to_code": dst_iata,
-                            "departure_time": "10:35",
-                            "arrival_time": "19:20" if not is_direct_intl else "13:20",
-                            "departure_date_formatted": dep_date_formatted,
-                            "arrival_date_formatted": dep_date_formatted,
-                            "is_next_day": False,
-                            "duration": flight_dur,
-                            "is_direct": is_direct_intl,
-                            "is_night_trip": False,
-                            "return_leg": ret_leg_thy,
-                            "price": thy_price,
-                            "has_live_price": True,
-                            "price_status_text": "Doğrulanmış Taban Fiyat",
-                            "regular_price": thy_reg,
-                            "currency": curr_symbol,
-                            "currency_code": currency,
-                            "badge": flight_badge,
-                            "route_notice": route_notice,
-                            "cabin_class": cabin_class,
-                            "official_name": "Türk Hava Yolları",
-                            "official_link": "https://www.turkishairlines.com/tr-int/",
-                            "agent_name": "Enuygun",
-                            "agent_link": links["flight"]["enuygun"],
-                            "direct_link": links["flight"]["enuygun"],
-                            "booking_link": links["flight"]["enuygun"],
-                            "hotel_link": dest_hotel_link,
-                            "providers": [
-                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": thy_price, "is_best": True, "channel": "trip"},
-                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(thy_price + enuygun_fee, 2), "is_best": False, "channel": "agency"},
-                                {"name": "Turna.com", "url": links["flight"]["turna"], "price": thy_price, "is_best": False, "channel": "turna"},
-                                {"name": "THY Resmi Web Sitesi", "url": "https://www.turkishairlines.com/tr-int/", "price": thy_price, "is_best": False, "channel": "official"},
-                            ]
-                        })
-                    else:
-                        ajet_price, ajet_reg = get_flight_benchmark_price("ajet", is_international, dest_name, cabin_class == "business")
-                        thy_dom_price, thy_dom_reg = get_flight_benchmark_price("thy", is_international, dest_name, cabin_class == "business")
-
-                        ret_leg_ajet = None
-                        if is_round and return_date:
-                            ret_leg_ajet = {
-                                "origin": f"{dest_name} ({dst_iata})",
-                                "destination": f"{origin_name} ({pgs_dep_code})",
-                                "from_code": dst_iata,
-                                "to_code": pgs_dep_code,
-                                "departure_time": "20:50",
-                                "arrival_time": "22:00",
-                                "departure_date": return_date,
-                                "departure_date_formatted": ret_date_formatted,
-                                "flight_number": "VF 4125",
-                                "duration": "1 sa 10 dk",
-                                "is_direct": True
-                            }
-
-                        ret_leg_thy_dom = None
-                        if is_round and return_date:
-                            ret_leg_thy_dom = {
-                                "origin": f"{dest_name} ({dst_iata})",
-                                "destination": f"{origin_name} ({orig_iata})",
-                                "from_code": dst_iata,
-                                "to_code": orig_iata,
-                                "departure_time": "22:15",
-                                "arrival_time": "23:25",
-                                "departure_date": return_date,
-                                "departure_date_formatted": ret_date_formatted,
-                                "flight_number": "TK 2159",
-                                "duration": "1 sa 10 dk",
-                                "is_direct": True
-                            }
-
-                        # AJet / Travelpayouts / Enuygun
-                        results.append({
-                            "id": "fl-ajet",
-                            "transport_type": "flight",
-                            "carrier": "AJet (AnadoluJet)",
-                            "carrier_logo": "✈️",
-                            "flight_number": "VF 4120",
-                            "origin": f"{origin_name} ({pgs_dep_code})",
-                            "destination": f"{dest_name} ({dst_iata})",
-                            "from_code": pgs_dep_code,
-                            "to_code": dst_iata,
-                            "departure_time": "14:15",
-                            "arrival_time": "15:25",
-                            "departure_date_formatted": dep_date_formatted,
-                            "arrival_date_formatted": dep_date_formatted,
-                            "is_next_day": False,
-                            "duration": "1 sa 10 dk",
-                            "is_direct": True,
-                            "is_night_trip": False,
-                            "return_leg": ret_leg_ajet,
-                            "price": ajet_price,
-                            "has_live_price": True,
-                            "price_status_text": "Doğrulanmış Taban Fiyat",
-                            "regular_price": ajet_reg,
-                            "currency": curr_symbol,
-                            "currency_code": currency,
-                            "badge": "AJet Avantajı",
-                            "cabin_class": cabin_class,
-                            "official_name": "AJet Resmi",
-                            "official_link": "https://ajet.com/tr",
-                            "agent_name": "Enuygun",
-                            "agent_link": links["flight"]["enuygun"],
-                            "direct_link": links["flight"]["enuygun"],
-                            "booking_link": links["flight"]["enuygun"],
-                            "hotel_link": dest_hotel_link,
-                            "providers": [
-                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(ajet_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
-                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": ajet_price, "is_best": False, "channel": "trip"},
-                                {"name": "Turna.com", "url": links["flight"]["turna"], "price": ajet_price, "is_best": False, "channel": "turna"},
-                                {"name": "AJet Resmi Web Sitesi", "url": "https://ajet.com/tr", "price": ajet_price, "is_best": False, "channel": "official"},
-                            ]
-                        })
-
-                        # Türk Hava Yolları Yurt İçi
-                        results.append({
-                            "id": "fl-thy-dom",
-                            "transport_type": "flight",
-                            "carrier": "Türk Hava Yolları",
-                            "carrier_logo": "✈️",
-                            "flight_number": "TK 2154",
-                            "origin": f"{origin_name} ({orig_iata})",
-                            "destination": f"{dest_name} ({dst_iata})",
-                            "from_code": orig_iata,
-                            "to_code": dst_iata,
-                            "departure_time": "18:40",
-                            "arrival_time": "19:50",
-                            "departure_date_formatted": dep_date_formatted,
-                            "arrival_date_formatted": dep_date_formatted,
-                            "is_next_day": False,
-                            "duration": "1 sa 10 dk",
-                            "is_direct": True,
-                            "is_night_trip": False,
-                            "return_leg": ret_leg_thy_dom,
-                            "price": thy_dom_price,
-                            "has_live_price": True,
-                            "price_status_text": "Doğrulanmış Taban Fiyat",
-                            "regular_price": thy_dom_reg,
-                            "currency": curr_symbol,
-                            "currency_code": currency,
-                            "badge": "⭐ THY Kalitesi",
-                            "cabin_class": cabin_class,
-                            "official_name": "Türk Hava Yolları",
-                            "official_link": "https://www.turkishairlines.com/tr-int/",
-                            "agent_name": "Enuygun",
-                            "agent_link": links["flight"]["enuygun"],
-                            "direct_link": links["flight"]["enuygun"],
-                            "booking_link": links["flight"]["enuygun"],
-                            "hotel_link": dest_hotel_link,
-                            "providers": [
-                                {"name": enuygun_label, "url": links["flight"]["enuygun"], "price": round(thy_dom_price + enuygun_fee, 2), "is_best": True, "channel": "agency"},
-                                {"name": "Trip.com Flights", "url": links["flight"]["trip"], "price": thy_dom_price, "is_best": False, "channel": "trip"},
-                                {"name": "Turna.com", "url": links["flight"]["turna"], "price": thy_dom_price, "is_best": False, "channel": "turna"},
-                                {"name": "THY Resmi Web Sitesi", "url": "https://www.turkishairlines.com/tr-int/", "price": thy_dom_price, "is_best": False, "channel": "official"},
-                            ]
-                        })
             else:
                 missing = origin_name if not origin_has_airport else dest_name
                 msg = f"ℹ️ {missing} şehrinde aktif havalimanı bulunmadığı için doğrudan uçak seferi yoktur."
@@ -1648,7 +1381,7 @@ class SearchService:
         )
 
         # Şeffaflık ve Doğruluk Bilgilendirmesi
-        notices.insert(0, "🛡️ Güven ve Şeffaflık İlkesi: Sitemizde tahmini veya yaklaşık fiyat gösterilmez. Tüm sefer, koltuk ve kesin ücretler doğrudan resmi sağlayıcı sisteminde anlık teyit edilir.")
+        notices.insert(0, "🛡️ Güven ve Şeffaflık İlkesi: Uçuş seferleri ve fiyatlar Trip.com ve resmi sağlayıcılar üzerinden canlı sorgulanır. Hakiki Bilet kullanıcıdan ek hizmet bedeli veya komisyon almaz.")
 
         car_rental_info = None
         try:

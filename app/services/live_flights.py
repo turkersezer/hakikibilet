@@ -352,10 +352,8 @@ def fetch_live_flights_from_google(
                 f"&aid={booking_aid}"
             )
 
-            if is_intl:
-                direct_link = trip_flight_link
-            else:
-                direct_link = direct_agent_link
+            # Tüm uçuşlarda (yurt içi ve yurt dışı) birincil komisyonlu rezervasyon kapısı: Trip.com (Alliance ID: 11051531)
+            direct_link = trip_flight_link
 
             if "pegasus" in carrier_lower or carrier_code == "PC":
                 carrier_display = "Pegasus Airlines"
@@ -363,80 +361,48 @@ def fetch_live_flights_from_google(
                 official_link = "https://www.flypgs.com/"
                 badge = "Comfort Flex ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Pegasus Seferi")
                 final_ticket_price = price
-                if is_intl:
-                    providers_list = [
-                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                        {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                        {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                        {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    ]
-                else:
-                    providers_list = [
-                        {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": True, "channel": "agency"},
-                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
-                        {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                        {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    ]
+                providers_list = [
+                    {"name": "Trip.com (⭐ Resmi Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
+                    {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
+                ]
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
                 carrier_display = "AJet (AnadoluJet)"
                 official_name = "AJet Resmi Web"
                 official_link = "https://ajet.com/tr"
                 badge = "Business ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "AJet Seferi")
                 final_ticket_price = price
-                if is_intl:
-                    providers_list = [
-                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                        {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                        {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                        {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    ]
-                else:
-                    providers_list = [
-                        {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": True, "channel": "agency"},
-                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
-                        {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                        {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    ]
+                providers_list = [
+                    {"name": "Trip.com (⭐ Resmi Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
+                    {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
+                ]
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
                 carrier_display = "Türk Hava Yolları"
                 official_name = "THY Resmi Web"
                 official_link = "https://www.turkishairlines.com/tr-int/"
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "⭐ THY Konforu")
                 final_ticket_price = price
-                if is_intl:
-                    providers_list = [
-                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                        {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                        {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                        {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    ]
-                else:
-                    providers_list = [
-                        {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": True, "channel": "agency"},
-                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
-                        {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                        {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    ]
+                providers_list = [
+                    {"name": "Trip.com (⭐ Resmi Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
+                    {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
+                ]
             elif "sunexpress" in carrier_lower or carrier_code == "XQ":
                 carrier_display = "SunExpress"
                 official_name = "SunExpress Resmi"
                 official_link = "https://www.sunexpress.com/tr/"
                 badge = "SunClassic" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "SunExpress Seferi")
                 final_ticket_price = price
-                if is_intl:
-                    providers_list = [
-                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
-                        {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
-                        {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                        {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    ]
-                else:
-                    providers_list = [
-                        {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": True, "channel": "agency"},
-                        {"name": "Trip.com Flights", "url": trip_flight_link, "price": price, "is_best": False, "channel": "trip"},
-                        {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
-                        {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
-                    ]
+                providers_list = [
+                    {"name": "Trip.com (⭐ Resmi Partner)", "url": trip_flight_link, "price": price, "is_best": True, "channel": "trip"},
+                    {"name": official_name, "url": official_link, "price": price, "is_best": False, "channel": "official"},
+                    {"name": enuygun_label, "url": direct_agent_link, "price": enuygun_price, "is_best": False, "channel": "agency"},
+                    {"name": "Turna.com", "url": turna_flight_link, "price": price, "is_best": False, "channel": "turna"},
+                ]
             else:
                 carrier_display = airline_name
                 official_name = f"{airline_name} Resmi"
