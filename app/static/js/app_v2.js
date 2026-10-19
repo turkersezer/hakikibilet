@@ -1063,12 +1063,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                         icon = '<i class="fa-solid fa-bolt text-teal-600 text-[9px]"></i> ';
                                     }
                                     let priceText = '';
-                                    let scopeBadge = '';
                                     if (hasVerifiedPrice) {
                                         priceText = `${Number(p.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${currSym}`;
-                                        if (p.channel === 'official' && isRoundTrip) {
-                                            scopeBadge = `<span class="text-[9px] font-semibold opacity-70 ml-0.5">(${isEn ? 'Round-Trip' : 'Gidiş-Dönüş'})</span>`;
-                                        }
                                     } else if (p.channel === 'trip') {
                                         priceText = isEn ? 'View Live Fare' : 'Canlı Fiyatı Gör';
                                     } else if (p.channel === 'agency') {
@@ -1079,7 +1075,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     return `
                                     <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${pillClass} transition" title="${p.name} üzerinden canlı sefer ve fiyat kontrolü">
                                          <span>${icon}${p.name}</span>
-                                         <span class="${(p.is_best && hasVerifiedPrice) ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : (p.channel === 'kiwi' ? 'text-teal-800' : 'text-slate-900'))} font-black">${priceText}${scopeBadge}</span>
+                                         <span class="${(p.is_best && hasVerifiedPrice) ? 'text-amber-800' : (p.channel === 'trip' ? 'text-sky-700' : (p.channel === 'kiwi' ? 'text-teal-800' : 'text-slate-900'))} font-black">${priceText}</span>
                                          <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                                     </a>
                                     `;

@@ -441,9 +441,17 @@ def fetch_live_flights_from_google(
             # KESİN DOĞRULUK KURALI:
             # Trip.com (veya herhangi bir acente) için yalnızca API'den doğrulanmış canlı fiyat geldiyse
             # yarışmaya sokulur. Asla havayolu taban fiyatı (price) varsayılan olarak kopyalanmaz!
-            # Fiyat teyit edilmemişse 'None' atanır; böylece resmi havayolu (Pegasus, THY vb.) hak ettiği
-            # gibi 1. sırayı alır ve kullanıcıya yanıltıcı fiyat vaat edilmez.
-            trip_price = float(trip_live["price"]) if (trip_live and trip_live.get("price") and float(trip_live["price"]) > 0) else None
+            # Ayrıca: Arama GİDİŞ-DÖNÜŞ (is_round) ise ve Trip.com teklifi tek bacak fiyatı ise,
+            # elma ile armut kıyaslanmaması için gidiş-dönüş toplam tutarı (2 bacak) hesaplanır.
+            if trip_live and trip_live.get("price") and float(trip_live["price"]) > 0:
+                base_trip_price = float(trip_live["price"])
+                if is_round and not trip_live.get("is_round"):
+                    trip_price = round(base_trip_price * 2, 2)
+                else:
+                    trip_price = round(base_trip_price, 2)
+            else:
+                trip_price = None
+
             trip_url = trip_live.get("url") if (trip_live and trip_live.get("url")) else trip_flight_link
 
             raw_providers = [

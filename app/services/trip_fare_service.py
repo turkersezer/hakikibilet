@@ -24,8 +24,9 @@ _TRIP_MEMORY_CACHE: Dict[str, Dict[str, Any]] = {}
 CACHE_TTL_SECONDS = 3600  # 1 Saat güncellik
 
 
-def _get_cache_filepath(orig_code: str, dest_code: str, dep_date: str) -> str:
-    filename = f"{orig_code.upper()}_{dest_code.upper()}_{dep_date}.json"
+def _get_cache_filepath(orig_code: str, dest_code: str, dep_date: str, ret_date: Optional[str] = None) -> str:
+    ret_part = f"_{ret_date}" if ret_date else ""
+    filename = f"{orig_code.upper()}_{dest_code.upper()}_{dep_date}{ret_part}.json"
     return os.path.join(CACHE_DIR, filename)
 
 
@@ -166,6 +167,7 @@ def fetch_trip_live_offers(
     orig_codes: List[str],
     dest_codes: List[str],
     departure_date: str,
+    return_date: Optional[str] = None,
 ) -> Dict[str, Dict[str, Any]]:
     """
     Belirli bir hat ve tarih için Trip.com canlı fiyatlarını çeker.
@@ -176,12 +178,13 @@ def fetch_trip_live_offers(
 
     all_offers: Dict[str, Dict[str, Any]] = {}
     now_ts = time.time()
+    is_round = bool(return_date)
 
     for orig_raw in orig_codes:
         o_code = orig_raw.strip().upper()
         for dest_raw in dest_codes:
             d_code = dest_raw.strip().upper()
-            cache_key = f"{o_code}_{d_code}_{departure_date}"
+            cache_key = f"{o_code}_{d_code}_{departure_date}_{return_date or 'ow'}"
 
             # 1. Bellek Önbelleği (RAM Cache)
             if cache_key in _TRIP_MEMORY_CACHE:
