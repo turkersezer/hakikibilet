@@ -1,0 +1,869 @@
+{
+  "ts": 1792434305.6392791,
+  "offers": {
+    "PC2000": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2136.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:50"
+      }
+    },
+    "TIME:SAW:AYT:05:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2136.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:50"
+      }
+    },
+    "SHORT:05:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2136.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:50"
+      }
+    },
+    "TIME:IST:AYT:05:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2136.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:50"
+      }
+    },
+    "VF3050": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1706.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:15"
+      }
+    },
+    "TIME:SAW:AYT:00:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1706.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:15"
+      }
+    },
+    "SHORT:00:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1706.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:15"
+      }
+    },
+    "TIME:IST:AYT:00:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1706.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:15"
+      }
+    },
+    "VF3028": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2247.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:35"
+      }
+    },
+    "TIME:SAW:AYT:05:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2247.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:35"
+      }
+    },
+    "SHORT:05:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2247.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:35"
+      }
+    },
+    "TIME:IST:AYT:05:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2247.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:35"
+      }
+    },
+    "PC2028": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2373.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "TIME:SAW:AYT:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2373.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "SHORT:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2373.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "TIME:IST:AYT:00:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2373.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:10"
+      }
+    },
+    "PC2002": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2855.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:SAW:AYT:08:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2855.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "SHORT:08:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2855.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:IST:AYT:08:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2855.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "VF3030": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2966.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:20"
+      }
+    },
+    "TIME:SAW:AYT:08:20:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2966.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:20"
+      }
+    },
+    "SHORT:08:20:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2966.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:20"
+      }
+    },
+    "TIME:IST:AYT:08:20:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2966.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:20"
+      }
+    },
+    "PC4902": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3181.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "TIME:SAW:AYT:13:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3181.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "SHORT:13:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3181.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "TIME:IST:AYT:13:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3181.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "PC2008": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3389.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:50"
+      }
+    },
+    "TIME:SAW:AYT:13:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3389.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:50"
+      }
+    },
+    "SHORT:13:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3389.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:50"
+      }
+    },
+    "TIME:IST:AYT:13:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3389.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:50"
+      }
+    },
+    "VF3032": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3203.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:05"
+      }
+    },
+    "TIME:SAW:AYT:12:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3203.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:05"
+      }
+    },
+    "SHORT:12:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3203.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:05"
+      }
+    },
+    "TIME:IST:AYT:12:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3203.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:05"
+      }
+    },
+    "VF3036": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3285.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "TIME:SAW:AYT:18:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3285.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "SHORT:18:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3285.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "TIME:IST:AYT:18:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3285.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "PC2010": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3670.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:45"
+      }
+    },
+    "TIME:SAW:AYT:16:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3670.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:45"
+      }
+    },
+    "SHORT:16:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3670.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:45"
+      }
+    },
+    "TIME:IST:AYT:16:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3670.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:45"
+      }
+    },
+    "PC2018": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3700.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "TIME:SAW:AYT:20:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3700.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "SHORT:20:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3700.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "TIME:IST:AYT:20:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3700.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "PC2006": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3737.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:30"
+      }
+    },
+    "TIME:SAW:AYT:11:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3737.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:30"
+      }
+    },
+    "SHORT:11:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3737.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:30"
+      }
+    },
+    "TIME:IST:AYT:11:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3737.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:30"
+      }
+    },
+    "PC4112": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3774.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:SAW:AYT:19:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3774.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "SHORT:19:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3774.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:IST:AYT:19:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3774.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "PC2020": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3841.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:20"
+      }
+    },
+    "TIME:SAW:AYT:22:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3841.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:20"
+      }
+    },
+    "SHORT:22:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3841.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:20"
+      }
+    },
+    "TIME:IST:AYT:22:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3841.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:20"
+      }
+    },
+    "PC2012": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3863.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "TIME:SAW:AYT:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3863.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "SHORT:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3863.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "TIME:IST:AYT:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3863.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "VF3034": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3598.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:05"
+      }
+    },
+    "TIME:SAW:AYT:16:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3598.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:05"
+      }
+    },
+    "SHORT:16:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3598.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:05"
+      }
+    },
+    "TIME:IST:AYT:16:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3598.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:05"
+      }
+    },
+    "PC2004": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3885.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:55"
+      }
+    },
+    "TIME:SAW:AYT:09:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3885.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:55"
+      }
+    },
+    "SHORT:09:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3885.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:55"
+      }
+    },
+    "TIME:IST:AYT:09:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3885.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:55"
+      }
+    },
+    "VF3038": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3774.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "TIME:SAW:AYT:21:25:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3774.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "SHORT:21:25:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3774.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "TIME:IST:AYT:21:25:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3774.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "PC2014": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5094.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:25"
+      }
+    },
+    "TIME:SAW:AYT:18:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5094.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:25"
+      }
+    },
+    "SHORT:18:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5094.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:25"
+      }
+    },
+    "TIME:IST:AYT:18:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5094.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:25"
+      }
+    },
+    "VF3000": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2781.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:SAW:AYT:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2781.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "SHORT:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2781.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:IST:AYT:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2781.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "VF3004": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3025.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "TIME:SAW:AYT:14:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3025.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "SHORT:14:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3025.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "TIME:IST:AYT:14:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3025.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "VF3002": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4832.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:SAW:AYT:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4832.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4832.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:IST:AYT:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4832.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "VF3006": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3381.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TIME:SAW:AYT:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3381.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "SHORT:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3381.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TIME:IST:AYT:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3381.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-antalya/tickets-saw-ayt?flighttype=ow&dcity=saw&acity=ayt&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    }
+  }
+}

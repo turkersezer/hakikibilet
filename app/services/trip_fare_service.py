@@ -23,7 +23,7 @@ CACHE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file_
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 _TRIP_MEMORY_CACHE: Dict[str, Dict[str, Any]] = {}
-CACHE_TTL_SECONDS = 3600  # 1 Saat güncellik
+CACHE_TTL_SECONDS = 86400  # 24 Saat guncellik
 
 
 def _get_cache_filepath(orig_code: str, dest_code: str, dep_date: str, ret_date: Optional[str] = None) -> str:
@@ -101,8 +101,18 @@ def parse_trip_flightlist_json(
         # İkincil anahtar: Kalkış Saati ve Havayolu (Örn: 'TIME:SAW:ADB:00:05:VF')
         if dep_hm and airline_code:
             t_key = f"TIME:{from_code.upper()}:{to_code.upper()}:{dep_hm}:{airline_code}"
+            short_key = f"SHORT:{dep_hm}:{airline_code}"
             if t_key not in offers or clean_price < offers[t_key]["trip"]["price"]:
                 offers[t_key] = {"trip": item}
+            if short_key not in offers or clean_price < offers[short_key]["trip"]["price"]:
+                offers[short_key] = {"trip": item}
+            # IST/SAW capraz eslesme destegi
+            if from_code.upper() in ("SAW", "IST"):
+                alt_o = "IST" if from_code.upper() == "SAW" else "SAW"
+                offers[f"TIME:{alt_o}:{to_code.upper()}:{dep_hm}:{airline_code}"] = {"trip": item}
+            if to_code.upper() in ("SAW", "IST"):
+                alt_d = "IST" if to_code.upper() == "SAW" else "SAW"
+                offers[f"TIME:{from_code.upper()}:{alt_d}:{dep_hm}:{airline_code}"] = {"trip": item}
 
     return offers
 
@@ -172,14 +182,21 @@ def parse_trip_dom_text(body_text: str, orig_code: str, dest_code: str, dep_date
                         offers[t_key] = {"trip": item}
                     if short_key not in offers or price < offers[short_key]["trip"]["price"]:
                         offers[short_key] = {"trip": item}
+                    # IST/SAW capraz eslesme destegi
+                    if orig_code.upper() in ("SAW", "IST"):
+                        alt_o = "IST" if orig_code.upper() == "SAW" else "SAW"
+                        offers[f"TIME:{alt_o}:{dest_code.upper()}:{dep_time}:{carrier}"] = {"trip": item}
+                    if dest_code.upper() in ("SAW", "IST"):
+                        alt_d = "IST" if dest_code.upper() == "SAW" else "SAW"
+                        offers[f"TIME:{orig_code.upper()}:{alt_d}:{dep_time}:{carrier}"] = {"trip": item}
 
     return offers
 
 
 def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) -> Dict[str, Dict[str, Any]]:
     """
-    Playwright Stealth (Edge) kullanarak Trip.com'dan canlı fırsatları (Pegasus, AJet, THY vb.)
-    doğrudan sayfa DOM akışından çeker ve doğrulanmış canlı teklifleri döner.
+    Playwright (Edge) kullanarak Trip.com'dan canlı fırsatları (Pegasus, AJet, THY vb.)
+    FlightListSearchSSE JSON veri akışından ve sayfa DOM'undan çeker.
     """
     try:
         from playwright.sync_api import sync_playwright
@@ -202,19 +219,55 @@ def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) 
             f"flighttype=ow&dcity={orig_code.lower()}&acity={dest_code.lower()}&ddate={dep_date}&curr=TRY{aff_param}"
         )
 
+        captured_payload = None
+        captured_headers = None
+
         with sync_playwright() as p:
             b = p.chromium.launch(channel="msedge", headless=True, args=args)
             ctx = b.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0",
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
                 viewport={"width": 1366, "height": 768},
                 locale="tr-TR",
             )
-            ctx.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
             page = ctx.new_page()
 
-            page.goto(url, wait_until="domcontentloaded", timeout=25000)
-            page.wait_for_timeout(4500)
+            def on_req(req):
+                nonlocal captured_payload, captured_headers
+                if "FlightListSearch" in req.url and not captured_payload:
+                    captured_payload = req.post_data
+                    captured_headers = req.headers
 
+            page.on("request", on_req)
+            page.goto(url, wait_until="domcontentloaded", timeout=25000)
+            page.wait_for_timeout(3500)
+
+            # 1. Öncelik: JSON API (FlightListSearchSSE) yanıtını parse et
+            if captured_payload:
+                try:
+                    api_res = ctx.request.post(
+                        "https://tr.trip.com/restapi/soa2/27015/FlightListSearchSSE",
+                        data=captured_payload,
+                        headers=captured_headers,
+                        timeout=12000,
+                    )
+                    if api_res.status == 200:
+                        lines = api_res.text().splitlines()
+                        all_offers: Dict[str, Dict[str, Any]] = {}
+                        for line in lines:
+                            if line.startswith("data:"):
+                                try:
+                                    data_chunk = json.loads(line[5:])
+                                    parsed = parse_trip_flightlist_json(data_chunk, orig_code, dest_code, dep_date)
+                                    all_offers.update(parsed)
+                                except Exception:
+                                    pass
+                        if all_offers:
+                            b.close()
+                            return all_offers
+                except Exception as api_err:
+                    logger.debug(f"Trip API request warning: {api_err}")
+
+            # 2. Öncelik: DOM Text akışından parse et
             body_text = page.inner_text("body")
             b.close()
 
@@ -227,6 +280,18 @@ def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) 
     return {}
 
 
+def _bg_refresh_trip(orig: str, dest: str, date: str, cache_key: str, cache_file: str):
+    """Arka planda Trip.com canlı tekliflerini yeniler ve önbelleğe yazar."""
+    try:
+        fresh_offers = probe_trip_fares_via_browser(orig, dest, date)
+        if fresh_offers:
+            _TRIP_MEMORY_CACHE[cache_key] = {"ts": time.time(), "data": fresh_offers}
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump({"ts": time.time(), "offers": fresh_offers}, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        logger.debug(f"Background Trip refresh error: {e}")
+
+
 def fetch_trip_live_offers(
     orig_codes: List[str],
     dest_codes: List[str],
@@ -235,14 +300,14 @@ def fetch_trip_live_offers(
 ) -> Dict[str, Dict[str, Any]]:
     """
     Belirli bir hat ve tarih için Trip.com canlı fiyatlarını çeker.
-    Önce bellek ve disk önbelleğine bakar; yoksa anlık canlı yakalama yapar.
+    Stale-While-Revalidate yaklaşımıyla var olan veriyi anında döndürür, arka planda günceller.
     """
     if not orig_codes or not dest_codes or not departure_date:
         return {}
 
     all_offers: Dict[str, Dict[str, Any]] = {}
     now_ts = time.time()
-    is_round = bool(return_date)
+    import threading
 
     for orig_raw in orig_codes:
         o_code = orig_raw.strip().upper()
@@ -259,19 +324,28 @@ def fetch_trip_live_offers(
 
             # 2. Disk Önbelleği (File Cache)
             cache_file = _get_cache_filepath(o_code, d_code, departure_date)
+            cached_disk = None
             if os.path.exists(cache_file):
                 try:
                     with open(cache_file, "r", encoding="utf-8") as f:
                         disk_entry = json.load(f)
-                    if now_ts - disk_entry.get("ts", 0) < CACHE_TTL_SECONDS:
-                        parsed_offers = disk_entry.get("offers", {})
-                        _TRIP_MEMORY_CACHE[cache_key] = {"ts": disk_entry.get("ts", now_ts), "data": parsed_offers}
-                        all_offers.update(parsed_offers)
+                    cached_disk = disk_entry.get("offers", {})
+                    age = now_ts - disk_entry.get("ts", 0)
+                    if age < CACHE_TTL_SECONDS and cached_disk:
+                        _TRIP_MEMORY_CACHE[cache_key] = {"ts": disk_entry.get("ts", now_ts), "data": cached_disk}
+                        all_offers.update(cached_disk)
+                        # 30 dakikadan eskiyse arka planda sessizce guncelle
+                        if age > 1800:
+                            threading.Thread(
+                                target=_bg_refresh_trip,
+                                args=(o_code, d_code, departure_date, cache_key, cache_file),
+                                daemon=True,
+                            ).start()
                         continue
                 except Exception as err:
                     logger.debug(f"Disk cache read error for Trip: {err}")
 
-            # 3. Canlı Sorgu (ThreadPool iş parçacığında doğrudan çalıştır ve önbelleğe al)
+            # 3. Canlı Sorgu (Disk cache yoksa doğrudan çek)
             try:
                 parsed_offers = probe_trip_fares_via_browser(o_code, d_code, departure_date)
                 if parsed_offers:
@@ -279,7 +353,12 @@ def fetch_trip_live_offers(
                     all_offers.update(parsed_offers)
                     with open(cache_file, "w", encoding="utf-8") as f:
                         json.dump({"ts": time.time(), "offers": parsed_offers}, f, ensure_ascii=False, indent=2)
+                elif cached_disk:
+                    all_offers.update(cached_disk)
             except Exception as e:
                 logger.debug(f"Direct Trip probe error: {e}")
+                if cached_disk:
+                    all_offers.update(cached_disk)
 
     return all_offers
+

@@ -1,0 +1,149 @@
+{
+  "ts": 1792433263.9617379,
+  "offers": {
+    "TIME:IST:AYT:05:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1369.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:35"
+      }
+    },
+    "SHORT:05:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1369.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:35"
+      }
+    },
+    "TIME:IST:AYT:15:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1369.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "SHORT:15:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1369.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TIME:IST:AYT:16:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1397.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:35"
+      }
+    },
+    "SHORT:16:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1397.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:35"
+      }
+    },
+    "TIME:IST:AYT:17:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1397.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:15"
+      }
+    },
+    "SHORT:17:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1397.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:15"
+      }
+    },
+    "TIME:IST:AYT:18:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1397.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:35"
+      }
+    },
+    "SHORT:18:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1397.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:35"
+      }
+    },
+    "TIME:IST:AYT:20:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1397.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:50"
+      }
+    },
+    "SHORT:20:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1397.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:50"
+      }
+    },
+    "TIME:IST:AYT:19:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1446.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:50"
+      }
+    },
+    "SHORT:19:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1446.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:50"
+      }
+    },
+    "TIME:IST:AYT:20:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1483.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:20"
+      }
+    },
+    "SHORT:20:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1483.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-antalya/tickets-ist-ayt?flighttype=ow&dcity=ist&acity=ayt&ddate=2026-10-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:20"
+      }
+    }
+  }
+}
