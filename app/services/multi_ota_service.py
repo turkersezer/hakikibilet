@@ -21,6 +21,7 @@ import re
 import logging
 import requests
 from app.config import settings
+from app.cities import find_city
 
 logger = logging.getLogger(__name__)
 
@@ -436,11 +437,15 @@ def fetch_rapidapi_multi_ota_offers(
 
                 dep_dt_str = str(first_leg.get("departure") or "")
                 dep_time = dep_dt_str[11:16] if len(dep_dt_str) >= 16 else None
-
+                orig_c = find_city(o_code)
+                dest_c = find_city(d_code)
+                orig_slug = orig_c.get("slug") if orig_c else o_code.lower()
+                dest_slug = dest_c.get("slug") if dest_c else d_code.lower()
+                carrier_filter = f"&airline={carrier_code}&airlineCode={carrier_code}" if carrier_code else ""
                 trip_url = (
-                    f"https://tr.trip.com/flights/search?"
-                    f"dcity={o_code.lower()}&acity={d_code.lower()}&ddate={departure_date}"
-                    f"&curr=TRY&Allianceid={trip_alliance}&SID={trip_sid}"
+                    f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{o_code.lower()}-{d_code.lower()}?"
+                    f"flighttype=ow&dcity={o_code.lower()}&acity={d_code.lower()}&ddate={departure_date}"
+                    f"&curr=TRY{carrier_filter}&Allianceid={trip_alliance}&SID={trip_sid}"
                 )
 
                 offer_item = {

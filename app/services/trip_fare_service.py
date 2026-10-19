@@ -14,6 +14,7 @@ import time
 import logging
 from typing import Dict, Any, List, Optional
 from app.config import settings
+from app.cities import find_city
 
 logger = logging.getLogger(__name__)
 
@@ -70,9 +71,15 @@ def parse_trip_flightlist_json(
 
         clean_price = round(float(total_price), 2)
         airline_filter = f"&airline={airline_code}&airlineCode={airline_code}" if airline_code else ""
+        
+        orig_c = find_city(from_code)
+        dest_c = find_city(to_code)
+        orig_slug = orig_c.get("slug") if orig_c else from_code.lower()
+        dest_slug = dest_c.get("slug") if dest_c else to_code.lower()
+        
         trip_url = (
-            f"https://tr.trip.com/flights/search?"
-            f"dcity={from_code.lower()}&acity={to_code.lower()}&ddate={dep_date}"
+            f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{from_code.lower()}-{to_code.lower()}?"
+            f"flighttype=ow&dcity={from_code.lower()}&acity={to_code.lower()}&ddate={dep_date}"
             f"&curr=TRY{airline_filter}{aff_param}"
         )
 
@@ -106,12 +113,17 @@ def probe_trip_fares_via_browser(orig_code: str, dest_code: str, dep_date: str) 
     try:
         from playwright.sync_api import sync_playwright
 
+        orig_c = find_city(orig_code)
+        dest_c = find_city(dest_code)
+        orig_slug = orig_c.get("slug") if orig_c else orig_code.lower()
+        dest_slug = dest_c.get("slug") if dest_c else dest_code.lower()
+
         args = [
             "--disable-blink-features=AutomationControlled",
             "--no-sandbox",
         ]
         url = (
-            f"https://tr.trip.com/flights/search?"
+            f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{orig_code.lower()}-{dest_code.lower()}?"
             f"flighttype=ow&dcity={orig_code.lower()}&acity={dest_code.lower()}&ddate={dep_date}&curr=TRY"
         )
         captured_data = []

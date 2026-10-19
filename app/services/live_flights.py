@@ -452,7 +452,11 @@ def fetch_live_flights_from_google(
             else:
                 trip_price = None
 
-            trip_url = trip_live.get("url") if (trip_live and trip_live.get("url")) else trip_flight_link
+            candidate_trip_url = str(trip_live.get("url") or "") if trip_live else ""
+            if candidate_trip_url and "/flights/search" not in candidate_trip_url:
+                trip_url = candidate_trip_url
+            else:
+                trip_url = trip_flight_link
 
             raw_providers = [
                 {
