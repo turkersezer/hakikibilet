@@ -285,7 +285,7 @@
                 <p class="text-xs text-slate-500">Canlı sistemi görüntülemek için şifrenizi girin.</p>
             </div>
             <form onsubmit="handleAdminUnlock(event)">
-                <input type="password" id="adminPasscode" required placeholder="Önizleme şifresi (hakiki2026)..." 
+                <input type="password" id="adminPasscode" required placeholder="Önizleme şifresi..." 
                     class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 mb-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
                 <button type="submit" 
                     class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black py-2.5 rounded-xl text-sm transition-all shadow-md cursor-pointer">
@@ -323,12 +323,7 @@
                     document.getElementById('adminError').classList.remove('hidden');
                 }
             } catch (err) {
-                if (passcode === 'hakiki2026') {
-                    document.cookie = "hakiki_preview_access=hakiki2026; path=/; max-age=" + (30*24*60*60);
-                    window.location.href = '/';
-                } else {
-                    document.getElementById('adminError').classList.remove('hidden');
-                }
+                document.getElementById('adminError').classList.remove('hidden');
             }
         }
 

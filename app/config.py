@@ -51,7 +51,7 @@ class Settings:
     )
 
     # Bakım / Lansman Öncesi Modu (Canlı açık beta; istendiğinde Render ortam değişkeninden 'true' yapılabilir)
-    MAINTENANCE_MODE: bool = os.getenv("MAINTENANCE_MODE", "false").lower() in ("true", "1", "yes")
+    MAINTENANCE_MODE: bool = os.getenv("MAINTENANCE_MODE", "true").lower() in ("true", "1", "yes")
     MAINTENANCE_BYPASS_KEY: str = os.getenv("MAINTENANCE_BYPASS_KEY", "hakiki2026")
 
 settings = Settings()
