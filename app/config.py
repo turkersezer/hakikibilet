@@ -18,6 +18,7 @@ class Settings:
     
     # Notification API Keys & Kurumsal E-posta Ayarları
     RESEND_API_KEY: str = os.getenv("RESEND_API_KEY", "")
+    RESEND_AUDIENCE_ID: str = os.getenv("RESEND_AUDIENCE_ID", "71f5c278-1caf-4326-a47c-112796f8dbbf")
     RESEND_FROM_EMAIL: str = os.getenv("RESEND_FROM_EMAIL", "Hakiki Bilet <info@hakikibilet.com>")
     RESEND_REPLY_TO: str = os.getenv("RESEND_REPLY_TO", "hakikibilet@gmail.com")
     ADMIN_NOTIFICATION_EMAIL: str = os.getenv("ADMIN_NOTIFICATION_EMAIL", "hakikibilet@gmail.com")

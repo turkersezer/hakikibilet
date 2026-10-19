@@ -358,3 +358,112 @@ class NotificationService:
             "payload": payload,
             "status": "broadcasted"
         }
+
+    # ==================== RESEND AUDIENCES (BULUT REHBER SENKRONİZASYONU) ====================
+
+    @classmethod
+    async def add_contact_to_resend_audience(cls, email: str, unsubscribed: bool = False) -> Dict[str, Any]:
+        """
+        Kayıt olan ziyaretçiyi anında Resend Cloud Audience listesine ekler veya günceller.
+        Bu sayede Render sunucusu yeniden başlasa veya disk sıfırlansa bile veriler Resend'de güvenle saklanır.
+        """
+        if not settings.RESEND_API_KEY or not getattr(settings, "RESEND_AUDIENCE_ID", None):
+            return {"success": False, "message": "Resend API veya Audience ID eksik."}
+
+        clean_email = email.strip().lower()
+        url = f"https://api.resend.com/audiences/{settings.RESEND_AUDIENCE_ID}/contacts"
+        headers = {
+            "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+            "Content-Type": "application/json"
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=8.0) as client:
+                if unsubscribed:
+                    # Önce email ile PATCH dene, olmazsa POST et
+                    patch_resp = await client.patch(f"{url}/{clean_email}", headers=headers, json={"unsubscribed": True})
+                    if patch_resp.status_code in (200, 201):
+                        return {"success": True, "action": "unsubscribed_patched"}
+                    post_resp = await client.post(url, headers=headers, json={"email": clean_email, "unsubscribed": True})
+                    return {"success": post_resp.status_code in (200, 201), "action": "unsubscribed_created"}
+                else:
+                    # Yeni abone veya yeniden aktifleşen
+                    post_resp = await client.post(url, headers=headers, json={"email": clean_email, "unsubscribed": False})
+                    if post_resp.status_code in (200, 201):
+                        return {"success": True, "action": "created_or_active"}
+                    patch_resp = await client.patch(f"{url}/{clean_email}", headers=headers, json={"unsubscribed": False})
+                    return {"success": patch_resp.status_code in (200, 201), "action": "reactivated"}
+        except Exception as e:
+            logger.error(f"Resend Audience güncelleme hatası ({clean_email}): {e}")
+            return {"success": False, "error": str(e)}
+
+    @classmethod
+    async def fetch_resend_contacts(cls) -> list:
+        """Resend Cloud Audience listesindeki tüm kişileri çeker"""
+        if not settings.RESEND_API_KEY or not getattr(settings, "RESEND_AUDIENCE_ID", None):
+            return []
+        url = f"https://api.resend.com/audiences/{settings.RESEND_AUDIENCE_ID}/contacts"
+        headers = {"Authorization": f"Bearer {settings.RESEND_API_KEY}"}
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(url, headers=headers)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    return data.get("data", [])
+        except Exception as e:
+            logger.error(f"Resend Audience kişi listesi çekilemedi: {e}")
+        return []
+
+    @classmethod
+    async def sync_resend_audience_with_db(cls) -> Dict[str, Any]:
+        """
+        Resend Bulut Rehberi ile yerel SQLite veritabanı arasında iki yönlü tam eşitleme yapar.
+        1. Resend'deki tüm kişileri SQLite'a aktarır (Render restart sonrası sıfır veri kaybı).
+        2. SQLite'ta olup Resend'e henüz gitmemiş kayıtları Resend'e yükler.
+        """
+        import aiosqlite
+        contacts = await cls.fetch_resend_contacts()
+        resend_emails = {c["email"].strip().lower(): c for c in contacts if c.get("email")}
+        
+        restored_count = 0
+        pushed_count = 0
+        
+        async with aiosqlite.connect(settings.DB_PATH) as conn:
+            conn.row_factory = aiosqlite.Row
+            cursor = await conn.execute("SELECT id, email, is_active FROM prelaunch_subscribers")
+            db_rows = await cursor.fetchall()
+            db_emails = {r["email"].strip().lower(): r for r in db_rows if r["email"]}
+            
+            # Adım 1: Resend'de olan ama yerel DB'de olmayanları geri yükle
+            for email, c in resend_emails.items():
+                is_active = 0 if c.get("unsubscribed") else 1
+                if email not in db_emails:
+                    created_at = c.get("created_at")
+                    await conn.execute(
+                        "INSERT OR IGNORE INTO prelaunch_subscribers (email, is_active, created_at) VALUES (?, ?, COALESCE(?, CURRENT_TIMESTAMP))",
+                        (email, is_active, created_at)
+                    )
+                    restored_count += 1
+                else:
+                    # Durum farkı varsa eşitle
+                    if db_emails[email]["is_active"] != is_active:
+                        await conn.execute(
+                            "UPDATE prelaunch_subscribers SET is_active = ? WHERE email = ?",
+                            (is_active, email)
+                        )
+            await conn.commit()
+            
+            # Adım 2: Yerel DB'de olup Resend'de henüz olmayanları buluta yedekle
+            for email, r in db_emails.items():
+                if email not in resend_emails:
+                    unsub = (r["is_active"] == 0)
+                    await cls.add_contact_to_resend_audience(email, unsubscribed=unsub)
+                    pushed_count += 1
+                    
+        logger.info(f"🔄 [RESEND SENKRONİZASYON] Tamamlandı: {restored_count} geri yüklendi, {pushed_count} buluta aktarıldı.")
+        return {
+            "success": True,
+            "resend_total": len(resend_emails),
+            "restored_to_local_db": restored_count,
+            "pushed_to_resend": pushed_count
+        }

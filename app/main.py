@@ -27,6 +27,11 @@ from app.services.scheduler_service import start_scheduler, stop_scheduler, sche
 async def lifespan(app: FastAPI):
     # Başlangıçta veritabanını oluştur ve tohum verileri yükle
     await init_db()
+    # Resend Bulut Rehberi ile yerel SQLite veritabanını iki yönlü eşitle (Sıfır veri kaybı güvencesi)
+    try:
+        await NotificationService.sync_resend_audience_with_db()
+    except Exception as e:
+        print(f"Resend audience senkronizasyon uyarısı: {e}")
     # Arka plan Cron zamanlayıcısını başlat
     start_scheduler()
     yield
@@ -473,6 +478,7 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
                 await db.execute("UPDATE prelaunch_subscribers SET is_active = 1, unsubscribed_at = NULL WHERE id = ?", (existing["id"],))
                 await db.commit()
                 asyncio.create_task(NotificationService.send_early_access_welcome(email))
+                asyncio.create_task(NotificationService.add_contact_to_resend_audience(email, unsubscribed=False))
                 return {
                     "success": True,
                     "already_registered": False,
@@ -495,9 +501,10 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
         count_row = await count_cursor.fetchone()
         total_subscribers = count_row["count"] if count_row else 1
 
-        # Arka planda anında hoş geldin e-postası ve yönetici bildirimi gönder (ziyaretçiyi bekletmeden)
+        # Arka planda anında hoş geldin e-postası, yönetici bildirimi ve Resend Bulut Rehberi senkronizasyonu
         asyncio.create_task(NotificationService.send_early_access_welcome(email))
         asyncio.create_task(NotificationService.send_admin_new_lead_alert(email, total_subscribers, client_ip))
+        asyncio.create_task(NotificationService.add_contact_to_resend_audience(email, unsubscribed=False))
         
         return {
             "success": True,
@@ -528,6 +535,7 @@ async def unsubscribe_page(request: Request, email: str = Query("", description=
                 (clean_email,)
             )
             await db.commit()
+            asyncio.create_task(NotificationService.add_contact_to_resend_audience(clean_email, unsubscribed=True))
             unsubscribed = True
         except Exception:
             pass
@@ -556,6 +564,7 @@ async def unsubscribe_post(request: Request, email: str = Form(""), db=Depends(g
                 (clean_email,)
             )
             await db.commit()
+            asyncio.create_task(NotificationService.add_contact_to_resend_audience(clean_email, unsubscribed=True))
             unsubscribed = True
         except Exception:
             pass
@@ -665,4 +674,17 @@ async def trigger_launch_announcement(request: Request, db=Depends(get_db)):
         "failed": failed_count,
         "message": f"Toplam {len(emails)} aktif kayıtlı gezginden {sent_count} kişiye açılış müjdesi başarıyla ulaştırıldı."
     }
+
+@app.get("/api/admin/erken-kayit-senkronize")
+@app.post("/api/admin/erken-kayit-senkronize")
+async def sync_early_access_audience(request: Request):
+    """Resend Bulut Rehberi (Audience) ile yerel veritabanı arasında manuel tam eşitleme yapar"""
+    cookie = request.cookies.get("hakiki_preview_access")
+    param = request.query_params.get("onizleme") or request.query_params.get("preview")
+    if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
+        raise HTTPException(status_code=403, detail="Yetkiniz bulunmamaktadır.")
+        
+    result = await NotificationService.sync_resend_audience_with_db()
+    return result
+
 
