@@ -41,6 +41,86 @@ class Settings:
     AFFILIATE_TRIP_ALLIANCE_ID: str = os.getenv("AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
     AFFILIATE_TRIP_SID: str = os.getenv("AFFILIATE_TRIP_SID", "333747492")
 
+    # Merkezi Gelir Modeli ve Komisyon Oranları Tablosu
+    # İleride yeni ortaklıklar onaylandığında veya komisyon oranları değiştiğinde
+    # tek bir noktadan (veya Render ortam değişkenlerinden) tüm site genelinde güncellenir.
+    PARTNER_COMMISSION_RULES: dict = {
+        "trip": {
+            "name": "Trip.com",
+            "active_affiliate": os.getenv("COMM_TRIP_ACTIVE", "true").lower() in ("true", "1", "yes"),
+            "model": os.getenv("COMM_TRIP_MODEL", "percentage"),  # 'percentage' | 'fixed_try'
+            "domestic_rate": float(os.getenv("COMM_TRIP_DOMESTIC_RATE", "1.5")),      # %1.5
+            "international_rate": float(os.getenv("COMM_TRIP_INTL_RATE", "2.0")),     # %2.0
+            "hotel_rate": float(os.getenv("COMM_TRIP_HOTEL_RATE", "5.5")),            # %5.5
+            "fixed_try": float(os.getenv("COMM_TRIP_FIXED_TRY", "0.0")),
+            "tie_breaker_rank": int(os.getenv("COMM_TRIP_RANK", "100")),
+        },
+        "kiwi": {
+            "name": "Kiwi.com (Travelpayouts)",
+            "active_affiliate": os.getenv("COMM_KIWI_ACTIVE", "true").lower() in ("true", "1", "yes"),
+            "model": os.getenv("COMM_KIWI_MODEL", "percentage"),
+            "domestic_rate": float(os.getenv("COMM_KIWI_DOMESTIC_RATE", "1.2")),
+            "international_rate": float(os.getenv("COMM_KIWI_INTL_RATE", "1.5")),
+            "fixed_try": float(os.getenv("COMM_KIWI_FIXED_TRY", "0.0")),
+            "tie_breaker_rank": int(os.getenv("COMM_KIWI_RANK", "85")),
+        },
+        "agency": {
+            "name": "Enuygun",
+            "active_affiliate": os.getenv("COMM_ENUYGUN_ACTIVE", "false").lower() in ("true", "1", "yes"),
+            "model": os.getenv("COMM_ENUYGUN_MODEL", "percentage"),
+            "domestic_rate": float(os.getenv("COMM_ENUYGUN_DOMESTIC_RATE", "1.8")),
+            "international_rate": float(os.getenv("COMM_ENUYGUN_INTL_RATE", "2.2")),
+            "fixed_try": float(os.getenv("COMM_ENUYGUN_FIXED_TRY", "0.0")),
+            "tie_breaker_rank": int(os.getenv("COMM_ENUYGUN_RANK", "70")),
+        },
+        "obilet": {
+            "name": "Obilet",
+            "active_affiliate": os.getenv("COMM_OBILET_ACTIVE", "false").lower() in ("true", "1", "yes"),
+            "model": os.getenv("COMM_OBILET_MODEL", "percentage"),
+            "domestic_rate": float(os.getenv("COMM_OBILET_DOMESTIC_RATE", "2.0")),
+            "international_rate": float(os.getenv("COMM_OBILET_INTL_RATE", "2.5")),
+            "fixed_try": float(os.getenv("COMM_OBILET_FIXED_TRY", "0.0")),
+            "tie_breaker_rank": int(os.getenv("COMM_OBILET_RANK", "75")),
+        },
+        "booking": {
+            "name": "Booking.com",
+            "active_affiliate": os.getenv("COMM_BOOKING_ACTIVE", "true").lower() in ("true", "1", "yes"),
+            "model": os.getenv("COMM_BOOKING_MODEL", "percentage"),
+            "domestic_rate": float(os.getenv("COMM_BOOKING_DOMESTIC_RATE", "4.0")),
+            "international_rate": float(os.getenv("COMM_BOOKING_INTL_RATE", "4.0")),
+            "hotel_rate": float(os.getenv("COMM_BOOKING_HOTEL_RATE", "4.0")),
+            "fixed_try": 0.0,
+            "tie_breaker_rank": int(os.getenv("COMM_BOOKING_RANK", "80")),
+        },
+        "bubilet": {
+            "name": "Bubilet",
+            "active_affiliate": os.getenv("COMM_BUBILET_ACTIVE", "false").lower() in ("true", "1", "yes"),
+            "model": os.getenv("COMM_BUBILET_MODEL", "percentage"),
+            "domestic_rate": float(os.getenv("COMM_BUBILET_RATE", "3.5")),
+            "international_rate": float(os.getenv("COMM_BUBILET_RATE", "3.5")),
+            "fixed_try": 0.0,
+            "tie_breaker_rank": int(os.getenv("COMM_BUBILET_RANK", "65")),
+        },
+        "official": {
+            "name": "Resmi Taşıyıcı / Havayolu",
+            "active_affiliate": False,
+            "model": "percentage",
+            "domestic_rate": 0.0,
+            "international_rate": 0.0,
+            "fixed_try": 0.0,
+            "tie_breaker_rank": 10,
+        },
+        "meta": {
+            "name": "Karşılaştırma / Meta",
+            "active_affiliate": False,
+            "model": "percentage",
+            "domestic_rate": 0.0,
+            "international_rate": 0.0,
+            "fixed_try": 0.0,
+            "tie_breaker_rank": 5,
+        },
+    }
+
     # RapidAPI Booking.com Canlı Otel Entegrasyonu
     RAPIDAPI_BOOKING_KEY: str = os.getenv("RAPIDAPI_BOOKING_KEY", "148a35e0b3msh6fee0694743036ap1fba10jsn5361646b970c")
     RAPIDAPI_BOOKING_HOST: str = os.getenv("RAPIDAPI_BOOKING_HOST", "apidojo-booking-v1.p.rapidapi.com")

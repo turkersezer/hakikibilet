@@ -27,6 +27,7 @@ from fast_flights.querying import create_query
 from fast_flights import FlightQuery, Passengers
 from app.cities import find_city
 from app.config import settings
+from app.services.commission_service import select_winning_offer, calculate_expected_commission
 
 logger = logging.getLogger(__name__)
 
@@ -37,15 +38,6 @@ DAYS_TR = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
 _FLIGHT_CACHE: Dict[str, Dict[str, Any]] = {}
 FLIGHT_CACHE_TTL_SECONDS = 900  # 15 dakika
 
-# Gelir Modeli Komisyon Öncelik Puanları (Fiyatlar eşit olduğunda en yüksek puanlı ortak kazanır)
-PROVIDER_COMMISSION_PRIORITY = {
-    "trip": 100,      # Trip.com (Onaylı Resmi Gelir Ortağı - En Yüksek Öncelik)
-    "kiwi": 85,       # Kiwi / Travelpayouts
-    "agency": 50,     # Enuygun / OTA
-    "official": 10,   # Resmi Havayolu Web Sitesi
-    "meta": 5,        # Google Flights
-}
-
 
 def format_tr_date(dt: datetime) -> str:
     return f"{dt.day} {MONTHS_TR[dt.month - 1]} {DAYS_TR[dt.weekday()]}"
@@ -55,49 +47,6 @@ def parse_time(t_list) -> tuple:
     padded = [*(t_list or []), None, None]
     return (padded[0] or 0, padded[1] or 0)
 
-
-def select_winning_offer(providers: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Optional[Dict[str, Any]]]:
-    """
-    Kazanan Teklif (Winner Offer) ve Eşit Fiyat (Tie-Breaker) Karar Motoru:
-    1. Yalnızca gerçek, doğrulanmış canlı fiyatı olan (price > 0) sağlayıcıları fiyat yarışmasına sokar.
-    2. En ucuz fiyatı veren sağlayıcı kazanır (price ASC).
-    3. Fiyatlar kuruşu kuruşuna eşitse, gelir modelimize göre komisyon önceliği (commission_priority)
-       en yüksek olan sağlayıcı (ör. Trip.com) otomatik olarak 1. sıraya ve Ana 'Bileti Al' butonuna yerleşir.
-    4. Henüz canlı fiyatı çekilmemiş alternatif kanallar (price=None) uydurma fiyat yazılmadan altta sıralanır.
-    """
-    priced = []
-    unpriced = []
-    for p in providers:
-        p_copy = dict(p)
-        channel = p_copy.get("channel", "meta")
-        if "commission_priority" not in p_copy:
-            p_copy["commission_priority"] = PROVIDER_COMMISSION_PRIORITY.get(channel, 0)
-        raw_p = p_copy.get("price")
-        if raw_p is not None and float(raw_p) > 0:
-            p_copy["price"] = round(float(raw_p), 2)
-            p_copy["verified_live"] = True
-            priced.append(p_copy)
-        else:
-            p_copy["price"] = None
-            p_copy["verified_live"] = False
-            unpriced.append(p_copy)
-
-    # Fiyatı olanları: Önce EN DÜŞÜK FİYAT, eşitlikte EN YÜKSEK KOMİSYON ÖNCELİĞİ ile sırala
-    priced.sort(key=lambda x: (x["price"], -int(x.get("commission_priority", 0))))
-    # Fiyatı henüz olmayan alternatif kanalları komisyon önceliğine göre sırala
-    unpriced.sort(key=lambda x: -int(x.get("commission_priority", 0)))
-
-    ordered = priced + unpriced
-    winner = None
-    for idx, item in enumerate(ordered):
-        if priced:
-            item["is_best"] = (idx == 0)
-        else:
-            item["is_best"] = (idx == 0)
-        if item["is_best"]:
-            winner = item
-
-    return ordered, winner
 
 
 def is_flight_item(item: Any) -> bool:
@@ -456,31 +405,35 @@ def fetch_live_flights_from_google(
             # KESİN ANAYASA KURALI 2.1:
             # Sadece gerçekten canlı çekilmiş fiyatlar 'price' alanına yazılır.
             # Turna.com tamamen kaldırılmıştır; Enuygun (+53 TL) uydurma formülü silinmiştir.
+            # Eşit fiyatta hangi ortağın kazanacağı app/services/commission_service.py üzerinden
+            # o anki aktif ortaklık ve net TL komisyon oranlarına göre dinamik hesaplanır.
+            is_intl_route = bool(origin_city.get("is_international") or dest_city.get("is_international"))
             raw_providers = [
                 {
                     "name": official_name,
                     "url": official_link,
                     "price": price,
                     "channel": "official",
-                    "commission_priority": PROVIDER_COMMISSION_PRIORITY["official"],
                 },
                 {
                     "name": "Trip.com",
                     "url": trip_flight_link,
                     "price": None,  # Faz 1B Çoklu Acente API bağlandığında canlı Trip.com fiyatı buraya akacak
                     "channel": "trip",
-                    "commission_priority": PROVIDER_COMMISSION_PRIORITY["trip"],
                 },
                 {
                     "name": "Enuygun",
                     "url": direct_agent_link,
                     "price": None,  # Faz 1B Çoklu Acente API bağlandığında canlı Enuygun fiyatı buraya akacak
                     "channel": "agency",
-                    "commission_priority": PROVIDER_COMMISSION_PRIORITY["agency"],
                 },
             ]
 
-            providers_list, winner_offer = select_winning_offer(raw_providers)
+            providers_list, winner_offer = select_winning_offer(
+                raw_providers,
+                category="flight",
+                is_international=is_intl_route,
+            )
             final_ticket_price = winner_offer["price"] if (winner_offer and winner_offer.get("price")) else price
             direct_link = winner_offer["url"] if winner_offer else official_link
             winner_name = winner_offer["name"] if winner_offer else official_name
