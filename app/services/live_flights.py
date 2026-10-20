@@ -541,7 +541,7 @@ def fetch_live_flights_from_google(
                 cand_b_url = str(booking_live.get("url") or "")
                 b_url = cand_b_url if (cand_b_url and "booking.com/flights" not in cand_b_url and "flights.booking.com" not in cand_b_url) else booking_flight_link
             else:
-                booking_price = round(price, 2) if price else None
+                booking_price = None
                 b_url = booking_flight_link
 
             raw_providers.append(
@@ -559,9 +559,7 @@ def fetch_live_flights_from_google(
                 skyscanner_price = round(base_s_price * 2, 2) if (is_round and not skyscanner_live.get("is_round")) else round(base_s_price, 2)
                 s_url = skyscanner_live.get("url") or skyscanner_flight_link
             else:
-                # Skyscanner piyasa toplayıcısıdır; en rekabetçi doğrulanmış fiyatı yansıtır
-                valid_market_prices = [p for p in [trip_price, price] if p and p > 0]
-                skyscanner_price = round(min(valid_market_prices), 2) if valid_market_prices else None
+                skyscanner_price = None
                 s_url = skyscanner_flight_link
 
             raw_providers.append(
