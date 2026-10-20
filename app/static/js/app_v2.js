@@ -858,14 +858,21 @@ function generateTicketCardsHtml(tickets, searchReq) {
         const winnerLabel = ticket.winner_name || ticket.official_name || ticket.carrier || 'Resmi Kanal';
 
         let flightActionText = '';
+        let flightTargetUrl = directLink;
         if (isFlight) {
             if (ticket.price) {
                 if (winnerChannel === 'trip') {
                     flightActionText = isEn ? `Book on Trip.com (${formattedTicketPrice})` : `Trip.com'dan Al (${formattedTicketPrice})`;
+                    const p = (ticket.providers || []).find(x => x.channel === 'trip');
+                    if (p && p.url) flightTargetUrl = p.url;
                 } else if (winnerChannel === 'kiwi') {
                     flightActionText = isEn ? `Book on Kiwi.com (${formattedTicketPrice})` : `Kiwi.com'dan Al (${formattedTicketPrice})`;
+                    const p = (ticket.providers || []).find(x => x.channel === 'kiwi');
+                    if (p && p.url) flightTargetUrl = p.url;
                 } else if (winnerChannel === 'agency') {
                     flightActionText = isEn ? `Book on ${winnerLabel} (${formattedTicketPrice})` : `${winnerLabel}'dan Al (${formattedTicketPrice})`;
+                    const p = (ticket.providers || []).find(x => x.channel === 'agency');
+                    if (p && p.url) flightTargetUrl = p.url;
                 } else {
                     let carrierBrand = 'Resmi Web';
                     if (ticket.carrier) {
@@ -877,6 +884,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         else carrierBrand = `${ticket.carrier}'den`;
                     }
                     flightActionText = isEn ? `Book Official (${formattedTicketPrice})` : `${carrierBrand} Al (${formattedTicketPrice})`;
+                    flightTargetUrl = ticket.official_link || directLink;
                 }
             } else {
                 flightActionText = isEn ? 'View Live Fares →' : 'Canlı Seferleri Gör →';
@@ -1182,7 +1190,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             </div>
                         </div>
 
-                        <a href="${directLink}" target="_blank" rel="noopener noreferrer" 
+                        <a href="${flightTargetUrl}" target="_blank" rel="noopener noreferrer" 
                            class="px-6 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 shrink-0">
                             <span>${actionButtonText}</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>

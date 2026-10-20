@@ -414,31 +414,37 @@ def fetch_live_flights_from_google(
             else:
                 skyscanner_flight_link = f"https://www.skyscanner.com.tr/transport/flights/{from_code.lower()}/{to_code.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency=TRY&locale=tr-TR&rtn=0"
 
-            # Havayolu kimliği ve resmi bilet seçim linkleri (Rota, Tarih ve Yolcu ile Önceden Doldurulmuş)
+            # Havayolu kimliği ve resmi bilet seçim linkleri (Rota, Tarih ve Sefer ile Önceden Doldurulmuş)
+            carrier_bridge_code = carrier_code if carrier_code else "flights"
+            if is_round and return_date:
+                airline_search_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{departure_date}+through+{return_date}+{carrier_bridge_code}&hl=tr&gl=tr&curr=TRY"
+            else:
+                airline_search_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{departure_date}+one+way+{carrier_bridge_code}&hl=tr&gl=tr&curr=TRY"
+
             if "pegasus" in carrier_lower or carrier_code == "PC":
                 carrier_display = "Pegasus Airlines"
                 official_name = "Pegasus Resmi Web"
-                official_link = "https://www.flypgs.com/"
+                official_link = airline_search_link
                 badge = "Comfort Flex ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Pegasus Seferi")
             elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
                 carrier_display = "AJet (AnadoluJet)"
                 official_name = "AJet Resmi Web"
-                official_link = "https://www.ajet.com/tr"
+                official_link = airline_search_link
                 badge = "Business ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "AJet Seferi")
             elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
                 carrier_display = "Türk Hava Yolları"
                 official_name = "THY Resmi Web"
-                official_link = "https://www.turkishairlines.com/tr-int/"
+                official_link = airline_search_link
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "⭐ THY Konforu")
             elif "sunexpress" in carrier_lower or carrier_code == "XQ":
                 carrier_display = "SunExpress"
                 official_name = "SunExpress Resmi"
-                official_link = "https://www.sunexpress.com/tr/"
+                official_link = airline_search_link
                 badge = "SunClassic" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "SunExpress Seferi")
             else:
                 carrier_display = airline_name
                 official_name = f"{airline_name} Resmi Web"
-                official_link = google_flights_link
+                official_link = airline_search_link
                 badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Ekonomik Uçuş")
 
             # KESİN ANAYASA KURALI 2.1:
@@ -494,9 +500,9 @@ def fetch_live_flights_from_google(
             if trip_live and trip_live.get("price") and float(trip_live["price"]) > 0:
                 base_trip_price = float(trip_live["price"])
                 if is_round and not trip_live.get("is_round"):
-                    trip_price = round(base_trip_price * 2, 2)
+                    trip_price = float(round(base_trip_price * 2))
                 else:
-                    trip_price = round(base_trip_price, 2)
+                    trip_price = float(round(base_trip_price))
             else:
                 trip_price = None
 
@@ -543,11 +549,12 @@ def fetch_live_flights_from_google(
                     }
                 )
 
-            # Booking.com Flights (Booking Holdings / Kayak & booking-com15 API)
+            # Booking.com Flights (Booking Holdings resmi Türkiye platformu: Kayak.com.tr)
             if booking_live and booking_live.get("price") and float(booking_live["price"]) > 0:
                 base_b_price = float(booking_live["price"])
                 booking_price = round(base_b_price * 2, 2) if (is_round and not booking_live.get("is_round")) else round(base_b_price, 2)
-                b_url = booking_live.get("url") or booking_flight_link
+                cand_b_url = str(booking_live.get("url") or "")
+                b_url = cand_b_url if (cand_b_url and "booking.com/flights" not in cand_b_url and "flights.booking.com" not in cand_b_url) else booking_flight_link
             else:
                 booking_price = round(price, 2) if price else None
                 b_url = booking_flight_link
@@ -581,7 +588,16 @@ def fetch_live_flights_from_google(
                 }
             )
 
-            providers_list, winner_offer = select_winning_offer(
+            # Ana biletleme butonuna doğrudan biletleme yapan sağlayıcılar (Trip, Kiwi, Resmi Havayolu, Acente) adaydır.
+            # Skyscanner bir arama motorudur; ana satın alma butonu yapılamaz, ancak biletleme seçeneklerinde (haplarda) listelenir.
+            direct_checkout_candidates = [p for p in raw_providers if p.get("channel") in ("official", "trip", "kiwi", "agency")]
+            _, winner_offer = select_winning_offer(
+                direct_checkout_candidates if direct_checkout_candidates else raw_providers,
+                category="flight",
+                is_international=is_intl_route,
+            )
+            # Tüm sağlayıcılar (Skyscanner ve Booking.com dahil) biletleme seçenekleri (hap) listesinde yer alır:
+            providers_list, _ = select_winning_offer(
                 raw_providers,
                 category="flight",
                 is_international=is_intl_route,

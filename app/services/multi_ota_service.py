@@ -598,16 +598,11 @@ def fetch_rapidapi_booking_offers(
             orig_actual = str((first_seg.get("departureAirport") or {}).get("code") or o_code).upper()
             dest_actual = str((first_seg.get("arrivalAirport") or {}).get("code") or d_code).upper()
 
-            booking_offer_url = (
-                f"https://www.booking.com/flights/index.html?"
-                f"aid={booking_aid}"
-                f"&type={booking_trip_type}"
-                f"&from={orig_actual}"
-                f"&to={dest_actual}"
-                f"&depart={departure_date}{booking_ret_param}"
-                f"&adults={adults}"
-                f"&cabinClass={booking_cabin}"
-            )
+            if return_date:
+                booking_offer_url = f"https://www.kayak.com.tr/flights/{orig_actual}-{dest_actual}/{departure_date}/{return_date}?sort=bestflight_a"
+            else:
+                booking_offer_url = f"https://www.kayak.com.tr/flights/{orig_actual}-{dest_actual}/{departure_date}?sort=bestflight_a"
+
 
             offer_item = {
                 "name": "Booking.com Flights",

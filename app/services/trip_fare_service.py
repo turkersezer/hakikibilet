@@ -73,23 +73,14 @@ def parse_trip_flightlist_json(
         candidate_prices = []
         for pol in policies:
             p_obj = pol.get("price") or {}
-            # 1. discountAverage (Özel İndirimli / Kampanyalı Fiyat)
-            more_p = p_obj.get("morePrice") or {}
-            if more_p.get("discountAverage") and float(more_p["discountAverage"]) > 0:
-                candidate_prices.append(float(more_p["discountAverage"]))
-            # 2. totalPrice / averagePrice
             tp = p_obj.get("totalPrice") or p_obj.get("averagePrice")
             if tp and float(tp) > 0:
                 candidate_prices.append(float(tp))
-            # 3. adult salePrice + tax
-            adult_p = p_obj.get("adult") or {}
-            if adult_p.get("totalPrice") and float(adult_p["totalPrice"]) > 0:
-                candidate_prices.append(float(adult_p["totalPrice"]))
 
         if not candidate_prices:
             continue
 
-        clean_price = round(min(candidate_prices), 2)
+        clean_price = float(round(min(candidate_prices)))
         airline_filter = f"&airline={airline_code}&airlineCode={airline_code}" if airline_code else ""
         
         orig_c = find_city(from_code)
