@@ -69,31 +69,46 @@ async function switchFlightScope(scope) {
     const domBtn = document.getElementById("flightScope-domestic");
     const intlBtn = document.getElementById("flightScope-intl");
     const summaryBadge = document.getElementById("flightScopeSummary");
+    const originInput = document.getElementById("transOrigin");
     const destInput = document.getElementById("transDest");
     const isEn = window.currentAppLang === 'en';
 
+    // Sıfırla: Yurtiçi ve Yurtdışı arasında geçiş yapıldığında önceki seçili havalimanlarını temizle
+    if (originInput) {
+        originInput.value = "";
+    }
+    if (destInput) {
+        destInput.value = "";
+    }
+
     if (scope === 'domestic') {
         if (domBtn) {
-            domBtn.className = "flight-scope-btn px-3.5 py-1.5 rounded-lg text-xs font-black bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs transition flex items-center gap-1.5";
+            domBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs transition";
         }
         if (intlBtn) {
-            intlBtn.className = "flight-scope-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5";
+            intlBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition";
         }
         if (summaryBadge) {
             summaryBadge.innerHTML = `<i class="fa-solid fa-plane-departure text-amber-500"></i><span>${isEn ? '55+ Verified Airports Across Turkey' : 'Türkiye İçi 55+ Teyitli Havalimanı'}</span>`;
+        }
+        if (originInput) {
+            originInput.placeholder = isEn ? "Where will you fly from? (e.g. Istanbul, Ankara)" : "Örn: İstanbul (IST / SAW)";
         }
         if (destInput) {
             destInput.placeholder = isEn ? "Where do you want to fly? (e.g. Antalya, Izmir, Ankara)" : "Nereye uçmak istiyorsunuz? (Örn: Antalya, İzmir, Ankara, Trabzon)";
         }
     } else {
         if (intlBtn) {
-            intlBtn.className = "flight-scope-btn px-3.5 py-1.5 rounded-lg text-xs font-black bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs transition flex items-center gap-1.5";
+            intlBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs transition";
         }
         if (domBtn) {
-            domBtn.className = "flight-scope-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5";
+            domBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition";
         }
         if (summaryBadge) {
             summaryBadge.innerHTML = `<i class="fa-solid fa-globe text-amber-500"></i><span>${isEn ? 'Global Hubs & International Airports' : 'Dünya Metropolleri & Popüler Havalimanları'}</span>`;
+        }
+        if (originInput) {
+            originInput.placeholder = isEn ? "Departure airport / city (e.g. Istanbul, London)" : "Kalkış havalimanı / şehir (Örn: İstanbul, Londra)";
         }
         if (destInput) {
             destInput.placeholder = isEn ? "Global airports (e.g. Paris, London, Rome, Berlin, Dubai)" : "Dünya havalimanları (Örn: Paris, Londra, Roma, Berlin, Dubai)";
@@ -110,10 +125,10 @@ function setFlightTripType(tripType) {
     const onewayBtn = document.getElementById("tripTypeBtn-oneway");
     const radioOneway = document.getElementById("radio-oneway");
     const radioRound = document.getElementById("radio-round");
-    const retWrapper = document.getElementById("returnDateWrapper");
-    const depWrapper = document.getElementById("depDateWrapper");
-    const depLabel = document.getElementById("depDateLabel");
     const retInput = document.getElementById("transRetDate");
+    const retBox = document.getElementById("returnDateBox");
+    const retPlaceholder = document.getElementById("returnDatePlaceholder");
+    const retLabelIcon = document.querySelector("#returnDateLabel i");
     const isEn = window.currentAppLang === 'en';
 
     if (tripType === 'one_way') {
@@ -125,19 +140,20 @@ function setFlightTripType(tripType) {
         if (roundBtn) {
             roundBtn.className = "flight-trip-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5";
         }
-        if (retWrapper) {
-            retWrapper.classList.add("hidden");
-        }
         if (retInput) {
             retInput.disabled = true;
             retInput.required = false;
+            retInput.classList.add("hidden");
         }
-        if (depWrapper) {
-            depWrapper.classList.remove("lg:col-span-2");
-            depWrapper.classList.add("lg:col-span-4");
+        if (retPlaceholder) {
+            retPlaceholder.classList.remove("hidden");
         }
-        if (depLabel) {
-            depLabel.innerHTML = `<i class="fa-solid fa-calendar-day text-amber-500"></i> <span data-i18n="depDate">${isEn ? 'Departure Date' : 'Gidiş Tarihi'}</span> <span class="text-amber-600 font-bold ml-1 text-[10px] bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">${isEn ? 'One-Way' : 'Tek Yön'}</span>`;
+        if (retBox) {
+            retBox.className = "input-box cursor-pointer opacity-60 bg-slate-50/80 transition-all hover:opacity-100";
+            retBox.title = isEn ? "Click to select round-trip" : "Gidiş-Dönüş yapmak için tıklayın";
+        }
+        if (retLabelIcon) {
+            retLabelIcon.className = "fa-solid fa-calendar-check text-slate-400";
         }
     } else {
         if (radioRound) radioRound.checked = true;
@@ -148,17 +164,18 @@ function setFlightTripType(tripType) {
         if (onewayBtn) {
             onewayBtn.className = "flight-trip-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5";
         }
-        if (depWrapper) {
-            depWrapper.classList.remove("lg:col-span-4");
-            depWrapper.classList.add("lg:col-span-2");
+        if (retPlaceholder) {
+            retPlaceholder.classList.add("hidden");
         }
-        if (depLabel) {
-            depLabel.innerHTML = `<i class="fa-solid fa-calendar-day text-amber-500"></i> <span data-i18n="depDate">${isEn ? 'Departure Date' : 'Gidiş Tarihi'}</span>`;
+        if (retBox) {
+            retBox.className = "input-box transition-all bg-white ring-1 ring-amber-400/50 shadow-2xs";
+            retBox.title = "";
         }
-        if (retWrapper) {
-            retWrapper.classList.remove("hidden");
+        if (retLabelIcon) {
+            retLabelIcon.className = "fa-solid fa-calendar-check text-amber-500";
         }
         if (retInput) {
+            retInput.classList.remove("hidden");
             retInput.disabled = false;
             retInput.required = true;
             if (!retInput.value) {
@@ -310,53 +327,11 @@ async function loadCitiesForTransport(transportMode, scope) {
 }
 
 function updateAirportHints() {
-    const originInput = document.getElementById("transOrigin");
-    const destInput = document.getElementById("transDest");
+    // Kutucuklarda kayma yapmaması için arama çubuğu sabit tutulur
     const originHint = document.getElementById("originAirportHint");
     const destHint = document.getElementById("destAirportHint");
-    if (!originInput) return;
-
-    if (currentTransportSubTab !== 'flight') {
-        if (originHint) originHint.classList.add("hidden");
-        if (destHint) destHint.classList.add("hidden");
-        return;
-    }
-
-    const originVal = (originInput.value || "").trim().toLowerCase();
-    const destVal = destInput ? (destInput.value || "").trim().toLowerCase() : "";
-
-    if (originHint) {
-        if (originVal.includes("sabiha") || originVal.includes("saw")) {
-            originHint.innerHTML = '<i class="fa-solid fa-plane-departure text-amber-600"></i><span>Sadece <strong>Sabiha Gökçen (SAW)</strong> seçildi • Anadolu Yakası (Pegasus & AJet)</span>';
-            originHint.classList.remove("hidden");
-        } else if (originVal.includes("istanbul havalimanı") || (originVal.includes("ist") && !originVal.includes("saw"))) {
-            originHint.innerHTML = '<i class="fa-solid fa-plane-departure text-amber-600"></i><span>Sadece <strong>İstanbul Havalimanı (IST)</strong> seçildi • Avrupa Yakası (THY & Dünya)</span>';
-            originHint.classList.remove("hidden");
-        } else if (originVal.includes("istanbul")) {
-            originHint.innerHTML = '<i class="fa-solid fa-circle-info text-amber-600"></i><span><strong>İstanbul (Tüm Havalimanları):</strong> SAW ve IST birlikte taranır, en ucuz bilet öne çıkar.</span>';
-            originHint.classList.remove("hidden");
-        } else {
-            originHint.classList.add("hidden");
-        }
-    }
-
-    if (destHint) {
-        if (destVal.includes("adana") || destVal.includes("çukurova") || destVal.includes("cov")) {
-            destHint.innerHTML = '<i class="fa-solid fa-location-dot text-amber-600"></i><span><strong>Çukurova Uluslararası (COV):</strong> Adana ve Mersin ortak yeni havalimanı</span>';
-            destHint.classList.remove("hidden");
-        } else if (destVal.includes("sabiha") || destVal.includes("saw")) {
-            destHint.innerHTML = '<i class="fa-solid fa-plane-arrival text-amber-600"></i><span>Sadece <strong>Sabiha Gökçen (SAW)</strong> varışlı</span>';
-            destHint.classList.remove("hidden");
-        } else if (destVal.includes("istanbul havalimanı") || (destVal.includes("ist") && !destVal.includes("saw"))) {
-            destHint.innerHTML = '<i class="fa-solid fa-plane-arrival text-amber-600"></i><span>Sadece <strong>İstanbul Havalimanı (IST)</strong> varışlı</span>';
-            destHint.classList.remove("hidden");
-        } else if (destVal.includes("istanbul")) {
-            destHint.innerHTML = '<i class="fa-solid fa-circle-info text-amber-600"></i><span><strong>İstanbul (Tüm Havalimanları):</strong> Her iki havalimanına inişler taranır.</span>';
-            destHint.classList.remove("hidden");
-        } else {
-            destHint.classList.add("hidden");
-        }
-    }
+    if (originHint) originHint.classList.add("hidden");
+    if (destHint) destHint.classList.add("hidden");
 }
 window.updateAirportHints = updateAirportHints;
 
