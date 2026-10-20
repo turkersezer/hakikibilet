@@ -87,6 +87,52 @@
             color: #0F172A;
         }
 
+        /* 4 Ana Bölüm (Pillar) Butonları */
+        .pillar-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            border: 1.5px solid #E2E8F0;
+            background: #F8FAFC;
+            color: #475569;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        .pillar-btn:hover:not(.active) {
+            background: #FFFFFF;
+            border-color: #CBD5E1;
+            color: #0F172A;
+            transform: translateY(-1px);
+        }
+        .pillar-btn.active {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            color: #FFFFFF;
+            border-color: #0F172A;
+            box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.28);
+        }
+        .pillar-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 900;
+            background: rgba(245, 158, 11, 0.18);
+            color: #D97706;
+            flex-shrink: 0;
+        }
+        .pillar-btn.active .pillar-badge {
+            background: #F59E0B;
+            color: #0F172A;
+        }
+
         /* Input Kutuları */
         .input-box {
             background: #F8FAFC;
@@ -183,17 +229,17 @@
 
             <!-- Sağ Navigasyon Linkleri -->
             <div class="flex items-center gap-3 sm:gap-5 text-xs font-bold text-slate-700">
-                <a href="#curatedRoutes" class="hover:text-amber-600 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-compass text-amber-500"></i>
-                    <span data-i18n="explore">Rota Keşfet</span>
-                </a>
-                <button type="button" onclick="alert(window.currentAppLang === 'en' ? 'Price alert system is active in closed beta. Instant alerts will be sent to your email when cheap fares are found.' : 'Fiyat alarmı sistemi kapalı beta sürecinde aktiftir. Seçtiğiniz rota için ucuz bilet düştüğünde kayıtlı e-posta adresinize anlık bildirim iletilir.')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
-                    <i class="fa-solid fa-bell text-amber-500"></i>
-                    <span data-i18n="priceAlert">Fiyat Alarmı</span>
+                <button type="button" onclick="switchMainPillar('events')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
+                    <i class="fa-solid fa-calendar-star text-amber-500"></i>
+                    <span data-i18n="explore">Etkinlik Takvimi</span>
                 </button>
-                <button type="button" onclick="switchUnifiedTab('hotel')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
+                <button type="button" onclick="switchMainPillar('smartroute')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+                    <span>Akıllı Rota</span>
+                </button>
+                <button type="button" onclick="switchMainPillar('stay')" class="hover:text-amber-600 transition flex items-center gap-1.5 bg-transparent border-0 cursor-pointer text-xs font-bold text-slate-700">
                     <i class="fa-solid fa-hotel text-amber-500"></i>
-                    <span data-i18n="hotels">Oteller</span>
+                    <span data-i18n="hotels">Konaklama</span>
                 </button>
                 <div class="px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 font-black text-xs text-slate-800 shadow-2xs">
                     ₺ TRY
@@ -206,37 +252,168 @@
             </div>
         </header>
 
-        <!-- ==================== ANA ARAMA KARTI (SEÇENEK A MINIMALIST) ==================== -->
-        <main class="search-card p-5 sm:p-7 mb-8">
+        <!-- ==================== ANA ARAMA KARTI (4 ANA BÖLÜM + ALT KIRILIMLAR) ==================== -->
+        <main class="search-card p-5 sm:p-7 mb-8" id="mainPortalHub">
             
-            <!-- 1. Üst Sekmeler (Tek Sıra Akıllı Mod Seçimi) -->
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4 mb-5">
+            <!-- KATMAN 1: 4 ANA BÖLÜM SEÇİCİ (1. Seyahat | 2. Konaklama | 3. Etkinlik Takvimi | 4. Akıllı Rota) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pb-4 mb-4 border-b border-slate-200">
+                <!-- 1. SEYAHAT -->
+                <button type="button" onclick="switchMainPillar('travel')" id="pillarBtn-travel" class="pillar-btn active">
+                    <span class="pillar-badge">1</span>
+                    <div class="min-w-0">
+                        <div class="font-black text-xs sm:text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-plane-up text-amber-500"></i>
+                            <span>Seyahat & Ulaşım</span>
+                        </div>
+                        <div class="text-[10.5px] opacity-75 font-semibold truncate">a.Uçak • b.Otobüs • c.Tren • d.Gemi • e.Araç</div>
+                    </div>
+                </button>
+
+                <!-- 2. KONAKLAMA -->
+                <button type="button" onclick="switchMainPillar('stay')" id="pillarBtn-stay" class="pillar-btn">
+                    <span class="pillar-badge">2</span>
+                    <div class="min-w-0">
+                        <div class="font-black text-xs sm:text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-hotel text-amber-500"></i>
+                            <span>Konaklama</span>
+                        </div>
+                        <div class="text-[10.5px] opacity-75 font-semibold truncate">a.Otel • b.Pansiyon • c.Airbnb Tarzı Ev</div>
+                    </div>
+                </button>
+
+                <!-- 3. ETKİNLİK TAKVİMİ -->
+                <button type="button" onclick="switchMainPillar('events')" id="pillarBtn-events" class="pillar-btn">
+                    <span class="pillar-badge">3</span>
+                    <div class="min-w-0">
+                        <div class="font-black text-xs sm:text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-trophy text-amber-500"></i>
+                            <span>Etkinlik Takvimi</span>
+                        </div>
+                        <div class="text-[10.5px] opacity-75 font-semibold truncate">a.Spor (F1/Futbol) • b.Konser/Tiyatro/Festival</div>
+                    </div>
+                </button>
+
+                <!-- 4. AKILLI ROTA -->
+                <button type="button" onclick="switchMainPillar('smartroute')" id="pillarBtn-smartroute" class="pillar-btn">
+                    <span class="pillar-badge">4</span>
+                    <div class="min-w-0">
+                        <div class="font-black text-xs sm:text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-route text-amber-500"></i>
+                            <span>Akıllı Rota</span>
+                            <span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 text-[9px] font-black uppercase">Yeni</span>
+                        </div>
+                        <div class="text-[10.5px] opacity-75 font-semibold truncate">Kapıdan Kapıya Adım Adım Planlayıcı</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- KATMAN 2A: 1. SEYAHAT ALT KIRILIMLARI (a. Uçak | b. Otobüs | c. Tren | d. Gemi | e. Araç Kiralama) -->
+            <div id="subBar-travel" class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 mb-4">
                 <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <button type="button" onclick="switchUnifiedTab('flight')" id="tabBtn-flight" class="tab-btn active">
-                        <i class="fa-solid fa-plane"></i>
+                        <span class="text-[10px] font-black opacity-60">a)</span>
                         <span data-i18n="tabFlight">✈️ Uçak Bileti</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('bus')" id="tabBtn-bus" class="tab-btn">
-                        <i class="fa-solid fa-bus"></i>
+                        <span class="text-[10px] font-black opacity-60">b)</span>
                         <span data-i18n="tabBus">🚌 Otobüs</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('train')" id="tabBtn-train" class="tab-btn">
-                        <i class="fa-solid fa-train"></i>
+                        <span class="text-[10px] font-black opacity-60">c)</span>
                         <span data-i18n="tabTrain">🚆 Tren</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('ferry')" id="tabBtn-ferry" class="tab-btn">
-                        <i class="fa-solid fa-ship"></i>
-                        <span data-i18n="tabFerry">⛴️ Feribot</span>
+                        <span class="text-[10px] font-black opacity-60">d)</span>
+                        <span data-i18n="tabFerry">🚢 Gemi & Feribot</span>
                     </button>
-                    <button type="button" onclick="switchUnifiedTab('hotel')" id="tabBtn-hotel" class="tab-btn">
-                        <i class="fa-solid fa-hotel"></i>
-                        <span data-i18n="tabHotel">🏨 Otel</span>
+                    <button type="button" onclick="switchUnifiedTab('car')" id="tabBtn-car" class="tab-btn">
+                        <span class="text-[10px] font-black opacity-60">e)</span>
+                        <span>🚗 Araç Kiralama</span>
                     </button>
                 </div>
 
                 <div id="transportSubHint" class="text-xs font-bold text-slate-500 hidden md:flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-500"></i>
                     <span data-i18n="transportSubHint">THY, Pegasus, AJet & Dünya Havayolları Canlı Bilet Karşılaştırması</span>
+                </div>
+            </div>
+
+            <!-- KATMAN 2B: 2. KONAKLAMA ALT KIRILIMLARI (a. Otel | b. Pansiyon | c. Airbnb Tarzı) -->
+            <div id="subBar-stay" class="hidden flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 mb-4">
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <button type="button" onclick="switchStaySubTab('hotel')" id="stayBtn-hotel" class="tab-btn active">
+                        <span class="text-[10px] font-black opacity-60">a)</span>
+                        <span>🏨 Otel & Resort</span>
+                    </button>
+                    <button type="button" onclick="switchStaySubTab('pension')" id="stayBtn-pension" class="tab-btn">
+                        <span class="text-[10px] font-black opacity-60">b)</span>
+                        <span>🏡 Pansiyon & Butik Otel</span>
+                    </button>
+                    <button type="button" onclick="switchStaySubTab('airbnb')" id="stayBtn-airbnb" class="tab-btn">
+                        <span class="text-[10px] font-black opacity-60">c)</span>
+                        <span>🏠 Ev & Villa (Airbnb Tarzı Günlük Kiralık)</span>
+                    </button>
+                </div>
+                <div id="staySubHint" class="text-xs font-bold text-slate-500 hidden md:flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                    <span>Booking.com, Trip.com, Enuygun & Otelz Canlı Oda Karşılaştırması</span>
+                </div>
+            </div>
+
+            <!-- KATMAN 2C: 3. ETKİNLİK TAKVİMİ ALT KIRILIMLARI (a. Spor Organizasyonları | b. Etkinlikler) -->
+            <div id="subBar-events" class="hidden flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 mb-4">
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <button type="button" onclick="switchEventsSubTab('all')" id="evtBtn-all" class="tab-btn active">
+                        <span>✨ Tüm Etkinlikler</span>
+                    </button>
+                    <button type="button" onclick="switchEventsSubTab('sport')" id="evtBtn-sport" class="tab-btn">
+                        <span class="text-[10px] font-black opacity-60">a)</span>
+                        <span>🏆 Spor Organizasyonları (F1, Futbol, Basketbol)</span>
+                    </button>
+                    <button type="button" onclick="switchEventsSubTab('culture')" id="evtBtn-culture" class="tab-btn">
+                        <span class="text-[10px] font-black opacity-60">b)</span>
+                        <span>🎭 Etkinlikler (Sinema, Tiyatro, Konser, Festival)</span>
+                    </button>
+                </div>
+                <div class="text-xs font-bold text-amber-700 hidden md:flex items-center gap-1.5">
+                    <i class="fa-solid fa-bell text-amber-500"></i>
+                    <span>Erken Rezervasyon Radarı & Tek Tuşla Akıllı Rota</span>
+                </div>
+            </div>
+
+            <!-- KATMAN 2D: 4. AKILLI ROTA ADIM ÇUBUĞU -->
+            <div id="subBar-smartroute" class="hidden flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 mb-4">
+                <div class="flex flex-wrap items-center gap-2 text-xs font-black text-slate-800">
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-900 text-amber-400">1. Ana Ulaşım Tercihi</span>
+                    <i class="fa-solid fa-arrow-right text-slate-400 text-[10px]"></i>
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">2. Evden Terminale/Havalimanına</span>
+                    <i class="fa-solid fa-arrow-right text-slate-400 text-[10px]"></i>
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">3. İnişten Otele & Konaklama</span>
+                    <i class="fa-solid fa-arrow-right text-slate-400 text-[10px]"></i>
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">4. Etkinlik / Gezi & Dönüş</span>
+                </div>
+                <div class="text-xs font-bold text-emerald-700 hidden md:flex items-center gap-1.5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+                    <span>Kapıdan Kapıya Kişisel Seyahat Asistanı</span>
+                </div>
+            </div>
+
+            <!-- GEMİ / FERİBOT ALT KIRILIM SEÇENEKLERİ (Sadece d. Gemi & Feribot Seçildiğinde Görünür) -->
+            <div id="ferryOptionsBar" class="hidden flex-wrap items-center justify-between gap-3 mb-4 text-xs font-bold text-slate-600 bg-sky-50/70 p-2.5 rounded-xl border border-sky-200/80">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sky-900 font-black mr-1"><i class="fa-solid fa-anchor text-sky-600 mr-1"></i> Deniz Ulaşımı Tipi:</span>
+                    <button type="button" onclick="setFerrySubMode('ferry_foot')" id="ferryMode-foot" class="px-3 py-1 rounded-lg bg-sky-900 text-white font-black text-[11px] transition">
+                        ⛴️ Feribot / Deniz Otobüsü (Yaya Yolcu)
+                    </button>
+                    <button type="button" onclick="setFerrySubMode('ferry_car')" id="ferryMode-car" class="px-3 py-1 rounded-lg bg-white text-slate-700 border border-slate-200 font-bold text-[11px] hover:bg-slate-100 transition">
+                        🚗⛴️ Araçlı Feribot (Arabalı Vapurlar & Adalar)
+                    </button>
+                    <button type="button" onclick="setFerrySubMode('cruise')" id="ferryMode-cruise" class="px-3 py-1 rounded-lg bg-white text-slate-700 border border-slate-200 font-bold text-[11px] hover:bg-slate-100 transition">
+                        🛳️ Cruise & Kruvaziyer Gemi Turları
+                    </button>
+                </div>
+                <div id="ferryModeSummary" class="text-[11px] font-bold text-sky-800">
+                    İDO, BUDO, Turyol & Kapıda Vize Yunan Adaları Seferleri
                 </div>
             </div>
 
@@ -500,14 +677,147 @@
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-3 border-t border-slate-100">
                         <div class="text-xs text-slate-500 flex items-center gap-2 font-medium">
                             <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                            <span data-i18n="hotelGuarantee">Booking.com & Enuygun canlı verisi üzerinden anlık oda fiyatları listelenir.</span>
+                            <span id="hotelGuaranteeText" data-i18n="hotelGuarantee">Booking.com & Enuygun canlı verisi üzerinden anlık oda fiyatları listelenir.</span>
                         </div>
                         <button type="submit" class="search-btn w-full sm:w-auto">
                             <i class="fa-solid fa-bed text-xs"></i>
-                            <span data-i18n="searchBtnHotel">Otelleri ve Fiyatları Bul →</span>
+                            <span id="hotelSubmitBtnText" data-i18n="searchBtnHotel">Otelleri ve Fiyatları Bul →</span>
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <!-- ==================== 3. BÖLÜM: ETKİNLİK TAKVİMİ PANELİ (a. Spor | b. Sinema/Tiyatro/Konser/Festival) ==================== -->
+            <div id="eventsPillarWrapper" class="hidden">
+                <div class="bg-slate-50/90 border border-slate-200/90 rounded-2xl p-4 sm:p-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-wider text-amber-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-calendar-check"></i>
+                                <span id="eventsPillarHeaderBadge">3. Bölüm • Canlı Etkinlik & Organizasyon Takvimi</span>
+                            </div>
+                            <h3 id="eventsPillarTitle" class="text-base sm:text-lg font-black text-slate-900 mt-0.5">
+                                Spor Organizasyonları (F1, Futbol, Basketbol) & Kültür-Sanat Festivalleri
+                            </h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="#radarSubscribeForm" class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-900 text-xs font-black hover:bg-amber-500/25 transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-bell text-amber-600"></i>
+                                <span>Erken Rezervasyon Habercisi</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Dinamik Etkinlik Kartları Izgarası -->
+                    <div id="pillarEventsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <!-- ==================== 4. BÖLÜM: AKILLI ROTA SİHİRBAZI (KAPIDAN KAPIYA 4 ADIMLI PLANLAYICI) ==================== -->
+            <div id="smartRoutePillarWrapper" class="hidden">
+                <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-5 sm:p-6 border border-slate-700 shadow-xl">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-700/80">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 mb-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> 4. Bölüm • Kapıdan Kapıya Akıllı Rota Sihirbazı
+                            </div>
+                            <h3 class="text-base sm:text-lg font-black text-white">
+                                Önce Ana Ulaşımınızı Seçin; Evden Çıkıştan Otele, Etkinliğe ve Dönüşe Kadar Planlayalım
+                            </h3>
+                            <p class="text-xs text-slate-300 mt-0.5">
+                                Havalimanına mı, otogara mı yoksa tren garına mı gideceğinizi bilerek evinizden/konumunuzdan kapıdan kapıya rota çıkarır.
+                            </p>
+                        </div>
+                    </div>
+
+                    <form id="smartRouteForm" onsubmit="generateSmartRoutePlan(event)">
+                        <!-- ADIM 1: ÖNCE ANA ULAŞIM TERCİHİ -->
+                        <div class="mb-4">
+                            <label class="block text-[11px] font-black uppercase tracking-wider text-amber-400 mb-2">
+                                Adım 1: Ana Ulaşımı Seçin (Evden Hangi Terminale / Havalimanına Yönlendireceğimizi Belirler)
+                            </label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                <button type="button" onclick="selectSmartRouteMode('flight')" id="srMode-flight" class="sr-mode-btn p-3 rounded-xl border-2 border-amber-400 bg-amber-500/20 text-white text-left transition cursor-pointer">
+                                    <div class="font-black text-xs sm:text-sm flex items-center justify-between">
+                                        <span>✈️ Uçakla Git</span>
+                                        <i class="fa-solid fa-circle-check text-amber-400"></i>
+                                    </div>
+                                    <div class="text-[10.5px] text-slate-300 mt-0.5">Ev ➔ Havalimanı Yönlendirmesi</div>
+                                </button>
+                                <button type="button" onclick="selectSmartRouteMode('bus')" id="srMode-bus" class="sr-mode-btn p-3 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 hover:border-slate-500 text-left transition cursor-pointer">
+                                    <div class="font-black text-xs sm:text-sm flex items-center justify-between">
+                                        <span>🚌 Otobüsle Git</span>
+                                    </div>
+                                    <div class="text-[10.5px] text-slate-400 mt-0.5">Ev ➔ Otogar / Cep Otogarı</div>
+                                </button>
+                                <button type="button" onclick="selectSmartRouteMode('train')" id="srMode-train" class="sr-mode-btn p-3 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 hover:border-slate-500 text-left transition cursor-pointer">
+                                    <div class="font-black text-xs sm:text-sm flex items-center justify-between">
+                                        <span>🚆 Trenle Git (YHT)</span>
+                                    </div>
+                                    <div class="text-[10.5px] text-slate-400 mt-0.5">Ev ➔ Tren Garı Yönlendirmesi</div>
+                                </button>
+                                <button type="button" onclick="selectSmartRouteMode('ferry')" id="srMode-ferry" class="sr-mode-btn p-3 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 hover:border-slate-500 text-left transition cursor-pointer">
+                                    <div class="font-black text-xs sm:text-sm flex items-center justify-between">
+                                        <span>🚢 Gemi / Feribot</span>
+                                    </div>
+                                    <div class="text-[10.5px] text-slate-400 mt-0.5">Ev ➔ İskele / Kruvaziyer Limanı</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ADIM 2, 3, 4 GİRİŞ ALANLARI -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
+                            <!-- Ev / Başlangıç Konumu -->
+                            <div class="lg:col-span-3">
+                                <div class="bg-slate-800/90 border border-slate-600 rounded-2xl p-2.5">
+                                    <label class="text-[10px] font-black uppercase text-amber-400 flex items-center gap-1.5 mb-0.5">
+                                        <i class="fa-solid fa-house-chimney"></i> Bulunduğunuz Şehir / Semt
+                                    </label>
+                                    <input type="text" id="srOriginInput" value="İstanbul (Kadıköy)" placeholder="Örn: İstanbul (Kadıköy), Ankara (Çankaya)" required
+                                           class="w-full bg-transparent font-bold text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none">
+                                </div>
+                            </div>
+
+                            <!-- Gidilecek Şehir -->
+                            <div class="lg:col-span-3">
+                                <div class="bg-slate-800/90 border border-slate-600 rounded-2xl p-2.5">
+                                    <label class="text-[10px] font-black uppercase text-amber-400 flex items-center gap-1.5 mb-0.5">
+                                        <i class="fa-solid fa-location-dot"></i> Hedef Şehir / Bölge
+                                    </label>
+                                    <input type="text" id="srDestInput" value="Antalya" placeholder="Örn: Antalya, Bakü, Münih, İzmir" required
+                                           class="w-full bg-transparent font-bold text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none">
+                                </div>
+                            </div>
+
+                            <!-- Seçili Etkinlik veya Gezi Amacı -->
+                            <div class="lg:col-span-3">
+                                <div class="bg-slate-800/90 border border-slate-600 rounded-2xl p-2.5">
+                                    <label class="text-[10px] font-black uppercase text-amber-400 flex items-center gap-1.5 mb-0.5">
+                                        <i class="fa-solid fa-ticket"></i> Etkinlik veya Gezi Amacı
+                                    </label>
+                                    <select id="srEventSelect" class="w-full bg-slate-800 font-bold text-xs sm:text-sm text-white focus:outline-none cursor-pointer">
+                                        <option value="auto">✨ Otomatik (Varsa Etkinlik, Yoksa Gezi Rehberi)</option>
+                                        <option value="Antalya Açıkhava Konserleri & Aspendos Festivali">🎭 Antalya Açıkhava & Aspendos Festivali</option>
+                                        <option value="Formula 1 Azerbaycan Grand Prix (Bakü)">🏎️ Formula 1 Bakü Grand Prix</option>
+                                        <option value="UEFA Şampiyonlar Ligi & Avrupa Futbol Haftası">⚽ Avrupa Futbol & Stadyum Turu</option>
+                                        <option value="Efes Antik Kenti & Ege Gastronomi Rotası">🏛️ Kültür, Müze & Gastronomi Keşfi</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Konaklama Tercihi + Buton -->
+                            <div class="lg:col-span-3">
+                                <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    <span>Adım Adım Rotamı Kur →</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- AKILLI ROTA SONUÇ ALANI (4 ADIMLI GÖRSEL YOL HARİTASI) -->
+                    <div id="smartRouteOutputArea" class="mt-5 pt-5 border-t border-slate-700/80 hidden"></div>
+                </div>
             </div>
 
             <!-- ==================== DİNAMİK ARAMA SONUÇLARI ==================== -->
@@ -637,16 +947,22 @@
                         </div>
                     </div>
 
-                    <!-- Aksiyon Butonları (Resmi Bilet & Ulaşım/Otel Planla) -->
+                    <!-- Aksiyon Butonları (Resmi Bilet & Akıllı Rota ile Oluştur) -->
                     <div class="p-4 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between gap-2">
                         <a href="{{ evt.ticket_url }}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-slate-700 hover:text-amber-600 transition flex items-center gap-1">
                             <span class="event-card-ticket-btn" data-is-escape="{{ '1' if evt.is_escape else '0' }}">{% if evt.is_escape %}Feribot Seferi{% else %}Resmi Bilet{% endif %}</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
-                        <button onclick="planEventTrip('{{ evt.city }}', '{{ evt.dep_date }}', '{{ evt.ret_date }}', '{{ evt.transport_mode }}')" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5">
-                            <span class="event-card-plan-btn" data-is-escape="{{ '1' if evt.is_escape else '0' }}">{% if evt.is_escape %}Kaçamağı Planla{% else %}Rotayı Planla{% endif %}</span>
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="openEventInSmartRoute('{{ evt.city }}', '{{ evt.title }}', '{{ evt.transport_mode }}')" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-black rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1" title="Adım Adım Kapıdan Kapıya Akıllı Rota Oluştur">
+                                <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                                <span>Akıllı Rota</span>
+                            </button>
+                            <button onclick="planEventTrip('{{ evt.city }}', '{{ evt.dep_date }}', '{{ evt.ret_date }}', '{{ evt.transport_mode }}')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-black rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1">
+                                <span class="event-card-plan-btn" data-is-escape="{{ '1' if evt.is_escape else '0' }}">{% if evt.is_escape %}Seferler{% else %}Bilet Bul{% endif %}</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
@@ -714,45 +1030,409 @@
     <!-- Initial Events Data Injection -->
     <script>
         window.INITIAL_EVENTS = {{ curated_events | tojson | safe if curated_events else '[]' }};
-        
-        // Minimalist Tekil Sekme Yönetimi
-        function switchUnifiedTab(mode) {
-            document.querySelectorAll(".tab-btn").forEach(b => {
-                b.classList.remove("active");
+        window.currentMainPillar = 'travel';
+        window.currentSmartRouteMode = 'flight';
+
+        // ==================== 4 ANA BÖLÜM YÖNETİMİ (1. Seyahat | 2. Konaklama | 3. Etkinlik Takvimi | 4. Akıllı Rota) ====================
+        function switchMainPillar(pillar) {
+            window.currentMainPillar = pillar;
+            ['travel', 'stay', 'events', 'smartroute'].forEach(p => {
+                const btn = document.getElementById('pillarBtn-' + p);
+                const subBar = document.getElementById('subBar-' + p);
+                if (btn) btn.classList.toggle('active', p === pillar);
+                if (subBar) {
+                    subBar.classList.toggle('hidden', p !== pillar);
+                    subBar.classList.toggle('flex', p === pillar);
+                }
             });
-            const btn = document.getElementById("tabBtn-" + mode);
-            if (btn) btn.classList.add("active");
 
             const transFormWrapper = document.getElementById("transFormWrapper");
             const hotelFormWrapper = document.getElementById("hotelFormWrapper");
+            const eventsPillarWrapper = document.getElementById("eventsPillarWrapper");
+            const smartRoutePillarWrapper = document.getElementById("smartRoutePillarWrapper");
             const flightOptionsBar = document.getElementById("flightOptionsBar");
+            const ferryOptionsBar = document.getElementById("ferryOptionsBar");
+
+            if (transFormWrapper) transFormWrapper.classList.toggle("hidden", pillar !== 'travel');
+            if (hotelFormWrapper) hotelFormWrapper.classList.toggle("hidden", pillar !== 'stay');
+            if (eventsPillarWrapper) eventsPillarWrapper.classList.toggle("hidden", pillar !== 'events');
+            if (smartRoutePillarWrapper) smartRoutePillarWrapper.classList.toggle("hidden", pillar !== 'smartroute');
+
+            if (pillar === 'travel') {
+                const activeMode = window.currentTransportSubTab || 'flight';
+                if (flightOptionsBar) flightOptionsBar.classList.toggle("hidden", activeMode !== 'flight');
+                if (ferryOptionsBar) {
+                    ferryOptionsBar.classList.toggle("hidden", activeMode !== 'ferry');
+                    ferryOptionsBar.classList.toggle("flex", activeMode === 'ferry');
+                }
+            } else {
+                if (flightOptionsBar) flightOptionsBar.classList.add("hidden");
+                if (ferryOptionsBar) {
+                    ferryOptionsBar.classList.add("hidden");
+                    ferryOptionsBar.classList.remove("flex");
+                }
+            }
+
+            if (pillar === 'events') {
+                renderPillarEvents(window.currentPillarEventCat || 'all');
+            }
+        }
+        window.switchMainPillar = switchMainPillar;
+
+        // 1. SEYAHAT ALT KIRILIMLARI (a. Uçak | b. Otobüs | c. Tren | d. Gemi | e. Araç Kiralama)
+        function switchUnifiedTab(mode) {
+            if (mode === 'hotel') {
+                switchMainPillar('stay');
+                switchStaySubTab('hotel');
+                return;
+            }
+            if (window.currentMainPillar !== 'travel') {
+                switchMainPillar('travel');
+            }
+
+            document.querySelectorAll("#subBar-travel .tab-btn").forEach(b => b.classList.remove("active"));
+            const btn = document.getElementById("tabBtn-" + mode);
+            if (btn) btn.classList.add("active");
+
+            const flightOptionsBar = document.getElementById("flightOptionsBar");
+            const ferryOptionsBar = document.getElementById("ferryOptionsBar");
             const searchBtnLabel = document.getElementById("searchSubmitBtnText");
 
-            if (mode === 'hotel') {
-                if (transFormWrapper) transFormWrapper.classList.add("hidden");
-                if (hotelFormWrapper) hotelFormWrapper.classList.remove("hidden");
-                if (flightOptionsBar) flightOptionsBar.classList.add("hidden");
-            } else {
-                if (hotelFormWrapper) hotelFormWrapper.classList.add("hidden");
-                if (transFormWrapper) transFormWrapper.classList.remove("hidden");
-                if (flightOptionsBar) {
-                    flightOptionsBar.classList.toggle("hidden", mode !== 'flight');
-                }
-                
-                // Ulaşım alt fonksiyonunu tetikle
-                if (window.switchTransportSubTab) {
-                    window.switchTransportSubTab(mode);
-                }
-                
-                if (searchBtnLabel) {
-                    if (mode === 'flight') searchBtnLabel.textContent = (window.currentAppLang === 'en' ? "Find Flights →" : "Uçuşları Bul →");
-                    else if (mode === 'bus') searchBtnLabel.textContent = (window.currentAppLang === 'en' ? "Find Bus Routes →" : "Otobüs Seferlerini Bul →");
-                    else if (mode === 'train') searchBtnLabel.textContent = (window.currentAppLang === 'en' ? "Find Trains →" : "Tren Seferlerini Bul →");
-                    else if (mode === 'ferry') searchBtnLabel.textContent = (window.currentAppLang === 'en' ? "Find Ferries →" : "Feribot Seferlerini Bul →");
-                }
+            if (flightOptionsBar) flightOptionsBar.classList.toggle("hidden", mode !== 'flight');
+            if (ferryOptionsBar) {
+                ferryOptionsBar.classList.toggle("hidden", mode !== 'ferry');
+                ferryOptionsBar.classList.toggle("flex", mode === 'ferry');
+            }
+
+            if (window.switchTransportSubTab) {
+                window.switchTransportSubTab(mode);
+            }
+
+            if (searchBtnLabel) {
+                const isEn = window.currentAppLang === 'en';
+                if (mode === 'flight') searchBtnLabel.textContent = isEn ? "Find Flights →" : "Uçuşları Bul →";
+                else if (mode === 'bus') searchBtnLabel.textContent = isEn ? "Find Bus Routes →" : "Otobüs Seferlerini Bul →";
+                else if (mode === 'train') searchBtnLabel.textContent = isEn ? "Find Trains →" : "Tren Seferlerini Bul →";
+                else if (mode === 'ferry') searchBtnLabel.textContent = isEn ? "Find Ferry & Cruise →" : "Gemi & Feribot Seferlerini Bul →";
+                else if (mode === 'car') searchBtnLabel.textContent = isEn ? "Find Rental Cars →" : "Kiralık Araçları Bul →";
             }
         }
         window.switchUnifiedTab = switchUnifiedTab;
+
+        // d) GEMİ & FERİBOT ALT SEÇENEKLERİ (Yaya Feribot | Araçlı Feribot | Cruise)
+        function setFerrySubMode(subMode) {
+            ['foot', 'car', 'cruise'].forEach(k => {
+                const el = document.getElementById('ferryMode-' + k);
+                if (!el) return;
+                const active = ('ferry_' + k === subMode) || (k === 'cruise' && subMode === 'cruise');
+                el.className = active
+                    ? "px-3 py-1 rounded-lg bg-sky-900 text-white font-black text-[11px] transition"
+                    : "px-3 py-1 rounded-lg bg-white text-slate-700 border border-slate-200 font-bold text-[11px] hover:bg-slate-100 transition";
+            });
+            const originInput = document.getElementById("transOrigin");
+            const destInput = document.getElementById("transDest");
+            const summary = document.getElementById("ferryModeSummary");
+            if (subMode === 'cruise') {
+                if (originInput) originInput.placeholder = "Örn: İstanbul (Galataport), Kuşadası, Pire (Atina)";
+                if (destInput) destInput.placeholder = "Örn: Yunan Adaları Kruvaziyer, Akdeniz Turu";
+                if (summary) summary.textContent = "Galataport, Kuşadası & Akdeniz Cruise / Kruvaziyer Gemi Turları";
+            } else if (subMode === 'ferry_car') {
+                if (originInput) originInput.placeholder = "Örn: Yenikapı, Pendik, Eskihisar, Çanakkale";
+                if (destInput) destInput.placeholder = "Örn: Bandırma, Yalova, Bursa (Mudanya), Gökçeada";
+                if (summary) summary.textContent = "Araçlı Feribot: İDO, Gestaş, Marmara & Ege Arabalı Vapur Hatları";
+            } else {
+                if (originInput) originInput.placeholder = "Örn: Çeşme, Bodrum, Kuşadası, Kadıköy";
+                if (destInput) destInput.placeholder = "Örn: Sakız Adası (Chios), Kos, Rodos, Samos";
+                if (summary) summary.textContent = "İDO, BUDO, Turyol & Kapıda Vize Yunan Adaları Hızlı Katamaran Seferleri";
+            }
+        }
+        window.setFerrySubMode = setFerrySubMode;
+
+        // 2. KONAKLAMA ALT KIRILIMLARI (a. Otel | b. Pansiyon & Butik | c. Airbnb Tarzı Ev & Villa)
+        function switchStaySubTab(stayType) {
+            window.currentStaySubType = stayType;
+            document.querySelectorAll("#subBar-stay .tab-btn").forEach(b => b.classList.remove("active"));
+            const btn = document.getElementById("stayBtn-" + stayType);
+            if (btn) btn.classList.add("active");
+
+            const cityInput = document.getElementById("hotelCity");
+            const guaranteeEl = document.getElementById("hotelGuaranteeText");
+            const submitEl = document.getElementById("hotelSubmitBtnText");
+            const stayHint = document.getElementById("staySubHint");
+
+            if (stayType === 'pension') {
+                if (cityInput) cityInput.placeholder = "Butik Otel, Pansiyon veya Bungalov Bölgesi (Örn: Alaçatı, Kaş, Sapanca, Bozcaada)";
+                if (guaranteeEl) guaranteeEl.textContent = "Yerel butik oteller, taş konaklar, bungalov ve pansiyon fiyatları karşılaştırılır.";
+                if (submitEl) submitEl.textContent = "Pansiyon & Butik Otelleri Bul →";
+                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>Alaçatı, Kaş, Kapadokya, Sapanca & Bozcaada Seçkin Pansiyon ve Butik Oteller</span>`;
+            } else if (stayType === 'airbnb') {
+                if (cityInput) cityInput.placeholder = "Günlük Kiralık Ev, Rezidans veya Villa Bölgesi (Örn: Fethiye, Kalkan, Bodrum, Roma)";
+                if (guaranteeEl) guaranteeEl.textContent = "Airbnb tarzı müstakil villa, daire ve apart konaklama alternatifleri listelenir.";
+                if (submitEl) submitEl.textContent = "Ev, Daire & Villaları Bul →";
+                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>Booking Homes, Vrbo & Günlük Kiralık Havuzlu Villa / Daire Karşılaştırması</span>`;
+            } else {
+                if (cityInput) cityInput.placeholder = "Şehir, Ada veya Bölge (Örn: Antalya, Kemer, Bodrum, Paris, Amsterdam)";
+                if (guaranteeEl) guaranteeEl.textContent = "Booking.com, Trip.com & Enuygun canlı verisi üzerinden anlık otel fiyatları listelenir.";
+                if (submitEl) submitEl.textContent = "Otelleri ve Fiyatları Bul →";
+                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>Booking.com, Trip.com, Enuygun & Otelz Canlı Oda Karşılaştırması</span>`;
+            }
+        }
+        window.switchStaySubTab = switchStaySubTab;
+
+        // 3. ETKİNLİK TAKVİMİ ALT KIRILIMLARI (a. Spor Organizasyonları | b. Sinema/Tiyatro/Konser/Festival)
+        function switchEventsSubTab(cat) {
+            window.currentPillarEventCat = cat;
+            document.querySelectorAll("#subBar-events .tab-btn").forEach(b => b.classList.remove("active"));
+            const btn = document.getElementById("evtBtn-" + cat);
+            if (btn) btn.classList.add("active");
+            renderPillarEvents(cat);
+        }
+        window.switchEventsSubTab = switchEventsSubTab;
+
+        function renderPillarEvents(cat) {
+            const grid = document.getElementById("pillarEventsGrid");
+            if (!grid) return;
+
+            const events = (window.INITIAL_EVENTS && window.INITIAL_EVENTS.length > 0) ? window.INITIAL_EVENTS : [];
+            const extraCatalog = [
+                {
+                    title: "Formula 1 & Avrupa Spor Finalleri Takvimi",
+                    city: "Bakü / Monza / Münih",
+                    country: "Uluslararası Spor",
+                    dates: "2026 Sezonu",
+                    badge: "🏆 a) Spor Organizasyonu (F1 & Futbol)",
+                    desc: "Formula 1 Grand Prix yarışları, UEFA Şampiyonlar Ligi ve EuroLeague Final Four maçları için uçak + otel + stadyum ulaşımı.",
+                    ticket_url: "https://www.formula1.com/en/racing/2026.html",
+                    dep_date: "2026-09-18",
+                    ret_date: "2026-09-21",
+                    transport_mode: "flight",
+                    pillar_cat: "sport"
+                },
+                {
+                    title: "Harbiye Açıkhava, Aspendos & Avrupa Müzik Festivalleri",
+                    city: "İstanbul / Antalya / Budapeşte",
+                    country: "Konser & Festival",
+                    dates: "Yaz - Sonbahar 2026",
+                    badge: "🎭 b) Konser, Tiyatro & Festival",
+                    desc: "Harbiye Cemil Topuzlu konserleri, Aspendos Opera ve Bale Festivali, devlet tiyatroları ve uluslararası film/müzik festivalleri.",
+                    ticket_url: "https://www.biletix.com",
+                    dep_date: "2026-08-14",
+                    ret_date: "2026-08-17",
+                    transport_mode: "flight",
+                    pillar_cat: "culture"
+                }
+            ];
+
+            const mappedInitial = events.map(e => {
+                const text = ((e.title || '') + ' ' + (e.badge || '') + ' ' + (e.category || '')).toLowerCase();
+                const isSport = text.includes('formula') || text.includes('f1') || text.includes('futbol') || text.includes('ufc') || text.includes('şampiyon') || text.includes('spor') || text.includes('grand prix') || e.category === 'sport';
+                return Object.assign({}, e, { pillar_cat: isSport ? 'sport' : 'culture' });
+            });
+
+            const combined = mappedInitial.concat(extraCatalog);
+            const filtered = cat === 'all' ? combined.slice(0, 6) : combined.filter(e => e.pillar_cat === cat).slice(0, 6);
+
+            grid.innerHTML = filtered.map(evt => `
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-2xs hover:shadow-md transition">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black ${evt.pillar_cat === 'sport' ? 'bg-amber-100 text-amber-900' : 'bg-indigo-100 text-indigo-900'}">
+                                ${evt.badge || (evt.pillar_cat === 'sport' ? '🏆 Spor Organizasyonu' : '🎭 Kültür & Festival')}
+                            </span>
+                            <span class="text-[11px] font-bold text-slate-500">${evt.dates || '2026'}</span>
+                        </div>
+                        <div class="text-[11px] font-bold text-amber-700 mb-0.5">
+                            <i class="fa-solid fa-location-dot mr-1"></i>${evt.city || ''} ${evt.country ? '• ' + evt.country : ''}
+                        </div>
+                        <h4 class="font-black text-sm text-slate-900 leading-snug">${evt.title}</h4>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">${evt.desc || ''}</p>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <button type="button" onclick="openEventInSmartRoute('${(evt.city || 'Antalya').replace(/'/g, '')}', '${(evt.title || '').replace(/'/g, '')}', '${evt.transport_mode || 'flight'}')"
+                                class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Akıllı Rota ile Oluştur</span>
+                        </button>
+                        <button type="button" onclick="planEventTrip('${(evt.city || 'Antalya').replace(/'/g, '')}', '${evt.dep_date || '2026-07-15'}', '${evt.ret_date || '2026-07-18'}', '${evt.transport_mode || 'flight'}')"
+                                class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer">
+                            Seferleri Gör →
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        window.renderPillarEvents = renderPillarEvents;
+
+        // 4. AKILLI ROTA SİHİRBAZI FONKSİYONLARI (Önce Ana Ulaşım -> Evden Terminale -> Otel -> Etkinlik & Dönüş)
+        function selectSmartRouteMode(mode) {
+            window.currentSmartRouteMode = mode;
+            const labels = {
+                flight: { icon: '✈️ Uçakla Git', sub: 'Ev ➔ Havalimanı Yönlendirmesi' },
+                bus:    { icon: '🚌 Otobüsle Git', sub: 'Ev ➔ Otogar / Cep Otogarı' },
+                train:  { icon: '🚆 Trenle Git (YHT)', sub: 'Ev ➔ Tren Garı Yönlendirmesi' },
+                ferry:  { icon: '🚢 Gemi / Feribot', sub: 'Ev ➔ İskele / Kruvaziyer Limanı' }
+            };
+            ['flight', 'bus', 'train', 'ferry'].forEach(m => {
+                const btn = document.getElementById('srMode-' + m);
+                if (!btn) return;
+                const active = (m === mode);
+                btn.className = active
+                    ? "sr-mode-btn p-3 rounded-xl border-2 border-amber-400 bg-amber-500/20 text-white text-left transition cursor-pointer"
+                    : "sr-mode-btn p-3 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 hover:border-slate-500 text-left transition cursor-pointer";
+                btn.innerHTML = `
+                    <div class="font-black text-xs sm:text-sm flex items-center justify-between">
+                        <span>${labels[m].icon}</span>
+                        ${active ? '<i class="fa-solid fa-circle-check text-amber-400"></i>' : ''}
+                    </div>
+                    <div class="text-[10.5px] ${active ? 'text-slate-200' : 'text-slate-400'} mt-0.5">${labels[m].sub}</div>
+                `;
+            });
+        }
+        window.selectSmartRouteMode = selectSmartRouteMode;
+
+        function openEventInSmartRoute(city, title, mode) {
+            switchMainPillar('smartroute');
+            selectSmartRouteMode(mode || 'flight');
+            const destEl = document.getElementById("srDestInput");
+            if (destEl && city) destEl.value = city.split('/')[0].trim();
+            const evtSelect = document.getElementById("srEventSelect");
+            if (evtSelect && title) {
+                let exists = false;
+                for (let i = 0; i < evtSelect.options.length; i++) {
+                    if (evtSelect.options[i].value === title) { exists = true; break; }
+                }
+                if (!exists) {
+                    const opt = document.createElement("option");
+                    opt.value = title;
+                    opt.textContent = "🎟️ " + title;
+                    evtSelect.appendChild(opt);
+                }
+                evtSelect.value = title;
+            }
+            generateSmartRoutePlan();
+            const mainHub = document.getElementById("mainPortalHub");
+            if (mainHub) mainHub.scrollIntoView({ behavior: "smooth" });
+        }
+        window.openEventInSmartRoute = openEventInSmartRoute;
+
+        function generateSmartRoutePlan(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const origin = (document.getElementById("srOriginInput")?.value || "İstanbul (Kadıköy)").trim();
+            const dest = (document.getElementById("srDestInput")?.value || "Antalya").trim();
+            const evtChoice = document.getElementById("srEventSelect")?.value || "auto";
+            const mode = window.currentSmartRouteMode || 'flight';
+
+            const hubInfo = {
+                flight: {
+                    name: "Uçak Bileti",
+                    terminal: origin.toLowerCase().includes("anadolu") || origin.toLowerCase().includes("kadıköy") ? "Sabiha Gökçen Havalimanı (SAW) veya İstanbul Havalimanı (IST)" : "En Yakın Havalimanı (IST / SAW / ESB)",
+                    transitTip: "Metro (M4 / M11) veya Havabüs / Havaist ekspres servisleri ile uçuştan 2 saat önce terminalde olun.",
+                    arrivalTransfer: `${dest} Havalimanı inişinden otele Havaş, Antray/Tramvay, Havalimanı Metrosu veya Kiralık Araç ile 25-35 dk içinde geçiş.`
+                },
+                bus: {
+                    name: "Otobüs Seferi",
+                    terminal: `${origin.split('(')[0].trim()} Şehirlerarası Otogarı / Cep Terminali`,
+                    transitTip: "Metro veya şehir içi servislerle kalkıştan 30 dakika önce peronda olacak şekilde evden çıkış.",
+                    arrivalTransfer: `${dest} Otogarı varışından şehir merkezi ve otele belediye ekspres hattı, tramvay veya taksi ile kolay geçiş.`
+                },
+                train: {
+                    name: "Yüksek Hızlı Tren (YHT)",
+                    terminal: `${origin.split('(')[0].trim()} YHT Garı (Söğütlüçeşme / Bakırköy / Ankara Gar)`,
+                    transitTip: "Marmaray veya Metro bağlantısıyla tren kalkışından 25 dakika önce garda olun.",
+                    arrivalTransfer: `${dest} Tren Garı şehir merkezinde olduğu için yürüyerek veya tek vasıtayla doğrudan otele geçiş.`
+                },
+                ferry: {
+                    name: "Gemi / Feribot Seferi",
+                    terminal: `${origin.split('(')[0].trim()} Feribot İskelesi / Kruvaziyer Limanı`,
+                    transitTip: "Vapur / dış hat feribot kalkışından 45 dakika önce iskelede hazır bulunun.",
+                    arrivalTransfer: `${dest} Limanı inişinden sahil otellerine veya merkeze yürüyerek / liman transfer aracıyla geçiş.`
+                }
+            }[mode];
+
+            const destSightseeing = evtChoice === 'auto'
+                ? `🎉 <strong>${dest} İçin Hakiki Tavsiye:</strong> Seçtiğiniz tarihte biletli bir etkinlik olmasa bile ${dest} Tarihi Merkezini, yerel gastronomi duraklarını ve gün batımı seyir noktalarını mutlaka görün!`
+                : `🎟️ <strong>Hedef Etkinlik:</strong> ${evtChoice} — Otelden etkinlik mekanına toplu taşıma / yürüyüş haritası ve etkinlik çıkışı güvenli dönüş rotası hazır.`;
+
+            const out = document.getElementById("smartRouteOutputArea");
+            if (!out) return;
+            out.classList.remove("hidden");
+            out.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3.5">
+                    <!-- ADIM 1 -->
+                    <div class="bg-slate-800/90 border border-amber-400/40 rounded-2xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-black uppercase text-amber-400 mb-1">1. Adım • Ana Ulaşım Kararı</div>
+                            <div class="font-black text-sm text-white mb-1">${origin.split('(')[0].trim()} ➔ ${dest} (${hubInfo.name})</div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Önce ana ulaşımınız <strong>${hubInfo.name}</strong> olarak belirlendi. Böylece evden hangi terminale gideceğiniz netleşti.
+                            </p>
+                        </div>
+                        <button type="button" onclick="launchSmartRouteTicketSearch('${origin.split('(')[0].trim()}', '${dest}', '${mode}')"
+                                class="mt-3 w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition cursor-pointer">
+                            1. Adım: ${hubInfo.name} Fiyatlarını Gör →
+                        </button>
+                    </div>
+
+                    <!-- ADIM 2 -->
+                    <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-black uppercase text-sky-400 mb-1">2. Adım • Evden Terminale Ulaşım</div>
+                            <div class="font-black text-sm text-white mb-1">${origin} ➔ ${hubInfo.terminal}</div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                ${hubInfo.transitTip}
+                            </p>
+                        </div>
+                        <a href="https://www.google.com/maps/dir/${encodeURIComponent(origin)}/${encodeURIComponent(hubInfo.terminal)}/?travelmode=transit" target="_blank" rel="noopener noreferrer"
+                           class="mt-3 w-full py-2 px-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs text-center transition block">
+                            <i class="fa-solid fa-map-location-dot text-sky-400 mr-1"></i> Evden Terminale Canlı Tarif ↗
+                        </a>
+                    </div>
+
+                    <!-- ADIM 3 -->
+                    <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-black uppercase text-emerald-400 mb-1">3. Adım • İnişten Otele & Konaklama</div>
+                            <div class="font-black text-sm text-white mb-1">${dest} Varışı ➔ Otel / Pansiyon / Villa</div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                ${hubInfo.arrivalTransfer}
+                            </p>
+                        </div>
+                        <button type="button" onclick="switchMainPillar('stay'); document.getElementById('hotelCity').value='${dest}';"
+                                class="mt-3 w-full py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition cursor-pointer">
+                            3. Adım: ${dest} Otel & Pansiyon Seç →
+                        </button>
+                    </div>
+
+                    <!-- ADIM 4 -->
+                    <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-black uppercase text-purple-400 mb-1">4. Adım • Etkinlik, Keşif & Dönüş</div>
+                            <div class="font-black text-sm text-white mb-1">${dest} Deneyim & Dönüş Planı</div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                ${destSightseeing}
+                            </p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/${encodeURIComponent(dest + ' gezilecek yerler ve etkinlikler')}" target="_blank" rel="noopener noreferrer"
+                           class="mt-3 w-full py-2 px-3 rounded-xl bg-purple-500/20 border border-purple-400/40 hover:bg-purple-500/30 text-purple-200 font-bold text-xs text-center transition block">
+                            <i class="fa-solid fa-compass mr-1"></i> ${dest} Harita & Dönüş Rehberi ↗
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+        window.generateSmartRoutePlan = generateSmartRoutePlan;
+
+        function launchSmartRouteTicketSearch(originCity, destCity, mode) {
+            switchMainPillar('travel');
+            switchUnifiedTab(mode);
+            const oInput = document.getElementById("transOrigin");
+            const dInput = document.getElementById("transDest");
+            if (oInput) oInput.value = originCity;
+            if (dInput) dInput.value = destCity;
+            const form = document.getElementById("transportSearchForm");
+            if (form) form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+        }
+        window.launchSmartRouteTicketSearch = launchSmartRouteTicketSearch;
 
         // ==================== DİL MOTORU (TR / EN I18N) ====================
         window.APP_TRANSLATIONS = {
