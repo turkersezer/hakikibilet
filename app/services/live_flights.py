@@ -438,14 +438,20 @@ def fetch_live_flights_from_google(
             if enuygun_subid:
                 enuygun_flight_link += f"&subid={enuygun_subid}"
 
-            # Obilet Canlı Uçak Bileti Arama Linki (Rota, Tarih ve Yolcu Parametreli)
+            # Obilet Canlı Uçak Bileti Arama Linki (Rota, Tarih ve Tüm Yolcu Parametreli)
             obilet_subid = getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
+            obilet_pax = f"yetiskin={adults}"
+            if children > 0:
+                obilet_pax += f"&cocuk={children}"
+            if infants > 0:
+                obilet_pax += f"&bebek={infants}"
             if is_round and return_date:
-                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}/{return_date}?yetiskin={adults}"
+                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}/{return_date}?{obilet_pax}"
             else:
-                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}?yetiskin={adults}"
+                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}?{obilet_pax}"
             if obilet_subid:
                 obilet_flight_link += f"&subid={obilet_subid}"
+
 
             # Havayolu kimliği ve resmi bilet seçim linkleri (Provider Registry üzerinden kural bazlı)
             carrier_meta = resolve_carrier_meta(
@@ -724,9 +730,13 @@ def fetch_live_flights_from_google(
             elif r.get("badge") == "💰 En Uygun Fiyat":
                 carrier_short = (r.get("carrier") or "").split()[0]
                 r["badge"] = f"{carrier_short} Seferi"
+        if len(_FLIGHT_CACHE) >= 500:
+            oldest_key = min(_FLIGHT_CACHE.keys(), key=lambda k: _FLIGHT_CACHE[k].get("ts", 0))
+            _FLIGHT_CACHE.pop(oldest_key, None)
         _FLIGHT_CACHE[cache_key] = {
             "ts": time.time(),
             "data": copy.deepcopy(results),
         }
 
     return results
+

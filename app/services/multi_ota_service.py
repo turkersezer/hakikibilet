@@ -43,7 +43,11 @@ def _get_from_cache(cache_key: str):
 
 
 def _save_to_cache(cache_key: str, data: Any):
+    if len(_OTA_CACHE) >= 500:
+        oldest_key = min(_OTA_CACHE.keys(), key=lambda k: _OTA_CACHE[k][0])
+        _OTA_CACHE.pop(oldest_key, None)
     _OTA_CACHE[cache_key] = (time.time(), data)
+
 
 
 def normalize_flight_key(flight_no: str) -> str:

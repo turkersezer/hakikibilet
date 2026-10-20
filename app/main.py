@@ -287,6 +287,15 @@ async def get_cities(transport_type: str = Query("all"), scope: str = Query("all
     filtered = get_cities_by_transport(transport_type, scope=scope)
     return {"cities": filtered, "mode": transport_type, "scope": scope, "count": len(filtered)}
 
+@app.get("/api/system/slots")
+async def get_extension_slots():
+    """Tek Beyin, Üç Ekran (Web, Mobil Uygulama, WhatsApp Botu) için aktif priz/modül şalter durumu"""
+    return {
+        "app_name": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+        "extension_slots": getattr(settings, "EXTENSION_SLOTS", {}),
+    }
+
 @app.post("/api/search")
 async def search_tickets(req: SearchRequest):
     """
@@ -298,28 +307,57 @@ async def search_tickets(req: SearchRequest):
     infants = req.infants if req.infants is not None else 0
     total_pax = max(1, adults + children + infants)
 
-    result = SearchService.search_all_tickets(
-        origin_city=req.origin,
-        dest_city=req.destination,
-        departure_date=req.departure_date,
-        return_date=req.return_date,
-        passengers=total_pax,
-        adults=adults,
-        children=children,
-        infants=infants,
-        transport_type=req.transport_type,
-        trip_type=req.trip_type,
-        night_only=req.night_only,
-        cabin_class=req.cabin_class,
-        calendar_range=req.calendar_range,
-        location_type=getattr(req, "location_type", "city"),
-        ferry_vehicle_type=getattr(req, "ferry_vehicle_type", "passenger"),
-        currency=getattr(req, "currency", "TRY"),
-        search_mode=getattr(req, "search_mode", "fast"),
-        include_hotel=getattr(req, "include_hotel", False),
-        hotel_nights=getattr(req, "hotel_nights", None)
-    )
-    return result
+    try:
+        result = SearchService.search_all_tickets(
+            origin_city=req.origin,
+            dest_city=req.destination,
+            departure_date=req.departure_date,
+            return_date=req.return_date,
+            passengers=total_pax,
+            adults=adults,
+            children=children,
+            infants=infants,
+            transport_type=req.transport_type,
+            trip_type=req.trip_type,
+            night_only=req.night_only,
+            cabin_class=req.cabin_class,
+            calendar_range=req.calendar_range,
+            location_type=getattr(req, "location_type", "city"),
+            ferry_vehicle_type=getattr(req, "ferry_vehicle_type", "passenger"),
+            currency=getattr(req, "currency", "TRY"),
+            search_mode=getattr(req, "search_mode", "fast"),
+            include_hotel=getattr(req, "include_hotel", False),
+            hotel_nights=getattr(req, "hotel_nights", None)
+        )
+        return result
+    except Exception as exc:
+        print(f"[/api/search Hata Kalkanı Devrede]: {exc}")
+        links = SearchService.generate_deep_links(
+            req.origin, req.destination, req.departure_date, req.return_date,
+            total_pax, req.trip_type, cabin_class=req.cabin_class,
+            adults=adults, children=children, infants=infants
+        )
+        return {
+            "origin": req.origin,
+            "destination": req.destination,
+            "date": req.departure_date,
+            "return_date": req.return_date,
+            "trip_type": req.trip_type,
+            "passengers": total_pax,
+            "adults": adults,
+            "children": children,
+            "infants": infants,
+            "cabin_class": req.cabin_class,
+            "transport_type": req.transport_type,
+            "currency": "₺",
+            "currency_code": "TRY",
+            "deep_links": links,
+            "extension_slots": getattr(settings, "EXTENSION_SLOTS", {}),
+            "notices": ["🛡️ Anlık yoğunluk nedeniyle doğrudan resmi acente bağlantıları hazırlandı."],
+            "results_count": 0,
+            "tickets": []
+        }
+
 
 @app.get("/api/currency/rates")
 async def get_currency_rates():

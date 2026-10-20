@@ -150,4 +150,42 @@ class Settings:
     MAINTENANCE_MODE: bool = os.getenv("MAINTENANCE_MODE", "true").lower() in ("true", "1", "yes")
     MAINTENANCE_BYPASS_KEY: str = os.getenv("MAINTENANCE_BYPASS_KEY", "hakiki2026")
 
+    # 🔌 ŞALTER PANELİ: Gelecek Modüller ve Yedek Priz Boşlukları (Plug-and-Play Extension Slots)
+    # Mevcut çalışan sistemi hiç bozmadan ileride tek şalterle ('enabled': True) devreye alınabilecek hazır yuvalar.
+    EXTENSION_SLOTS: dict = {
+        "ancillary_slots": {
+            "enabled": os.getenv("SLOT_ANCILLARY_ENABLED", "false").lower() in ("true", "1", "yes"),
+            "esim_partner_url": os.getenv("PARTNER_ESIM_URL", ""),
+            "insurance_partner_url": os.getenv("PARTNER_INSURANCE_URL", ""),
+            "flight_compensation_url": os.getenv("PARTNER_COMPENSATION_URL", ""),
+            "lounge_parking_url": os.getenv("PARTNER_LOUNGE_URL", ""),
+        },
+        "experience_slots": {
+            "enabled": os.getenv("SLOT_EXPERIENCE_ENABLED", "false").lower() in ("true", "1", "yes"),
+            "tours_partner_url": os.getenv("PARTNER_TOURS_URL", ""),
+        },
+        "sponsored_slots": {
+            "enabled": os.getenv("SLOT_SPONSORED_ENABLED", "false").lower() in ("true", "1", "yes"),
+            "items": [],
+        },
+        "user_hub_slot": {
+            "enabled": os.getenv("SLOT_USER_HUB_ENABLED", "false").lower() in ("true", "1", "yes"),
+        },
+        "smart_route_wizard": {
+            "enabled": os.getenv("SLOT_SMART_ROUTE_ENABLED", "true").lower() in ("true", "1", "yes"),
+        },
+        "price_ribbon_7d": {
+            "enabled": os.getenv("SLOT_PRICE_RIBBON_ENABLED", "true").lower() in ("true", "1", "yes"),
+        },
+        "city_guide_gems": {
+            "enabled": os.getenv("SLOT_CITY_GUIDE_ENABLED", "true").lower() in ("true", "1", "yes"),
+        },
+        "mobile_whatsapp_gateway": {
+            "enabled": True,
+            "api_version": "1.0",
+        },
+        "custom_extension_blocks": [],
+    }
+
 settings = Settings()
+

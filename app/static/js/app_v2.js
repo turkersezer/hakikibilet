@@ -3,6 +3,34 @@
  * Akıllı Mod Filtreleme (Uçakta feribot çıkmaz), HD Destinasyon Fotoğrafları, Derin Linkler
  */
 
+// Güvenlik Kalkanı: DOM XSS Önleyici Yardımcı Fonksiyon
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+window.escapeHtml = escapeHtml;
+
+// Ortak Seyahat Hafızası (Tek Arama, Tüm Seyahat: Uçak -> Otel -> Araç -> Etkinlik -> Akıllı Rota)
+window.HakikiTravelContext = {
+    origin_name: "",
+    destination_name: "",
+    departure_date: "",
+    return_date: null,
+    trip_type: "one_way",
+    adults: 1,
+    children: 0,
+    infants: 0,
+    passengers: 1,
+    cabin_class: "economy",
+    is_international: false,
+    currency: "TRY"
+};
+
 // Global State
 let currentMasterTab = 'transport'; // 'transport', 'hotel', 'events', 'deals'
 let currentTransportSubTab = 'flight'; // 'flight', 'bus', 'train', 'ferry', 'car'
@@ -22,6 +50,7 @@ let flightPax = {
 
 let verifiedCities = [];
 let allCuratedEvents = [];
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     setupDynamicDates();
@@ -612,11 +641,11 @@ async function executeTransportSearch(e) {
                 <div class="flex items-center justify-between text-xs font-black mt-5 text-sky-200">
                     <span class="flex items-center gap-1.5 bg-slate-900/90 border border-sky-400/30 px-3.5 py-1.5 rounded-xl shadow-xs">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span class="text-white">${origin}</span>
+                        <span class="text-white">${escapeHtml(origin)}</span>
                     </span>
                     <span class="flex items-center gap-1.5 bg-slate-900/90 border border-amber-400/30 px-3.5 py-1.5 rounded-xl shadow-xs">
                         <i class="fa-solid fa-location-dot text-amber-400"></i>
-                        <span class="text-amber-300">${destination}</span>
+                        <span class="text-amber-300">${escapeHtml(destination)}</span>
                     </span>
                 </div>
             </div>
@@ -624,9 +653,9 @@ async function executeTransportSearch(e) {
             <!-- Bilgilendirme Metinleri -->
             <div class="relative z-10 space-y-2 mt-4">
                 <div class="text-lg sm:text-xl font-black text-white flex items-center justify-center gap-2">
-                    <span>${origin}</span>
+                    <span>${escapeHtml(origin)}</span>
                     <i class="fa-solid fa-arrow-right-long text-amber-400 text-sm"></i>
-                    <span>${destination}</span>
+                    <span>${escapeHtml(destination)}</span>
                 </div>
                 <div class="text-xs sm:text-sm text-amber-300 font-extrabold flex items-center justify-center gap-2">
                     <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
@@ -666,14 +695,18 @@ async function executeTransportSearch(e) {
 
         if (!res.ok) throw new Error("Arama sunucusundan yanıt alınamadı.");
         const data = await res.json();
+        if (data.travel_context) {
+            window.HakikiTravelContext = data.travel_context;
+        }
         renderTransportResults(data, payload);
     } catch (err) {
         resultsArea.innerHTML = `
             <div class="p-8 text-center bg-rose-50 border border-rose-200 rounded-3xl text-rose-800 shadow-xs">
                 <i class="fa-solid fa-circle-exclamation text-2xl mb-2 text-rose-500"></i>
                 <div class="font-bold text-base">Arama sırasında bir bağlantı sorunu oluştu.</div>
-                <div class="text-xs mt-1 text-rose-600 font-medium">${err.message}</div>
+                <div class="text-xs mt-1 text-rose-600 font-medium">${escapeHtml(err.message)}</div>
             </div>
+
         `;
     }
 }
@@ -1224,9 +1257,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 <i class="fa-solid fa-shield-check"></i>
                                 <span>${isEn ? 'Official Partner Booking' : 'Resmi Partner Yönlendirmesi'}</span>
                             </div>
-                            <span class="italic text-slate-400">${isEn ? '*Direct checkout via Trip.com & official airline portal.' : '*Trip.com ve resmi havayolu güvencesiyle doğrudan rezervasyon.'}</span>
+                            <span class="italic text-slate-400">${isEn ? `*Direct checkout via ${escapeHtml(winnerLabel)}.` : `*${escapeHtml(winnerLabel)} güvencesiyle doğrudan rezervasyon.`}</span>
                         </div>
                     </div>
+
 
                 </div>
             </div>

@@ -1021,6 +1021,18 @@ class SearchService:
                     is_international = bool(origin and origin.get("is_international") or dest and dest.get("is_international"))
                     trip_url = links["flight"]["trip"]
                     google_url = links["flight"]["google_flights"]
+                    enuygun_fallback_url = links["flight"].get("enuygun")
+                    obilet_subid = getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
+                    obilet_pax_str = f"yetiskin={adults}"
+                    if children > 0:
+                        obilet_pax_str += f"&cocuk={children}"
+                    if infants > 0:
+                        obilet_pax_str += f"&bebek={infants}"
+                    if is_round and return_date:
+                        obilet_fallback_url = f"https://www.obilet.com/ucak-bileti/{orig_iata.lower()}-{dst_iata.lower()}/{departure_date}/{return_date}?{obilet_pax_str}&subid={obilet_subid}"
+                    else:
+                        obilet_fallback_url = f"https://www.obilet.com/ucak-bileti/{orig_iata.lower()}-{dst_iata.lower()}/{departure_date}?{obilet_pax_str}&subid={obilet_subid}"
+
                     booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
                     try:
                         dep_dt_calc = datetime.strptime(departure_date, "%Y-%m-%d")
@@ -1039,7 +1051,7 @@ class SearchService:
                     results.append({
                         "id": "fl-trip-live",
                         "transport_type": "flight",
-                        "carrier": "Trip.com Canlı Uçuş Arama",
+                        "carrier": "Canlı Uçuş Arama",
                         "carrier_logo": "✈️",
                         "flight_number": f"{orig_iata} ➔ {dst_iata}",
                         "origin": f"{origin_name} ({orig_iata})",
@@ -1057,17 +1069,19 @@ class SearchService:
                         "return_leg": None,
                         "price": None,
                         "has_live_price": False,
-                        "price_status_text": "Trip.com Canlı Sefer Sorgula",
+                        "price_status_text": "Canlı Sefer Sorgula",
                         "regular_price": None,
                         "currency": curr_symbol,
                         "currency_code": currency,
                         "badge": "⭐ Resmi Gelir Ortağı",
-                        "route_notice": f"{origin_name} - {dest_name} rotasında seçtiğiniz tarih için anlık müsaitlik ve tüm havayolu fiyatlarını Trip.com canlı ekranında listeleyin.",
+                        "route_notice": f"{origin_name} - {dest_name} rotasında seçtiğiniz tarih için anlık müsaitlik ve tüm havayolu fiyatlarını canlı ekranlarda listeleyin.",
                         "cabin_class": cabin_class,
                         "official_name": "Resmi Havayolu Sorgula",
-                        "official_link": "https://www.turkishairlines.com/",
+                        "official_link": trip_url or "https://www.turkishairlines.com/",
                         "agent_name": "Trip.com",
                         "agent_link": trip_url,
+                        "enuygun_link": enuygun_fallback_url,
+                        "obilet_link": obilet_fallback_url,
                         "direct_link": trip_url,
                         "booking_link": trip_url,
                         "hotel_link": dest_hotel_link,
@@ -1076,6 +1090,7 @@ class SearchService:
                             {"name": "Google Flights Karşılaştırması", "url": google_url, "price": None, "is_best": False, "channel": "meta"}
                         ]
                     })
+
             else:
                 missing = origin_name if not origin_has_airport else dest_name
                 msg = f"ℹ️ {missing} şehrinde aktif havalimanı bulunmadığı için doğrudan uçak seferi yoktur."
@@ -1396,6 +1411,24 @@ class SearchService:
         except Exception:
             car_rental_info = None
 
+        is_intl_search = bool((origin and origin.get("is_international")) or (dest and dest.get("is_international")))
+        travel_context = {
+            "origin_name": origin_name,
+            "origin_iata": origin.get("iata") if origin else None,
+            "destination_name": dest_name,
+            "destination_iata": dest.get("iata") if dest else None,
+            "departure_date": departure_date,
+            "return_date": return_date,
+            "trip_type": trip_type,
+            "adults": adults,
+            "children": children,
+            "infants": infants,
+            "passengers": total_pax,
+            "cabin_class": cabin_class,
+            "is_international": is_intl_search,
+            "currency": currency.upper(),
+        }
+
         return {
             "origin": origin_name,
             "destination": dest_name,
@@ -1420,8 +1453,11 @@ class SearchService:
             "price_calendar": price_calendar,
             "deep_links": links,
             "car_rental": car_rental_info,
+            "travel_context": travel_context,
+            "extension_slots": getattr(settings, "EXTENSION_SLOTS", {}),
             "notices": notices,
             "results_count": len(car_rental_info["vehicles"]) if transport_type == "car" and car_rental_info else len(results),
             "tickets": results
         }
+
 
