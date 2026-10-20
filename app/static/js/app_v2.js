@@ -638,7 +638,7 @@ async function executeTransportSearch(e) {
                     <span>Canlı Seferler & Hakiki Fiyatlar Taranıyor...</span>
                 </div>
                 <div class="text-[11px] sm:text-xs text-slate-400 font-medium max-w-lg mx-auto">
-                    Trip.com, Skyscanner, Booking.com, THY, Pegasus ve AJet resmi acente biletleri anlık taranıyor.
+                    Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.
                 </div>
             </div>
         </div>
@@ -858,21 +858,23 @@ function generateTicketCardsHtml(tickets, searchReq) {
         const winnerLabel = ticket.winner_name || ticket.official_name || ticket.carrier || 'Resmi Kanal';
 
         let flightActionText = '';
-        let flightTargetUrl = directLink;
+        let flightTargetUrl = ticket.winner_url || directLink;
         if (isFlight) {
-            if (ticket.price) {
+            if (isEn && ticket.winner_button_text_en) {
+                flightActionText = ticket.winner_button_text_en;
+            } else if (ticket.winner_button_text) {
+                flightActionText = ticket.winner_button_text;
+            } else if (ticket.price) {
                 if (winnerChannel === 'trip') {
                     flightActionText = isEn ? `Book on Trip.com (${formattedTicketPrice})` : `Trip.com'dan Al (${formattedTicketPrice})`;
-                    const p = (ticket.providers || []).find(x => x.channel === 'trip');
-                    if (p && p.url) flightTargetUrl = p.url;
+                } else if (winnerChannel === 'booking') {
+                    flightActionText = isEn ? `Book on Booking.com (${formattedTicketPrice})` : `Booking'den Al (${formattedTicketPrice})`;
+                } else if (winnerChannel === 'skyscanner') {
+                    flightActionText = isEn ? `Book on Skyscanner (${formattedTicketPrice})` : `Skyscanner'dan Al (${formattedTicketPrice})`;
                 } else if (winnerChannel === 'kiwi') {
                     flightActionText = isEn ? `Book on Kiwi.com (${formattedTicketPrice})` : `Kiwi.com'dan Al (${formattedTicketPrice})`;
-                    const p = (ticket.providers || []).find(x => x.channel === 'kiwi');
-                    if (p && p.url) flightTargetUrl = p.url;
                 } else if (winnerChannel === 'agency') {
                     flightActionText = isEn ? `Book on ${winnerLabel} (${formattedTicketPrice})` : `${winnerLabel}'dan Al (${formattedTicketPrice})`;
-                    const p = (ticket.providers || []).find(x => x.channel === 'agency');
-                    if (p && p.url) flightTargetUrl = p.url;
                 } else {
                     let carrierBrand = 'Resmi Web';
                     if (ticket.carrier) {
@@ -883,8 +885,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         else if (cl.includes('sunexpress')) carrierBrand = "SunExpress'ten";
                         else carrierBrand = `${ticket.carrier}'den`;
                     }
-                    flightActionText = isEn ? `Book Official (${formattedTicketPrice})` : `${carrierBrand} Al (${formattedTicketPrice})`;
-                    flightTargetUrl = ticket.official_link || directLink;
+                    flightActionText = isEn ? `Book on ${carrierBrand} (${formattedTicketPrice})` : `${carrierBrand} Al (${formattedTicketPrice})`;
                 }
             } else {
                 flightActionText = isEn ? 'View Live Fares →' : 'Canlı Seferleri Gör →';

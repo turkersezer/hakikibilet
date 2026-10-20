@@ -29,6 +29,7 @@ from app.cities import find_city
 from app.config import settings
 from app.services.commission_service import select_winning_offer, calculate_expected_commission
 from app.services.multi_ota_service import fetch_multi_ota_flight_map, normalize_flight_key
+from app.services.provider_registry import resolve_carrier_meta, decide_winning_flight_offer
 
 logger = logging.getLogger(__name__)
 
@@ -414,38 +415,22 @@ def fetch_live_flights_from_google(
             else:
                 skyscanner_flight_link = f"https://www.skyscanner.com.tr/transport/flights/{from_code.lower()}/{to_code.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency=TRY&locale=tr-TR&rtn=0"
 
-            # Havayolu kimliği ve resmi bilet seçim linkleri (Rota, Tarih ve Sefer ile Önceden Doldurulmuş)
-            carrier_bridge_code = carrier_code if carrier_code else "flights"
-            if is_round and return_date:
-                airline_search_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{departure_date}+through+{return_date}+{carrier_bridge_code}&hl=tr&gl=tr&curr=TRY"
-            else:
-                airline_search_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{departure_date}+one+way+{carrier_bridge_code}&hl=tr&gl=tr&curr=TRY"
-
-            if "pegasus" in carrier_lower or carrier_code == "PC":
-                carrier_display = "Pegasus Airlines"
-                official_name = "Pegasus Resmi Web"
-                official_link = airline_search_link
-                badge = "Comfort Flex ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Pegasus Seferi")
-            elif "ajet" in carrier_lower or carrier_code == "VF" or "anadolu" in carrier_lower:
-                carrier_display = "AJet (AnadoluJet)"
-                official_name = "AJet Resmi Web"
-                official_link = airline_search_link
-                badge = "Business ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "AJet Seferi")
-            elif "turkish" in carrier_lower or "thy" in carrier_lower or carrier_code == "TK":
-                carrier_display = "Türk Hava Yolları"
-                official_name = "THY Resmi Web"
-                official_link = airline_search_link
-                badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "⭐ THY Konforu")
-            elif "sunexpress" in carrier_lower or carrier_code == "XQ":
-                carrier_display = "SunExpress"
-                official_name = "SunExpress Resmi"
-                official_link = airline_search_link
-                badge = "SunClassic" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "SunExpress Seferi")
-            else:
-                carrier_display = airline_name
-                official_name = f"{airline_name} Resmi Web"
-                official_link = airline_search_link
-                badge = "Business Class ⭐" if is_biz else ("💰 En Uygun Fiyat" if idx == 0 else "Ekonomik Uçuş")
+            # Havayolu kimliği ve resmi bilet seçim linkleri (Provider Registry üzerinden kural bazlı)
+            carrier_meta = resolve_carrier_meta(
+                carrier_name=airline_name,
+                carrier_code=carrier_code,
+                from_code=from_code,
+                to_code=to_code,
+                dep_date=departure_date,
+                ret_date=return_date,
+                is_round=is_round,
+                adults=adults,
+                cabin_class=seat_mode,
+            )
+            carrier_display = carrier_meta["display_name"]
+            official_name = carrier_meta["official_name"]
+            official_link = carrier_meta["official_link"]
+            badge = "💰 En Uygun Fiyat" if (idx == 0 and not is_biz) else carrier_meta["badge"]
 
             # KESİN ANAYASA KURALI 2.1:
             # Sadece gerçekten canlı çekilmiş fiyatlar 'price' alanına yazılır.
@@ -588,24 +573,19 @@ def fetch_live_flights_from_google(
                 }
             )
 
-            # Ana biletleme butonuna doğrudan biletleme yapan sağlayıcılar (Trip, Kiwi, Resmi Havayolu, Acente) adaydır.
-            # Skyscanner bir arama motorudur; ana satın alma butonu yapılamaz, ancak biletleme seçeneklerinde (haplarda) listelenir.
-            direct_checkout_candidates = [p for p in raw_providers if p.get("channel") in ("official", "trip", "kiwi", "agency")]
-            _, winner_offer = select_winning_offer(
-                direct_checkout_candidates if direct_checkout_candidates else raw_providers,
-                category="flight",
+            # TEK VE KESİN KAZANAN SAĞLAYICI SEÇİMİ (Universal Single Source of Truth)
+            decision = decide_winning_flight_offer(
+                raw_providers=raw_providers,
+                carrier_meta=carrier_meta,
                 is_international=is_intl_route,
             )
-            # Tüm sağlayıcılar (Skyscanner ve Booking.com dahil) biletleme seçenekleri (hap) listesinde yer alır:
-            providers_list, _ = select_winning_offer(
-                raw_providers,
-                category="flight",
-                is_international=is_intl_route,
-            )
-            final_ticket_price = winner_offer["price"] if (winner_offer and winner_offer.get("price")) else price
-            direct_link = winner_offer["url"] if winner_offer else official_link
-            winner_name = winner_offer["name"] if winner_offer else official_name
-            winner_channel = winner_offer.get("channel", "official") if winner_offer else "official"
+            providers_list = decision["providers"]
+            final_ticket_price = decision["winner_price"] if (decision["winner_price"] is not None) else price
+            direct_link = decision["winner_url"]
+            winner_name = decision["winner_name"]
+            winner_channel = decision["winner_channel"]
+            winner_button_tr = decision["winner_button_tr"]
+            winner_button_en = decision["winner_button_en"]
 
             # Gidiş-Dönüş Aramalarında GERÇEK Canlı Dönüş Seferi Eşleştirmesi (Asla sabit 19:40-20:55 basılmaz!)
             return_leg_dict = None
@@ -691,8 +671,11 @@ def fetch_live_flights_from_google(
                 "google_link": google_flights_link,
                 "direct_link": direct_link,
                 "booking_link": direct_link,
+                "winner_url": direct_link,
                 "winner_name": winner_name,
                 "winner_channel": winner_channel,
+                "winner_button_text": winner_button_tr,
+                "winner_button_text_en": winner_button_en,
                 "travelpayouts_link": trip_flight_link,
                 "hotel_link": dest_hotel_link,
                 "providers": providers_list
