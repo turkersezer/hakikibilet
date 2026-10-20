@@ -12,7 +12,7 @@ let currentHotelScope = 'intl'; // 'intl' (Booking.com & Agoda) or 'domestic' (E
 
 // Uçuş Modu Özel Durumları
 let currentFlightScope = 'domestic'; // 'domestic' (Yurtiçi) or 'international' (Yurtdışı)
-let currentFlightTripType = 'round'; // 'round' (Gidiş-Dönüş) or 'one_way' (Tek Yön)
+let currentFlightTripType = 'one_way'; // 'one_way' (Tek Yön) or 'round' (Gidiş-Dönüş)
 let currentFlightCabin = 'economy'; // 'economy' or 'business'
 let flightPax = {
     adults: 1,
@@ -25,6 +25,7 @@ let allCuratedEvents = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     setupDynamicDates();
+    setFlightTripType('one_way');
     await loadCitiesForTransport('flight', currentFlightScope); // Varsayılan uçuş havalimanları
     setupEventListeners();
     renderEvents();
@@ -107,12 +108,17 @@ function setFlightTripType(tripType) {
     currentFlightTripType = tripType;
     const roundBtn = document.getElementById("tripTypeBtn-round");
     const onewayBtn = document.getElementById("tripTypeBtn-oneway");
+    const radioOneway = document.getElementById("radio-oneway");
+    const radioRound = document.getElementById("radio-round");
     const retWrapper = document.getElementById("returnDateWrapper");
     const depWrapper = document.getElementById("depDateWrapper");
     const depLabel = document.getElementById("depDateLabel");
     const retInput = document.getElementById("transRetDate");
+    const isEn = window.currentAppLang === 'en';
 
     if (tripType === 'one_way') {
+        if (radioOneway) radioOneway.checked = true;
+        if (radioRound) radioRound.checked = false;
         if (onewayBtn) {
             onewayBtn.className = "flight-trip-btn px-3.5 py-1.5 rounded-lg text-xs font-black bg-slate-900 text-white shadow-2xs transition flex items-center gap-1.5";
         }
@@ -131,9 +137,11 @@ function setFlightTripType(tripType) {
             depWrapper.classList.add("lg:col-span-4");
         }
         if (depLabel) {
-            depLabel.innerHTML = '✈️ Gidiş Tarihi <span class="text-amber-600 font-bold ml-1 text-[10px] bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">Tek Yön</span>';
+            depLabel.innerHTML = `<i class="fa-solid fa-calendar-day text-amber-500"></i> <span data-i18n="depDate">${isEn ? 'Departure Date' : 'Gidiş Tarihi'}</span> <span class="text-amber-600 font-bold ml-1 text-[10px] bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">${isEn ? 'One-Way' : 'Tek Yön'}</span>`;
         }
     } else {
+        if (radioRound) radioRound.checked = true;
+        if (radioOneway) radioOneway.checked = false;
         if (roundBtn) {
             roundBtn.className = "flight-trip-btn px-3.5 py-1.5 rounded-lg text-xs font-black bg-slate-900 text-white shadow-2xs transition flex items-center gap-1.5";
         }
@@ -145,7 +153,7 @@ function setFlightTripType(tripType) {
             depWrapper.classList.add("lg:col-span-2");
         }
         if (depLabel) {
-            depLabel.innerHTML = '✈️ Gidiş Tarihi';
+            depLabel.innerHTML = `<i class="fa-solid fa-calendar-day text-amber-500"></i> <span data-i18n="depDate">${isEn ? 'Departure Date' : 'Gidiş Tarihi'}</span>`;
         }
         if (retWrapper) {
             retWrapper.classList.remove("hidden");
@@ -162,7 +170,16 @@ function setFlightTripType(tripType) {
 }
 
 // 3. KALKIŞ VE VARIŞ HAVALİMANLARINI DEĞİŞTİR (SWAP)
-function swapOriginDest() {
+let _isSwappingAirports = false;
+function swapOriginDest(e) {
+    if (e && e.preventDefault) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    if (_isSwappingAirports) return;
+    _isSwappingAirports = true;
+    setTimeout(() => { _isSwappingAirports = false; }, 200);
+
     const originInput = document.getElementById("transOrigin");
     const destInput = document.getElementById("transDest");
     const swapBtn = document.getElementById("swapAirportsBtn");
@@ -171,6 +188,9 @@ function swapOriginDest() {
     const temp = originInput.value;
     originInput.value = destInput.value;
     destInput.value = temp;
+
+    originInput.dispatchEvent(new Event("input", { bubbles: true }));
+    destInput.dispatchEvent(new Event("input", { bubbles: true }));
     updateAirportHints();
 
     if (swapBtn) {
