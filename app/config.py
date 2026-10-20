@@ -59,8 +59,8 @@ class Settings:
             "name": "Kiwi.com (Travelpayouts)",
             "active_affiliate": os.getenv("COMM_KIWI_ACTIVE", "true").lower() in ("true", "1", "yes"),
             "model": os.getenv("COMM_KIWI_MODEL", "percentage"),
-            "domestic_rate": float(os.getenv("COMM_KIWI_DOMESTIC_RATE", "1.2")),
-            "international_rate": float(os.getenv("COMM_KIWI_INTL_RATE", "1.5")),
+            "domestic_rate": float(os.getenv("COMM_KIWI_DOMESTIC_RATE", "3.0")),
+            "international_rate": float(os.getenv("COMM_KIWI_INTL_RATE", "3.0")),
             "fixed_try": float(os.getenv("COMM_KIWI_FIXED_TRY", "0.0")),
             "tie_breaker_rank": int(os.getenv("COMM_KIWI_RANK", "85")),
         },
@@ -138,7 +138,7 @@ class Settings:
     RAPIDAPI_FLIGHTS_KEY: str = os.getenv("RAPIDAPI_FLIGHTS_KEY", "a6d67df14amsh2b9f96b7584f325p1d32cajsn0cca8bc51e87")
     RAPIDAPI_FLIGHTS_HOST: str = os.getenv("RAPIDAPI_FLIGHTS_HOST", "sky-scrapper.p.rapidapi.com")
     TRAVELPAYOUTS_API_TOKEN: str = os.getenv("TRAVELPAYOUTS_API_TOKEN", "d39b88c4a651e7fba34d50d0949b3de2")
-    KIWI_AFFILIATE_ID: str = os.getenv("KIWI_AFFILIATE_ID", "hakikibilet")
+    KIWI_AFFILIATE_ID: str = os.getenv("KIWI_AFFILIATE_ID", "travelpayouts")
     # Hukuki Yasal Metinler & TÜRSAB Muafiyeti (Metasearch / Karşılaştırma Beyanı)
     LEGAL_DISCLAIMER: str = (
         "Hakiki Bilet (hakikibilet.com) bağımsız bir seyahat ve etkinlik bilet fiyat karşılaştırma ve yönlendirme platformudur. "

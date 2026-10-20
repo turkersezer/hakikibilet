@@ -101,7 +101,8 @@ def fetch_kiwi_live_offers(
     dest_ids = [f"Station:airport:{code.upper()}" for code in dest_codes if code]
     cabin_str = "BUSINESS" if seat_mode == "business" else "ECONOMY"
     is_round = bool(return_date)
-    affil_id = getattr(settings, "KIWI_AFFILIATE_ID", "hakikibilet")
+    affil_id = getattr(settings, "KIWI_AFFILIATE_ID", "travelpayouts")
+    tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
 
     try:
         if is_round and return_date:
@@ -254,13 +255,15 @@ def fetch_kiwi_live_offers(
                 continue
 
             price_val = round(float(raw_amount), 2)
+            kiwi_affil_params = f"affilid={affil_id}&marker={tp_marker}"
             if booking_path.startswith("/"):
                 sep = "&" if "?" in booking_path else "?"
-                direct_url = f"https://www.kiwi.com{booking_path}{sep}affilid={affil_id}"
+                direct_url = f"https://www.kiwi.com{booking_path}{sep}{kiwi_affil_params}"
             elif booking_path.startswith("http"):
-                direct_url = booking_path
+                sep = "&" if "?" in booking_path else "?"
+                direct_url = f"{booking_path}{sep}{kiwi_affil_params}"
             else:
-                direct_url = f"https://www.kiwi.com/tr/search/results/{orig_codes[0]}/{dest_codes[0]}/{departure_date}"
+                direct_url = f"https://www.kiwi.com/tr/search/results/{orig_codes[0]}/{dest_codes[0]}/{departure_date}?{kiwi_affil_params}"
 
             local_time = str(((first_seg.get("source") or {}).get("localTime")) or "")
             dep_hhmm = local_time[11:16] if len(local_time) >= 16 else None
