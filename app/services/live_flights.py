@@ -415,6 +415,38 @@ def fetch_live_flights_from_google(
             else:
                 skyscanner_flight_link = f"https://www.skyscanner.com.tr/transport/flights/{from_code.lower()}/{to_code.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency=TRY&locale=tr-TR&rtn=0"
 
+            # Enuygun Canlı Arama ve Biletleme Linki (Kalkış, Varış, Tarih, Yolcu ve Havayolu Filtreli)
+            enuygun_dep_date = dep_dt.strftime("%d.%m.%Y") if dep_dt else datetime.strptime(departure_date, "%Y-%m-%d").strftime("%d.%m.%Y")
+            enuygun_route = f"{orig_slug}-{dest_slug}-{from_code.lower()}a-{to_code.lower()}a"
+            enuygun_pax = f"yetiskin={adults}"
+            if children > 0:
+                enuygun_pax += f"&cocuk={children}"
+            if infants > 0:
+                enuygun_pax += f"&bebek={infants}"
+            enuygun_subid = getattr(settings, "AFFILIATE_ENUYGUN_SUBID", "hakikibilet")
+            enuygun_flight_link = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep_date}&{enuygun_pax}"
+            if is_round and return_date:
+                try:
+                    enuygun_ret_date = datetime.strptime(return_date, "%Y-%m-%d").strftime("%d.%m.%Y")
+                except Exception:
+                    enuygun_ret_date = return_date
+                enuygun_flight_link += f"&donus={enuygun_ret_date}"
+            if is_biz:
+                enuygun_flight_link += "&sinif=business"
+            if carrier_code in ("PC", "TK", "VF", "XQ"):
+                enuygun_flight_link += f"&havayolu={carrier_code}"
+            if enuygun_subid:
+                enuygun_flight_link += f"&subid={enuygun_subid}"
+
+            # Obilet Canlı Uçak Bileti Arama Linki (Rota, Tarih ve Yolcu Parametreli)
+            obilet_subid = getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
+            if is_round and return_date:
+                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}/{return_date}?yetiskin={adults}"
+            else:
+                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}?yetiskin={adults}"
+            if obilet_subid:
+                obilet_flight_link += f"&subid={obilet_subid}"
+
             # Havayolu kimliği ve resmi bilet seçim linkleri (Provider Registry üzerinden kural bazlı)
             carrier_meta = resolve_carrier_meta(
                 carrier_name=airline_name,
@@ -665,7 +697,9 @@ def fetch_live_flights_from_google(
                 "official_name": official_name,
                 "official_link": official_link,
                 "agent_name": "Enuygun",
-                "agent_link": direct_agent_link,
+                "agent_link": enuygun_flight_link,
+                "enuygun_link": enuygun_flight_link,
+                "obilet_link": obilet_flight_link,
                 "google_link": google_flights_link,
                 "direct_link": direct_link,
                 "booking_link": direct_link,

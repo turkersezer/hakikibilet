@@ -1175,6 +1175,33 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             </div>
                         ` : ''}
 
+                        <!-- Yerli Acenteler: Enuygun & Obilet 'Teklifleri Gör' Karşılaştırma Kutusu -->
+                        ${ticket.enuygun_link || ticket.obilet_link ? `
+                            <div class="pt-2 border-t border-dashed border-slate-200 flex flex-wrap items-center gap-2 text-[11px]">
+                                <span class="text-slate-400 font-bold text-[10px] uppercase flex items-center gap-1">
+                                    <i class="fa-solid fa-store text-emerald-600"></i> ${isEn ? 'Local OTAs:' : 'Yerli Acenteler:'}
+                                </span>
+                                ${ticket.enuygun_link ? `
+                                    <a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" 
+                                       class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 text-emerald-950 border border-emerald-300/80 font-bold shadow-2xs transition" 
+                                       title="${isEn ? 'Compare live offers on Enuygun' : 'Enuygun canlı sefer ve kampanya tekliflerini inceleyin'}">
+                                        <span class="flex items-center gap-1"><i class="fa-solid fa-ticket text-emerald-600 text-[10px]"></i> Enuygun</span>
+                                        <span class="font-extrabold text-emerald-700 bg-white/90 px-1.5 py-0.5 rounded text-[9.5px] border border-emerald-200">${isEn ? 'See Offers' : 'Teklifleri Gör'}</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[8.5px] text-emerald-600 opacity-70"></i>
+                                    </a>
+                                ` : ''}
+                                ${ticket.obilet_link ? `
+                                    <a href="${ticket.obilet_link}" target="_blank" rel="noopener noreferrer" 
+                                       class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-rose-50/80 hover:bg-rose-100 text-rose-950 border border-rose-300/80 font-bold shadow-2xs transition" 
+                                       title="${isEn ? 'Compare live offers on Obilet' : 'Obilet canlı bilet ve acente tekliflerini inceleyin'}">
+                                        <span class="flex items-center gap-1"><i class="fa-solid fa-ticket-simple text-rose-600 text-[10px]"></i> Obilet</span>
+                                        <span class="font-extrabold text-rose-700 bg-white/90 px-1.5 py-0.5 rounded text-[9.5px] border border-rose-200">${isEn ? 'See Offers' : 'Teklifleri Gör'}</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[8.5px] text-rose-600 opacity-70"></i>
+                                    </a>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+
                     </div>
 
                     <!-- Sağ Taraf: Fiyat & Bilet Satın Alma Butonu -->
