@@ -1125,8 +1125,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 <span class="text-slate-500 font-black text-[10px] uppercase flex items-center gap-1">
                                     <i class="fa-solid fa-cart-shopping text-amber-500"></i> Biletleme Seçenekleri:
                                 </span>
-                                ${(ticket.providers || []).map(p => {
-                                    const hasVerifiedPrice = (p.price !== null && p.price !== undefined && Number(p.price) > 0);
+                                ${(ticket.providers || []).filter(p => p.price !== null && p.price !== undefined && Number(p.price) > 0).map(p => {
+                                    const hasVerifiedPrice = true;
                                     let pillClass = 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 font-bold';
                                     let icon = '';
                                     if (p.is_best && hasVerifiedPrice) {

@@ -372,9 +372,8 @@ def decide_winning_flight_offer(
             "active_affiliate": False,
         }
 
-    # Bütün sağlayıcı listesini birleştir ve en iyiyi işaretle
-    all_ordered = priced_candidates + unpriced_candidates
-    for it in all_ordered:
+    # Bütün sağlayıcı listesinde yalnızca doğrulanmış canlı fiyatı olanları listele (KURAL 4: Asla fiyatsız hap olmama yasası)
+    for it in priced_candidates:
         it["is_best"] = (it.get("url") == winner.get("url") and it.get("channel") == winner.get("channel"))
 
     # Buton metinlerini üret
@@ -393,5 +392,5 @@ def decide_winning_flight_offer(
         "winner_url": winner.get("url", carrier_meta["official_link"]),
         "winner_button_tr": btn_tr,
         "winner_button_en": btn_en,
-        "providers": all_ordered,
+        "providers": priced_candidates,
     }
