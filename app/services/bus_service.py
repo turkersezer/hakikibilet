@@ -160,13 +160,15 @@ class BusService:
         orig_id = cls.OBILET_CITY_IDS.get(orig_slug)
         dest_id = cls.OBILET_CITY_IDS.get(dest_slug)
 
-        aff_query = f"?subid={subid}" if subid else ""
+        from app.config import settings
+        actual_subid = subid or getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
+        aff_query = f"?subid={actual_subid}" if actual_subid else ""
 
         if orig_id and dest_id:
             return f"https://www.obilet.com/seferler/{orig_id}-{dest_id}/{departure_date}{aff_query}"
         else:
             # Fallback URL: Statik SEO sayfası parametresiz veya güvenli sorgulu
-            return f"https://www.obilet.com/otobus-bileti/{orig_slug}-{dest_slug}?tarih={departure_date}{'&subid=' + subid if subid else ''}"
+            return f"https://www.obilet.com/otobus-bileti/{orig_slug}-{dest_slug}?tarih={departure_date}{'&subid=' + actual_subid if actual_subid else ''}"
 
     @classmethod
     def estimate_distance_and_duration(cls, orig_name: str, dest_name: str) -> tuple[float, str, int, int]:

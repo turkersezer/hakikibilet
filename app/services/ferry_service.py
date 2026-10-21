@@ -427,7 +427,15 @@ class FerryService:
             category = route.get("category", "domestic")
             is_greek_island = route.get("requires_visa", False) or category == "greek_islands"
             is_cruise = route.get("is_cruise", False) or category == "cruise"
-            booking_link = route.get("booking_url", "https://www.ido.com.tr/")
+            raw_booking_link = route.get("booking_url", "https://www.ido.com.tr/")
+            ferry_subid = getattr(settings, "AFFILIATE_FERRY_SUBID", "hakikibilet")
+            sep = "&" if "?" in raw_booking_link else "?"
+            if is_cruise:
+                booking_link = f"{raw_booking_link}{sep}utm_source=hakikibilet&utm_medium=affiliate&ref={ferry_subid}&subid={ferry_subid}"
+            elif is_greek_island:
+                booking_link = f"{raw_booking_link}{sep}utm_source=hakikibilet&utm_medium=affiliate&ref={ferry_subid}&subid={ferry_subid}"
+            else:
+                booking_link = f"{raw_booking_link}{sep}utm_source=hakikibilet&utm_medium=referral"
             is_veh_allowed = route.get("vehicle_allowed", False)
             base_eur = route.get("base_eur_price")
 

@@ -45,23 +45,29 @@ class CarRentalService:
             slug_loc = base_slug
             loc_label = f"{location_name} Şehir Merkezi"
 
-        # 1. Yolcu360 (Garantili 200 OK çalışan parametreli URL)
-        yolcu360_url = f"https://yolcu360.com/tr/arac-kiralama/?pickup_location={slug_loc}&pickup_date={pickup_date}&dropoff_date={dropoff_date}&pickup_time=10:00&dropoff_time=10:00"
-        
-        # 2. Enuygun (Garantili 200 OK çalışan URL - /arama/ kaldırıldı)
-        enuygun_car_url = f"https://www.enuygun.com/arac-kiralama/{slug_loc}/?alis_tarihi={pickup_date}&iade_tarihi={dropoff_date}&alis_saati=10:00&iade_saati=10:00"
-        
-        # 3. Obilet (/arac-kiralama/{slug}?pick_up_date=... garantili 200 OK)
-        obilet_car_url = f"https://www.obilet.com/arac-kiralama/{slug_loc}?pick_up_date={pickup_date}&drop_off_date={dropoff_date}"
+        from app.config import settings
+        y360_sub = getattr(settings, "AFFILIATE_YOLCU360_SUBID", "hakikibilet")
+        enuygun_sub = getattr(settings, "AFFILIATE_ENUYGUN_SUBID", "hakikibilet")
+        obilet_sub = getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
+        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
 
-        # 4. Rentalcars (/tr/city/tr/{base_slug}/... garantili 200 OK)
-        rentalcars_url = f"https://www.rentalcars.com/tr/city/tr/{base_slug}/?pickupDate={pickup_date}&dropoffDate={dropoff_date}"
+        # 1. Yolcu360 (Garantili 200 OK çalışan parametreli URL + Affiliate SubID)
+        yolcu360_url = f"https://yolcu360.com/tr/arac-kiralama/?pickup_location={slug_loc}&pickup_date={pickup_date}&dropoff_date={dropoff_date}&pickup_time=10:00&dropoff_time=10:00&utm_source=hakikibilet&utm_medium=affiliate&subid={y360_sub}"
+        
+        # 2. Enuygun (Garantili 200 OK çalışan URL + Affiliate SubID)
+        enuygun_car_url = f"https://www.enuygun.com/arac-kiralama/{slug_loc}/?alis_tarihi={pickup_date}&iade_tarihi={dropoff_date}&alis_saati=10:00&iade_saati=10:00&subid={enuygun_sub}"
+        
+        # 3. Obilet (/arac-kiralama/{slug}?pick_up_date=... garantili 200 OK + SubID)
+        obilet_car_url = f"https://www.obilet.com/arac-kiralama/{slug_loc}?pick_up_date={pickup_date}&drop_off_date={dropoff_date}&subid={obilet_sub}"
+
+        # 4. Rentalcars (/tr/city/tr/{base_slug}/... garantili 200 OK + Travelpayouts Marker)
+        rentalcars_url = f"https://www.rentalcars.com/tr/city/tr/{base_slug}/?pickupDate={pickup_date}&dropoffDate={dropoff_date}&affiliateCode=hakikibilet&adcamp=travelpayouts&marker={tp_marker}"
 
         # 5. Avis (Resmi güvenli sayfa, 403 engeli aşılır)
-        avis_url = "https://www.avis.com.tr/"
+        avis_url = "https://www.avis.com.tr/?utm_source=hakikibilet"
 
         # 6. Garenta (Garantili 200 OK)
-        garenta_url = "https://www.garenta.com.tr/arac-kiralama/"
+        garenta_url = "https://www.garenta.com.tr/arac-kiralama/?utm_source=hakikibilet"
 
         return {
             "yolcu360": yolcu360_url,
