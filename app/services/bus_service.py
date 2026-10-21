@@ -343,10 +343,14 @@ class BusService:
         orig_slug = cls.get_clean_slug(origin_name)
         dest_slug = cls.get_clean_slug(dest_name)
         curr_symbol = CurrencyService.get_symbol(currency)
+        orig_display = origin_name.strip().title()
+        dest_display = dest_name.strip().title()
 
         obilet_url = cls.get_obilet_deep_link(origin_name, dest_name, departure_date, subid=subid)
 
         today = datetime.now().date()
+        bus_mult = max(1, passengers) * (2 if is_round else 1)
+
         try:
             dep_dt = datetime.strptime(departure_date, "%Y-%m-%d")
             dep_date_obj = dep_dt.date()
@@ -364,6 +368,14 @@ class BusService:
             dep_date_formatted = departure_date
             next_day_formatted = departure_date
 
+        ret_date_formatted = None
+        if is_round and return_date:
+            try:
+                ret_dt = datetime.strptime(return_date, "%Y-%m-%d")
+                ret_date_formatted = f"{ret_dt.day} {months_tr[ret_dt.month - 1]} {days_tr[ret_dt.weekday()]}"
+            except Exception:
+                ret_date_formatted = return_date
+
         tickets = []
 
         # 1. İSTANBUL - ANKARA VEYA ANKARA - İSTANBUL (28 Gerçek Seferli Zengin Çizelge)
@@ -376,7 +388,7 @@ class BusService:
                     bus_type=item.get("type", "")
                 )
 
-                raw_price = dynamic_single_price * passengers
+                raw_price = dynamic_single_price * bus_mult
                 converted_p = round(CurrencyService.convert(raw_price, "TRY", currency), 2)
                 reg_p = round(converted_p * 1.15, 2)
 
@@ -386,14 +398,33 @@ class BusService:
                 if days_ahead <= 1:
                     badge_text = f"🔥 Son Koltuklar • {badge_text}"
 
+                return_leg = None
+                if is_round and return_date:
+                    ret_sched = cls.ISTANBUL_ANKARA_BUS_SCHEDULE
+                    ret_idx = (idx + 12) % len(ret_sched)
+                    ret_item = ret_sched[ret_idx]
+                    return_leg = {
+                        "origin": f"{dest_display} ({item['dest_term']})",
+                        "destination": f"{orig_display} ({item['orig_term']})",
+                        "departure_time": ret_item["dep"],
+                        "arrival_time": ret_item["arr"],
+                        "departure_date": return_date,
+                        "departure_date_formatted": ret_date_formatted,
+                        "flight_number": ret_item["type"],
+                        "carrier": ret_item["carrier"],
+                        "duration": ret_item["dur"],
+                        "is_direct": True,
+                        "badge": ret_item["badge"]
+                    }
+
                 tickets.append({
                     "id": f"bus-{idx+1}",
                     "transport_type": "bus",
                     "carrier": item["carrier"],
                     "carrier_logo": "🚌",
                     "flight_number": item["type"],
-                    "origin": f"{origin_name} ({item['orig_term']})",
-                    "destination": f"{dest_name} ({item['dest_term']})",
+                    "origin": f"{orig_display} ({item['orig_term']})",
+                    "destination": f"{dest_display} ({item['dest_term']})",
                     "departure_time": item["dep"],
                     "arrival_time": item["arr"],
                     "departure_date_formatted": dep_date_formatted,
@@ -402,6 +433,7 @@ class BusService:
                     "duration": item["dur"],
                     "is_direct": True,
                     "is_night_trip": item.get("night", False),
+                    "return_leg": return_leg,
                     "price": converted_p,
                     "has_live_price": True,
                     "price_status_text": status_text,
@@ -409,6 +441,7 @@ class BusService:
                     "currency": curr_symbol,
                     "currency_code": currency,
                     "badge": badge_text,
+                    "features": ["2+1 Rahat Koltuk", "Wi-Fi", "220V Priz", "İkram Servisi"],
                     "route_notice": None,
                     "official_name": f"{item['carrier']} (Obilet)",
                     "official_link": obilet_url,
@@ -489,7 +522,7 @@ class BusService:
             item_price = round((base_calc_price * carrier_mult + price_offset) / 10) * 10
             item_price = max(280.0, item_price)
 
-            raw_p = item_price * passengers
+            raw_p = item_price * bus_mult
             conv_p = round(CurrencyService.convert(raw_p, "TRY", currency), 2)
             reg_p = round(conv_p * 1.15, 2)
 
@@ -498,14 +531,30 @@ class BusService:
             arr_str = arr_dt_calc.strftime("%H:%M")
             is_next = arr_dt_calc.day > 1 or is_night
 
+            return_leg = None
+            if is_round and return_date:
+                return_leg = {
+                    "origin": f"{dest_display} Otogarı",
+                    "destination": f"{orig_display} Otogarı",
+                    "departure_time": "16:30",
+                    "arrival_time": (datetime.strptime("16:30", "%H:%M") + timedelta(hours=dur_h, minutes=dur_m)).strftime("%H:%M"),
+                    "departure_date": return_date,
+                    "departure_date_formatted": ret_date_formatted,
+                    "flight_number": bus_type,
+                    "carrier": carrier,
+                    "duration": dur_str,
+                    "is_direct": True,
+                    "badge": "Dönüş Seferi"
+                }
+
             tickets.append({
                 "id": f"bus-nat-{orig_slug}-{i+1}",
                 "transport_type": "bus",
                 "carrier": carrier,
                 "carrier_logo": "🚌",
                 "flight_number": bus_type,
-                "origin": f"{origin_name} Otogarı",
-                "destination": f"{dest_name} Otogarı",
+                "origin": f"{orig_display} Otogarı",
+                "destination": f"{dest_display} Otogarı",
                 "departure_time": dep_time,
                 "arrival_time": arr_str,
                 "departure_date_formatted": dep_date_formatted,
@@ -514,6 +563,7 @@ class BusService:
                 "duration": dur_str,
                 "is_direct": True,
                 "is_night_trip": is_night,
+                "return_leg": return_leg,
                 "price": conv_p,
                 "has_live_price": True,
                 "price_status_text": status_text_gen,
@@ -521,6 +571,7 @@ class BusService:
                 "currency": curr_symbol,
                 "currency_code": currency,
                 "badge": badge,
+                "features": ["2+1 Rahat Koltuk", "Wi-Fi", "220V Priz", "İkram Servisi"],
                 "route_notice": None,
                 "official_name": f"{carrier} (Obilet)",
                 "official_link": obilet_url,

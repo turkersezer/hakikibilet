@@ -499,6 +499,55 @@
                 </div>
             </div>
 
+            <!-- 2B. Otobüs Seçenekleri & Popüler Otobüs Hatları Satırı -->
+            <div id="busOptionsBar" class="hidden flex-wrap items-center justify-between gap-3 mb-4 text-xs font-bold text-slate-600">
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Tek Yön / Gidiş-Dönüş Seçimi -->
+                    <div class="inline-flex items-center gap-3">
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
+                            <input type="radio" name="busTripTypeRadio" id="bus-radio-oneway" value="one_way" checked onchange="setFlightTripType('one_way')" class="text-slate-900 focus:ring-slate-900">
+                            <span>Tek Yön</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
+                            <input type="radio" name="busTripTypeRadio" id="bus-radio-round" value="round" onchange="setFlightTripType('round')" class="text-slate-900 focus:ring-slate-900">
+                            <span>Gidiş - Dönüş</span>
+                        </label>
+                    </div>
+
+                    <span class="text-slate-300">|</span>
+
+                    <!-- Popüler Otobüs Hatları -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-black text-slate-400 mr-1 hidden sm:inline-flex items-center gap-1">
+                            <i class="fa-solid fa-bolt text-amber-500"></i> Popüler:
+                        </span>
+                        <button type="button" onclick="quickFillBus('İstanbul', 'Ankara')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ İst ➔ Ank (AŞTİ)
+                        </button>
+                        <button type="button" onclick="quickFillBus('İstanbul', 'İzmir')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ İst ➔ İzmir
+                        </button>
+                        <button type="button" onclick="quickFillBus('İstanbul', 'Antalya')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ İst ➔ Antalya
+                        </button>
+                        <button type="button" onclick="quickFillBus('İstanbul', 'Bursa')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ İst ➔ Bursa
+                        </button>
+                        <button type="button" onclick="quickFillBus('Ankara', 'İzmir')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ Ank ➔ İzmir
+                        </button>
+                        <button type="button" onclick="quickFillBus('İstanbul', 'Trabzon')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-600 hover:text-white border border-emerald-200 text-emerald-900 font-bold text-[11px] transition">
+                            ⭐ İst ➔ Trabzon
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-[11px] font-bold text-emerald-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-bus text-emerald-600"></i>
+                    <span>Kamil Koç, Pamukkale & Obilet Canlı Seferleri</span>
+                </div>
+            </div>
+
             <!-- ==================== ULAŞIM FORMU (UÇAK, OTOBÜS, TREN, FERİBOT) ==================== -->
             <div id="transFormWrapper">
                 <form id="transportSearchForm">
@@ -1142,6 +1191,7 @@
 
             const flightOptionsBar = document.getElementById("flightOptionsBar");
             const trainOptionsBar = document.getElementById("trainOptionsBar");
+            const busOptionsBar = document.getElementById("busOptionsBar");
             const ferryOptionsBar = document.getElementById("ferryOptionsBar");
             const searchBtnLabel = document.getElementById("searchSubmitBtnText");
 
@@ -1149,6 +1199,10 @@
             if (trainOptionsBar) {
                 trainOptionsBar.classList.toggle("hidden", mode !== 'train');
                 trainOptionsBar.classList.toggle("flex", mode === 'train');
+            }
+            if (busOptionsBar) {
+                busOptionsBar.classList.toggle("hidden", mode !== 'bus');
+                busOptionsBar.classList.toggle("flex", mode === 'bus');
             }
             if (ferryOptionsBar) {
                 ferryOptionsBar.classList.toggle("hidden", mode !== 'ferry');
