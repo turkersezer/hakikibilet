@@ -121,6 +121,7 @@ class CarRentalService:
         location: str, 
         pickup_date: str, 
         dropoff_date: Optional[str] = None, 
+        dropoff_location: Optional[str] = None,
         driver_age: int = 25,
         location_type: str = "city",
         currency: str = "TRY"
@@ -133,6 +134,14 @@ class CarRentalService:
         # Eğer havalimanı olmayan bir ilde havalimanı seçildiyse otomatik şehir merkezine çevir
         if location_type == "airport" and not has_airport:
             location_type = "city"
+
+        # Farklı noktada iade kontrolü
+        is_different_dropoff = False
+        drop_name = loc_name
+        if dropoff_location and dropoff_location.strip().lower() not in (location.strip().lower(), "aynı noktaya iade"):
+            drop_obj = find_city(dropoff_location)
+            drop_name = drop_obj["name"] if drop_obj else dropoff_location
+            is_different_dropoff = True
 
         # Gün sayısı hesaplama (Varsayılan 3 gün)
         try:
@@ -154,7 +163,10 @@ class CarRentalService:
         links = cls.generate_car_deep_links(loc_name, pickup_date, dropoff_date, location_type=location_type)
 
         # Lokasyon türüne göre teslimat başlığı ve açıklaması
-        if location_type == "airport" and has_airport:
+        if is_different_dropoff:
+            location_type_label = f"🚗 Farklı Noktada Teslim ({loc_name} ➔ {drop_name})"
+            pickup_point_desc = f"{loc_name} Alış Ofisi ➔ {drop_name} İade Noktası"
+        elif location_type == "airport" and has_airport:
             location_type_label = f"✈️ Havalimanı Teslim ({airport_code})"
             pickup_point_desc = f"{loc_name} Havalimanı ({airport_code}) Terminal Ofisi"
         elif location_type == "station":

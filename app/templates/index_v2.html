@@ -597,6 +597,84 @@
                 </div>
             </div>
 
+            <!-- 2E. Araç Kiralama Seçenekleri & Popüler Havalimanları Satırı -->
+            <div id="carOptionsBar" class="hidden flex-wrap items-center justify-between gap-3 mb-4 text-xs font-bold text-slate-600 bg-amber-50/70 p-3 rounded-2xl border border-amber-200">
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Araç Segment Filtresi -->
+                    <div class="inline-flex items-center bg-white p-0.5 rounded-xl border border-amber-200 shadow-2xs">
+                        <button type="button" onclick="setCarCategoryFilter('all')" id="carCat-all" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-slate-900 text-white transition">
+                            Tümü
+                        </button>
+                        <button type="button" onclick="setCarCategoryFilter('Ekonomi')" id="carCat-eco" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-slate-900 transition">
+                            🚗 Ekonomi
+                        </button>
+                        <button type="button" onclick="setCarCategoryFilter('SUV')" id="carCat-suv" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-slate-900 transition">
+                            🚙 SUV & Aile
+                        </button>
+                        <button type="button" onclick="setCarCategoryFilter('Konfor')" id="carCat-comfort" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-slate-900 transition">
+                            🚘 Konfor / Sedan
+                        </button>
+                        <button type="button" onclick="setCarCategoryFilter('Premium')" id="carCat-luxury" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-slate-900 transition">
+                            🏎️ Lüks / VIP
+                        </button>
+                    </div>
+
+                    <span class="text-slate-300">|</span>
+
+                    <!-- Vites Filtresi -->
+                    <div class="inline-flex items-center bg-white p-0.5 rounded-xl border border-amber-200 shadow-2xs">
+                        <button type="button" onclick="setCarTransmissionFilter('all')" id="carTrans-all" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-amber-500 text-slate-950 transition">
+                            Vites: Tümü
+                        </button>
+                        <button type="button" onclick="setCarTransmissionFilter('Otomatik')" id="carTrans-auto" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-slate-900 transition">
+                            ⚡ Otomatik
+                        </button>
+                        <button type="button" onclick="setCarTransmissionFilter('Manuel')" id="carTrans-manual" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-slate-900 transition">
+                            🕹️ Manuel
+                        </button>
+                    </div>
+
+                    <span class="text-slate-300">|</span>
+
+                    <!-- Farklı Noktada İade Checkbox -->
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer font-bold text-slate-800 text-[11px]">
+                        <input type="checkbox" id="carDifferentDropoffCheckbox" onchange="toggleCarDropoffLocation(this.checked)" class="rounded text-amber-500 focus:ring-amber-400">
+                        <span>Farklı yerde bırakmak istiyorum</span>
+                    </label>
+                </div>
+
+                <!-- Popüler Havalimanı Kiralama Hapları -->
+                <div class="flex flex-wrap items-center gap-1.5 w-full pt-2 border-t border-amber-100">
+                    <span class="text-[11px] font-black text-amber-900 mr-1 hidden sm:inline-flex items-center gap-1">
+                        <i class="fa-solid fa-key text-amber-600"></i> Popüler Havalimanları:
+                    </span>
+                    <button type="button" onclick="quickFillCar('Antalya Havalimanı (AYT)')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-amber-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Antalya (AYT)
+                    </button>
+                    <button type="button" onclick="quickFillCar('İstanbul Sabiha Gökçen (SAW)')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-amber-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ İst Sabiha Gökçen (SAW)
+                    </button>
+                    <button type="button" onclick="quickFillCar('İstanbul Havalimanı (IST)')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-amber-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ İstanbul Havalimanı (IST)
+                    </button>
+                    <button type="button" onclick="quickFillCar('İzmir Adnan Menderes (ADB)')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-amber-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ İzmir (ADB)
+                    </button>
+                    <button type="button" onclick="quickFillCar('Bodrum Milas (BJV)')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-amber-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Bodrum (BJV)
+                    </button>
+                    <button type="button" onclick="quickFillCar('Dalaman Havalimanı (DLM)')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-amber-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Dalaman (DLM)
+                    </button>
+                    <button type="button" onclick="quickFillCar('Ankara Esenboğa (ESB)')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-amber-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Ankara (ESB)
+                    </button>
+                    <button type="button" onclick="quickFillCar('Trabzon Havalimanı (TZX)')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-amber-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Trabzon (TZX)
+                    </button>
+                </div>
+            </div>
+
             <!-- ==================== ULAŞIM FORMU (UÇAK, OTOBÜS, TREN, FERİBOT) ==================== -->
             <div id="transFormWrapper">
                 <form id="transportSearchForm">
@@ -1242,6 +1320,7 @@
             const trainOptionsBar = document.getElementById("trainOptionsBar");
             const busOptionsBar = document.getElementById("busOptionsBar");
             const ferryOptionsBar = document.getElementById("ferryOptionsBar");
+            const carOptionsBar = document.getElementById("carOptionsBar");
             const searchBtnLabel = document.getElementById("searchSubmitBtnText");
 
             if (flightOptionsBar) flightOptionsBar.classList.toggle("hidden", mode !== 'flight');
@@ -1256,6 +1335,10 @@
             if (ferryOptionsBar) {
                 ferryOptionsBar.classList.toggle("hidden", mode !== 'ferry');
                 ferryOptionsBar.classList.toggle("flex", mode === 'ferry');
+            }
+            if (carOptionsBar) {
+                carOptionsBar.classList.toggle("hidden", mode !== 'car');
+                carOptionsBar.classList.toggle("flex", mode === 'car');
             }
 
             if (window.switchTransportSubTab) {

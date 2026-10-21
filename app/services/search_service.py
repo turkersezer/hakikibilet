@@ -1401,10 +1401,12 @@ class SearchService:
         try:
             from app.services.car_rental_service import CarRentalService
             car_loc = origin_name if transport_type == "car" else dest_name
+            car_dropoff = dest_name if transport_type == "car" and dest_name != origin_name else None
             car_rental_info = CarRentalService.search_cars(
                 location=car_loc,
                 pickup_date=departure_date,
                 dropoff_date=return_date,
+                dropoff_location=car_dropoff,
                 location_type=location_type,
                 currency=currency
             )

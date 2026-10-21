@@ -370,6 +370,90 @@ function quickFillFerry(origin, dest, cat = 'all', isVehicle = false) {
 }
 window.quickFillFerry = quickFillFerry;
 
+// Araç Kiralama Filtre ve Durum Değişkenleri
+let currentCarCategoryFilter = 'all'; // 'all', 'Ekonomi', 'SUV', 'Konfor', 'Premium'
+let currentCarTransmissionFilter = 'all'; // 'all', 'Otomatik', 'Manuel'
+let currentCarDifferentDropoff = false;
+
+function setCarCategoryFilter(cat) {
+    currentCarCategoryFilter = cat;
+    const btns = {
+        'all': document.getElementById('carCat-all'),
+        'Ekonomi': document.getElementById('carCat-eco'),
+        'SUV': document.getElementById('carCat-suv'),
+        'Konfor': document.getElementById('carCat-comfort'),
+        'Premium': document.getElementById('carCat-luxury')
+    };
+    Object.keys(btns).forEach(k => {
+        if (!btns[k]) return;
+        if (k === cat) {
+            btns[k].className = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-slate-900 text-white transition";
+        } else {
+            btns[k].className = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-slate-900 transition";
+        }
+    });
+    if (window.lastTransportData && window.lastTransportData.car_rental) {
+        renderTransportResults(window.lastTransportData, window.lastTransportSearchReq || { transport_type: 'car' });
+    }
+}
+window.setCarCategoryFilter = setCarCategoryFilter;
+
+function setCarTransmissionFilter(trans) {
+    currentCarTransmissionFilter = trans;
+    const btns = {
+        'all': document.getElementById('carTrans-all'),
+        'Otomatik': document.getElementById('carTrans-auto'),
+        'Manuel': document.getElementById('carTrans-manual')
+    };
+    Object.keys(btns).forEach(k => {
+        if (!btns[k]) return;
+        if (k === trans) {
+            btns[k].className = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-amber-500 text-slate-950 transition";
+        } else {
+            btns[k].className = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-slate-900 transition";
+        }
+    });
+    if (window.lastTransportData && window.lastTransportData.car_rental) {
+        renderTransportResults(window.lastTransportData, window.lastTransportSearchReq || { transport_type: 'car' });
+    }
+}
+window.setCarTransmissionFilter = setCarTransmissionFilter;
+
+function toggleCarDropoffLocation(checked) {
+    currentCarDifferentDropoff = !!checked;
+    const destInput = document.getElementById("transDest");
+    const destLabel = document.getElementById("destFieldLabel");
+    if (checked) {
+        if (destInput) {
+            destInput.disabled = false;
+            destInput.value = "";
+            destInput.placeholder = "Örn: İzmir, Bodrum, Antalya Merkez";
+            destInput.focus();
+        }
+        if (destLabel) destLabel.innerHTML = '📍 Farklı İade Noktası';
+    } else {
+        const originVal = document.getElementById("transOrigin")?.value || "";
+        if (destInput) {
+            destInput.value = originVal;
+            destInput.placeholder = "Aynı noktaya iade";
+        }
+        if (destLabel) destLabel.innerHTML = '📍 İade Noktası (Aynı Yer)';
+    }
+}
+window.toggleCarDropoffLocation = toggleCarDropoffLocation;
+
+function quickFillCar(location) {
+    if (window.switchUnifiedTab) {
+        window.switchUnifiedTab('car');
+    }
+    const oInput = document.getElementById("transOrigin");
+    const dInput = document.getElementById("transDest");
+    if (oInput) oInput.value = location;
+    if (dInput && !currentCarDifferentDropoff) dInput.value = location;
+    executeTransportSearch();
+}
+window.quickFillCar = quickFillCar;
+
 // 4. YOLCU VE KABİN SEÇİMİ POPOVER KONTROLLERİ
 function togglePaxDropdown(e) {
     if (e) {
@@ -624,6 +708,27 @@ function populateDatalists(transportMode, scope) {
         `;
         if (originList) originList.innerHTML = ferryPortsHtml;
         if (destList) destList.innerHTML = ferryPortsHtml;
+    } else if (transportMode === 'car') {
+        const carLocationsHtml = `
+            <option value="Antalya Havalimanı (AYT)">🚗 Antalya Havalimanı (AYT) - İç/Dış Hatlar Ofisleri</option>
+            <option value="İstanbul Sabiha Gökçen (SAW)">🚗 Sabiha Gökçen Havalimanı (SAW) - Anadolu Yakası</option>
+            <option value="İstanbul Havalimanı (IST)">🚗 İstanbul Havalimanı (IST) - Avrupa Yakası</option>
+            <option value="İzmir Adnan Menderes (ADB)">🚗 İzmir Adnan Menderes Havalimanı (ADB)</option>
+            <option value="Bodrum Milas (BJV)">🚗 Muğla - Bodrum Milas Havalimanı (BJV)</option>
+            <option value="Dalaman Havalimanı (DLM)">🚗 Muğla - Dalaman Havalimanı (DLM)</option>
+            <option value="Ankara Esenboğa (ESB)">🚗 Ankara Esenboğa Havalimanı (ESB)</option>
+            <option value="Trabzon Havalimanı (TZX)">🚗 Trabzon Havalimanı (TZX)</option>
+            <option value="Adana / Çukurova (COV)">🚗 Adana / Çukurova Havalimanı (COV)</option>
+            <option value="Kayseri Havalimanı (ASR)">🚗 Kayseri Erkilet Havalimanı (ASR)</option>
+            <option value="Gaziantep Havalimanı (GZT)">🚗 Gaziantep Havalimanı (GZT)</option>
+            <option value="İstanbul Kadıköy">🏙️ İstanbul Kadıköy - Şehir İçi Ofisleri</option>
+            <option value="İstanbul Taksim">🏙️ İstanbul Taksim - Şehir İçi Ofisleri</option>
+            <option value="İzmir Alsancak">🏙️ İzmir Alsancak - Şehir İçi Ofisleri</option>
+            <option value="Ankara Çankaya">🏙️ Ankara Çankaya / Kızılay Ofisleri</option>
+            <option value="Antalya Lara">🏙️ Antalya Lara / Muratpaşa Şehir İçi</option>
+        `;
+        if (originList) originList.innerHTML = carLocationsHtml;
+        if (destList) destList.innerHTML = carLocationsHtml;
     } else {
         const html = verifiedCities.map(c => {
             const iataStr = c.iata ? ` (${c.iata})` : '';
@@ -743,10 +848,12 @@ async function switchTransportSubTab(subTab) {
 
     if (subTab === 'car') {
         if (originLabel) originLabel.innerHTML = '🚗 Alış Noktası (Havalimanı / Şehir)';
-        if (destLabel) destLabel.innerHTML = '📍 İade Noktası';
+        if (destLabel) destLabel.innerHTML = currentCarDifferentDropoff ? '📍 Farklı İade Noktası' : '📍 İade Noktası (Aynı Yer)';
         if (originInput) originInput.placeholder = 'Örn: Antalya Havalimanı (AYT)';
-        if (destInput) destInput.placeholder = 'Aynı noktaya iade veya farklı şehir';
+        if (destInput) destInput.placeholder = currentCarDifferentDropoff ? 'Örn: İzmir, Bodrum, Antalya Merkez' : 'Aynı noktaya iade';
         if (subHintBadge) subHintBadge.innerHTML = '🚗 Enuygun, Yolcu360, Avis & Garenta Havalimanı Araç Kiralama Karşılaştırması';
+        // Araç kiralamada alış ve iade tarihi gerektiğinden varsayılan olarak tarih aralığını aç
+        setFlightTripType('round');
     } else if (subTab === 'bus') {
         if (originLabel) originLabel.innerHTML = '🚌 Kalkış Şehri / Otogarı';
         if (destLabel) destLabel.innerHTML = '🎯 Varış Şehri (Türkiye & Balkanlar)';
@@ -812,6 +919,16 @@ async function switchTransportSubTab(subTab) {
             ferryBar.classList.remove("flex");
         }
     }
+    const carBar = document.getElementById("carOptionsBar");
+    if (carBar) {
+        if (subTab === 'car') {
+            carBar.classList.remove("hidden");
+            carBar.classList.add("flex");
+        } else {
+            carBar.classList.add("hidden");
+            carBar.classList.remove("flex");
+        }
+    }
     updateAirportHints();
 }
 
@@ -819,12 +936,19 @@ async function switchTransportSubTab(subTab) {
 async function executeTransportSearch(e) {
     if (e) e.preventDefault();
 
-    const origin = document.getElementById("transOrigin").value.trim();
-    const destination = document.getElementById("transDest").value.trim();
+    let origin = document.getElementById("transOrigin").value.trim();
+    let destination = document.getElementById("transDest").value.trim();
     const depDate = document.getElementById("transDepDate").value;
     const retDate = document.getElementById("transRetDate").value;
     const isRound = (currentFlightTripType === 'round');
     const totalPax = flightPax.adults + flightPax.children + flightPax.infants;
+
+    // Araç kiralamada varış boş bırakılmışsa otomatik olarak alış noktasıyla aynı kabul et (aynı yere iade)
+    if (currentTransportSubTab === 'car' && !destination) {
+        destination = origin;
+        const dInput = document.getElementById("transDest");
+        if (dInput) dInput.value = origin;
+    }
 
     if (!origin || !destination || !depDate) {
         alert("Lütfen kalkış noktası, varış noktası ve seyahat tarihini seçiniz.");
@@ -902,10 +1026,10 @@ async function executeTransportSearch(e) {
                 </div>
                 <div class="text-xs sm:text-sm text-amber-300 font-extrabold flex items-center justify-center gap-2">
                     <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span>${currentTransportSubTab === 'train' ? 'TCDD Yüksek Hızlı Tren (YHT) Seferleri Taranıyor...' : (currentTransportSubTab === 'bus' ? 'Obilet Canlı Otobüs Seferleri & Koltuk Fiyatları Taranıyor...' : (currentTransportSubTab === 'ferry' ? 'İDO, BUDO, Ertürk Lines, Turyol & Cruise Seferleri Taranıyor...' : 'Canlı Seferler & Hakiki Fiyatlar Taranıyor...'))}</span>
+                    <span>${currentTransportSubTab === 'train' ? 'TCDD Yüksek Hızlı Tren (YHT) Seferleri Taranıyor...' : (currentTransportSubTab === 'bus' ? 'Obilet Canlı Otobüs Seferleri & Koltuk Fiyatları Taranıyor...' : (currentTransportSubTab === 'ferry' ? 'İDO, BUDO, Ertürk Lines, Turyol & Cruise Seferleri Taranıyor...' : (currentTransportSubTab === 'car' ? 'Yolcu360, Enuygun, Avis & Garenta Canlı Filoları Taranıyor...' : 'Canlı Seferler & Hakiki Fiyatlar Taranıyor...')))}</span>
                 </div>
                 <div class="text-[11px] sm:text-xs text-slate-400 font-medium max-w-lg mx-auto">
-                    ${currentTransportSubTab === 'train' ? 'TCDD Taşımacılık resmi e-bilet portalı ve YHT tarife saatleri doğrulanıyor.' : (currentTransportSubTab === 'bus' ? 'Kamil Koç, Pamukkale, Varan, Metro ve 180+ firmanın seferleri Obilet üzerinden anlık doğrulanıyor.' : (currentTransportSubTab === 'ferry' ? 'İç hat Marmara arabalı vapurları, Kapıda Vize Yunan Adaları hızlı katamaranları ve Cruise turları doğrulanıyor.' : 'Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.'))}
+                    ${currentTransportSubTab === 'train' ? 'TCDD Taşımacılık resmi e-bilet portalı ve YHT tarife saatleri doğrulanıyor.' : (currentTransportSubTab === 'bus' ? 'Kamil Koç, Pamukkale, Varan, Metro ve 180+ firmanın seferleri Obilet üzerinden anlık doğrulanıyor.' : (currentTransportSubTab === 'ferry' ? 'İç hat Marmara arabalı vapurları, Kapıda Vize Yunan Adaları hızlı katamaranları ve Cruise turları doğrulanıyor.' : (currentTransportSubTab === 'car' ? 'Havalimanı ve şehir ofislerindeki müsait kiralık araçlar, depozito koşulları ve taban fiyatlar taranıyor.' : 'Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.')))}
                 </div>
             </div>
         </div>
@@ -1230,56 +1354,164 @@ function renderTransportResults(data, searchReq) {
     // A. SEFER VEYA KİRALIK ARAÇ KARTLARI
     if (searchReq.transport_type === 'car' && data.car_rental && Array.isArray(data.car_rental.vehicles) && data.car_rental.vehicles.length > 0) {
         const cr = data.car_rental;
-        const cSym = data.currency || '₺';
-        html += `<div class="space-y-4 mb-6">`;
-        html += cr.vehicles.map(v => `
-            <div class="bg-white border-2 border-slate-200 hover:border-amber-400 rounded-3xl p-5 shadow-xs hover:shadow-lg transition">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex flex-wrap items-center gap-2 mb-1.5">
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-900 uppercase">${escapeHtml(v.category)}</span>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">${escapeHtml(v.badge || '')}</span>
-                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>${escapeHtml(v.pickup_point || '')}</span>
-                        </div>
-                        <h4 class="text-lg font-black text-slate-900 flex items-center gap-2">
-                            <span>${v.image_icon || '🚗'}</span>
-                            <span>${escapeHtml(v.car_model)}</span>
-                        </h4>
-                        <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600 mt-2">
-                            <span>⚙️ ${escapeHtml(v.transmission)}</span>
-                            <span>⛽ ${escapeHtml(v.fuel)}</span>
-                            <span>👥 ${v.seats} Koltuk</span>
-                            <span>🧳 ${escapeHtml(v.luggage)}</span>
-                            <span>🛡️ ${escapeHtml(v.deposit || '')}</span>
-                        </div>
-                        <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-2">
-                            <span class="text-[10px] font-black uppercase text-slate-400">Kiralama Şirketleri:</span>
-                            ${(v.providers || []).map(p => `
-                                <a href="${p.url}" target="_blank" rel="noopener noreferrer"
-                                   class="px-2.5 py-1 rounded-xl text-xs font-bold border ${p.is_cheapest ? 'bg-amber-50 border-amber-400 text-amber-950 font-black' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'} transition inline-flex items-center gap-1.5">
-                                    <span>${escapeHtml(p.name)}</span>
-                                    <span class="font-black">${Number(p.daily_price).toLocaleString('tr-TR')} ${cSym}/gün</span>
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
-                                </a>
-                            `).join('')}
-                        </div>
+        const cSym = data.currency || cr.currency || '₺';
+
+        // Aktif filtreleri uygula (Segment ve Vites)
+        let filteredVehicles = cr.vehicles || [];
+        if (currentCarCategoryFilter && currentCarCategoryFilter !== 'all') {
+            filteredVehicles = filteredVehicles.filter(v => (v.category || '').toLowerCase().includes(currentCarCategoryFilter.toLowerCase()));
+        }
+        if (currentCarTransmissionFilter && currentCarTransmissionFilter !== 'all') {
+            filteredVehicles = filteredVehicles.filter(v => (v.transmission || '').toLowerCase().includes(currentCarTransmissionFilter.toLowerCase()));
+        }
+
+        // Kiralama Özet Bilgi Şeridi
+        html += `
+            <div class="bg-amber-50/90 border border-amber-200 rounded-3xl p-4 sm:p-5 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl font-black shadow-xs">
+                        🚗
                     </div>
-                    <div class="lg:w-56 border-t lg:border-t-0 lg:border-l border-slate-200 pt-3 lg:pt-0 lg:pl-5 flex flex-row lg:flex-col items-center lg:items-end justify-between gap-2">
-                        <div class="text-left lg:text-right">
-                            <div class="text-[10px] font-black uppercase text-slate-400">Günlük En Uygun</div>
-                            <div class="text-2xl font-black text-slate-900">${Number(v.daily_price).toLocaleString('tr-TR')} ${cSym}</div>
-                            <div class="text-[11px] font-bold text-emerald-700">Toplam: ${Number(v.total_price).toLocaleString('tr-TR')} ${cSym}</div>
+                    <div>
+                        <div class="text-sm sm:text-base font-black text-slate-900">
+                            ${escapeHtml(cr.location)} • ${escapeHtml(cr.location_type_label || 'Havalimanı / Merkez Ofisleri')}
                         </div>
-                        <a href="${v.official_link || '#'}" target="_blank" rel="noopener noreferrer"
-                           class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs shadow-md transition flex items-center gap-1.5">
-                            <span>${escapeHtml(v.cheapest_provider_name || 'Yolcu360')} ile Kirala</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                        </a>
+                        <div class="text-xs font-semibold text-slate-600 mt-0.5 flex flex-wrap items-center gap-2">
+                            <span>📅 <strong>${escapeHtml(cr.pickup_date)}</strong> ➔ <strong>${escapeHtml(cr.dropoff_date)}</strong></span>
+                            <span>•</span>
+                            <span class="text-amber-900 font-black">⏱️ ${cr.days_count} Günlük Kiralama</span>
+                            <span>•</span>
+                            <span class="text-emerald-700 font-bold">⚡ Sınırsız Kilometre</span>
+                        </div>
                     </div>
                 </div>
+                <div class="text-xs font-bold text-slate-600 flex items-center gap-2 border-t sm:border-t-0 pt-2 sm:pt-0 border-amber-200">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                    <span>Yolcu360, Enuygun, Avis & Garenta Karşılaştırmalı</span>
+                </div>
             </div>
-        `).join('');
-        html += `</div>`;
+        `;
+
+        if (filteredVehicles.length === 0) {
+            html += `
+                <div class="bg-white p-8 rounded-3xl border-2 border-slate-200 text-center shadow-xs mb-6">
+                    <i class="fa-solid fa-filter-circle-xmark text-3xl text-amber-500 mb-2"></i>
+                    <div class="font-black text-slate-800 text-base">Seçtiğiniz filtreye (${currentCarCategoryFilter !== 'all' ? currentCarCategoryFilter : ''} ${currentCarTransmissionFilter !== 'all' ? currentCarTransmissionFilter : ''}) uygun araç bulunamadı.</div>
+                    <div class="text-xs text-slate-500 mt-1 font-medium">Lütfen filtreleri sıfırlayarak tüm araç filosunu görüntüleyin.</div>
+                    <button type="button" onclick="setCarCategoryFilter('all'); setCarTransmissionFilter('all');" class="mt-4 px-4 py-2 bg-slate-900 text-white font-bold text-xs rounded-xl shadow-xs hover:bg-black transition">
+                        Filtreleri Temizle
+                    </button>
+                </div>
+            `;
+        } else {
+            html += `<div class="space-y-4 mb-6">`;
+            html += filteredVehicles.map(v => `
+                <div class="bg-white border-2 border-slate-200 hover:border-amber-400 rounded-3xl p-5 sm:p-6 shadow-xs hover:shadow-xl transition-all mb-4">
+                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
+                        
+                        <!-- Sol / Araç & Segment Detayları -->
+                        <div class="flex-1 min-w-0">
+                            <!-- Üst Rozet Satırı -->
+                            <div class="flex flex-wrap items-center gap-2 mb-2.5">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-amber-100 text-amber-900 border border-amber-200 uppercase">
+                                    ${escapeHtml(v.category)}
+                                </span>
+                                ${v.badge ? `
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-orange-100 text-orange-900 border border-orange-200">
+                                        ${escapeHtml(v.badge)}
+                                    </span>
+                                ` : ''}
+                                <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-emerald-100 text-emerald-800">
+                                    ⚡ Sınırsız Km
+                                </span>
+                                <span class="px-2 py-0.5 rounded-md text-[10.5px] font-bold bg-slate-100 text-slate-600">
+                                    🛡️ ${escapeHtml(v.deposit || 'Depozito')}
+                                </span>
+                            </div>
+
+                            <!-- Araç Modeli ve İkonu -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl shadow-2xs">
+                                    ${v.image_icon || '🚗'}
+                                </div>
+                                <div>
+                                    <h4 class="text-lg sm:text-xl font-black text-slate-900 leading-snug">
+                                        ${escapeHtml(v.car_model)}
+                                    </h4>
+                                    <div class="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mt-0.5">
+                                        <i class="fa-solid fa-location-dot text-amber-500"></i>
+                                        <span>${escapeHtml(v.pickup_point || cr.location)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Donanım ve Kapasite Özellikleri -->
+                            <div class="flex flex-wrap items-center gap-2 mt-3.5 text-xs font-bold text-slate-700">
+                                <span class="px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-1">
+                                    ⚙️ <strong>${escapeHtml(v.transmission)}</strong>
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-1">
+                                    ⛽ <strong>${escapeHtml(v.fuel)}</strong>
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-1">
+                                    👥 <strong>${v.seats} Koltuk</strong>
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-1">
+                                    🧳 <strong>${escapeHtml(v.luggage)}</strong>
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                                    ❄️ <strong>Klima Dahil</strong>
+                                </span>
+                            </div>
+
+                            <!-- Sağlayıcı Fiyat Karşılaştırma Şeridi -->
+                            <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                                <span class="text-[10px] font-black uppercase text-slate-400">Şeffaf Sağlayıcı Fiyatları:</span>
+                                ${(v.providers || []).map(p => `
+                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer"
+                                       class="px-2.5 py-1 rounded-xl text-xs font-bold border ${p.is_cheapest ? 'bg-amber-50 border-amber-400 text-amber-950 font-black shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'} transition inline-flex items-center gap-1.5">
+                                        <span>${escapeHtml(p.name)}</span>
+                                        <span class="font-black">${Number(p.daily_price).toLocaleString('tr-TR')} ${cSym}/gün</span>
+                                        ${p.is_cheapest ? '<span class="text-[9px] px-1 py-0.2 rounded bg-amber-200 text-amber-900 font-black">🏆 EN UCUZ</span>' : ''}
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-60"></i>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Sağ / Günlük & Toplam Fiyat ve Doğrudan Rezervasyon Butonu -->
+                        <div class="lg:w-64 flex flex-col justify-between items-end border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6">
+                            <div class="text-right w-full">
+                                <div class="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center justify-end gap-1">
+                                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                                    <span>Doğrulanmış Günlük Taban</span>
+                                </div>
+                                <div class="text-3xl font-black text-slate-950 mt-1">
+                                    ${Number(v.daily_price).toLocaleString('tr-TR')} <span class="text-lg font-bold">${cSym}</span>
+                                    <span class="text-xs font-medium text-slate-400">/ gün</span>
+                                </div>
+                                <div class="text-xs font-black text-emerald-700 mt-1">
+                                    Toplam: ${Number(v.total_price).toLocaleString('tr-TR')} ${cSym} (${cr.days_count} Gün)
+                                </div>
+                            </div>
+
+                            <div class="w-full mt-4">
+                                <a href="${v.official_link || (v.providers && v.providers[0] ? v.providers[0].url : '#')}" target="_blank" rel="noopener noreferrer"
+                                   class="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 group">
+                                    <span>${escapeHtml(v.cheapest_provider_name || 'Yolcu360')} ile Kirala</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                                </a>
+                                <div class="text-[10px] text-center text-slate-400 font-medium mt-1.5">
+                                    Sıfır ek komisyon • Doğrudan güvenli filo rezervasyonu
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `).join('');
+            html += `</div>`;
+        }
     } else if (tickets.length === 0) {
         html += `
             <div class="bg-white p-10 rounded-3xl border-2 border-slate-200 text-center shadow-xs mb-6">
@@ -3204,6 +3436,10 @@ window.handleRadarSubscribe = handleRadarSubscribe;
 window.setFerryCategory = setFerryCategory;
 window.toggleFerryVehicle = toggleFerryVehicle;
 window.quickFillFerry = quickFillFerry;
+window.setCarCategoryFilter = setCarCategoryFilter;
+window.setCarTransmissionFilter = setCarTransmissionFilter;
+window.toggleCarDropoffLocation = toggleCarDropoffLocation;
+window.quickFillCar = quickFillCar;
 
 // ==================== DİL MOTORU DESTEĞİ ====================
 // Dil motoru index_v2.html içerisindeki window.APP_TRANSLATIONS ve window.setAppLanguage tarafından yönetilmektedir.
