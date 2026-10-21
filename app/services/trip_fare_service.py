@@ -347,35 +347,23 @@ def fetch_trip_live_offers(
                     with open(cache_file, "r", encoding="utf-8") as f:
                         disk_entry = json.load(f)
                     cached_disk = disk_entry.get("offers", {})
-                    age = now_ts - disk_entry.get("ts", 0)
-                    if age < CACHE_TTL_SECONDS and cached_disk:
+                    if cached_disk:
                         _TRIP_MEMORY_CACHE[cache_key] = {"ts": disk_entry.get("ts", now_ts), "data": cached_disk}
                         all_offers.update(cached_disk)
-                        # 30 dakikadan eskiyse arka planda sessizce taze guncelleme baslat
-                        if age > 1800:
-                            threading.Thread(
-                                target=_bg_refresh_trip,
-                                args=(o_code, d_code, departure_date, cache_key, cache_file),
-                                daemon=True,
-                            ).start()
                         continue
                 except Exception as err:
                     logger.debug(f"Disk cache read error for Trip: {err}")
 
-            # 3. Canlı Sorgu (Disk cache yoksa doğrudan çek)
-            try:
-                parsed_offers = probe_trip_fares_via_browser(o_code, d_code, departure_date)
-                if parsed_offers:
-                    _TRIP_MEMORY_CACHE[cache_key] = {"ts": time.time(), "data": parsed_offers}
-                    all_offers.update(parsed_offers)
-                    with open(cache_file, "w", encoding="utf-8") as f:
-                        json.dump({"ts": time.time(), "offers": parsed_offers}, f, ensure_ascii=False, indent=2)
-                elif cached_disk:
-                    all_offers.update(cached_disk)
-            except Exception as e:
-                logger.debug(f"Direct Trip probe error: {e}")
-                if cached_disk:
-                    all_offers.update(cached_disk)
+            # 3. Tarayıcı probe yalnızca açıkça etkinleştirildiğinde arka planda çalışır (CPU/RAM ve hız koruması)
+            if os.getenv("ENABLE_TRIP_BROWSER_PROBE", "false").lower() in ("true", "1", "yes"):
+                try:
+                    threading.Thread(
+                        target=_bg_refresh_trip,
+                        args=(o_code, d_code, departure_date, cache_key, cache_file),
+                        daemon=True,
+                    ).start()
+                except Exception as e:
+                    logger.debug(f"Direct Trip probe error: {e}")
 
     return all_offers
 

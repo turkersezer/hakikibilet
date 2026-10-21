@@ -15,8 +15,11 @@ Gelişmiş Özellikler:
 
 from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime, timedelta
+import os
+import re
 import time
 import copy
+import threading
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
@@ -36,9 +39,18 @@ logger = logging.getLogger(__name__)
 MONTHS_TR = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
 DAYS_TR = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
 
-# 15 Dakikalık Akıllı Uçuş Önbelleği (Aynı rotayı arayan kullanıcılar için hız ve IP koruması)
+# 60 Dakikalık Akıllı Uçuş Önbelleği (7 Günlük Esnek Şerit ile Tıklanan Gün Arasında %100 Birebir Fiyat Garantisi)
 _FLIGHT_CACHE: Dict[str, Dict[str, Any]] = {}
-FLIGHT_CACHE_TTL_SECONDS = 900  # 15 dakika
+_FLIGHT_CACHE_LOCK = threading.Lock()
+FLIGHT_CACHE_TTL_SECONDS = 3600  # 60 dakika
+FLIGHT_DISK_CACHE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "flight_results_cache")
+os.makedirs(FLIGHT_DISK_CACHE_DIR, exist_ok=True)
+
+
+def _get_flight_disk_cache_path(cache_key: str) -> str:
+    safe_name = re.sub(r"[^a-zA-Z0-9_-]", "_", cache_key)
+    return os.path.join(FLIGHT_DISK_CACHE_DIR, f"{safe_name}.json")
+
 
 
 def format_tr_date(dt: datetime) -> str:
@@ -211,12 +223,27 @@ def fetch_live_flights_from_google(
     is_round = (trip_type == "round_trip" and bool(return_date))
     seat_mode = "business" if cabin_class == "business" else "economy"
 
-    # 1. Önbellek (Cache) Kontrolü (15 Dakika TTL)
+    # 1. Önbellek (Cache) Kontrolü (60 Dakika TTL • RAM + Disk Korumalı)
     cache_key = f"{orig_slug}:{dest_slug}:{departure_date}:{return_date or ''}:{'rt' if is_round else 'ow'}:{seat_mode}:{adults}:{children}:{infants}"
     now_ts = time.time()
-    cached_entry = _FLIGHT_CACHE.get(cache_key)
-    if cached_entry and (now_ts - cached_entry["ts"] < FLIGHT_CACHE_TTL_SECONDS):
-        return copy.deepcopy(cached_entry["data"])
+    with _FLIGHT_CACHE_LOCK:
+        cached_entry = _FLIGHT_CACHE.get(cache_key)
+        if cached_entry and (now_ts - cached_entry["ts"] < FLIGHT_CACHE_TTL_SECONDS):
+            return copy.deepcopy(cached_entry["data"])
+
+    disk_path = _get_flight_disk_cache_path(cache_key)
+    if os.path.exists(disk_path):
+        try:
+            with open(disk_path, "r", encoding="utf-8") as df:
+                disk_payload = json.load(df)
+            if disk_payload and (now_ts - float(disk_payload.get("ts", 0)) < FLIGHT_CACHE_TTL_SECONDS):
+                disk_data = disk_payload.get("data") or []
+                if disk_data:
+                    with _FLIGHT_CACHE_LOCK:
+                        _FLIGHT_CACHE[cache_key] = {"ts": float(disk_payload["ts"]), "data": copy.deepcopy(disk_data)}
+                    return copy.deepcopy(disk_data)
+        except Exception:
+            pass
 
     # Çoklu havalimanı desteği (ör. İstanbul için hem SAW hem IST)
     def get_airport_codes(city: Dict[str, Any]) -> List[str]:
@@ -730,13 +757,20 @@ def fetch_live_flights_from_google(
             elif r.get("badge") == "💰 En Uygun Fiyat":
                 carrier_short = (r.get("carrier") or "").split()[0]
                 r["badge"] = f"{carrier_short} Seferi"
-        if len(_FLIGHT_CACHE) >= 500:
-            oldest_key = min(_FLIGHT_CACHE.keys(), key=lambda k: _FLIGHT_CACHE[k].get("ts", 0))
-            _FLIGHT_CACHE.pop(oldest_key, None)
-        _FLIGHT_CACHE[cache_key] = {
-            "ts": time.time(),
-            "data": copy.deepcopy(results),
-        }
+        save_ts = time.time()
+        with _FLIGHT_CACHE_LOCK:
+            if len(_FLIGHT_CACHE) >= 500:
+                oldest_key = min(_FLIGHT_CACHE.keys(), key=lambda k: _FLIGHT_CACHE[k].get("ts", 0))
+                _FLIGHT_CACHE.pop(oldest_key, None)
+            _FLIGHT_CACHE[cache_key] = {
+                "ts": save_ts,
+                "data": copy.deepcopy(results),
+            }
+        try:
+            with open(disk_path, "w", encoding="utf-8") as df:
+                json.dump({"ts": save_ts, "data": results}, df, ensure_ascii=False)
+        except Exception:
+            pass
 
     return results
 

@@ -1423,7 +1423,11 @@ class SearchService:
             curr_symbol=curr_symbol,
             passengers=total_pax,
             trip_type="round_trip" if is_round else "one_way",
-            cabin_class=cabin_class
+            cabin_class=cabin_class,
+            return_date=return_date,
+            adults=adults,
+            children=children,
+            infants=infants,
         )
 
         # Adım 2.2: Haftanın En Ucuz Otobüs / Tren / Alternatif Ulaşım Rozetleri
@@ -1514,22 +1518,39 @@ class SearchService:
         curr_symbol: str = "₺",
         passengers: int = 1,
         trip_type: str = "one_way",
-        cabin_class: str = "economy"
+        cabin_class: str = "economy",
+        return_date: Optional[str] = None,
+        adults: int = 1,
+        children: int = 0,
+        infants: int = 0,
     ) -> Dict[str, Any]:
         """
         Pegasus / Skyscanner tarzı 7 günlük (-3..+3 gün) esnek fiyat şeridi ve
-        '💡 Hakiki İpucu: Cuma yerine Perşembe uçarsanız X ₺ daha ucuz!' hesaplayıcısı.
+        '💡 Hakiki İpucu' hesaplayıcısı.
+        KESİN KURAL (Sıfır Tahmin / %100 Hakiki Fiyat):
+        Şeritteki her gün için gerçek canlı uçuş sorgusu (veya önbellekteki gerçek sefer listesi)
+        kullanılır; güne tıklandığında çıkan en düşük bilet fiyatı ile şeritteki fiyat %100 birebir aynıdır.
         """
+        from concurrent.futures import ThreadPoolExecutor
+
         try:
             base_dt = datetime.strptime(departure_date, "%Y-%m-%d").date()
         except Exception:
             base_dt = (datetime.now() + timedelta(days=7)).date()
 
         today = datetime.now().date()
-        # Başlangıç gününü belirle (-3 gün, ama bugünden önceye düşmesin)
         start_dt = base_dt - timedelta(days=3)
         if start_dt < today:
             start_dt = today
+
+        round_span = 3
+        is_round = (trip_type == "round_trip" and bool(return_date))
+        if is_round and return_date:
+            try:
+                ret_dt_parsed = datetime.strptime(return_date, "%Y-%m-%d").date()
+                round_span = max(1, (ret_dt_parsed - base_dt).days)
+            except Exception:
+                round_span = 3
 
         weekdays_short_tr = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
         weekdays_full_tr = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
@@ -1538,70 +1559,65 @@ class SearchService:
         months_tr = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
         months_en = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-        # Havacılık / Ulaşım haftanın günü talep eğrisi (Salı/Çarşamba/Perşembe daha ekonomik, Cuma/Pazar zirve)
-        dow_multipliers = {
-            0: 0.96,  # Pazartesi
-            1: 0.84,  # Salı (En uygun günlerden)
-            2: 0.82,  # Çarşamba (En uygun günlerden)
-            3: 0.86,  # Perşembe (Cuma öncesi fırsat günü)
-            4: 1.08,  # Cuma (Hafta sonu gidiş yoğunluğu)
-            5: 0.98,  # Cumartesi
-            6: 1.12,  # Pazar (Dönüş yoğunluğu)
-        }
-
-        base_dow = base_dt.weekday()
-        base_mult = dow_multipliers.get(base_dow, 1.0)
-
-        # Önbellekte komşu günlerin gerçek uçuş verisi varsa doğrudan onu kullan
-        flight_cache_ref = {}
-        try:
-            from app.services.live_flights import _FLIGHT_CACHE
-            flight_cache_ref = _FLIGHT_CACHE
-        except Exception:
-            flight_cache_ref = {}
-
         orig_obj = find_city(origin_name)
         dest_obj = find_city(dest_name)
-        orig_iata = (orig_obj.get("iata") if orig_obj else "") or ""
-        dest_iata = (dest_obj.get("iata") if dest_obj else "") or ""
+        can_query_flights = bool(
+            transport_type in ("flight", "all")
+            and orig_obj and orig_obj.get("has_airport")
+            and dest_obj and dest_obj.get("has_airport")
+        )
+
+        target_dates = [start_dt + timedelta(days=i) for i in range(7)]
+        live_day_prices: Dict[str, Optional[float]] = {}
+
+        if can_query_flights:
+            from app.services.live_flights import fetch_live_flights_from_google
+
+            def _fetch_real_day_min(d_dt_item) -> tuple:
+                d_iso_str = d_dt_item.strftime("%Y-%m-%d")
+                if d_iso_str == departure_date and selected_min_price is not None and selected_min_price > 0:
+                    val = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
+                    return d_iso_str, val
+                day_ret_str = (d_dt_item + timedelta(days=round_span)).strftime("%Y-%m-%d") if is_round else None
+                try:
+                    day_flights = fetch_live_flights_from_google(
+                        origin_city_name=origin_name,
+                        dest_city_name=dest_name,
+                        departure_date=d_iso_str,
+                        return_date=day_ret_str,
+                        passengers=passengers,
+                        trip_type="round_trip" if is_round else "one_way",
+                        cabin_class=cabin_class,
+                        adults=adults,
+                        children=children,
+                        infants=infants,
+                    )
+                    valid_p = [float(f["price"]) for f in (day_flights or []) if f.get("price") is not None and float(f["price"]) > 0]
+                    if not valid_p:
+                        return d_iso_str, None
+                    min_try = min(valid_p)
+                    if currency != "TRY":
+                        conv = round(CurrencyService.convert(min_try, "TRY", currency), 2)
+                        return d_iso_str, conv
+                    return d_iso_str, round(min_try)
+                except Exception:
+                    return d_iso_str, None
+
+            with ThreadPoolExecutor(max_workers=7) as ex:
+                for d_key, d_val in ex.map(_fetch_real_day_min, target_dates):
+                    live_day_prices[d_key] = d_val
 
         days_strip = []
-        for i in range(7):
-            d_dt = start_dt + timedelta(days=i)
+        for d_dt in target_dates:
             d_iso = d_dt.strftime("%Y-%m-%d")
             dow = d_dt.weekday()
             is_sel = (d_iso == departure_date)
 
             day_price = None
-            if is_sel and selected_min_price:
-                day_price = round(float(selected_min_price))
+            if can_query_flights:
+                day_price = live_day_prices.get(d_iso)
             elif selected_min_price and selected_min_price > 0:
-                # Önce önbellekte o gün için gerçek sorgu var mı kontrol et
-                cached_min = None
-                if transport_type == "flight" and orig_iata and dest_iata:
-                    for c_key, c_val in list(flight_cache_ref.items()):
-                        if isinstance(c_key, tuple) and len(c_key) >= 3:
-                            if c_key[0] == orig_iata and c_key[1] == dest_iata and c_key[2] == d_iso:
-                                c_flights = c_val[1] if isinstance(c_val, tuple) and len(c_val) > 1 else []
-                                c_prices = [f.get("price") for f in (c_flights or []) if f.get("price")]
-                                if c_prices:
-                                    cached_min = min(c_prices)
-                                    break
-
-                if cached_min:
-                    day_price = round(float(cached_min))
-                else:
-                    # Seçili günün gerçek canlı fiyatını referans alarak günün talep çarpanını uygula
-                    target_mult = dow_multipliers.get(dow, 1.0)
-                    # Rota + tarih bazlı deterministik küçük varyasyon (-%3 ile +%4 arası)
-                    seed_val = (d_dt.day * 17 + d_dt.month * 31 + len(origin_name) + len(dest_name)) % 9
-                    micro_adj = 1.0 + ((seed_val - 4) * 0.01)
-                    raw_est = float(selected_min_price) * (target_mult / base_mult) * micro_adj
-                    # Otobüs/Tren ise fiyatlar daha sabit, Uçak ise 10'luk dilime yuvarla
-                    if transport_type in ("bus", "train"):
-                        day_price = round(float(selected_min_price))
-                    else:
-                        day_price = max(350, int(round(raw_est / 10.0) * 10))
+                day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
 
             day_diff = (d_dt - base_dt).days
             days_strip.append({
@@ -1622,20 +1638,28 @@ class SearchService:
                 "day_diff": day_diff
             })
 
-        # En ucuz günü işaretle ve "Hakiki İpucu" oluştur
-        priced_days = [d for d in days_strip if d.get("min_price") is not None]
+        # En ucuz günü işaretle ve "Hakiki İpucu" oluştur (%100 Şerit ve Banner Tutarlılığı)
+        priced_days = [d for d in days_strip if d.get("min_price") is not None and d["min_price"] > 0]
         hakiki_tip = None
         if priced_days:
-            cheapest_day = min(priced_days, key=lambda x: x["min_price"])
+            sel_day_obj = next((d for d in days_strip if d["is_selected"]), None)
+            cheapest_day = min(
+                priced_days,
+                key=lambda x: (
+                    float(x["min_price"]),
+                    0 if x["is_selected"] else 1,
+                    abs(x["day_diff"]),
+                ),
+            )
             for d in days_strip:
                 if d["date"] == cheapest_day["date"]:
                     d["is_cheapest"] = True
 
-            sel_day_obj = next((d for d in days_strip if d["is_selected"]), None)
             if sel_day_obj and sel_day_obj.get("min_price") and cheapest_day.get("min_price"):
-                savings = int(round(sel_day_obj["min_price"] - cheapest_day["min_price"]))
+                raw_savings = float(sel_day_obj["min_price"]) - float(cheapest_day["min_price"])
+                savings = int(round(raw_savings)) if currency == "TRY" else round(raw_savings, 2)
                 diff = cheapest_day["day_diff"]
-                if savings >= 80 and diff != 0:
+                if savings > 0 and diff != 0:
                     abs_diff = abs(diff)
                     diff_tr = f"{abs_diff} gün {'önce' if diff < 0 else 'sonra'}"
                     diff_en = f"{abs_diff} {'day' if abs_diff == 1 else 'days'} {'earlier' if diff < 0 else 'later'}"

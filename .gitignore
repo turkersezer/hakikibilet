@@ -12,3 +12,4 @@ data/*.db
 *.log
 scratch_*.py
 scratch/
+data/flight_results_cache/

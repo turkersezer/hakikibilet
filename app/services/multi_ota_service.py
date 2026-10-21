@@ -730,7 +730,7 @@ def fetch_multi_ota_flight_map(
     """
     combined_map: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         from app.services.trip_fare_service import fetch_trip_live_offers
         futures = [
             executor.submit(
@@ -738,15 +738,6 @@ def fetch_multi_ota_flight_map(
                 orig_codes,
                 dest_codes,
                 departure_date,
-            ),
-            executor.submit(
-                fetch_rapidapi_skyscanner_offers,
-                orig_codes,
-                dest_codes,
-                departure_date,
-                return_date,
-                seat_mode,
-                adults,
             ),
             executor.submit(
                 fetch_rapidapi_booking_offers,
