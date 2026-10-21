@@ -163,6 +163,10 @@ function setFlightTripType(tripType) {
     if (tripType === 'one_way') {
         if (radioOneway) radioOneway.checked = true;
         if (radioRound) radioRound.checked = false;
+        const trainRadioOneway = document.getElementById("train-radio-oneway");
+        const trainRadioRound = document.getElementById("train-radio-round");
+        if (trainRadioOneway) trainRadioOneway.checked = true;
+        if (trainRadioRound) trainRadioRound.checked = false;
         if (onewayBtn) {
             onewayBtn.className = "flight-trip-btn px-3.5 py-1.5 rounded-lg text-xs font-black bg-slate-900 text-white shadow-2xs transition flex items-center gap-1.5";
         }
@@ -187,6 +191,10 @@ function setFlightTripType(tripType) {
     } else {
         if (radioRound) radioRound.checked = true;
         if (radioOneway) radioOneway.checked = false;
+        const trainRadioOneway = document.getElementById("train-radio-oneway");
+        const trainRadioRound = document.getElementById("train-radio-round");
+        if (trainRadioOneway) trainRadioOneway.checked = false;
+        if (trainRadioRound) trainRadioRound.checked = true;
         if (roundBtn) {
             roundBtn.className = "flight-trip-btn px-3.5 py-1.5 rounded-lg text-xs font-black bg-slate-900 text-white shadow-2xs transition flex items-center gap-1.5";
         }
@@ -244,6 +252,19 @@ function swapOriginDest(e) {
         setTimeout(() => swapBtn.classList.remove("rotate-180"), 300);
     }
 }
+
+// Hızlı Popüler Tren Hattı Seçimi & Anında Arama
+function quickFillTrain(origin, dest) {
+    if (window.switchUnifiedTab) {
+        window.switchUnifiedTab('train');
+    }
+    const oInput = document.getElementById("transOrigin");
+    const dInput = document.getElementById("transDest");
+    if (oInput) oInput.value = origin;
+    if (dInput) dInput.value = dest;
+    executeTransportSearch();
+}
+window.quickFillTrain = quickFillTrain;
 
 // 4. YOLCU VE KABİN SEÇİMİ POPOVER KONTROLLERİ
 function togglePaxDropdown(e) {
@@ -411,6 +432,32 @@ function populateDatalists(transportMode, scope) {
             return `<option value="${c.name}">${icon} ${c.name}${iataStr}${countryStr}</option>`;
         }).join("");
         if (destList) destList.innerHTML = specialDests + restDests;
+    } else if (transportMode === 'train') {
+        const trainStationsHtml = `
+            <option value="İstanbul">🚆 İstanbul - Söğütlüçeşme / Bostancı / Halkalı YHT</option>
+            <option value="Ankara">🚆 Ankara Gar (YHT / Anahat)</option>
+            <option value="Eskişehir">🚆 Eskişehir Gar (YHT)</option>
+            <option value="Konya">🚆 Konya Gar (YHT)</option>
+            <option value="Sivas">🚆 Sivas Gar (YHT)</option>
+            <option value="Karaman">🚆 Karaman Gar (YHT)</option>
+            <option value="Kars">🚆 Kars Gar (Doğu Ekspresi)</option>
+            <option value="İzmir">🚆 İzmir Basmane (İzmir Mavi Treni)</option>
+            <option value="Denizli">🚆 Denizli Gar (Pamukkale Ekspresi)</option>
+            <option value="Adana">🚆 Adana Gar</option>
+            <option value="Mersin">🚆 Mersin Gar</option>
+            <option value="Kayseri">🚆 Kayseri Gar</option>
+            <option value="Tatvan">🚆 Tatvan Gar (Van Gölü Ekspresi)</option>
+            <option value="Londra">🚆 Londra St Pancras (Eurostar Hızlı Tren)</option>
+            <option value="Paris">🚆 Paris Gare du Nord (Eurostar / TGV)</option>
+            <option value="Roma">🚆 Roma Termini (Frecciarossa 1000)</option>
+            <option value="Milano">🚆 Milano Centrale (Frecciarossa)</option>
+            <option value="Berlin">🚆 Berlin Hbf (ICE Hızlı Tren)</option>
+            <option value="Münih">🚆 Münih Hbf (ICE)</option>
+            <option value="Madrid">🚆 Madrid Atocha (Renfe AVE)</option>
+            <option value="Barselona">🚆 Barselona Sants (Renfe AVE)</option>
+        `;
+        if (originList) originList.innerHTML = trainStationsHtml;
+        if (destList) destList.innerHTML = trainStationsHtml;
     } else {
         const html = verifiedCities.map(c => {
             const iataStr = c.iata ? ` (${c.iata})` : '';
@@ -569,6 +616,16 @@ async function switchTransportSubTab(subTab) {
             flightBar.classList.add("hidden");
         }
     }
+    const trainBar = document.getElementById("trainOptionsBar");
+    if (trainBar) {
+        if (subTab === 'train') {
+            trainBar.classList.remove("hidden");
+            trainBar.classList.add("flex");
+        } else {
+            trainBar.classList.add("hidden");
+            trainBar.classList.remove("flex");
+        }
+    }
     updateAirportHints();
 }
 
@@ -659,10 +716,10 @@ async function executeTransportSearch(e) {
                 </div>
                 <div class="text-xs sm:text-sm text-amber-300 font-extrabold flex items-center justify-center gap-2">
                     <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span>Canlı Seferler & Hakiki Fiyatlar Taranıyor...</span>
+                    <span>${currentTransportSubTab === 'train' ? 'TCDD Yüksek Hızlı Tren (YHT) Seferleri Taranıyor...' : 'Canlı Seferler & Hakiki Fiyatlar Taranıyor...'}</span>
                 </div>
                 <div class="text-[11px] sm:text-xs text-slate-400 font-medium max-w-lg mx-auto">
-                    Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.
+                    ${currentTransportSubTab === 'train' ? 'TCDD Taşımacılık resmi e-bilet portalı ve YHT tarife saatleri doğrulanıyor.' : 'Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.'}
                 </div>
             </div>
         </div>
@@ -1273,6 +1330,154 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     : (ticket.transport_type === 'bus'
                         ? `Obilet'te Seç`
                         : `Bileti Al`)));
+
+        if (ticket.transport_type === 'train') {
+            const hasReturn = isRoundTrip && ticket.return_leg;
+            const retLeg = ticket.return_leg;
+            const discounts = ticket.discounts || {};
+            const trainNo = ticket.flight_number || 'YHT';
+            const badgeText = ticket.badge || 'Yüksek Hızlı Tren (YHT)';
+            const isIntlTrain = ticket.id && ticket.id.startsWith('tr-intl');
+            const targetUrl = ticket.direct_link || ticket.official_link || 'https://ebilet.tcddtasimacilik.gov.tr/';
+            const btnLabel = isIntlTrain ? (isEn ? 'Book on Trainline ↗' : 'Trainline ile Al ↗') : (isEn ? 'TCDD Official E-Ticket ↗' : 'TCDD E-Bilet Resmi Portalı ↗');
+
+            let discountsHtml = '';
+            if (discounts.genc_ogrenci || discounts.yas_65_ustu) {
+                discountsHtml = `
+                    <div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-bold text-slate-600">
+                        <span class="text-indigo-800 font-extrabold flex items-center gap-1">
+                            <i class="fa-solid fa-tags text-indigo-600"></i> ${isEn ? 'Legal Discounts:' : 'Kanuni İndirimler:'}
+                        </span>
+                        ${discounts.genc_ogrenci ? `<span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">🎓 ${isEn ? 'Youth/Student:' : 'Genç/Öğrenci:'} <strong>${Number(discounts.genc_ogrenci).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
+                        ${discounts.yas_65_ustu ? `<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200">👴 65+ Yaş: <strong>${Number(discounts.yas_65_ustu).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
+                        ${discounts.ogretmen ? `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">Öğretmen: <strong>${Number(discounts.ogretmen).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
+                        <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">👶 0-6 Yaş: <strong>${isEn ? 'Free' : 'Ücretsiz'}</strong></span>
+                    </div>
+                `;
+            }
+
+            let returnLegHtml = '';
+            if (hasReturn) {
+                returnLegHtml = `
+                    <div class="mt-3 bg-slate-50/90 p-3 sm:p-3.5 rounded-2xl border border-slate-200">
+                        <div class="text-[11px] font-black text-slate-700 mb-2 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 text-indigo-700 font-black">
+                                <i class="fa-solid fa-train"></i> 🚆 ${isEn ? 'RETURN TRAIN' : 'DÖNÜŞ TRENİ'} • ${retLeg.departure_date_formatted || searchReq.return_date}
+                            </span>
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
+                                ${retLeg.flight_number || 'YHT Dönüş'}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-12 items-center gap-2">
+                            <div class="col-span-4 sm:col-span-3 text-left">
+                                <div class="text-xl font-black text-slate-900 leading-none">${retLeg.departure_time}</div>
+                                <div class="text-xs font-bold text-slate-700 mt-1 truncate">${retLeg.origin}</div>
+                            </div>
+                            <div class="col-span-4 sm:col-span-6 px-1 text-center">
+                                <div class="text-xs font-bold text-slate-600 mb-1">${retLeg.duration || ticket.duration}</div>
+                                <div class="relative flex items-center justify-center my-0.5">
+                                    <div class="w-full h-[2px] bg-indigo-200"></div>
+                                    <div class="absolute bg-white px-1.5 py-0.5 rounded-full border border-indigo-200 shadow-2xs">
+                                        <i class="fa-solid fa-train text-indigo-600 text-[10px] transform rotate-180"></i>
+                                    </div>
+                                </div>
+                                <div class="text-[10.5px] font-bold text-emerald-600 mt-1">✓ ${isEn ? 'Direct' : 'Direkt • Aktarmasız'}</div>
+                            </div>
+                            <div class="col-span-4 sm:col-span-3 text-right">
+                                <div class="text-xl font-black text-slate-900 leading-none">${retLeg.arrival_time}</div>
+                                <div class="text-xs font-bold text-slate-700 mt-1 truncate">${retLeg.destination}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="bg-white border-2 border-slate-200 hover:border-indigo-400 rounded-3xl p-5 sm:p-6 shadow-xs hover:shadow-xl transition-all mb-4">
+                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
+                        
+                        <!-- Sol / Sefer Detayları -->
+                        <div class="flex-1 min-w-0">
+                            <!-- Üst Rozet Satırı -->
+                            <div class="flex flex-wrap items-center gap-2 mb-3">
+                                <div class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center text-base shadow-2xs">
+                                    🚆
+                                </div>
+                                <span class="font-black text-slate-900 text-sm sm:text-base">${ticket.carrier}</span>
+                                <span class="px-2 py-0.5 rounded-md font-mono text-[11px] font-black bg-slate-100 text-slate-800 border border-slate-200">
+                                    ${trainNo}
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-amber-100 text-amber-900 border border-amber-200">
+                                    ${badgeText}
+                                </span>
+                                ${isIntlTrain ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-sky-100 text-sky-800">${isEn ? 'European Rail' : 'Avrupa Hızlı Tren'}</span>` : `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-emerald-100 text-emerald-800">⚡ ${isEn ? 'Station-to-Station 250+ km/h' : 'Gardan Gara 250+ km/s'}</span>`}
+                            </div>
+
+                            <!-- Gidiş Seferi Zaman Çizelgesi -->
+                            <div class="bg-slate-50/60 p-3.5 sm:p-4 rounded-2xl border border-slate-200">
+                                ${hasReturn ? `<div class="text-[11px] font-black text-indigo-700 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-train"></i> ${isEn ? 'OUTBOUND TRAIN' : 'GİDİŞ TRENİ'} • ${ticket.departure_date_formatted}</div>` : ''}
+                                <div class="grid grid-cols-12 items-center gap-2">
+                                    <div class="col-span-4 sm:col-span-3 text-left">
+                                        <div class="text-2xl font-black text-slate-900 leading-none">${ticket.departure_time}</div>
+                                        <div class="text-xs font-bold text-slate-700 mt-1.5 truncate">${ticket.origin}</div>
+                                        <div class="text-[11px] text-slate-400 font-medium">${ticket.departure_date_formatted}</div>
+                                    </div>
+                                    <div class="col-span-4 sm:col-span-6 px-1 text-center">
+                                        <div class="text-xs font-bold text-slate-600 mb-1">${ticket.duration || '4 sa 20 dk'}</div>
+                                        <div class="relative flex items-center justify-center my-0.5">
+                                            <div class="w-full h-[2px] bg-indigo-300"></div>
+                                            <div class="absolute bg-white px-2 py-0.5 rounded-full border border-indigo-300 shadow-2xs">
+                                                <i class="fa-solid fa-train text-indigo-600 text-xs"></i>
+                                            </div>
+                                        </div>
+                                        <div class="text-[10.5px] font-bold text-emerald-600 mt-1">✓ ${isEn ? 'Direct' : 'Direkt • Aktarmasız'}</div>
+                                    </div>
+                                    <div class="col-span-4 sm:col-span-3 text-right">
+                                        <div class="text-2xl font-black text-slate-900 leading-none">${ticket.arrival_time}</div>
+                                        <div class="text-xs font-bold text-slate-700 mt-1.5 truncate">${ticket.destination}</div>
+                                        <div class="text-[11px] text-slate-400 font-medium">${ticket.arrival_date_formatted || ticket.departure_date_formatted}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Varsa Dönüş Seferi -->
+                            ${returnLegHtml}
+
+                            <!-- İndirimler Şeridi -->
+                            ${discountsHtml}
+                        </div>
+
+                        <!-- Sağ / Fiyat ve Doğrudan Biletleme Butonu -->
+                        <div class="lg:w-64 flex flex-col justify-between items-end border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6">
+                            <div class="text-right w-full">
+                                <div class="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center justify-end gap-1">
+                                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                                    <span>${isEn ? 'Verified Official Fare' : 'Doğrulanmış Taban Fiyat'}</span>
+                                </div>
+                                <div class="text-3xl font-black text-slate-950 mt-1">
+                                    ${Number(ticket.price).toLocaleString('tr-TR')} <span class="text-lg font-bold">${ticket.currency || '₺'}</span>
+                                </div>
+                                <div class="text-[11px] font-semibold text-slate-500 mt-0.5">
+                                    ${isRoundTrip ? (isEn ? 'Round-trip Total' : 'Gidiş - Dönüş Toplam') : (isEn ? 'One-way Base Fare' : 'Tek Yön Taban Ücret')}
+                                </div>
+                            </div>
+
+                            <div class="w-full mt-4">
+                                <a href="${targetUrl}" target="_blank" rel="noopener noreferrer"
+                                   class="w-full py-3 px-4 bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-700 hover:from-black hover:to-indigo-950 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 group">
+                                    <span>${btnLabel}</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                                </a>
+                                <div class="text-[10px] text-center text-slate-400 font-medium mt-1.5">
+                                    ${isIntlTrain ? 'Trainline resmi acente rezervasyonu' : 'Resmi TCDD Taşımacılık E-Bilet Sistemi'}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
 
         if (!isFlight) {
             // Otobüs, Tren, Feribot Kartı

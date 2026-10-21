@@ -177,6 +177,14 @@ class TrainService:
             dep_date_formatted = departure_date
             next_day_formatted = departure_date
 
+        ret_date_formatted = None
+        if is_round and return_date:
+            try:
+                ret_dt = datetime.strptime(return_date, "%Y-%m-%d")
+                ret_date_formatted = f"{ret_dt.day} {months_tr[ret_dt.month - 1]} {days_tr[ret_dt.weekday()]}"
+            except Exception:
+                ret_date_formatted = return_date
+
         tcdd_link = "https://ebilet.tcddtasimacilik.gov.tr/"
 
         # 1. İSTANBUL - ANKARA (En Popüler Hat - Gerçek TCDD Sefer Çizelgesi)
@@ -186,6 +194,8 @@ class TrainService:
             station_dest = "Ankara Gar" if "istanbul" in orig_clean else "İstanbul(Bostancı / Söğütlüçeşme)"
 
             timetable_to_use = cls.ANKARA_ISTANBUL_TIMETABLE if "ankara" in orig_clean else cls.ISTANBUL_ANKARA_TIMETABLE
+            ret_timetable = cls.ISTANBUL_ANKARA_TIMETABLE if "ankara" in orig_clean else cls.ANKARA_ISTANBUL_TIMETABLE
+
             for idx, item in enumerate(timetable_to_use):
                 is_anahat = (item.get("type") == "anahat")
                 carrier_display = "TCDD Taşımacılık (Ankara Ekspresi)" if is_anahat else "TCDD Taşımacılık (YHT)"
@@ -211,6 +221,24 @@ class TrainService:
                 yas65_fmt = cls.format_price_tr(discounts_converted['yas_65_ustu'])
                 discount_info_text = f"💡 İndirimli Bilet: Öğrenci: {ogrenci_fmt} {curr_symbol} • 65+ Yaş: {yas65_fmt} {curr_symbol} (TCDD Ekranında Seçilebilir)"
 
+                return_leg = None
+                if is_round and return_date and ret_timetable:
+                    ret_idx = (idx + 6) % len(ret_timetable)
+                    ret_item = ret_timetable[ret_idx]
+                    return_leg = {
+                        "origin": station_dest,
+                        "destination": station_orig,
+                        "departure_time": ret_item["dep"],
+                        "arrival_time": ret_item["arr"],
+                        "departure_date": return_date,
+                        "departure_date_formatted": ret_date_formatted,
+                        "flight_number": ret_item["code"],
+                        "carrier": "TCDD Taşımacılık (Ankara Ekspresi)" if ret_item.get("type") == "anahat" else "TCDD Taşımacılık (YHT)",
+                        "duration": ret_item["dur"],
+                        "is_direct": True,
+                        "badge": ret_item.get("badge", "Dönüş Hızlı Treni")
+                    }
+
                 tickets.append({
                     "id": f"tcdd-{idx+1}",
                     "transport_type": "train",
@@ -227,6 +255,7 @@ class TrainService:
                     "duration": item["dur"],
                     "is_direct": True,
                     "is_night_trip": is_night,
+                    "return_leg": return_leg,
                     "price": final_p,
                     "has_live_price": True,
                     "price_status_text": "TCDD E-Bilet Doğrulanmış Taban Fiyat",
@@ -255,6 +284,22 @@ class TrainService:
             disc_conv = {k: round(CurrencyService.convert(v * train_mult, "TRY", currency), 2) for k, v in disc.items()}
             is_nxt = tariff.get("next_day", False)
 
+            return_leg = None
+            if is_round and return_date:
+                return_leg = {
+                    "origin": f"{dest_name} Garı",
+                    "destination": f"{origin_name} Garı",
+                    "departure_time": tariff["dep"],
+                    "arrival_time": tariff["arr"],
+                    "departure_date": return_date,
+                    "departure_date_formatted": ret_date_formatted,
+                    "flight_number": f"{tariff['name']} (Dönüş)",
+                    "carrier": tariff["carrier"],
+                    "duration": tariff["duration"],
+                    "is_direct": True,
+                    "badge": "Dönüş Ekspresi"
+                }
+
             tickets.append({
                 "id": f"tcdd-anahat-{orig_clean}",
                 "transport_type": "train",
@@ -271,6 +316,7 @@ class TrainService:
                 "duration": tariff["duration"],
                 "is_direct": True,
                 "is_night_trip": True,
+                "return_leg": return_leg,
                 "price": conv_p,
                 "has_live_price": True,
                 "price_status_text": "TCDD E-Bilet Doğrulanmış Taban Fiyat",
@@ -324,6 +370,22 @@ class TrainService:
                 arr_str = arr_dt_calc.strftime("%H:%M")
                 is_nxt_calc = arr_dt_calc.day > 1
 
+                return_leg = None
+                if is_round and return_date:
+                    return_leg = {
+                        "origin": f"{dest_name} Garı",
+                        "destination": f"{origin_name} Garı",
+                        "departure_time": "18:00",
+                        "arrival_time": (datetime.strptime("18:00", "%H:%M") + timedelta(hours=dur_hours, minutes=dur_mins)).strftime("%H:%M"),
+                        "departure_date": return_date,
+                        "departure_date_formatted": ret_date_formatted,
+                        "flight_number": f"{'YHT' if not is_bolgesel else 'Bölgesel'} Dönüş",
+                        "carrier": carrier_str,
+                        "duration": dur,
+                        "is_direct": True,
+                        "badge": "Dönüş Seferi"
+                    }
+
                 tickets.append({
                     "id": f"tcdd-rt-{orig_clean}-{i+1}",
                     "transport_type": "train",
@@ -340,6 +402,7 @@ class TrainService:
                     "duration": dur,
                     "is_direct": True,
                     "is_night_trip": dep_hour >= 20,
+                    "return_leg": return_leg,
                     "price": conv_p,
                     "has_live_price": True,
                     "price_status_text": "TCDD E-Bilet Doğrulanmış Taban Fiyat",
