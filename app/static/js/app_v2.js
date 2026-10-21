@@ -714,6 +714,11 @@ async function executeTransportSearch(e) {
 // Ulaşım Sonuçlarını Render Et (Google Flights & Skyscanner Standardı • Canlı Sefer Saatleri & Çift Bacak)
 function renderTransportResults(data, searchReq) {
     const resultsArea = document.getElementById("transportResultsArea");
+    if (data && (data.flexible_insights || data.destination_cross_sell)) {
+        window.lastTransportData = data;
+    } else if (window.lastTransportData) {
+        data = Object.assign({}, window.lastTransportData, data);
+    }
     const tickets = data.tickets || [];
     window.lastTransportResults = tickets;
     window.lastSearchReq = searchReq;
@@ -737,7 +742,7 @@ function renderTransportResults(data, searchReq) {
         : (isEn ? '🌍 International Flight' : '🌍 Yurtdışı Uçuş');
 
     html += `
-        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-5 sm:p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl border border-slate-700">
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-5 sm:p-6 mb-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl border border-slate-700">
             <div>
                 <div class="flex flex-wrap items-center gap-2 mb-2">
                     <span class="px-3 py-1 rounded-full text-[10.5px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-2xs">
@@ -748,9 +753,9 @@ function renderTransportResults(data, searchReq) {
                     </span>
                 </div>
                 <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
-                    <span>${searchReq.origin}</span>
+                    <span>${escapeHtml(searchReq.origin)}</span>
                     <i class="fa-solid fa-plane-departure text-amber-400 text-base"></i>
-                    <span>${searchReq.destination}</span>
+                    <span>${escapeHtml(searchReq.destination)}</span>
                 </h3>
             </div>
             <div class="text-left md:text-right border-t md:border-t-0 pt-3 md:pt-0 w-full md:w-auto">
@@ -766,6 +771,131 @@ function renderTransportResults(data, searchReq) {
             </div>
         </div>
     `;
+
+    // ==================== ADIM 2.1 & 2.2: PEGASUS TARZI 7 GÜNLÜK FİYAT ŞERİDİ + "HAKİKİ İPUCU" + EN UCUZ OTOBÜS/TREN ROZETLERİ ====================
+    const flexInsights = data.flexible_insights;
+    const altBadges = data.alternative_badges || [];
+    if (flexInsights && Array.isArray(flexInsights.days) && flexInsights.days.length > 0) {
+        const tip = flexInsights.hakiki_tip;
+        const fmtNum = (n) => Number(n).toLocaleString(isEn ? 'en-US' : 'tr-TR');
+
+        html += `<div class="bg-white border-2 border-amber-300/80 rounded-3xl p-4 sm:p-5 mb-5 shadow-md">`;
+
+        // 1. Üst "💡 Hakiki İpucu" Bandı
+        if (tip && tip.has_savings) {
+            const selDayName = isEn ? tip.selected_weekday_en : tip.selected_weekday_tr;
+            const bestDayName = isEn ? tip.best_weekday_en : tip.best_weekday_tr;
+            const diffTxt = isEn ? tip.diff_text_en : tip.diff_text_tr;
+            const bestLbl = isEn ? tip.best_label_en : tip.best_label_tr;
+            html += `
+                <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 text-white rounded-2xl p-3.5 sm:p-4 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-emerald-500/40 shadow-sm">
+                    <div class="flex items-start sm:items-center gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-base shrink-0 shadow-xs">
+                            💡
+                        </span>
+                        <div class="text-xs sm:text-sm leading-snug">
+                            <span class="font-black text-amber-300 uppercase tracking-wide text-[11px] block mb-0.5">
+                                ${isEn ? 'Hakiki Smart Fare Tip' : 'Hakiki Fiyat İpucu'}
+                            </span>
+                            ${isEn
+                                ? `Instead of <strong>${selDayName}</strong> (${fmtNum(tip.selected_price)} ${tip.currency}), if you travel on <strong>${bestDayName} (${diffTxt})</strong>, the same route starts at <strong class="text-emerald-300 underline">${fmtNum(tip.best_price)} ${tip.currency}</strong> (<span class="bg-emerald-500/30 text-emerald-200 px-1.5 py-0.5 rounded font-black">${fmtNum(tip.savings)} ${tip.currency} cheaper!</span>)`
+                                : `<strong>${selDayName}</strong> (${fmtNum(tip.selected_price)} ${tip.currency}) yerine <strong>${bestDayName} (${diffTxt})</strong> uçarsanız aynı rotada bilet <strong class="text-emerald-300 underline">${fmtNum(tip.best_price)} ${tip.currency}</strong> (<span class="bg-emerald-500/30 text-emerald-200 px-1.5 py-0.5 rounded font-black">${fmtNum(tip.savings)} ${tip.currency} daha ucuz!</span>)`
+                            }
+                        </div>
+                    </div>
+                    <button type="button" onclick="switchSearchDate('${tip.best_date}')"
+                            class="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs whitespace-nowrap shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5 shrink-0">
+                        <i class="fa-regular fa-calendar-check"></i>
+                        <span>${isEn ? `Switch to ${bestLbl} →` : `Tarihi Değiştir (${bestLbl}) →`}</span>
+                    </button>
+                </div>
+            `;
+        } else if (tip && !tip.has_savings) {
+            const selDayName = isEn ? tip.selected_weekday_en : tip.selected_weekday_tr;
+            html += `
+                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-2.5 mb-3.5 flex items-center justify-between gap-2 text-xs text-emerald-950">
+                    <div class="flex items-center gap-2 font-bold">
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+                        <span>${isEn ? `<strong>Hakiki Fare Check:</strong> Your selected day (<strong>${selDayName}</strong>) is already the <strong>cheapest day</strong> of this 7-day period!` : `<strong>Hakiki İpucu:</strong> Seçtiğiniz gün (<strong>${selDayName}</strong>) bu 7 günlük dönemin <strong>en ucuz günü!</strong>`}</span>
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-black text-[10px] uppercase shrink-0">${isEn ? 'Best Day' : 'En Uygun Gün'}</span>
+                </div>
+            `;
+        }
+
+        // 2. Pegasus Tarzı 7 Günlük Yatay Fiyat Şeridi
+        html += `
+            <div class="flex items-center justify-between mb-2 px-0.5">
+                <div class="text-[11px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                    <i class="fa-solid fa-calendar-week text-amber-500"></i>
+                    <span>${isEn ? 'Flexible 7-Day Lowest Fare Strip (Click any day to switch)' : 'Esnek 7 Günlük En Ucuz Fiyat Şeridi (Güne tıklayarak anında geçiş yapın)'}</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                ${flexInsights.days.map(d => {
+                    const lbl = isEn ? d.label_en : d.label_tr;
+                    const pText = d.min_price ? `${fmtNum(d.min_price)} ${d.currency}` : (isEn ? 'Check' : 'Sorgula');
+                    if (d.is_selected) {
+                        return `
+                            <button type="button" onclick="switchSearchDate('${d.date}')"
+                                    class="p-2.5 rounded-2xl bg-slate-900 text-white border-2 border-slate-900 shadow-md text-center transition cursor-pointer flex flex-col items-center justify-between">
+                                <span class="text-[10px] font-bold text-amber-300 uppercase tracking-tight">${isEn ? 'Selected' : 'Seçili Gün'}</span>
+                                <span class="text-xs font-bold text-white my-0.5">${lbl}</span>
+                                <span class="text-sm font-black text-amber-400">${pText}</span>
+                            </button>
+                        `;
+                    } else if (d.is_cheapest) {
+                        return `
+                            <button type="button" onclick="switchSearchDate('${d.date}')"
+                                    class="p-2.5 rounded-2xl bg-emerald-50/90 hover:bg-emerald-100 text-slate-900 border-2 border-emerald-500 shadow-2xs text-center transition cursor-pointer flex flex-col items-center justify-between">
+                                <span class="text-[9.5px] font-black bg-emerald-600 text-white px-2 py-0.2 rounded-full uppercase">${isEn ? '🔥 Cheapest' : '🔥 En Ucuz'}</span>
+                                <span class="text-xs font-bold text-slate-800 my-0.5">${lbl}</span>
+                                <span class="text-sm font-black text-emerald-700">${pText}</span>
+                            </button>
+                        `;
+                    } else {
+                        return `
+                            <button type="button" onclick="switchSearchDate('${d.date}')"
+                                    class="p-2.5 rounded-2xl bg-slate-50 hover:bg-amber-50/60 text-slate-700 border border-slate-200 hover:border-amber-400 text-center transition cursor-pointer flex flex-col items-center justify-between">
+                                <span class="text-[10px] font-semibold text-slate-400">${d.day_diff > 0 ? '+' + d.day_diff : d.day_diff} ${isEn ? 'd' : 'gün'}</span>
+                                <span class="text-xs font-bold text-slate-800 my-0.5">${lbl}</span>
+                                <span class="text-xs sm:text-sm font-black text-slate-900">${pText}</span>
+                            </button>
+                        `;
+                    }
+                }).join('')}
+            </div>
+        `;
+
+        // 3. Haftanın En Ucuz Otobüs & Tren Alternatif Rozetleri
+        if (altBadges.length > 0) {
+            html += `
+                <div class="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                    <div class="text-[11px] font-black text-slate-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-tags text-amber-500"></i>
+                        <span>${isEn ? 'Cheapest Ground / Alternative Transport on This Route:' : 'Bu Güzergahta Haftanın En Ucuz Alternatif Ulaşım Rozetleri:'}</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        ${altBadges.map(b => {
+                            const bTitle = isEn ? b.title_en : b.title_tr;
+                            const bPrice = b.min_price ? `${fmtNum(b.min_price)} ${b.currency}` : (isEn ? 'Live Fares' : 'Canlı Seferler');
+                            return `
+                                <button type="button" onclick="switchUnifiedTab('${b.mode}'); executeTransportSearch();"
+                                        class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-800 border border-slate-200 text-xs font-bold transition cursor-pointer flex items-center gap-2 shadow-2xs group">
+                                    <span>${b.icon} <strong>${bTitle}:</strong></span>
+                                    <span class="px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 font-black text-xs">${bPrice}</span>
+                                    ${b.duration ? `<span class="text-[10.5px] opacity-75">(${b.duration})</span>` : ''}
+                                    <span class="text-[10px] font-black text-amber-600 group-hover:text-amber-300">${isEn ? 'Switch →' : 'Gör →'}</span>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `</div>`;
+    }
 
     // Filtre & Hızlı Sıralama Çubuğu (En Erken / En Geç & 12-18 Öğle Slotu Dahil)
     if (currentTransportSubTab === 'flight' && tickets.length > 1) {
@@ -853,8 +983,60 @@ function renderTransportResults(data, searchReq) {
         `;
     }
 
-    // A. SEFER KARTLARI
-    if (tickets.length === 0) {
+    // A. SEFER VEYA KİRALIK ARAÇ KARTLARI
+    if (searchReq.transport_type === 'car' && data.car_rental && Array.isArray(data.car_rental.vehicles) && data.car_rental.vehicles.length > 0) {
+        const cr = data.car_rental;
+        const cSym = data.currency || '₺';
+        html += `<div class="space-y-4 mb-6">`;
+        html += cr.vehicles.map(v => `
+            <div class="bg-white border-2 border-slate-200 hover:border-amber-400 rounded-3xl p-5 shadow-xs hover:shadow-lg transition">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="flex-1">
+                        <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-900 uppercase">${escapeHtml(v.category)}</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">${escapeHtml(v.badge || '')}</span>
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>${escapeHtml(v.pickup_point || '')}</span>
+                        </div>
+                        <h4 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                            <span>${v.image_icon || '🚗'}</span>
+                            <span>${escapeHtml(v.car_model)}</span>
+                        </h4>
+                        <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600 mt-2">
+                            <span>⚙️ ${escapeHtml(v.transmission)}</span>
+                            <span>⛽ ${escapeHtml(v.fuel)}</span>
+                            <span>👥 ${v.seats} Koltuk</span>
+                            <span>🧳 ${escapeHtml(v.luggage)}</span>
+                            <span>🛡️ ${escapeHtml(v.deposit || '')}</span>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                            <span class="text-[10px] font-black uppercase text-slate-400">Kiralama Şirketleri:</span>
+                            ${(v.providers || []).map(p => `
+                                <a href="${p.url}" target="_blank" rel="noopener noreferrer"
+                                   class="px-2.5 py-1 rounded-xl text-xs font-bold border ${p.is_cheapest ? 'bg-amber-50 border-amber-400 text-amber-950 font-black' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'} transition inline-flex items-center gap-1.5">
+                                    <span>${escapeHtml(p.name)}</span>
+                                    <span class="font-black">${Number(p.daily_price).toLocaleString('tr-TR')} ${cSym}/gün</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="lg:w-56 border-t lg:border-t-0 lg:border-l border-slate-200 pt-3 lg:pt-0 lg:pl-5 flex flex-row lg:flex-col items-center lg:items-end justify-between gap-2">
+                        <div class="text-left lg:text-right">
+                            <div class="text-[10px] font-black uppercase text-slate-400">Günlük En Uygun</div>
+                            <div class="text-2xl font-black text-slate-900">${Number(v.daily_price).toLocaleString('tr-TR')} ${cSym}</div>
+                            <div class="text-[11px] font-bold text-emerald-700">Toplam: ${Number(v.total_price).toLocaleString('tr-TR')} ${cSym}</div>
+                        </div>
+                        <a href="${v.official_link || '#'}" target="_blank" rel="noopener noreferrer"
+                           class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs shadow-md transition flex items-center gap-1.5">
+                            <span>${escapeHtml(v.cheapest_provider_name || 'Yolcu360')} ile Kirala</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        html += `</div>`;
+    } else if (tickets.length === 0) {
         html += `
             <div class="bg-white p-10 rounded-3xl border-2 border-slate-200 text-center shadow-xs mb-6">
                 <i class="fa-solid fa-plane-slash text-3xl text-slate-400 mb-2"></i>
@@ -863,13 +1045,175 @@ function renderTransportResults(data, searchReq) {
             </div>
         `;
     } else {
-        html += `<div id="ticketCardsContainer" class="space-y-4 mb-8">`;
+        html += `<div id="ticketCardsContainer" class="space-y-4 mb-6">`;
         html += generateTicketCardsHtml(tickets, searchReq);
         html += `</div>`;
     }
 
+    // ==================== ADIM 2.3: UÇUŞ / SEFER ALTI "GİTTİĞİNİZ YERDE BUNLAR VAR!" (OTEL + ARAÇ + ETKİNLİK/KEŞİF KÖPRÜSÜ) ====================
+    const crossSell = data.destination_cross_sell;
+    if (crossSell && crossSell.city) {
+        const cCity = escapeHtml(crossSell.city);
+        const cOrig = escapeHtml(crossSell.origin || searchReq.origin);
+        const hl = crossSell.highlights || {};
+        const evt = crossSell.matched_event;
+
+        html += `
+            <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-5 sm:p-6 border border-slate-700 shadow-xl mt-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-700/80">
+                    <div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950">
+                            🧭 ${cCity} Seyahat Tamamlayıcıları & Yerel Rehber
+                        </span>
+                        <h4 class="text-base sm:text-lg font-black text-white mt-1">
+                            🎉 Siz Oradayken ${cCity} Şehrinde Neler Var? (Konaklama • Araç • Etkinlik & Keşif)
+                        </h4>
+                    </div>
+                    <button type="button" onclick="openEventInSmartRoute('${cCity}', '${evt ? escapeHtml(evt.title) : ''}', '${searchReq.transport_type || 'flight'}')"
+                            class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-1.5 shrink-0">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Bu Seyahati Akıllı Rota ile Planla →</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- KUTU 1: ETKİNLİK VEYA "ORADAYKEN BUNU MUTLAKA GÖRÜN" TAVSİYESİ -->
+                    <div class="bg-slate-800/90 border ${evt ? 'border-amber-400/60' : 'border-slate-700'} rounded-2xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-black uppercase ${evt ? 'text-amber-400' : 'text-sky-400'} mb-1">
+                                ${evt ? '🎟️ Şehirdeki Canlı Etkinlik Yakalandı!' : '🏛️ Oradayken Bunları Mutlaka Görün!'}
+                            </div>
+                            ${evt ? `
+                                <div class="font-black text-sm text-white mb-1">${escapeHtml(evt.title)}</div>
+                                <div class="text-[11px] text-amber-300 font-bold mb-1.5"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(evt.dates || '')} • ${escapeHtml(evt.badge || '')}</div>
+                                <p class="text-xs text-slate-300 leading-relaxed mb-2">${escapeHtml(evt.desc || '')}</p>
+                            ` : `
+                                <div class="font-black text-sm text-white mb-1.5">${escapeHtml(hl.title || (cCity + ' Keşif Rehberi'))}</div>
+                                <ul class="text-xs text-slate-300 space-y-1 mb-2">
+                                    ${(hl.spots || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+                                </ul>
+                                ${hl.taste ? `<div class="text-[11px] text-amber-300 font-semibold mt-1.5">${escapeHtml(hl.taste)}</div>` : ''}
+                            `}
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-slate-700/70 flex items-center justify-between gap-2">
+                            ${evt ? `
+                                <a href="${evt.ticket_url || '#'}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs text-center transition block">
+                                    🎟️ Resmi Etkinlik Biletini Gör ↗
+                                </a>
+                            ` : `
+                                <a href="https://www.google.com/maps/search/${encodeURIComponent(crossSell.city + ' gezilecek yerler ve restoranlar')}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs text-center transition block">
+                                    <i class="fa-solid fa-map-location-dot text-amber-400 mr-1"></i> ${cCity} Gezi & Lezzet Haritası ↗
+                                </a>
+                            `}
+                        </div>
+                    </div>
+
+                    <!-- KUTU 2: KONAKLAMA KÖPRÜSÜ (OTEL / PANSİYON / AIRBNB TARZI EV) -->
+                    <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-black uppercase text-emerald-400 mb-1">
+                                🏨 2. Bölüm • ${cCity} Konaklama Fırsatları
+                            </div>
+                            <div class="font-black text-sm text-white mb-1">Otel, Butik Pansiyon & Günlük Villa</div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                ${escapeHtml(hl.stay_tip || (cCity + ' merkezinde otel, pansiyon ve günlük kiralık ev alternatifleri.'))}
+                            </p>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-slate-700/70 grid grid-cols-3 gap-1.5">
+                            <button type="button" onclick="triggerCrossSellStay('${cCity}', 'hotel', '${crossSell.checkin_date}', '${crossSell.checkout_date}')"
+                                    class="py-2 px-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-[11px] transition cursor-pointer">
+                                🏨 Otel
+                            </button>
+                            <button type="button" onclick="triggerCrossSellStay('${cCity}', 'pension', '${crossSell.checkin_date}', '${crossSell.checkout_date}')"
+                                    class="py-2 px-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-[11px] transition cursor-pointer">
+                                🏡 Pansiyon
+                            </button>
+                            <button type="button" onclick="triggerCrossSellStay('${cCity}', 'airbnb', '${crossSell.checkin_date}', '${crossSell.checkout_date}')"
+                                    class="py-2 px-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-[11px] transition cursor-pointer">
+                                🏠 Ev/Villa
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KUTU 3: HAVALİMANI ARAÇ KİRALAMA & TRANSFER KÖPRÜSÜ -->
+                    <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-black uppercase text-amber-400 mb-1">
+                                🚗 İnişte Ulaşım & Araç Kiralama
+                            </div>
+                            <div class="font-black text-sm text-white mb-1">${cCity} Havalimanı / Gar Teslim Araçlar</div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                ${cCity} varışınızda havalimanı veya şehir merkezinden hemen teslim alabileceğiniz kiralık araçları karşılaştırın.
+                            </p>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-slate-700/70 flex flex-col gap-1.5">
+                            <button type="button" onclick="triggerCrossSellCar('${cCity}', '${crossSell.checkin_date}', '${crossSell.checkout_date}')"
+                                    class="w-full py-2 px-3 rounded-xl bg-amber-500/20 border border-amber-400/50 hover:bg-amber-500 hover:text-slate-950 text-amber-300 font-black text-xs transition cursor-pointer">
+                                🚗 ${cCity} Kiralık Araç Fiyatlarını Gör →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     resultsArea.innerHTML = html;
 }
+
+// Esnek Tarih Şeridinden veya "Hakiki İpucu" Butonundan Gün Değiştirme
+function switchSearchDate(newDepDate) {
+    if (!newDepDate) return;
+    const depInput = document.getElementById("transDepDate");
+    const retInput = document.getElementById("transRetDate");
+    if (depInput) {
+        const oldDep = depInput.value;
+        depInput.value = newDepDate;
+        // Eğer gidiş-dönüş seçiliyse dönüş tarihini aynı gün farkıyla kaydır
+        if (currentFlightTripType === 'round' && retInput && retInput.value && oldDep) {
+            try {
+                const d1 = new Date(oldDep);
+                const d2 = new Date(retInput.value);
+                const diffDays = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+                retInput.value = getNextDaysDate(newDepDate, diffDays);
+            } catch (e) {
+                retInput.value = getNextDaysDate(newDepDate, 3);
+            }
+        }
+    }
+    executeTransportSearch();
+}
+window.switchSearchDate = switchSearchDate;
+
+// Uçuş Altı Konaklama (Otel / Pansiyon / Ev-Villa) Hızlı Geçiş Köprüsü
+function triggerCrossSellStay(city, staySubType, checkinDate, checkoutDate) {
+    if (window.switchMainPillar) window.switchMainPillar('stay');
+    if (window.switchStaySubTab) window.switchStaySubTab(staySubType || 'hotel');
+    const cInput = document.getElementById("hotelCity");
+    const cinInput = document.getElementById("hotelCheckin");
+    const coutInput = document.getElementById("hotelCheckout");
+    if (cInput && city) cInput.value = city;
+    if (cinInput && checkinDate) cinInput.value = checkinDate;
+    if (coutInput && checkoutDate) coutInput.value = checkoutDate;
+    if (typeof executeHotelSearch === 'function') {
+        executeHotelSearch();
+    }
+}
+window.triggerCrossSellStay = triggerCrossSellStay;
+
+// Uçuş Altı Araç Kiralama Hızlı Geçiş Köprüsü
+function triggerCrossSellCar(city, pickupDate, dropoffDate) {
+    if (window.switchMainPillar) window.switchMainPillar('travel');
+    if (window.switchUnifiedTab) window.switchUnifiedTab('car');
+    const oInput = document.getElementById("transOrigin");
+    const dInput = document.getElementById("transDest");
+    const depInput = document.getElementById("transDepDate");
+    if (oInput && city) oInput.value = city;
+    if (dInput && city) dInput.value = city;
+    if (depInput && pickupDate) depInput.value = pickupDate;
+    executeTransportSearch();
+}
+window.triggerCrossSellCar = triggerCrossSellCar;
 
 // Bilet Kartlarını Profesyonel Formatla Üret (Google Flights & Skyscanner Standardı)
 function generateTicketCardsHtml(tickets, searchReq) {
