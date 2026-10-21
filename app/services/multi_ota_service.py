@@ -700,12 +700,12 @@ def fetch_travelpayouts_offers(
             _merge_offer(
                 offers_map,
                 f_key,
-                "kiwi",
+                "aviasales",
                 {
-                    "name": "Kiwi / Aviasales",
+                    "name": "Aviasales",
                     "price": float(price_val),
                     "url": full_link,
-                    "channel": "kiwi",
+                    "channel": "aviasales",
                 },
             )
     except Exception as exc:
@@ -727,10 +727,12 @@ def fetch_multi_ota_flight_map(
     """
     Tüm aktif Çoklu Acente (Multi-OTA) motorlarını paralel çalıştırır ve
     sefer kodu ('PC2182', 'VF3078' vb.) bazında birleştirilmiş canlı fiyat haritası döndürür.
+    KESİN KURAL: Aviasales gibi yabancı/USD diline yönlendiren motorlar devre dışıdır;
+    Kiwi.com yalnızca kendi resmi Türkçe doğrudan ödeme motorundan (GraphQL) çekilir.
     """
     combined_map: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor(max_workers=3) as executor:
         from app.services.trip_fare_service import fetch_trip_live_offers
         futures = [
             executor.submit(
@@ -758,13 +760,6 @@ def fetch_multi_ota_flight_map(
                 adults,
                 children,
                 infants,
-            ),
-            executor.submit(
-                fetch_travelpayouts_offers,
-                orig_codes,
-                dest_codes,
-                departure_date,
-                return_date,
             ),
         ]
 
