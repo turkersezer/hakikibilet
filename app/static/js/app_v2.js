@@ -171,6 +171,10 @@ function setFlightTripType(tripType) {
         const busRadioRound = document.getElementById("bus-radio-round");
         if (busRadioOneway) busRadioOneway.checked = true;
         if (busRadioRound) busRadioRound.checked = false;
+        const ferryRadioOneway = document.getElementById("ferry-radio-oneway");
+        const ferryRadioRound = document.getElementById("ferry-radio-round");
+        if (ferryRadioOneway) ferryRadioOneway.checked = true;
+        if (ferryRadioRound) ferryRadioRound.checked = false;
         if (onewayBtn) {
             onewayBtn.className = "flight-trip-btn px-3.5 py-1.5 rounded-lg text-xs font-black bg-slate-900 text-white shadow-2xs transition flex items-center gap-1.5";
         }
@@ -203,6 +207,10 @@ function setFlightTripType(tripType) {
         const busRadioRound = document.getElementById("bus-radio-round");
         if (busRadioOneway) busRadioOneway.checked = false;
         if (busRadioRound) busRadioRound.checked = true;
+        const ferryRadioOneway = document.getElementById("ferry-radio-oneway");
+        const ferryRadioRound = document.getElementById("ferry-radio-round");
+        if (ferryRadioOneway) ferryRadioOneway.checked = false;
+        if (ferryRadioRound) ferryRadioRound.checked = true;
         if (roundBtn) {
             roundBtn.className = "flight-trip-btn px-3.5 py-1.5 rounded-lg text-xs font-black bg-slate-900 text-white shadow-2xs transition flex items-center gap-1.5";
         }
@@ -286,6 +294,81 @@ function quickFillBus(origin, dest) {
     executeTransportSearch();
 }
 window.quickFillBus = quickFillBus;
+
+// Gemi & Feribot Segment & Araç Durum Değişkenleri
+let currentFerryCategory = 'all'; // 'all', 'domestic', 'greek_islands', 'cruise'
+let currentFerryVehicleType = 'passenger'; // 'passenger', 'car'
+
+function setFerryCategory(cat) {
+    currentFerryCategory = cat;
+    const allBtn = document.getElementById("ferryCat-all");
+    const domBtn = document.getElementById("ferryCat-domestic");
+    const islBtn = document.getElementById("ferryCat-islands");
+    const cruBtn = document.getElementById("ferryCat-cruise");
+
+    const activeCls = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-sky-900 text-white transition";
+    const inactiveCls = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition";
+
+    if (allBtn) allBtn.className = cat === 'all' ? activeCls : inactiveCls;
+    if (domBtn) domBtn.className = cat === 'domestic' ? activeCls : inactiveCls;
+    if (islBtn) islBtn.className = cat === 'greek_islands' ? activeCls : inactiveCls;
+    if (cruBtn) cruBtn.className = cat === 'cruise' ? activeCls : inactiveCls;
+
+    const originInput = document.getElementById("transOrigin");
+    const destInput = document.getElementById("transDest");
+    if (cat === 'domestic') {
+        if (originInput && !originInput.value) originInput.placeholder = "Örn: Yenikapı (İDO), Eminönü (BUDO)";
+        if (destInput && !destInput.value) destInput.placeholder = "Örn: Bursa, Yalova, Bandırma, Avşa";
+    } else if (cat === 'greek_islands') {
+        if (originInput && !originInput.value) originInput.placeholder = "Örn: Çeşme, Bodrum, Ayvalık, Kuşadası";
+        if (destInput && !destInput.value) destInput.placeholder = "Örn: Sakız Adası, Kos, Midilli, Rodos";
+    } else if (cat === 'cruise') {
+        if (originInput && !originInput.value) originInput.placeholder = "Örn: Galataport Limanı, Kuşadası";
+        if (destInput && !destInput.value) destInput.placeholder = "Örn: Ege & Adalar Cruise, Atina";
+    }
+}
+window.setFerryCategory = setFerryCategory;
+
+function toggleFerryVehicle() {
+    const isCar = currentFerryVehicleType === 'car';
+    currentFerryVehicleType = isCar ? 'passenger' : 'car';
+
+    const btn = document.getElementById("ferryVehicleToggle");
+    const label = document.getElementById("ferryVehicleLabel");
+    const icon = document.getElementById("ferryVehicleIcon");
+
+    if (currentFerryVehicleType === 'car') {
+        if (btn) btn.className = "px-2.5 py-1 rounded-lg border border-sky-600 bg-sky-900 text-white font-black text-[11px] shadow-2xs transition flex items-center gap-1.5";
+        if (label) label.innerText = "🚗 Arabalı Geçiş (Araç Dahil)";
+        if (icon) icon.className = "fa-solid fa-car text-amber-300";
+    } else {
+        if (btn) btn.className = "px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-700 font-bold text-[11px] hover:border-sky-500 transition flex items-center gap-1.5";
+        if (label) label.innerText = "🚶 Yaya (Araçsız)";
+        if (icon) icon.className = "fa-solid fa-person-walking text-slate-500";
+    }
+}
+window.toggleFerryVehicle = toggleFerryVehicle;
+
+// Hızlı Popüler Feribot & Deniz Hattı Seçimi & Anında Arama
+function quickFillFerry(origin, dest, cat = 'all', isVehicle = false) {
+    if (window.switchUnifiedTab) {
+        window.switchUnifiedTab('ferry');
+    }
+    if (cat && window.setFerryCategory) {
+        window.setFerryCategory(cat);
+    }
+    if (isVehicle && currentFerryVehicleType !== 'car') {
+        toggleFerryVehicle();
+    } else if (!isVehicle && currentFerryVehicleType === 'car') {
+        toggleFerryVehicle();
+    }
+    const oInput = document.getElementById("transOrigin");
+    const dInput = document.getElementById("transDest");
+    if (oInput) oInput.value = origin;
+    if (dInput) dInput.value = dest;
+    executeTransportSearch();
+}
+window.quickFillFerry = quickFillFerry;
 
 // 4. YOLCU VE KABİN SEÇİMİ POPOVER KONTROLLERİ
 function togglePaxDropdown(e) {
@@ -508,6 +591,39 @@ function populateDatalists(transportMode, scope) {
         `;
         if (originList) originList.innerHTML = busTerminalsHtml;
         if (destList) destList.innerHTML = busTerminalsHtml;
+    } else if (transportMode === 'ferry') {
+        const ferryPortsHtml = `
+            <option value="İstanbul">⛴️ İstanbul - Yenikapı / Eminönü / Pendik / Galataport</option>
+            <option value="Yenikapı">⛴️ İstanbul - Yenikapı İskelesi (İDO)</option>
+            <option value="Eminönü">⛴️ İstanbul - Eminönü / Sirkeci İskelesi (BUDO)</option>
+            <option value="Pendik">⛴️ İstanbul - Pendik İskelesi (İDO Hızlı Feribot)</option>
+            <option value="Galataport">🛳️ İstanbul - Galataport Kruvaziyer Limanı</option>
+            <option value="Bursa">⛴️ Bursa - Mudanya (BUDO) / Güzelyalı (İDO)</option>
+            <option value="Yalova">⛴️ Yalova İskelesi (İDO Hızlı Arabalı Feribot)</option>
+            <option value="Bandırma">⛴️ Bandırma Limanı (İDO Arabalı Hızlı Feribot)</option>
+            <option value="Avşa Adası">🏝️ Avşa Adası (Marmara)</option>
+            <option value="Marmara Adası">🏝️ Marmara Adası</option>
+            <option value="Çeşme">🇬🇷 İzmir - Çeşme Uluslararası Limanı</option>
+            <option value="Sakız Adası">🇬🇷 Sakız Adası (Chios - Kapıda Vize)</option>
+            <option value="Bodrum">🇬🇷 Muğla - Bodrum Yolcu Limanı</option>
+            <option value="Kos Adası">🇬🇷 Kos Adası (İstanköy - Kapıda Vize)</option>
+            <option value="Ayvalık">🇬🇷 Balıkesir - Ayvalık Limanı</option>
+            <option value="Midilli Adası">🇬🇷 Midilli Adası (Lesvos - Kapıda Vize)</option>
+            <option value="Kuşadası">🇬🇷 Aydın - Kuşadası Ege Port Limanı</option>
+            <option value="Samos Adası">🇬🇷 Samos Adası (Sisam - Kapıda Vize)</option>
+            <option value="Marmaris">🇬🇷 Muğla - Marmaris Cruise & Feribot Limanı</option>
+            <option value="Fethiye">🇬🇷 Muğla - Fethiye Limanı</option>
+            <option value="Rodos Adası">🇬🇷 Rodos Adası (Rhodes - Kapıda Vize)</option>
+            <option value="Kaş">🇬🇷 Antalya - Kaş Limanı</option>
+            <option value="Meis Adası">🇬🇷 Meis Adası (Kastellorizo - Kapıda Vize)</option>
+            <option value="Çanakkale">⛴️ Çanakkale İskelesi (Gestaş)</option>
+            <option value="Eceabat">⛴️ Eceabat / Gelibolu İskelesi (Gestaş)</option>
+            <option value="Bozcaada">🏝️ Bozcaada Limanı (Gestaş)</option>
+            <option value="Gökçeada">🏝️ Gökçeada (Kuzu Limanı - Gestaş)</option>
+            <option value="Cruise">🛳️ Ege & Yunan Adaları & İtalya Kruvaziyer Turu</option>
+        `;
+        if (originList) originList.innerHTML = ferryPortsHtml;
+        if (destList) destList.innerHTML = ferryPortsHtml;
     } else {
         const html = verifiedCities.map(c => {
             const iataStr = c.iata ? ` (${c.iata})` : '';
@@ -686,6 +802,16 @@ async function switchTransportSubTab(subTab) {
             busBar.classList.remove("flex");
         }
     }
+    const ferryBar = document.getElementById("ferryOptionsBar");
+    if (ferryBar) {
+        if (subTab === 'ferry') {
+            ferryBar.classList.remove("hidden");
+            ferryBar.classList.add("flex");
+        } else {
+            ferryBar.classList.add("hidden");
+            ferryBar.classList.remove("flex");
+        }
+    }
     updateAirportHints();
 }
 
@@ -776,10 +902,10 @@ async function executeTransportSearch(e) {
                 </div>
                 <div class="text-xs sm:text-sm text-amber-300 font-extrabold flex items-center justify-center gap-2">
                     <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span>${currentTransportSubTab === 'train' ? 'TCDD Yüksek Hızlı Tren (YHT) Seferleri Taranıyor...' : (currentTransportSubTab === 'bus' ? 'Obilet Canlı Otobüs Seferleri & Koltuk Fiyatları Taranıyor...' : 'Canlı Seferler & Hakiki Fiyatlar Taranıyor...')}</span>
+                    <span>${currentTransportSubTab === 'train' ? 'TCDD Yüksek Hızlı Tren (YHT) Seferleri Taranıyor...' : (currentTransportSubTab === 'bus' ? 'Obilet Canlı Otobüs Seferleri & Koltuk Fiyatları Taranıyor...' : (currentTransportSubTab === 'ferry' ? 'İDO, BUDO, Ertürk Lines, Turyol & Cruise Seferleri Taranıyor...' : 'Canlı Seferler & Hakiki Fiyatlar Taranıyor...'))}</span>
                 </div>
                 <div class="text-[11px] sm:text-xs text-slate-400 font-medium max-w-lg mx-auto">
-                    ${currentTransportSubTab === 'train' ? 'TCDD Taşımacılık resmi e-bilet portalı ve YHT tarife saatleri doğrulanıyor.' : (currentTransportSubTab === 'bus' ? 'Kamil Koç, Pamukkale, Varan, Metro ve 180+ firmanın seferleri Obilet üzerinden anlık doğrulanıyor.' : 'Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.')}
+                    ${currentTransportSubTab === 'train' ? 'TCDD Taşımacılık resmi e-bilet portalı ve YHT tarife saatleri doğrulanıyor.' : (currentTransportSubTab === 'bus' ? 'Kamil Koç, Pamukkale, Varan, Metro ve 180+ firmanın seferleri Obilet üzerinden anlık doğrulanıyor.' : (currentTransportSubTab === 'ferry' ? 'İç hat Marmara arabalı vapurları, Kapıda Vize Yunan Adaları hızlı katamaranları ve Cruise turları doğrulanıyor.' : 'Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.'))}
                 </div>
             </div>
         </div>
@@ -799,6 +925,7 @@ async function executeTransportSearch(e) {
             infants: flightPax.infants,
             cabin_class: currentFlightCabin,
             transport_type: currentTransportSubTab === 'car' ? 'car' : currentTransportSubTab,
+            ferry_vehicle_type: currentFerryVehicleType,
             trip_type: isRound ? 'round_trip' : 'one_way',
             include_hotel: false, // Kullanıcı talimatı: Şimdilik otel önerilerini kaldır
             currency: activeCurrency
@@ -1684,15 +1811,198 @@ function generateTicketCardsHtml(tickets, searchReq) {
             `;
         }
 
+        if (ticket.transport_type === 'ferry' || ticket.is_cruise) {
+            const hasReturn = isRoundTrip && ticket.return_leg;
+            const retLeg = ticket.return_leg;
+            const isCruise = ticket.is_cruise || ticket.category === 'cruise';
+            const isGreekIsland = ticket.is_greek_island || ticket.category === 'greek_islands';
+            const targetUrl = ticket.direct_link || ticket.official_link || 'https://www.ido.com.tr/';
+            
+            let btnLabel = isEn ? 'Book Official Ferry ↗' : 'Resmi Bileti Al ↗';
+            if (isCruise) {
+                btnLabel = isEn ? 'View Cruise Details & Book ↗' : 'Kruvaziyer Rezervasyonu ↗';
+            } else if (ticket.carrier && ticket.carrier.includes('İDO')) {
+                btnLabel = 'İDO Resmi Portalı ↗';
+            } else if (ticket.carrier && ticket.carrier.includes('BUDO')) {
+                btnLabel = 'BUDO Resmi Satış ↗';
+            } else if (ticket.carrier && ticket.carrier.includes('Ertürk')) {
+                btnLabel = 'Ertürk Lines ile Al ↗';
+            } else if (ticket.carrier && ticket.carrier.includes('Feribotlines')) {
+                btnLabel = 'Feribotlines ile Al ↗';
+            } else if (ticket.carrier && ticket.carrier.includes('Turyol')) {
+                btnLabel = 'Turyol Resmi Satış ↗';
+            }
+
+            let featuresHtml = '';
+            if (isCruise) {
+                featuresHtml = `
+                    <div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-bold text-slate-600">
+                        <span class="text-sky-900 font-extrabold flex items-center gap-1">
+                            <i class="fa-solid fa-ship text-sky-600"></i> ${isEn ? 'Cruise Amenities:' : 'Tur Detayları:'}
+                        </span>
+                        <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200">⭐ Her Şey Dahil (Tam Pansiyon)</span>
+                        <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200">🛏️ Kabin Konaklama</span>
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">🎭 Canlı Şovlar & Müzik</span>
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">🏊 Havuz & Güverte Keyfi</span>
+                    </div>
+                `;
+            } else if (isGreekIsland) {
+                featuresHtml = `
+                    <div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-bold text-slate-600">
+                        <span class="text-sky-900 font-extrabold flex items-center gap-1">
+                            <i class="fa-solid fa-anchor text-sky-600"></i> ${isEn ? 'Services:' : 'Hizmetler:'}
+                        </span>
+                        <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200">🇬🇷 Kapıda Vizeye Uygun</span>
+                        <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">⚡ Hızlı Katamaran</span>
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">☕ Kafeterya & Bar</span>
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">🧳 Serbest Bagaj</span>
+                    </div>
+                `;
+            } else {
+                featuresHtml = `
+                    <div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-bold text-slate-600">
+                        <span class="text-sky-900 font-extrabold flex items-center gap-1">
+                            <i class="fa-solid fa-water text-sky-600"></i> ${isEn ? 'Services:' : 'Hizmetler:'}
+                        </span>
+                        ${ticket.vehicle_allowed ? '<span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200">🚗 Arabalı Feribot</span>' : '<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">🚶 Yaya Deniz Otobüsü</span>'}
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">🛋️ Konforlu Salon</span>
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">☕ Büfe / İkram</span>
+                        <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">🌊 Marmara Güvenli Hat</span>
+                    </div>
+                `;
+            }
+
+            let returnLegHtml = '';
+            if (hasReturn) {
+                returnLegHtml = `
+                    <div class="mt-3 bg-slate-50/90 p-3 sm:p-3.5 rounded-2xl border border-slate-200">
+                        <div class="text-[11px] font-black text-slate-700 mb-2 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 text-sky-700 font-black">
+                                <i class="fa-solid fa-ship"></i> ⛴️ ${isEn ? 'RETURN VOYAGE' : 'DÖNÜŞ SEFERİ'} • ${retLeg.departure_date_formatted || searchReq.return_date}
+                            </span>
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
+                                ${retLeg.carrier || ticket.carrier} • ${retLeg.flight_number || 'Dönüş'}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-12 items-center gap-2">
+                            <div class="col-span-4 sm:col-span-3 text-left">
+                                <div class="text-xl font-black text-slate-900 leading-none">${retLeg.departure_time}</div>
+                                <div class="text-xs font-bold text-slate-700 mt-1 truncate">${retLeg.origin}</div>
+                            </div>
+                            <div class="col-span-4 sm:col-span-6 px-1 text-center">
+                                <div class="text-xs font-bold text-slate-600 mb-1">${retLeg.duration || ticket.duration}</div>
+                                <div class="relative flex items-center justify-center my-0.5">
+                                    <div class="w-full h-[2px] bg-sky-300"></div>
+                                    <div class="absolute bg-white px-1.5 py-0.5 rounded-full border border-sky-300 shadow-2xs">
+                                        <i class="fa-solid fa-ship text-sky-600 text-[10px] transform rotate-180"></i>
+                                    </div>
+                                </div>
+                                <div class="text-[10.5px] font-bold text-emerald-600 mt-1">✓ ${isEn ? 'Direct' : 'Direkt • Tarifeli Hat'}</div>
+                            </div>
+                            <div class="col-span-4 sm:col-span-3 text-right">
+                                <div class="text-xl font-black text-slate-900 leading-none">${retLeg.arrival_time}</div>
+                                <div class="text-xs font-bold text-slate-700 mt-1 truncate">${retLeg.destination}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="bg-white border-2 border-slate-200 hover:border-sky-500 rounded-3xl p-5 sm:p-6 shadow-xs hover:shadow-xl transition-all mb-4">
+                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
+                        
+                        <!-- Sol / Sefer Detayları -->
+                        <div class="flex-1 min-w-0">
+                            <!-- Üst Rozet Satırı -->
+                            <div class="flex flex-wrap items-center gap-2 mb-3">
+                                <div class="w-8 h-8 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center text-base shadow-2xs">
+                                    ${ticket.carrier_logo || (isCruise ? '🛳️' : '⛴️')}
+                                </div>
+                                <span class="font-black text-slate-900 text-sm sm:text-base">${ticket.carrier}</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-amber-100 text-amber-900 border border-amber-200">
+                                    ${ticket.badge || 'Tarifeli Sefer'}
+                                </span>
+                                ${isCruise ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-purple-100 text-purple-900">🛳️ Kruvaziyer Gemi Turu</span>` : ''}
+                                ${isGreekIsland ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-sky-100 text-sky-800">🇬🇷 Kapıda Vize</span>` : ''}
+                                ${ticket.vehicle_allowed ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-emerald-100 text-emerald-800">🚗 Arabalı Feribot</span>` : ''}
+                            </div>
+
+                            <!-- Gidiş Seferi Zaman Çizelgesi -->
+                            <div class="bg-slate-50/60 p-3.5 sm:p-4 rounded-2xl border border-slate-200">
+                                ${hasReturn ? `<div class="text-[11px] font-black text-sky-700 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-ship"></i> ${isEn ? 'OUTBOUND VOYAGE' : 'GİDİŞ SEFERİ'} • ${ticket.departure_date_formatted}</div>` : ''}
+                                <div class="grid grid-cols-12 items-center gap-2">
+                                    <div class="col-span-4 sm:col-span-3 text-left">
+                                        <div class="text-2xl font-black text-slate-900 leading-none">${ticket.departure_time}</div>
+                                        <div class="text-xs font-bold text-slate-700 mt-1.5 truncate">${ticket.origin}</div>
+                                        <div class="text-[11px] text-slate-400 font-medium">${ticket.departure_date_formatted}</div>
+                                    </div>
+                                    <div class="col-span-4 sm:col-span-6 px-1 text-center">
+                                        <div class="text-xs font-bold text-slate-600 mb-1">${ticket.duration || '1 sa 30 dk'}</div>
+                                        <div class="relative flex items-center justify-center my-0.5">
+                                            <div class="w-full h-[2px] bg-sky-300"></div>
+                                            <div class="absolute bg-white px-1.5 py-0.5 rounded-full border border-sky-300 shadow-2xs">
+                                                <i class="fa-solid fa-ship text-sky-600 text-xs"></i>
+                                            </div>
+                                        </div>
+                                        <div class="text-[10.5px] font-bold text-emerald-600 mt-1">✓ ${isEn ? 'Direct' : 'Direkt • Tarifeli Hat'}</div>
+                                    </div>
+                                    <div class="col-span-4 sm:col-span-3 text-right">
+                                        <div class="text-2xl font-black text-slate-900 leading-none">${ticket.arrival_time}</div>
+                                        <div class="text-xs font-bold text-slate-700 mt-1.5 truncate">${ticket.destination}</div>
+                                        <div class="text-[11px] text-slate-400 font-medium">${ticket.arrival_date_formatted || ticket.departure_date_formatted}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Varsa Dönüş Seferi -->
+                            ${returnLegHtml}
+
+                            <!-- Hizmet / Donanım Şeridi -->
+                            ${featuresHtml}
+                        </div>
+
+                        <!-- Sağ / Fiyat ve Doğrudan Biletleme Butonu -->
+                        <div class="lg:w-64 flex flex-col justify-between items-end border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6">
+                            <div class="text-right w-full">
+                                <div class="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center justify-end gap-1">
+                                    <i class="fa-solid fa-circle-check text-sky-500"></i>
+                                    <span>${isCruise ? (isEn ? 'Verified Cruise Fare' : 'Doğrulanmış Tur Fiyatı') : (isEn ? 'Verified Base Fare' : 'Doğrulanmış Taban Fiyat')}</span>
+                                </div>
+                                <div class="text-3xl font-black text-slate-950 mt-1">
+                                    ${Number(ticket.price).toLocaleString('tr-TR')} <span class="text-lg font-bold">${ticket.currency || '₺'}</span>
+                                </div>
+                                <div class="text-[11px] font-semibold text-slate-500 mt-0.5">
+                                    ${isCruise ? 'Her Şey Dahil Kişi Başı' : (isRoundTrip ? (isEn ? 'Round-trip Total' : 'Gidiş - Dönüş Toplam') : (isEn ? 'One-way Base Fare' : 'Tek Yön Taban Ücret'))}
+                                </div>
+                            </div>
+
+                            <div class="w-full mt-4">
+                                <a href="${targetUrl}" target="_blank" rel="noopener noreferrer"
+                                   class="w-full py-3 px-4 bg-gradient-to-r from-sky-900 via-sky-800 to-cyan-800 hover:from-black hover:to-sky-950 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 group">
+                                    <span>${btnLabel}</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                                </a>
+                                <div class="text-[10px] text-center text-slate-400 font-medium mt-1.5">
+                                    ${ticket.carrier.includes('İDO') ? 'İDO resmi satış altyapısı' : (ticket.carrier.includes('BUDO') ? 'BURULAŞ resmi biletleme portali' : 'Doğrudan yetkili deniz yolu rezervasyonu')}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
+
         if (!isFlight) {
-            // Feribot veya Araç Kartı
-            const typeIcon = '⛴️';
-            const typeColor = 'bg-sky-50 text-sky-700 border-sky-200';
+            // Araç Kiralama veya Diğer Taşıt Kartı
+            const typeIcon = '🚗';
+            const typeColor = 'bg-amber-50 text-amber-700 border-amber-200';
 
             return `
                 <div class="bg-white border-2 border-slate-200 hover:border-amber-400 rounded-3xl p-5 sm:p-6 shadow-xs hover:shadow-lg transition-all flex flex-col md:flex-row items-center justify-between gap-4">
                     <div class="flex items-center gap-4 w-full md:w-auto">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${typeColor} border shadow-xs flex-shrink-0">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${typeColor} border shadow-2xs flex-shrink-0">
                             ${ticket.carrier_logo || typeIcon}
                         </div>
                         <div>
@@ -2891,6 +3201,9 @@ window.applyFlightSortAndFilter = applyFlightSortAndFilter;
 window.generateTicketCardsHtml = generateTicketCardsHtml;
 window.updateAirportHints = updateAirportHints;
 window.handleRadarSubscribe = handleRadarSubscribe;
+window.setFerryCategory = setFerryCategory;
+window.toggleFerryVehicle = toggleFerryVehicle;
+window.quickFillFerry = quickFillFerry;
 
 // ==================== DİL MOTORU DESTEĞİ ====================
 // Dil motoru index_v2.html içerisindeki window.APP_TRANSLATIONS ve window.setAppLanguage tarafından yönetilmektedir.

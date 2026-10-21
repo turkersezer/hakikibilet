@@ -399,21 +399,70 @@
             </div>
 
             <!-- GEMİ / FERİBOT ALT KIRILIM SEÇENEKLERİ (Sadece d. Gemi & Feribot Seçildiğinde Görünür) -->
-            <div id="ferryOptionsBar" class="hidden flex-wrap items-center justify-between gap-3 mb-4 text-xs font-bold text-slate-600 bg-sky-50/70 p-2.5 rounded-xl border border-sky-200/80">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-sky-900 font-black mr-1"><i class="fa-solid fa-anchor text-sky-600 mr-1"></i> Deniz Ulaşımı Tipi:</span>
-                    <button type="button" onclick="setFerrySubMode('ferry_foot')" id="ferryMode-foot" class="px-3 py-1 rounded-lg bg-sky-900 text-white font-black text-[11px] transition">
-                        ⛴️ Feribot / Deniz Otobüsü (Yaya Yolcu)
-                    </button>
-                    <button type="button" onclick="setFerrySubMode('ferry_car')" id="ferryMode-car" class="px-3 py-1 rounded-lg bg-white text-slate-700 border border-slate-200 font-bold text-[11px] hover:bg-slate-100 transition">
-                        🚗⛴️ Araçlı Feribot (Arabalı Vapurlar & Adalar)
-                    </button>
-                    <button type="button" onclick="setFerrySubMode('cruise')" id="ferryMode-cruise" class="px-3 py-1 rounded-lg bg-white text-slate-700 border border-slate-200 font-bold text-[11px] hover:bg-slate-100 transition">
-                        🛳️ Cruise & Kruvaziyer Gemi Turları
+            <div id="ferryOptionsBar" class="hidden flex-wrap items-center justify-between gap-3 mb-4 text-xs font-bold text-slate-600 bg-sky-50/80 p-3 rounded-2xl border border-sky-200">
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Tek Yön / Gidiş-Dönüş Seçimi -->
+                    <div class="inline-flex items-center gap-3">
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
+                            <input type="radio" name="ferryTripTypeRadio" id="ferry-radio-oneway" value="one_way" checked onchange="setFlightTripType('one_way')" class="text-slate-900 focus:ring-slate-900">
+                            <span>Tek Yön</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
+                            <input type="radio" name="ferryTripTypeRadio" id="ferry-radio-round" value="round" onchange="setFlightTripType('round')" class="text-slate-900 focus:ring-slate-900">
+                            <span>Gidiş - Dönüş</span>
+                        </label>
+                    </div>
+
+                    <span class="text-slate-300">|</span>
+
+                    <!-- 3 Ana Deniz Seyahati Segmenti -->
+                    <div class="inline-flex items-center bg-white p-0.5 rounded-xl border border-sky-200 shadow-2xs">
+                        <button type="button" onclick="setFerryCategory('all')" id="ferryCat-all" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-sky-900 text-white transition">
+                            Tümü
+                        </button>
+                        <button type="button" onclick="setFerryCategory('domestic')" id="ferryCat-domestic" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition">
+                            🇹🇷 İç Hat Feribot
+                        </button>
+                        <button type="button" onclick="setFerryCategory('greek_islands')" id="ferryCat-islands" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition">
+                            🇬🇷 Yunan Adaları (Kapıda Vize)
+                        </button>
+                        <button type="button" onclick="setFerryCategory('cruise')" id="ferryCat-cruise" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition">
+                            🛳️ Cruise Turları
+                        </button>
+                    </div>
+
+                    <span class="text-slate-300">|</span>
+
+                    <!-- Araçlı Vapur Toggle Butonu -->
+                    <button type="button" onclick="toggleFerryVehicle()" id="ferryVehicleToggle" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-700 font-bold text-[11px] hover:border-sky-500 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-car text-slate-500" id="ferryVehicleIcon"></i>
+                        <span id="ferryVehicleLabel">🚗 Yaya (Araçsız)</span>
                     </button>
                 </div>
-                <div id="ferryModeSummary" class="text-[11px] font-bold text-sky-800">
-                    İDO, BUDO, Turyol & Kapıda Vize Yunan Adaları Seferleri
+
+                <!-- Popüler Deniz Hatları Hapları -->
+                <div class="flex flex-wrap items-center gap-1.5 w-full pt-2 border-t border-sky-100">
+                    <span class="text-[11px] font-black text-sky-800 mr-1 hidden sm:inline-flex items-center gap-1">
+                        <i class="fa-solid fa-anchor text-sky-600"></i> Popüler Rotalar:
+                    </span>
+                    <button type="button" onclick="quickFillFerry('Yenikapı', 'Bursa', 'domestic')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Yenikapı ➔ Bursa (İDO/BUDO)
+                    </button>
+                    <button type="button" onclick="quickFillFerry('Yenikapı', 'Yalova', 'domestic', true)" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Yenikapı ➔ Yalova (Arabalı)
+                    </button>
+                    <button type="button" onclick="quickFillFerry('Çeşme', 'Sakız Adası', 'greek_islands')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Çeşme ➔ Sakız (25 dk)
+                    </button>
+                    <button type="button" onclick="quickFillFerry('Bodrum', 'Kos Adası', 'greek_islands')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Bodrum ➔ Kos (20 dk)
+                    </button>
+                    <button type="button" onclick="quickFillFerry('Ayvalık', 'Midilli Adası', 'greek_islands')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
+                        ⚡ Ayvalık ➔ Midilli (45 dk)
+                    </button>
+                    <button type="button" onclick="quickFillFerry('Galataport', 'Cruise', 'cruise')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-600 hover:text-white border border-amber-300 text-amber-900 font-black text-[11px] transition">
+                        ⭐ Galataport Ege Cruise (Celestyal)
+                    </button>
                 </div>
             </div>
 
