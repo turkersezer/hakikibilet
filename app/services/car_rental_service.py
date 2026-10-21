@@ -60,19 +60,26 @@ class CarRentalService:
         # 3. Obilet (/arac-kiralama/{slug}?pick_up_date=... garantili 200 OK + SubID)
         obilet_car_url = f"https://www.obilet.com/arac-kiralama/{slug_loc}?pick_up_date={pickup_date}&drop_off_date={dropoff_date}&subid={obilet_sub}"
 
-        # 4. Rentalcars (/tr/city/tr/{base_slug}/... garantili 200 OK + Travelpayouts Marker)
+        # 4. Discover Cars (Travelpayouts 1 Numaralı Resmi Araç Kiralama Partneri - Promo ID: 3555)
+        discovercars_target = f"https://www.discovercars.com/tr/search?pickup_location={slug_loc}&pickup_date={pickup_date}&dropoff_date={dropoff_date}"
+        import urllib.parse
+        encoded_dc_target = urllib.parse.quote(discovercars_target, safe="")
+        discovercars_url = f"https://c117.travelpayouts.com/click?shmarker={tp_marker}&promo_id=3555&source_type=customlink&type=click&custom_url={encoded_dc_target}"
+
+        # 5. Rentalcars (Booking Holdings)
         rentalcars_url = f"https://www.rentalcars.com/tr/city/tr/{base_slug}/?pickupDate={pickup_date}&dropoffDate={dropoff_date}&affiliateCode=hakikibilet&adcamp=travelpayouts&marker={tp_marker}"
 
-        # 5. Avis (Resmi güvenli sayfa, 403 engeli aşılır)
+        # 6. Avis (Resmi güvenli sayfa, 403 engeli aşılır)
         avis_url = "https://www.avis.com.tr/?utm_source=hakikibilet"
 
-        # 6. Garenta (Garantili 200 OK)
+        # 7. Garenta (Garantili 200 OK)
         garenta_url = "https://www.garenta.com.tr/arac-kiralama/?utm_source=hakikibilet"
 
         return {
             "yolcu360": yolcu360_url,
             "enuygun": enuygun_car_url,
             "obilet": obilet_car_url,
+            "discovercars": discovercars_url,
             "rentalcars": rentalcars_url,
             "avis": avis_url,
             "garenta": garenta_url,
@@ -89,6 +96,7 @@ class CarRentalService:
             "yolcu360": 0.0 if cheapest_id == "yolcu360" else 0.03,
             "obilet": 0.0 if cheapest_id == "obilet" else 0.025,
             "enuygun": 0.0 if cheapest_id == "enuygun" else 0.045,
+            "discovercars": 0.0 if cheapest_id == "discovercars" else 0.05,
             "rentalcars": 0.0 if cheapest_id == "rentalcars" else 0.09,
             "garenta": 0.0 if cheapest_id == "garenta" else 0.18,
             "avis": 0.0 if cheapest_id == "avis" else 0.28
@@ -97,6 +105,7 @@ class CarRentalService:
             "yolcu360": {"name": "Yolcu360", "badge": "100+ Ofis", "btn_class": "bg-emerald-600 hover:bg-emerald-700 text-white"},
             "obilet": {"name": "Obilet", "badge": "Popüler & Güvenli", "btn_class": "bg-amber-600 hover:bg-amber-700 text-white"},
             "enuygun": {"name": "Enuygun", "badge": "Hızlı Kiralama", "btn_class": "bg-sky-600 hover:bg-sky-700 text-white"},
+            "discovercars": {"name": "Discover Cars", "badge": "En İyi Fiyat Garantisi", "btn_class": "bg-teal-600 hover:bg-teal-700 text-white"},
             "rentalcars": {"name": "Rentalcars", "badge": "Global Ağ", "btn_class": "bg-blue-600 hover:bg-blue-700 text-white"},
             "garenta": {"name": "Garenta", "badge": "Yerli Kurumsal", "btn_class": "bg-indigo-600 hover:bg-indigo-700 text-white"},
             "avis": {"name": "Avis", "badge": "Kurumsal Filo", "btn_class": "bg-rose-600 hover:bg-rose-700 text-white"}
