@@ -1177,23 +1177,25 @@ class SearchService:
                 elif transport_type == "all":
                     notices.append(msg)
 
-        # 3. OTOBÜS SEÇENEKLERİ (Obilet & FlixBus Uluslararası Ağı)
+        # 3. OTOBÜS SEÇENEKLERİ (Obilet Canlı Sefer & FlixBus Uluslararası Ağı)
         if transport_type in ("all", "bus"):
-            from app.services.bus_service import BusService
-            bus_tickets = BusService.search_buses(
-                origin_name=origin_name,
-                dest_name=dest_name,
-                departure_date=departure_date,
-                passengers=passengers,
-                currency=currency,
-                is_round=is_round,
-                return_date=return_date
-            )
-            if bus_tickets:
-                results.extend(bus_tickets)
-            else:
-                if transport_type == "bus":
-                    notices.append(f"ℹ️ {origin_name} - {dest_name} rotasında doğrudan otobüs seferi bulunamamıştır. Lütfen uçak veya alternatif kalkış noktalarını inceleyiniz.")
+            if links.get("bus", {}).get("available", True):
+                from app.services.bus_service import BusService
+                bus_tickets = BusService.search_buses(
+                    origin_name=origin_name,
+                    dest_name=dest_name,
+                    departure_date=departure_date,
+                    passengers=passengers,
+                    currency=currency,
+                    is_round=is_round,
+                    return_date=return_date
+                )
+                if bus_tickets:
+                    results.extend(bus_tickets)
+                elif transport_type == "bus":
+                    notices.append(f"ℹ️ {origin_name} - {dest_name} rotasında seçilen tarihte doğrudan otobüs seferi bulunamamıştır. Lütfen farklı bir tarih veya alternatif ulaşım modlarını inceleyiniz.")
+            elif transport_type == "bus":
+                notices.append(links.get("bus", {}).get("reason") or f"ℹ️ {origin_name} - {dest_name} rotasında doğrudan otobüs seferi bulunmamaktadır.")
 
         # 4. DENİZ YOLLARI & FERİBOT SEÇENEKLERİ (İDO, BUDO, Ertürk, Turyol, Feribotlines)
         if transport_type in ("all", "ferry"):
@@ -1254,7 +1256,7 @@ class SearchService:
             "bus": {
                 "count": len(bus_tickets),
                 "min_price": calc_min_price(bus_tickets),
-                "min_duration": "6 sa 30 dk" if bus_tickets else None,
+                "min_duration": bus_tickets[0]["duration"] if bus_tickets else None,
                 "available": links["bus"]["available"],
                 "reason": links["bus"]["reason"]
             },
@@ -1548,6 +1550,19 @@ class SearchService:
                 day_price = live_day_prices.get(d_iso)
             elif is_sel and selected_min_price and selected_min_price > 0:
                 day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
+            elif transport_type == "bus":
+                try:
+                    from app.services.bus_service import BusService
+                    day_price = BusService.get_cached_min_price(
+                        origin_name=origin_name,
+                        dest_name=dest_name,
+                        departure_date=d_iso,
+                        passengers=passengers,
+                        currency=currency,
+                        is_round=is_round
+                    )
+                except Exception:
+                    day_price = None
 
             day_diff = (d_dt - base_dt).days
             days_strip.append({
@@ -1723,12 +1738,30 @@ class SearchService:
 
         # 3. Kullanıcı Otobüs veya Tren arıyorsa "✈️ Uçak Seferlerini Gör" rozeti ekle
         if current_mode in ("bus", "train") and links.get("flight", {}).get("available"):
+            fl_min_price = summary.get("flight", {}).get("min_price")
+            if fl_min_price is None:
+                # Canlı Google Flights servisinden en ucuz uçuşu hızlıca çek
+                try:
+                    from app.services.live_flights import fetch_live_flights_from_google
+                    f_list = fetch_live_flights_from_google(
+                        origin_city_name=origin_name,
+                        dest_city_name=dest_name,
+                        departure_date=departure_date,
+                        passengers=passengers
+                    )
+                    valid_fp = [float(f["price"]) for f in (f_list or []) if f.get("price") is not None and float(f["price"]) > 0]
+                    if valid_fp:
+                        raw_min_fp = min(valid_fp)
+                        fl_min_price = round(CurrencyService.convert(raw_min_fp, "TRY", currency), 2) if currency != "TRY" else round(raw_min_fp)
+                except Exception:
+                    fl_min_price = None
+
             badges.append({
                 "mode": "flight",
                 "icon": "✈️",
                 "title_tr": "Direkt Uçak Bileti",
                 "title_en": "Direct Flights",
-                "min_price": summary.get("flight", {}).get("min_price"),
+                "min_price": fl_min_price,
                 "currency": curr_symbol,
                 "duration": "1 sa 15 dk",
                 "provider": "THY / Pegasus / AJet",

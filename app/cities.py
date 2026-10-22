@@ -225,7 +225,9 @@ FERRY_PORTS = [
     {"name": "Meis Adası (Kastellorizo)", "slug": "meis-adasi", "port_code": "KZS", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.1480, "lng": 29.5930}
 ]
 
-ALL_LOCATIONS = TURKEY_CITIES + INTERNATIONAL_CITIES + FERRY_PORTS
+from app.turkey_districts import TURKEY_DISTRICTS
+
+ALL_LOCATIONS = TURKEY_CITIES + INTERNATIONAL_CITIES + FERRY_PORTS + TURKEY_DISTRICTS
 
 def find_city(city_name: str):
     return find_location(city_name)
@@ -307,7 +309,7 @@ def get_cities_by_transport(transport_type: str = "all", scope: str = "all"):
             return tr_trains + int_trains
         return tr_trains + int_trains
     elif transport_type == "bus":
-        tr_buses = TURKEY_CITIES
+        tr_buses = TURKEY_CITIES + TURKEY_DISTRICTS
         overland_buses = [c for c in INTERNATIONAL_CITIES if c.get("has_bus")]
         if scope == "domestic":
             return tr_buses

@@ -216,8 +216,11 @@ def resolve_carrier_meta(
         prefix_en = "AJet"
         provider_id = "official_ajet"
         badge = "Business ⭐" if cabin_class == "business" else "AJet Seferi"
-        # AJet resmi portal linki
-        official_link = "https://ajet.com/tr"
+        # AJet doğrudan oturum tokeni gerektirdiği için ana sayfaya düşüşü önleyen parametreli resmi uçuş köprüsü
+        if is_round and ret_date:
+            official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+AJet&hl=tr&gl=tr&curr=TRY"
+        else:
+            official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+AJet&hl=tr&gl=tr&curr=TRY"
 
     # Türk Hava Yolları (TK)
     elif "turkish" in c_lower or "thy" in c_lower or "türk hava" in c_lower or c_code == "TK":
@@ -227,7 +230,10 @@ def resolve_carrier_meta(
         prefix_en = "THY"
         provider_id = "official_thy"
         badge = "Business Class ⭐" if cabin_class == "business" else "⭐ THY Konforu"
-        official_link = "https://www.turkishairlines.com/tr-tr/"
+        if is_round and ret_date:
+            official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+Turkish+Airlines&hl=tr&gl=tr&curr=TRY"
+        else:
+            official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+Turkish+Airlines&hl=tr&gl=tr&curr=TRY"
 
     # SunExpress (XQ)
     elif "sunexpress" in c_lower or c_code == "XQ":
@@ -237,7 +243,10 @@ def resolve_carrier_meta(
         prefix_en = "SunExpress"
         provider_id = "official_sunexpress"
         badge = "SunClassic" if cabin_class == "business" else "SunExpress Seferi"
-        official_link = "https://www.sunexpress.com/tr/"
+        if is_round and ret_date:
+            official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+SunExpress&hl=tr&gl=tr&curr=TRY"
+        else:
+            official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+SunExpress&hl=tr&gl=tr&curr=TRY"
 
     # Diğer / Uluslararası Havayolları (Lufthansa, Emirates, Qatar, Corendon vb.)
     else:
