@@ -632,7 +632,7 @@ class BusService:
                     "direct_link": obilet_url,
                     "booking_link": obilet_url,
                     "providers": [
-                        {"name": "Obilet Canlı Koltuk Seçimi", "url": obilet_url, "price": converted_p, "is_best": True}
+                        {"name": "Obilet Sefer Listesi & Koltuk Seçimi", "url": obilet_url, "price": converted_p, "is_best": True}
                     ]
                 })
 
@@ -762,7 +762,7 @@ class BusService:
                 "direct_link": obilet_url,
                 "booking_link": obilet_url,
                 "providers": [
-                    {"name": "Obilet Canlı Koltuk Seçimi", "url": obilet_url, "price": conv_p, "is_best": True}
+                    {"name": "Obilet Sefer Listesi & Koltuk Seçimi", "url": obilet_url, "price": conv_p, "is_best": True}
                 ]
             })
 

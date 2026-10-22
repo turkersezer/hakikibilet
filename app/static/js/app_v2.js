@@ -2044,7 +2044,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
             const busType = ticket.flight_number || '2+1 Rahat';
             const badgeText = ticket.badge || 'Sefer';
             const targetUrl = ticket.direct_link || ticket.official_link || 'https://www.obilet.com/';
-            const btnLabel = isEn ? 'Select Seat on Obilet ↗' : 'Obilet\'te Koltuk Seç ↗';
+            const isFlix = Boolean(ticket.carrier && (ticket.carrier.includes('Flix') || ticket.carrier.includes('Alpar')));
+            const btnLabel = isFlix 
+                ? (isEn ? 'Select Seat on FlixBus ↗' : 'FlixBus\'ta Koltuk Seç ↗')
+                : (isEn ? 'View Trips & Select Seat on Obilet ↗' : 'Obilet\'te Seferleri & Koltuğu Seç ↗');
 
             const featuresHtml = `
                 <div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-bold text-slate-600">
@@ -2172,8 +2175,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     <span>${btnLabel}</span>
                                     <i class="fa-solid fa-arrow-up-right-from-square text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
                                 </a>
-                                <div class="text-[10px] text-center text-slate-400 font-medium mt-1.5">
-                                    Obilet güvencesiyle 3D Secure doğrudan biletleme
+                                <div class="text-[10.5px] text-center text-slate-500 font-medium mt-1.5">
+                                    ${isFlix 
+                                        ? 'FlixBus resmi ekranında doğrudan sefer ve koltuk seçimi' 
+                                        : 'Obilet ekranında seferinizi seçerek canlı koltuk şemasını açabilirsiniz'}
                                 </div>
                             </div>
                         </div>
