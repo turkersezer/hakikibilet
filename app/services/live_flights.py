@@ -277,8 +277,11 @@ def fetch_live_flights_from_google(
             script = parser.css_first('script.ds\\:1')
             if not script:
                 return []
-            data_str = script.text().split('data:', 1)[1].rsplit(',', 1)[0]
-            payload = json.loads(data_str)
+            data_str = script.text().split('data:', 1)[1].rsplit(',', 1)[0].strip()
+            try:
+                payload = json.loads(data_str)
+            except json.JSONDecodeError:
+                payload, _ = json.JSONDecoder().raw_decode(data_str)
             return extract_flights_from_payload(payload)
         except Exception as e:
             logger.warning(f"Live flight error for {orig_code}->{dest_code} ({leg_date}): {e}")

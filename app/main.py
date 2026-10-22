@@ -11,7 +11,30 @@ import csv
 import io
 
 from app.config import settings
-from app.database import init_db, get_db
+from app.database import init_db, get_db, get_db_dep
+import time
+from collections import defaultdict
+
+# Basit IP Bazlı Hız Sınırlayıcı (Rate Limiter - Bot ve Spam Koruması)
+_RATE_LIMIT_BUCKETS = defaultdict(list)
+
+def _check_rate_limit(ip: str, bucket: str, max_requests: int = 5, window_sec: int = 60) -> bool:
+    now = time.time()
+    key = f"{bucket}:{ip or 'unknown'}"
+    timestamps = [t for t in _RATE_LIMIT_BUCKETS[key] if now - t < window_sec]
+    if len(timestamps) >= max_requests:
+        _RATE_LIMIT_BUCKETS[key] = timestamps
+        return False
+    timestamps.append(now)
+    _RATE_LIMIT_BUCKETS[key] = timestamps
+    return True
+
+def _require_admin_access(request: Request):
+    cookie = request.cookies.get("hakiki_preview_access")
+    param = request.query_params.get("onizleme") or request.query_params.get("preview")
+    header_key = request.headers.get("X-Admin-Key")
+    if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY and header_key != settings.MAINTENANCE_BYPASS_KEY:
+        raise HTTPException(status_code=403, detail="Bu işlemi gerçekleştirmek için yönetici yetkisi gereklidir.")
 from app.cities import TURKEY_CITIES, ALL_LOCATIONS, find_city, get_cities_by_transport
 from app.models import (
     SearchRequest, CarSearchRequest, TrackRouteRequest, UserSettingsUpdate, TestNotificationRequest,
@@ -81,7 +104,7 @@ async def maintenance_middleware(request: Request, call_next):
             key="hakiki_preview_access",
             value=settings.MAINTENANCE_BYPASS_KEY,
             max_age=30 * 24 * 3600,
-            httponly=False,
+            httponly=True,
             samesite="lax"
         )
         return response
@@ -121,6 +144,9 @@ async def maintenance_middleware(request: Request, call_next):
 
 @app.post("/admin/unlock")
 async def admin_unlock(request: Request):
+    client_ip = request.client.host if request.client else "unknown"
+    if not _check_rate_limit(client_ip, "admin_unlock", max_requests=5, window_sec=60):
+        return JSONResponse(content={"success": False, "message": "Çok fazla deneme yapıldı. Lütfen 1 dakika bekleyiniz."}, status_code=429)
     try:
         data = await request.json()
         passcode = data.get("passcode", "")
@@ -133,7 +159,7 @@ async def admin_unlock(request: Request):
             key="hakiki_preview_access",
             value=settings.MAINTENANCE_BYPASS_KEY,
             max_age=30 * 24 * 3600,
-            httponly=False,
+            httponly=True,
             samesite="lax"
         )
         return response
@@ -308,7 +334,8 @@ async def search_tickets(req: SearchRequest):
     total_pax = max(1, adults + children + infants)
 
     try:
-        result = SearchService.search_all_tickets(
+        result = await asyncio.to_thread(
+            SearchService.search_all_tickets,
             origin_city=req.origin,
             dest_city=req.destination,
             departure_date=req.departure_date,
@@ -448,8 +475,9 @@ async def get_logs():
     return {"logs": logs}
 
 @app.post("/api/notifications/test")
-async def test_notification(req: TestNotificationRequest):
-    """MODÜL 3: Bildirim Kanallarını Anlık Test Et (E-posta, Telegram, Web Push)"""
+async def test_notification(req: TestNotificationRequest, request: Request):
+    """MODÜL 3: Bildirim Kanallarını Anlık Test Et (E-posta, Telegram, Web Push) - Yönetici Korumalı"""
+    _require_admin_access(request)
     res = {}
     if req.channel == "email":
         res = await NotificationService.send_email(
@@ -476,16 +504,23 @@ async def test_notification(req: TestNotificationRequest):
     return {"success": True, "result": res}
 
 @app.post("/api/cron/trigger")
-async def trigger_cron_now():
-    """Zamanlayıcıyı (Cron Job) Anında Tetikle"""
+async def trigger_cron_now(request: Request):
+    """Zamanlayıcıyı (Cron Job) Anında Tetikle - Yönetici Korumalı"""
+    _require_admin_access(request)
     await scheduled_price_and_campaign_check()
     return {"success": True, "message": "Cron fiyat ve kampanya taraması anında çalıştırıldı."}
 
 # ==================== LANSMAN ÖNCESİ ERKEN ERİŞİM & KAYIT API ====================
 
 @app.post("/api/erken-kayit")
-async def register_early_access(payload: EarlyAccessRequest, request: Request, db=Depends(get_db)):
+async def register_early_access(payload: EarlyAccessRequest, request: Request, db=Depends(get_db_dep)):
     """Ziyaretçiyi erken erişim bültenine kaydeder"""
+    client_ip = request.client.host if request.client else "unknown"
+    if not _check_rate_limit(client_ip, "early_access", max_requests=5, window_sec=60):
+        return JSONResponse(
+            status_code=429,
+            content={"success": False, "message": "Çok fazla kayıt denemesi yapıldı. Lütfen 1 dakika sonra tekrar deneyiniz."}
+        )
     email = payload.email.strip().lower()
     
     # E-posta format kontrolü
@@ -558,7 +593,7 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
 # ==================== BÜLTEN & ERKEN ERİŞİM ABONELİKTEN ÇIKMA (UNSUBSCRIBE) ====================
 
 @app.get("/bulten/ayril", response_class=HTMLResponse)
-async def unsubscribe_page(request: Request, email: str = Query("", description="Ayrılacak e-posta"), onayla: int = Query(0, description="Onay bayrağı"), db=Depends(get_db)):
+async def unsubscribe_page(request: Request, email: str = Query("", description="Ayrılacak e-posta"), onayla: int = Query(0, description="Onay bayrağı"), db=Depends(get_db_dep)):
     """Erken erişim ve bülten listesinden çıkış sayfası (Bot/Crawler korumalı)"""
     clean_email = email.strip().lower()
     unsubscribed = False
@@ -591,7 +626,7 @@ async def unsubscribe_page(request: Request, email: str = Query("", description=
     )
 
 @app.post("/bulten/ayril", response_class=HTMLResponse)
-async def unsubscribe_post(request: Request, email: str = Form(""), db=Depends(get_db)):
+async def unsubscribe_post(request: Request, email: str = Form(""), db=Depends(get_db_dep)):
     """Butona tıklandığında POST isteğiyle güvenli abonelik iptali"""
     clean_email = email.strip().lower()
     unsubscribed = False
@@ -620,7 +655,7 @@ async def unsubscribe_post(request: Request, email: str = Form(""), db=Depends(g
     )
 
 @app.get("/api/admin/erken-kayit-listesi")
-async def get_early_access_subscribers(request: Request, db=Depends(get_db)):
+async def get_early_access_subscribers(request: Request, db=Depends(get_db_dep)):
     """Yönetici için erken kayıt listesini JSON olarak listeler"""
     cookie = request.cookies.get("hakiki_preview_access")
     param = request.query_params.get("onizleme") or request.query_params.get("preview")
@@ -648,16 +683,19 @@ async def get_early_access_subscribers(request: Request, db=Depends(get_db)):
     }
 
 @app.get("/api/admin/erken-kayit-csv")
-async def export_early_access_csv(request: Request, db=Depends(get_db)):
+async def export_early_access_csv(request: Request, db=Depends(get_db_dep)):
     """Yönetici için erken kayıt listesini Excel uyumlu CSV olarak indirir"""
-    cookie = request.cookies.get("hakiki_preview_access")
-    param = request.query_params.get("onizleme") or request.query_params.get("preview")
-    if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
-        raise HTTPException(status_code=403, detail="Yetkiniz bulunmamaktadır.")
+    _require_admin_access(request)
         
     cursor = await db.execute("SELECT id, email, is_active, created_at, ip_address FROM prelaunch_subscribers ORDER BY created_at DESC")
     rows = await cursor.fetchall()
     
+    def _safe_csv_cell(val):
+        s = str(val or "")
+        if s.startswith(("=", "+", "-", "@", "\t", "\r")):
+            return f"'{s}"
+        return s
+
     output = io.StringIO()
     # Excel'in Türkçe karakterleri düzgün açması için UTF-8 BOM
     output.write('\ufeff')
@@ -666,7 +704,13 @@ async def export_early_access_csv(request: Request, db=Depends(get_db)):
     
     for r in rows:
         status_text = "Aktif" if r["is_active"] == 1 else "Ayrıldı"
-        writer.writerow([r["id"], r["email"], status_text, r["created_at"], r["ip_address"] or ""])
+        writer.writerow([
+            r["id"],
+            _safe_csv_cell(r["email"]),
+            status_text,
+            _safe_csv_cell(r["created_at"]),
+            _safe_csv_cell(r["ip_address"] or "")
+        ])
         
     csv_content = output.getvalue()
     return Response(
@@ -679,7 +723,7 @@ async def export_early_access_csv(request: Request, db=Depends(get_db)):
     )
 
 @app.post("/api/admin/toplu-lansman-duyurusu")
-async def trigger_launch_announcement(request: Request, db=Depends(get_db)):
+async def trigger_launch_announcement(request: Request, db=Depends(get_db_dep)):
     """Lansman günü SADECE aktif (ayrılmamış) erken kayıtlı kullanıcılara açılış e-postasını gönderir"""
     cookie = request.cookies.get("hakiki_preview_access")
     param = request.query_params.get("onizleme") or request.query_params.get("preview")

@@ -1,3 +1,4 @@
+import asyncio
 import json
 import uuid
 from datetime import datetime, timedelta
@@ -147,6 +148,11 @@ class TrackerService:
                 dest = route_dict["destination_city"]
                 target_price = route_dict["target_price"]
                 dep_date = route_dict["travel_date_start"]
+                today_str = datetime.now().strftime("%Y-%m-%d")
+                if dep_date and dep_date < today_str:
+                    # Tarihi geçmiş takip rotalarını otomatik pasife al (gereksiz kazımayı önle)
+                    await conn.execute("UPDATE tracked_routes SET is_active = 0, last_checked_at = ? WHERE id = ?", (now_str, route_id))
+                    continue
                 channels = json.loads(route_dict["active_channels"]) if route_dict["active_channels"] else ["email"]
 
                 # Kullanıcı bilgilerini çek (e-posta, telegram, quiet hours)
@@ -156,17 +162,26 @@ class TrackerService:
                     continue
                 user_dict = dict(user)
 
-                # Arama servisinden anlık bilet fiyatlarını al
-                search_res = SearchService.search_all_tickets(
-                    origin, dest, dep_date, passengers=1, transport_type=route_dict["transport_type"]
+                # Arama servisinden anlık bilet fiyatlarını al (Event loop'u bloklamamak için thread içinde çalıştır)
+                search_res = await asyncio.to_thread(
+                    SearchService.search_all_tickets,
+                    origin,
+                    dest,
+                    dep_date,
+                    passengers=1,
+                    transport_type=route_dict["transport_type"]
                 )
                 
                 cheapest_ticket = None
-                if search_res.get("tickets"):
-                    cheapest_ticket = search_res["tickets"][0] # En ucuz bilet
+                priced_tickets = [
+                    t for t in (search_res.get("tickets") or [])
+                    if t.get("price") is not None and isinstance(t.get("price"), (int, float)) and t["price"] > 0
+                ]
+                if priced_tickets:
+                    cheapest_ticket = min(priced_tickets, key=lambda x: float(x["price"]))
 
                 # Fiyat eşiği kontrolü
-                if cheapest_ticket and cheapest_ticket["price"] <= target_price:
+                if cheapest_ticket and float(cheapest_ticket["price"]) <= float(target_price):
                     # Spam koruması: Son bildirim 6 saat içinde gönderilmişse bekle
                     last_notified = route_dict.get("last_notified_at")
                     if last_notified:
@@ -175,10 +190,11 @@ class TrackerService:
                             continue # Henüz spam süresi dolmadı
 
                     # Bildirim gönder
-                    route_label = f"{origin} → {dest} ({cheapest_ticket['carrier']})"
-                    direct_link = cheapest_ticket["direct_link"]
-                    current_price = cheapest_ticket["price"]
-                    regular_price = cheapest_ticket.get("regular_price", current_price * 1.5)
+                    route_label = f"{origin} → {dest} ({cheapest_ticket.get('carrier') or 'Sefer'})"
+                    direct_link = cheapest_ticket.get("direct_link") or "https://hakikibilet.com"
+                    current_price = float(cheapest_ticket["price"])
+                    raw_reg = cheapest_ticket.get("regular_price")
+                    regular_price = float(raw_reg) if (raw_reg is not None and float(raw_reg) > 0) else round(current_price * 1.5, 2)
 
                     # Kanal dağıtımı (Fan-Out)
                     if "email" in channels and user_dict.get("email"):

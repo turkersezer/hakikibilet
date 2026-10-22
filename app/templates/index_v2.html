@@ -1345,7 +1345,10 @@
             const eventsPillarWrapper = document.getElementById("eventsPillarWrapper");
             const smartRoutePillarWrapper = document.getElementById("smartRoutePillarWrapper");
             const flightOptionsBar = document.getElementById("flightOptionsBar");
+            const trainOptionsBar = document.getElementById("trainOptionsBar");
+            const busOptionsBar = document.getElementById("busOptionsBar");
             const ferryOptionsBar = document.getElementById("ferryOptionsBar");
+            const carOptionsBar = document.getElementById("carOptionsBar");
 
             if (transFormWrapper) transFormWrapper.classList.toggle("hidden", pillar !== 'travel');
             if (hotelFormWrapper) hotelFormWrapper.classList.toggle("hidden", pillar !== 'stay');
@@ -1355,16 +1358,30 @@
             if (pillar === 'travel') {
                 const activeMode = window.currentTransportSubTab || 'flight';
                 if (flightOptionsBar) flightOptionsBar.classList.toggle("hidden", activeMode !== 'flight');
+                if (trainOptionsBar) {
+                    trainOptionsBar.classList.toggle("hidden", activeMode !== 'train');
+                    trainOptionsBar.classList.toggle("flex", activeMode === 'train');
+                }
+                if (busOptionsBar) {
+                    busOptionsBar.classList.toggle("hidden", activeMode !== 'bus');
+                    busOptionsBar.classList.toggle("flex", activeMode === 'bus');
+                }
                 if (ferryOptionsBar) {
                     ferryOptionsBar.classList.toggle("hidden", activeMode !== 'ferry');
                     ferryOptionsBar.classList.toggle("flex", activeMode === 'ferry');
                 }
+                if (carOptionsBar) {
+                    carOptionsBar.classList.toggle("hidden", activeMode !== 'car');
+                    carOptionsBar.classList.toggle("flex", activeMode === 'car');
+                }
             } else {
                 if (flightOptionsBar) flightOptionsBar.classList.add("hidden");
-                if (ferryOptionsBar) {
-                    ferryOptionsBar.classList.add("hidden");
-                    ferryOptionsBar.classList.remove("flex");
-                }
+                [trainOptionsBar, busOptionsBar, ferryOptionsBar, carOptionsBar].forEach(bar => {
+                    if (bar) {
+                        bar.classList.add("hidden");
+                        bar.classList.remove("flex");
+                    }
+                });
             }
 
             if (pillar === 'events') {
@@ -1624,6 +1641,13 @@
         }
         window.openEventInSmartRoute = openEventInSmartRoute;
 
+        function _escHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+        function _escJs(str) {
+            return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
         function generateSmartRoutePlan(e) {
             if (e && e.preventDefault) e.preventDefault();
             const origin = (document.getElementById("srOriginInput")?.value || "İstanbul (Kadıköy)").trim();
@@ -1631,36 +1655,45 @@
             const evtChoice = document.getElementById("srEventSelect")?.value || "auto";
             const mode = window.currentSmartRouteMode || 'flight';
 
+            const origClean = origin.split('(')[0].trim();
+            const safeOrigin = _escHtml(origin);
+            const safeOrigClean = _escHtml(origClean);
+            const safeDest = _escHtml(dest);
+            const safeEvtChoice = _escHtml(evtChoice);
+            const jsOrigClean = _escJs(origClean);
+            const jsDest = _escJs(dest);
+            const jsMode = _escJs(mode);
+
             const hubInfo = {
                 flight: {
                     name: "Uçak Bileti",
                     terminal: origin.toLowerCase().includes("anadolu") || origin.toLowerCase().includes("kadıköy") ? "Sabiha Gökçen Havalimanı (SAW) veya İstanbul Havalimanı (IST)" : "En Yakın Havalimanı (IST / SAW / ESB)",
                     transitTip: "Metro (M4 / M11) veya Havabüs / Havaist ekspres servisleri ile uçuştan 2 saat önce terminalde olun.",
-                    arrivalTransfer: `${dest} Havalimanı inişinden otele Havaş, Antray/Tramvay, Havalimanı Metrosu veya Kiralık Araç ile 25-35 dk içinde geçiş.`
+                    arrivalTransfer: `${safeDest} Havalimanı inişinden otele Havaş, Antray/Tramvay, Havalimanı Metrosu veya Kiralık Araç ile 25-35 dk içinde geçiş.`
                 },
                 bus: {
                     name: "Otobüs Seferi",
-                    terminal: `${origin.split('(')[0].trim()} Şehirlerarası Otogarı / Cep Terminali`,
+                    terminal: `${safeOrigClean} Şehirlerarası Otogarı / Cep Terminali`,
                     transitTip: "Metro veya şehir içi servislerle kalkıştan 30 dakika önce peronda olacak şekilde evden çıkış.",
-                    arrivalTransfer: `${dest} Otogarı varışından şehir merkezi ve otele belediye ekspres hattı, tramvay veya taksi ile kolay geçiş.`
+                    arrivalTransfer: `${safeDest} Otogarı varışından şehir merkezi ve otele belediye ekspres hattı, tramvay veya taksi ile kolay geçiş.`
                 },
                 train: {
                     name: "Yüksek Hızlı Tren (YHT)",
-                    terminal: `${origin.split('(')[0].trim()} YHT Garı (Söğütlüçeşme / Bakırköy / Ankara Gar)`,
+                    terminal: `${safeOrigClean} YHT Garı (Söğütlüçeşme / Bakırköy / Ankara Gar)`,
                     transitTip: "Marmaray veya Metro bağlantısıyla tren kalkışından 25 dakika önce garda olun.",
-                    arrivalTransfer: `${dest} Tren Garı şehir merkezinde olduğu için yürüyerek veya tek vasıtayla doğrudan otele geçiş.`
+                    arrivalTransfer: `${safeDest} Tren Garı şehir merkezinde olduğu için yürüyerek veya tek vasıtayla doğrudan otele geçiş.`
                 },
                 ferry: {
                     name: "Gemi / Feribot Seferi",
-                    terminal: `${origin.split('(')[0].trim()} Feribot İskelesi / Kruvaziyer Limanı`,
+                    terminal: `${safeOrigClean} Feribot İskelesi / Kruvaziyer Limanı`,
                     transitTip: "Vapur / dış hat feribot kalkışından 45 dakika önce iskelede hazır bulunun.",
-                    arrivalTransfer: `${dest} Limanı inişinden sahil otellerine veya merkeze yürüyerek / liman transfer aracıyla geçiş.`
+                    arrivalTransfer: `${safeDest} Limanı inişinden sahil otellerine veya merkeze yürüyerek / liman transfer aracıyla geçiş.`
                 }
             }[mode];
 
             const destSightseeing = evtChoice === 'auto'
-                ? `🎉 <strong>${dest} İçin Hakiki Tavsiye:</strong> Seçtiğiniz tarihte biletli bir etkinlik olmasa bile ${dest} Tarihi Merkezini, yerel gastronomi duraklarını ve gün batımı seyir noktalarını mutlaka görün!`
-                : `🎟️ <strong>Hedef Etkinlik:</strong> ${evtChoice} — Otelden etkinlik mekanına toplu taşıma / yürüyüş haritası ve etkinlik çıkışı güvenli dönüş rotası hazır.`;
+                ? `🎉 <strong>${safeDest} İçin Hakiki Tavsiye:</strong> Seçtiğiniz tarihte biletli bir etkinlik olmasa bile ${safeDest} Tarihi Merkezini, yerel gastronomi duraklarını ve gün batımı seyir noktalarını mutlaka görün!`
+                : `🎟️ <strong>Hedef Etkinlik:</strong> ${safeEvtChoice} — Otelden etkinlik mekanına toplu taşıma / yürüyüş haritası ve etkinlik çıkışı güvenli dönüş rotası hazır.`;
 
             const out = document.getElementById("smartRouteOutputArea");
             if (!out) return;
@@ -1671,12 +1704,12 @@
                     <div class="bg-slate-800/90 border border-amber-400/40 rounded-2xl p-4 flex flex-col justify-between">
                         <div>
                             <div class="text-[10px] font-black uppercase text-amber-400 mb-1">1. Adım • Ana Ulaşım Kararı</div>
-                            <div class="font-black text-sm text-white mb-1">${origin.split('(')[0].trim()} ➔ ${dest} (${hubInfo.name})</div>
+                            <div class="font-black text-sm text-white mb-1">${safeOrigClean} ➔ ${safeDest} (${hubInfo.name})</div>
                             <p class="text-xs text-slate-300 leading-relaxed">
                                 Önce ana ulaşımınız <strong>${hubInfo.name}</strong> olarak belirlendi. Böylece evden hangi terminale gideceğiniz netleşti.
                             </p>
                         </div>
-                        <button type="button" onclick="launchSmartRouteTicketSearch('${origin.split('(')[0].trim()}', '${dest}', '${mode}')"
+                        <button type="button" onclick="launchSmartRouteTicketSearch('${jsOrigClean}', '${jsDest}', '${jsMode}')"
                                 class="mt-3 w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition cursor-pointer">
                             1. Adım: ${hubInfo.name} Fiyatlarını Gör →
                         </button>
@@ -1686,12 +1719,12 @@
                     <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 flex flex-col justify-between">
                         <div>
                             <div class="text-[10px] font-black uppercase text-sky-400 mb-1">2. Adım • Evden Terminale Ulaşım</div>
-                            <div class="font-black text-sm text-white mb-1">${origin} ➔ ${hubInfo.terminal}</div>
+                            <div class="font-black text-sm text-white mb-1">${safeOrigin} ➔ ${hubInfo.terminal}</div>
                             <p class="text-xs text-slate-300 leading-relaxed">
                                 ${hubInfo.transitTip}
                             </p>
                         </div>
-                        <a href="https://www.google.com/maps/dir/${encodeURIComponent(origin)}/${encodeURIComponent(hubInfo.terminal)}/?travelmode=transit" target="_blank" rel="noopener noreferrer"
+                        <a href="https://www.google.com/maps/dir/${encodeURIComponent(origin)}/${encodeURIComponent(origClean + ' ' + hubInfo.name)}/?travelmode=transit" target="_blank" rel="noopener noreferrer"
                            class="mt-3 w-full py-2 px-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs text-center transition block">
                             <i class="fa-solid fa-map-location-dot text-sky-400 mr-1"></i> Evden Terminale Canlı Tarif ↗
                         </a>
@@ -1701,14 +1734,14 @@
                     <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 flex flex-col justify-between">
                         <div>
                             <div class="text-[10px] font-black uppercase text-emerald-400 mb-1">3. Adım • İnişten Otele & Konaklama</div>
-                            <div class="font-black text-sm text-white mb-1">${dest} Varışı ➔ Otel / Pansiyon / Villa</div>
+                            <div class="font-black text-sm text-white mb-1">${safeDest} Varışı ➔ Otel / Pansiyon / Villa</div>
                             <p class="text-xs text-slate-300 leading-relaxed">
                                 ${hubInfo.arrivalTransfer}
                             </p>
                         </div>
-                        <button type="button" onclick="switchMainPillar('stay'); document.getElementById('hotelCity').value='${dest}';"
+                        <button type="button" onclick="switchMainPillar('stay'); document.getElementById('hotelCity').value='${jsDest}';"
                                 class="mt-3 w-full py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition cursor-pointer">
-                            3. Adım: ${dest} Otel & Pansiyon Seç →
+                            3. Adım: ${safeDest} Otel & Pansiyon Seç →
                         </button>
                     </div>
 
@@ -1716,14 +1749,14 @@
                     <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 flex flex-col justify-between">
                         <div>
                             <div class="text-[10px] font-black uppercase text-purple-400 mb-1">4. Adım • Etkinlik, Keşif & Dönüş</div>
-                            <div class="font-black text-sm text-white mb-1">${dest} Deneyim & Dönüş Planı</div>
+                            <div class="font-black text-sm text-white mb-1">${safeDest} Deneyim & Dönüş Planı</div>
                             <p class="text-xs text-slate-300 leading-relaxed">
                                 ${destSightseeing}
                             </p>
                         </div>
                         <a href="https://www.google.com/maps/search/${encodeURIComponent(dest + ' gezilecek yerler ve etkinlikler')}" target="_blank" rel="noopener noreferrer"
                            class="mt-3 w-full py-2 px-3 rounded-xl bg-purple-500/20 border border-purple-400/40 hover:bg-purple-500/30 text-purple-200 font-bold text-xs text-center transition block">
-                            <i class="fa-solid fa-compass mr-1"></i> ${dest} Harita & Dönüş Rehberi ↗
+                            <i class="fa-solid fa-compass mr-1"></i> ${safeDest} Harita & Dönüş Rehberi ↗
                         </a>
                     </div>
                 </div>
@@ -2020,8 +2053,9 @@
             }
 
             // 9. Eğer ekranda arama sonuçları varsa, tekrar render et
-            if (window.lastTransportResults && window.lastSearchReq && typeof window.renderTransportResults === 'function') {
-                window.renderTransportResults({ tickets: window.lastTransportResults }, window.lastSearchReq);
+            if ((window.lastTransportData || window.lastTransportResults) && window.lastSearchReq && typeof window.renderTransportResults === 'function') {
+                const fullData = window.lastTransportData || { tickets: window.lastTransportResults };
+                window.renderTransportResults(fullData, window.lastSearchReq);
             }
         }
         window.setAppLanguage = setAppLanguage;
@@ -2038,6 +2072,6 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v2.js?v=20261021_01"></script>
+    <script src="/static/js/app_v2.js?v=20261022_02"></script>
 </body>
 </html>

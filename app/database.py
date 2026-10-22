@@ -7,13 +7,28 @@ from app.config import settings
 os.makedirs(os.path.dirname(settings.DB_PATH), exist_ok=True)
 
 async def get_db():
-    conn = await aiosqlite.connect(settings.DB_PATH)
+    conn = await aiosqlite.connect(settings.DB_PATH, timeout=10.0)
     conn.row_factory = aiosqlite.Row
+    await conn.execute("PRAGMA journal_mode = WAL;")
+    await conn.execute("PRAGMA synchronous = NORMAL;")
+    await conn.execute("PRAGMA foreign_keys = ON;")
+    await conn.execute("PRAGMA busy_timeout = 5000;")
     return conn
 
+async def get_db_dep():
+    """FastAPI Depends() için bağlantıyı işlem sonunda otomatik kapatan güvenli bağımlılık"""
+    conn = await get_db()
+    try:
+        yield conn
+    finally:
+        await conn.close()
+
 async def init_db():
-    async with aiosqlite.connect(settings.DB_PATH) as conn:
+    async with aiosqlite.connect(settings.DB_PATH, timeout=10.0) as conn:
+        await conn.execute("PRAGMA journal_mode = WAL;")
+        await conn.execute("PRAGMA synchronous = NORMAL;")
         await conn.execute("PRAGMA foreign_keys = ON;")
+        await conn.execute("PRAGMA busy_timeout = 5000;")
         
         # 1. Users Table
         await conn.execute("""

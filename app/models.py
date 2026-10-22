@@ -27,9 +27,13 @@ class SearchRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_and_sanitize_search(self):
-        # 1. Tarih formatı kontrolü (Bozuk format gelirse sunucuyu çökertmek yerine güvenli tarihe normalize et)
+        # 1. Tarih formatı ve geçmiş tarih kontrolü (Bozuk format veya geçmiş tarih gelirse güvenli geleceğe normalize et)
         try:
             dep_dt = datetime.strptime(str(self.departure_date).strip(), "%Y-%m-%d")
+            today = datetime.now().date()
+            if dep_dt.date() < today:
+                dep_dt = datetime.now() + timedelta(days=7)
+                self.departure_date = dep_dt.strftime("%Y-%m-%d")
         except Exception:
             dep_dt = datetime.now() + timedelta(days=7)
             self.departure_date = dep_dt.strftime("%Y-%m-%d")

@@ -89,6 +89,15 @@ class SearchService:
         origin_slug = origin["slug"] if origin else origin_city_name.lower().replace(" ", "-")
         dest_slug = dest["slug"] if dest else dest_city_name.lower().replace(" ", "-")
         
+        # 0. Aynı Kalkış ve Varış Noktası Kontrolü
+        if origin_slug == dest_slug or origin_city_name.strip().lower() == dest_city_name.strip().lower():
+            return {
+                "flight": {"available": False, "reason": "Kalkış ve varış noktası aynı olamaz. Lütfen farklı bir varış noktası seçiniz.", "trip": None, "travelpayouts": None, "pegasus": None, "google_flights": None, "enuygun": None, "skyscanner": None},
+                "train": {"available": False, "is_tcdd": False, "is_international": False, "reason": "Kalkış ve varış garı aynı olamaz.", "tcdd": None, "trainline": None, "omio": None},
+                "bus": {"available": False, "is_overland_neighbor": False, "reason": "Kalkış ve varış şehri aynı olamaz.", "obilet": None, "kamilkoc": None, "pamukkale": None},
+                "ferry": {"available": False, "reason": "Kalkış ve varış iskelesi aynı olamaz.", "ido": None, "budo": None, "erturk": None, "turyol": None, "feribotlines": None}
+            }
+
         sky_dep = cls.format_date_for_skyscanner(departure_date)
         enuygun_dep = cls.format_date_for_enuygun(departure_date)
 
@@ -211,43 +220,56 @@ class SearchService:
             "tcdd_search_hint": f"Kalkış: {origin.get('train_station', origin_city_name)} -> Varış: {dest.get('train_station', dest_city_name)}" if is_tcdd_train else "Demiryolu hattı yok"
         }
 
-        # 3. Otobüs Deep Linkleri (Obilet - Doğrudan seçili tarih ve güzergah sefer listesi)
+        # 3. Otobüs Deep Linkleri (Obilet yurt içi, FlixBus/Omio Avrupa ve komşu ağlar)
         is_dest_intl = bool(dest and dest.get("is_international"))
+        is_orig_intl = bool(origin and origin.get("is_international"))
         is_overland = bool(dest and dest.get("is_overland_neighbor"))
+        is_intra_europe = bool(is_orig_intl and is_dest_intl and origin.get("region") == "Avrupa" and dest.get("region") == "Avrupa")
         bus_ret_path = f"/{return_date}" if is_round else ""
 
-        if is_dest_intl and not is_overland:
+        if is_dest_intl and not is_overland and not is_intra_europe:
             bus_links = {
                 "available": False,
                 "is_overland_neighbor": False,
                 "reason": f"{dest_city_name} denizaşırı/kıtalararası bir rota olduğundan doğrudan otobüs seferi bulunmamaktadır.",
                 "obilet": None,
                 "kamilkoc": None,
-                "pamukkale": None
+                "pamukkale": None,
+                "flixbus": None,
+                "omio": None
             }
         else:
             from app.services.bus_service import BusService
-            bus_link = BusService.get_obilet_deep_link(origin_city_name, dest_city_name, departure_date)
+            if is_intra_europe:
+                bus_link = BusService.get_flixbus_deep_link(origin_city_name, dest_city_name, departure_date)
+                omio_bus_link = BusService.get_omio_deep_link(origin_city_name, dest_city_name, departure_date)
+            else:
+                bus_link = BusService.get_obilet_deep_link(origin_city_name, dest_city_name, departure_date)
+                omio_bus_link = None
+
             bus_links = {
                 "available": True,
-                "is_overland_neighbor": is_overland,
+                "is_overland_neighbor": is_overland or is_intra_europe,
                 "reason": None,
-                "obilet": bus_link,
-                "kamilkoc": bus_link,
-                "pamukkale": bus_link
+                "obilet": None if is_intra_europe else bus_link,
+                "kamilkoc": None if is_intra_europe else bus_link,
+                "pamukkale": None if is_intra_europe else bus_link,
+                "flixbus": bus_link if is_intra_europe else None,
+                "omio": omio_bus_link
             }
 
         # 4. Deniz Yolları & Feribot Deep Linkleri
         is_sea_origin = bool(origin and origin.get("is_ferry"))
         is_sea_dest = bool(dest and dest.get("is_ferry"))
+        ferry_avail = bool(is_sea_origin and is_sea_dest)
         ferry_links = {
-            "available": is_sea_origin and is_sea_dest,
-            "reason": None if (is_sea_origin and is_sea_dest) else "Bu güzergahta doğrudan deniz yolu seferi bulunmamaktadır.",
-            "ido": "https://www.ido.com.tr/",
-            "budo": "https://budo.burulas.com.tr/",
-            "erturk": "https://www.erturk.com.tr/tr/",
-            "turyol": "https://www.turyolonline.com/",
-            "feribotlines": f"https://www.feribotlines.com/?subid={settings.AFFILIATE_FERRY_SUBID}"
+            "available": ferry_avail,
+            "reason": None if ferry_avail else "Bu güzergahta doğrudan deniz yolu seferi bulunmamaktadır.",
+            "ido": "https://www.ido.com.tr/" if ferry_avail else None,
+            "budo": "https://budo.burulas.com.tr/" if ferry_avail else None,
+            "erturk": "https://www.erturk.com.tr/tr/" if ferry_avail else None,
+            "turyol": "https://www.turyolonline.com/" if ferry_avail else None,
+            "feribotlines": f"https://www.feribotlines.com/?subid={settings.AFFILIATE_FERRY_SUBID}" if ferry_avail else None
         }
 
         return {
@@ -940,6 +962,41 @@ class SearchService:
         
         origin_name = origin["name"] if origin else origin_city
         dest_name = dest["name"] if dest else dest_city
+
+        # 1.1 Aynı Kalkış ve Varış Noktası Erken Koruması
+        orig_slug = origin["slug"] if origin else origin_city.lower().replace(" ", "-")
+        dest_slug = dest["slug"] if dest else dest_city.lower().replace(" ", "-")
+        if orig_slug == dest_slug or origin_city.strip().lower() == dest_city.strip().lower():
+            currency_norm = (currency or "TRY").upper()
+            curr_sym = CurrencyService.get_symbol(currency_norm)
+            links = cls.generate_deep_links(
+                origin_name, dest_name, departure_date, return_date, total_pax, trip_type, 
+                cabin_class=cabin_class, currency=currency_norm,
+                adults=adults, children=children, infants=infants
+            )
+            return {
+                "origin": origin_name,
+                "destination": dest_name,
+                "date": departure_date,
+                "departure_date": departure_date,
+                "return_date": return_date,
+                "trip_type": trip_type,
+                "passengers": total_pax,
+                "adults": adults,
+                "children": children,
+                "infants": infants,
+                "cabin_class": cabin_class,
+                "transport_type": transport_type,
+                "currency": curr_sym,
+                "currency_code": currency_norm,
+                "tickets": [],
+                "results_count": 0,
+                "summary": {"total_options": 0, "flight": None, "train": None, "bus": None, "ferry": None},
+                "deep_links": links,
+                "notices": ["⚠️ Kalkış ve varış noktası aynı olamaz. Lütfen farklı bir varış şehri belirleyiniz."],
+                "hotel_info": None,
+                "price_calendar": {"days": [], "days_count": 0, "range_type": calendar_range, "tip": ""}
+            }
         
         origin_has_airport = bool(origin and origin.get("has_airport"))
         dest_has_airport = bool(dest and dest.get("has_airport"))
@@ -1268,20 +1325,21 @@ class SearchService:
         notices.insert(0, "🛡️ Güven ve Şeffaflık İlkesi: Uçuş seferleri ve fiyatlar Trip.com ve resmi sağlayıcılar üzerinden canlı sorgulanır. Hakiki Bilet kullanıcıdan ek hizmet bedeli veya komisyon almaz.")
 
         car_rental_info = None
-        try:
-            from app.services.car_rental_service import CarRentalService
-            car_loc = origin_name if transport_type == "car" else dest_name
-            car_dropoff = dest_name if transport_type == "car" and dest_name != origin_name else None
-            car_rental_info = CarRentalService.search_cars(
-                location=car_loc,
-                pickup_date=departure_date,
-                dropoff_date=return_date,
-                dropoff_location=car_dropoff,
-                location_type=location_type,
-                currency=currency
-            )
-        except Exception:
-            car_rental_info = None
+        if transport_type in ("car", "all"):
+            try:
+                from app.services.car_rental_service import CarRentalService
+                car_loc = origin_name if transport_type == "car" else dest_name
+                car_dropoff = dest_name if transport_type == "car" and dest_name != origin_name else None
+                car_rental_info = CarRentalService.search_cars(
+                    location=car_loc,
+                    pickup_date=departure_date,
+                    dropoff_date=return_date,
+                    dropoff_location=car_dropoff,
+                    location_type=location_type,
+                    currency=currency
+                )
+            except Exception:
+                car_rental_info = None
 
         # Adım 2.1: Pegasus Tarzı 7 Günlük Esnek Fiyat Şeridi & "Hakiki İpucu" Hesaplaması
         active_min_price = calc_min_price(results)
@@ -1488,7 +1546,7 @@ class SearchService:
             day_price = None
             if can_query_flights:
                 day_price = live_day_prices.get(d_iso)
-            elif selected_min_price and selected_min_price > 0:
+            elif is_sel and selected_min_price and selected_min_price > 0:
                 day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
 
             day_diff = (d_dt - base_dt).days

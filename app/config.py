@@ -9,9 +9,9 @@ class Settings:
     APP_SLOGAN: str = "Hakiki Fiyat, Hakiki Bilet"
     APP_DOMAIN: str = "hakikibilet.com"
     APP_VERSION: str = "1.0.0"
-    DEBUG: bool = True
-    PORT: int = 8143
-    HOST: str = "127.0.0.1"
+    DEBUG: bool = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
+    PORT: int = int(os.getenv("PORT", "8143"))
+    HOST: str = os.getenv("HOST", "127.0.0.1")
     
     # Database
     DB_PATH: str = os.path.join(os.path.dirname(__file__), "..", "data", "ucuz_bilet.db")
@@ -131,13 +131,13 @@ class Settings:
     }
 
     # RapidAPI Booking.com Canlı Otel & Uçuş Entegrasyonu
-    RAPIDAPI_BOOKING_KEY: str = os.getenv("RAPIDAPI_BOOKING_KEY", "a6d67df14amsh2b9f96b7584f325p1d32cajsn0cca8bc51e87")
+    RAPIDAPI_BOOKING_KEY: str = os.getenv("RAPIDAPI_BOOKING_KEY", "")
     RAPIDAPI_BOOKING_HOST: str = os.getenv("RAPIDAPI_BOOKING_HOST", "booking-com15.p.rapidapi.com")
 
     # Hibrit Çoklu Acente (Multi-OTA) Canlı Uçuş Fiyat Entegrasyonları (Faz 1B)
-    RAPIDAPI_FLIGHTS_KEY: str = os.getenv("RAPIDAPI_FLIGHTS_KEY", "a6d67df14amsh2b9f96b7584f325p1d32cajsn0cca8bc51e87")
+    RAPIDAPI_FLIGHTS_KEY: str = os.getenv("RAPIDAPI_FLIGHTS_KEY", "")
     RAPIDAPI_FLIGHTS_HOST: str = os.getenv("RAPIDAPI_FLIGHTS_HOST", "sky-scrapper.p.rapidapi.com")
-    TRAVELPAYOUTS_API_TOKEN: str = os.getenv("TRAVELPAYOUTS_API_TOKEN", "d39b88c4a651e7fba34d50d0949b3de2")
+    TRAVELPAYOUTS_API_TOKEN: str = os.getenv("TRAVELPAYOUTS_API_TOKEN", "")
     KIWI_AFFILIATE_ID: str = os.getenv("KIWI_AFFILIATE_ID", "travelpayouts")
     # Hukuki Yasal Metinler & TÜRSAB Muafiyeti (Metasearch / Karşılaştırma Beyanı)
     LEGAL_DISCLAIMER: str = (

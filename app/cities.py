@@ -19,7 +19,7 @@ TURKEY_CITIES = [
     {"name": "Diyarbakır", "slug": "diyarbakir", "iata": "DIY", "train_station": "Diyarbakır Gar", "has_airport": True, "has_train": True, "lat": 37.9144, "lng": 40.2306},
     {"name": "Samsun", "slug": "samsun", "iata": "SZF", "train_station": "Samsun Gar", "has_airport": True, "has_train": True, "lat": 41.2867, "lng": 36.3300},
     {"name": "Kayseri", "slug": "kayseri", "iata": "ASR", "train_station": "Kayseri Gar", "has_airport": True, "has_train": True, "lat": 38.7312, "lng": 35.4787},
-    {"name": "Bodrum (Muğla)", "slug": "bodrum", "iata": "BJV", "train_station": None, "has_airport": True, "has_train": False, "lat": 37.0344, "lng": 27.4305},
+    {"name": "Bodrum (Muğla)", "slug": "bodrum", "iata": "BJV", "train_station": None, "has_airport": True, "has_train": False, "is_ferry": True, "port_code": "BXN", "lat": 37.0344, "lng": 27.4305},
     {"name": "Dalaman (Muğla)", "slug": "dalaman", "iata": "DLM", "train_station": None, "has_airport": True, "has_train": False, "lat": 36.7656, "lng": 28.8044},
     {"name": "Van", "slug": "van", "iata": "VAN", "train_station": "Van İskele", "has_airport": True, "has_train": True, "lat": 38.4891, "lng": 43.4089},
     {"name": "Erzurum", "slug": "erzurum", "iata": "ERZ", "train_station": "Erzurum Gar", "has_airport": True, "has_train": True, "lat": 39.9043, "lng": 41.2679},
@@ -86,7 +86,7 @@ TURKEY_CITIES = [
      "nearest_domestic_hub": {"name": "İzmir Adnan Menderes (ADB)", "iata": "ADB", "city": "İzmir", "duration": "45 dk", "transport": "bus_or_train"},
      "nearest_intl_hub": {"name": "İzmir Adnan Menderes (ADB)", "iata": "ADB", "city": "İzmir", "duration": "45 dk", "transport": "bus_or_train"}},
     {"name": "Tekirdağ", "slug": "tekirdag", "iata": "TEQ", "train_station": None, "has_airport": True, "has_train": False, "lat": 40.9833, "lng": 27.5167},
-    {"name": "Yalova", "slug": "yalova", "iata": None, "train_station": None, "has_airport": False, "has_train": False, "lat": 40.6500, "lng": 29.2667,
+    {"name": "Yalova", "slug": "yalova", "iata": None, "train_station": None, "has_airport": False, "has_train": False, "is_ferry": True, "port_code": "YLV", "lat": 40.6500, "lng": 29.2667,
      "nearest_domestic_hub": {"name": "Bursa Yenişehir (YEI)", "iata": "YEI", "city": "Bursa", "duration": "55 dk", "transport": "bus"},
      "nearest_intl_hub": {"name": "İstanbul Sabiha Gökçen (SAW)", "iata": "SAW", "city": "İstanbul", "duration": "45 dk (İDO Hızlı Feribot) veya 1 sa 10 dk (Otobüs)", "transport": "ferry_or_bus"}},
     {"name": "Düzce", "slug": "duzce", "iata": None, "train_station": None, "has_airport": False, "has_train": False, "lat": 40.8438, "lng": 31.1565,
@@ -172,6 +172,7 @@ INTERNATIONAL_CITIES = [
     {"name": "Zürih (ZRH)", "slug": "zurih", "country": "İsviçre", "region": "Avrupa", "iata": "ZRH", "train_station": "Zürich HB (SBB)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Nice (NCE)", "slug": "nice", "country": "Fransa", "region": "Avrupa", "iata": "NCE", "train_station": "Gare de Nice-Ville (TER Monaco)", "has_airport": True, "has_train": True, "is_international": True},
     {"name": "Monaco / Monte Carlo", "slug": "monaco", "country": "Monaco", "region": "Avrupa", "iata": "NCE", "train_station": "Gare de Monaco-Monte Carlo", "has_airport": True, "nearest_airport_iata": "NCE", "nearest_airport_name": "Nice Côte d'Azur (NCE)", "has_train": True, "is_international": True},
+    {"name": "Moskova (SVO/DME/VKO)", "slug": "moskova", "country": "Rusya", "region": "Doğu Avrupa", "iata": "SVO", "alt_iata": "VKO", "has_airport": True, "has_train": False, "is_international": True},
 
     # 🚌 Komşu Ülkeler (Uçak + Karayolu Otobüs Seferleri Aktif)
     {"name": "Selanik (SKG)", "slug": "selanik", "country": "Yunanistan", "region": "Balkanlar", "iata": "SKG", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},

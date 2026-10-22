@@ -649,13 +649,17 @@ function updatePaxSummaryDisplay() {
     label.textContent = str;
 }
 
-// 5. MODA ÖZEL AKILLI ŞEHİR YÜKLEME (UÇAKTA ASLA FERİBOT ÇIKMAZ!)
+// 5. MODA ÖZEL AKILLI ŞEHİR YÜKLEME (UÇAKTA ASLA FERİBOT ÇIKMAZ! + YARIŞ KORUMALI)
+let _cityLoadSeq = 0;
 async function loadCitiesForTransport(transportMode, scope) {
+    const reqSeq = ++_cityLoadSeq;
     const actualScope = scope || (transportMode === 'flight' ? currentFlightScope : 'all');
     try {
-        const res = await fetch(`/api/cities?transport_type=${transportMode}&scope=${actualScope}`);
+        const res = await fetch(`/api/cities?transport_type=${encodeURIComponent(transportMode)}&scope=${encodeURIComponent(actualScope)}`);
+        if (reqSeq !== _cityLoadSeq) return; // Daha yeni bir sekme geçişi yapıldıysa eski yanıtı yoksay
         if (res.ok) {
             const data = await res.json();
+            if (reqSeq !== _cityLoadSeq) return;
             verifiedCities = data.cities || [];
             populateDatalists(transportMode, actualScope);
         }
@@ -1178,6 +1182,13 @@ async function executeTransportSearch(e) {
     resultsArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
     try {
+        if (window._activeTransportAbort) {
+            try { window._activeTransportAbort.abort(); } catch (_) {}
+        }
+        const abortCtrl = new AbortController();
+        window._activeTransportAbort = abortCtrl;
+        const searchSeq = (window._activeTransportSearchSeq = (window._activeTransportSearchSeq || 0) + 1);
+
         const payload = {
             origin: origin,
             destination: destination,
@@ -1198,16 +1209,20 @@ async function executeTransportSearch(e) {
         const res = await fetch("/api/search", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal: abortCtrl.signal
         });
 
+        if (searchSeq !== window._activeTransportSearchSeq) return;
         if (!res.ok) throw new Error("Arama sunucusundan yanıt alınamadı.");
         const data = await res.json();
+        if (searchSeq !== window._activeTransportSearchSeq) return;
         if (data.travel_context) {
             window.HakikiTravelContext = data.travel_context;
         }
         renderTransportResults(data, payload);
     } catch (err) {
+        if (err && err.name === "AbortError") return;
         resultsArea.innerHTML = `
             <div class="p-8 text-center bg-rose-50 border border-rose-200 rounded-3xl text-rose-800 shadow-xs">
                 <i class="fa-solid fa-circle-exclamation text-2xl mb-2 text-rose-500"></i>
@@ -1222,7 +1237,7 @@ async function executeTransportSearch(e) {
 // Ulaşım Sonuçlarını Render Et (Google Flights & Skyscanner Standardı • Canlı Sefer Saatleri & Çift Bacak)
 function renderTransportResults(data, searchReq) {
     const resultsArea = document.getElementById("transportResultsArea");
-    if (data && (data.flexible_insights || data.destination_cross_sell)) {
+    if (data && (data.flexible_insights || data.destination_cross_sell || data.car_rental || data.notices || data.deep_links)) {
         window.lastTransportData = data;
     } else if (window.lastTransportData) {
         data = Object.assign({}, window.lastTransportData, data);
@@ -1237,17 +1252,37 @@ function renderTransportResults(data, searchReq) {
     let html = '';
 
     const isEn = window.currentAppLang === 'en';
-    // Uçuş Bilgi ve Kriter Özeti Çubuğu
+    const modeType = searchReq.transport_type || 'flight';
+    // Ulaşım Bilgi ve Kriter Özeti Çubuğu
     const adultWord = isEn ? ((searchReq.adults || 1) > 1 ? "Adults" : "Adult") : "Yetişkin";
     const childWord = isEn ? (searchReq.children > 1 ? "Children" : "Child") : "Çocuk";
     const infantWord = isEn ? (searchReq.infants > 1 ? "Infants" : "Infant") : "Bebek";
-    const paxSummaryText = `${searchReq.adults || 1} ${adultWord}${searchReq.children ? ', ' + searchReq.children + ' ' + childWord : ''}${searchReq.infants ? ', ' + searchReq.infants + ' ' + infantWord : ''} • ${searchReq.cabin_class === 'business' ? 'Business' : (isEn ? 'Economy' : 'Ekonomi')}`;
+    const paxSummaryText = `${searchReq.adults || 1} ${adultWord}${searchReq.children ? ', ' + searchReq.children + ' ' + childWord : ''}${searchReq.infants ? ', ' + searchReq.infants + ' ' + infantWord : ''}${modeType === 'flight' ? ' • ' + (searchReq.cabin_class === 'business' ? 'Business' : (isEn ? 'Economy' : 'Ekonomi')) : ''}`;
     const tripTypeText = searchReq.trip_type === 'round_trip' 
         ? `${isEn ? 'Round-Trip' : 'Gidiş - Dönüş'} (${searchReq.departure_date} ⇄ ${searchReq.return_date})` 
         : `${isEn ? 'One-Way' : 'Tek Yön'} (${searchReq.departure_date})`;
-    const scopeLabel = currentFlightScope === 'domestic' 
-        ? (isEn ? '🇹🇷 Domestic Flight' : '🇹🇷 Yurtiçi Uçuş') 
-        : (isEn ? '🌍 International Flight' : '🌍 Yurtdışı Uçuş');
+    
+    const isIntlRoute = Boolean(data.travel_context && data.travel_context.is_international) || (modeType === 'flight' && currentFlightScope === 'international');
+    let scopeLabel = '';
+    let headerModeIcon = 'fa-plane-departure';
+    if (modeType === 'bus') {
+        scopeLabel = isIntlRoute ? (isEn ? '🌍 International Bus' : '🌍 Uluslararası Otobüs') : (isEn ? '🚌 Domestic Bus' : '🚌 Otobüs Seferleri');
+        headerModeIcon = 'fa-bus';
+    } else if (modeType === 'train') {
+        scopeLabel = isIntlRoute ? (isEn ? '🌍 European Rail' : '🌍 Avrupa Tren Hattı') : (isEn ? '🚆 TCDD & High-Speed Rail' : '🚆 Tren & YHT Seferleri');
+        headerModeIcon = 'fa-train';
+    } else if (modeType === 'ferry') {
+        scopeLabel = isIntlRoute ? (isEn ? '⛴️ Greek Islands & Cruise' : '⛴️ Yunan Adaları & Cruise') : (isEn ? '⛴️ Domestic Ferry' : '⛴️ Deniz & Feribot Seferleri');
+        headerModeIcon = 'fa-ship';
+    } else if (modeType === 'car') {
+        scopeLabel = isEn ? '🚗 Car Rental Comparison' : '🚗 Kiralık Araç Karşılaştırma';
+        headerModeIcon = 'fa-car-side';
+    } else {
+        scopeLabel = isIntlRoute
+            ? (isEn ? '🌍 International Flight' : '🌍 Yurtdışı Uçuş')
+            : (isEn ? '🇹🇷 Domestic Flight' : '🇹🇷 Yurtiçi Uçuş');
+        headerModeIcon = 'fa-plane-departure';
+    }
 
     html += `
         <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-5 sm:p-6 mb-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl border border-slate-700">
@@ -1262,7 +1297,7 @@ function renderTransportResults(data, searchReq) {
                 </div>
                 <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
                     <span>${escapeHtml(searchReq.origin)}</span>
-                    <i class="fa-solid fa-plane-departure text-amber-400 text-base"></i>
+                    <i class="fa-solid ${headerModeIcon} text-amber-400 text-base"></i>
                     <span>${escapeHtml(searchReq.destination)}</span>
                 </h3>
             </div>
@@ -1653,11 +1688,23 @@ function renderTransportResults(data, searchReq) {
             html += `</div>`;
         }
     } else if (tickets.length === 0) {
+        const routeNotices = (data.notices || []).filter(n => !n.includes("Güven ve Şeffaflık İlkesi"));
+        const primaryNotice = routeNotices.length > 0
+            ? routeNotices[0]
+            : (isEn ? "No direct scheduled service found on this route for the selected date." : "Bu güzergahta seçili tarihte doğrudan sefer bulunamadı.");
+        const secondaryNotice = routeNotices.length > 1
+            ? routeNotices.slice(1).join(" • ")
+            : (modeType === 'ferry'
+                ? (isEn ? "Please select a coastal port or use Smart Route for combined travel." : "Lütfen feribot iskelesi olan bir kıyı noktası seçiniz veya Akıllı Rota Sihirbazı'nı kullanınız.")
+                : (modeType === 'train'
+                    ? (isEn ? "Please check bus or flight options for this route." : "Bu güzergah için otobüs veya uçak alternatiflerini inceleyebilirsiniz.")
+                    : (isEn ? "Please try a different date or transport mode." : "Lütfen farklı bir tarih veya alternatif ulaşım modunu seçiniz.")));
+        const emptyIcon = modeType === 'ferry' ? 'fa-anchor-circle-xmark' : (modeType === 'train' ? 'fa-train' : (modeType === 'bus' ? 'fa-bus' : 'fa-plane-slash'));
         html += `
             <div class="bg-white p-10 rounded-3xl border-2 border-slate-200 text-center shadow-xs mb-6">
-                <i class="fa-solid fa-plane-slash text-3xl text-slate-400 mb-2"></i>
-                <div class="font-black text-slate-800 text-base">Bu güzergahta seçili tarihte doğrudan sefer bulunamadı.</div>
-                <div class="text-xs text-slate-500 mt-1 font-medium">Lütfen farklı bir tarih veya en yakın büyük merkez havalimanını seçiniz.</div>
+                <i class="fa-solid ${emptyIcon} text-3xl text-amber-500 mb-3"></i>
+                <div class="font-black text-slate-800 text-base">${escapeHtml(primaryNotice)}</div>
+                <div class="text-xs text-slate-500 mt-1.5 font-medium">${escapeHtml(secondaryNotice)}</div>
             </div>
         `;
     } else {
@@ -2361,7 +2408,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     <i class="fa-solid fa-arrow-up-right-from-square text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
                                 </a>
                                 <div class="text-[10px] text-center text-slate-400 font-medium mt-1.5">
-                                    ${ticket.carrier.includes('İDO') ? 'İDO resmi satış altyapısı' : (ticket.carrier.includes('BUDO') ? 'BURULAŞ resmi biletleme portali' : 'Doğrudan yetkili deniz yolu rezervasyonu')}
+                                    ${(ticket.carrier && ticket.carrier.includes('İDO')) ? 'İDO resmi satış altyapısı' : ((ticket.carrier && ticket.carrier.includes('BUDO')) ? 'BURULAŞ resmi biletleme portali' : 'Doğrudan yetkili deniz yolu rezervasyonu')}
                                 </div>
                             </div>
                         </div>
@@ -2675,7 +2722,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 ${ticket.price ? `${Number(ticket.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${ticket.currency || '₺'}` : (isEn ? 'Live Fare' : 'Canlı Fiyat')}
                             </div>
                             <div class="text-[10px] text-slate-500 font-medium mt-0.5">
-                                ${totalPaxText} ${isEn ? 'total' : 'için toplam'}${isRoundTrip && ticket.price ? ` <span class="text-amber-700 font-semibold">(${isEn ? 'One-way avg.' : 'Tek yön ort.'} ~${Math.round(ticket.price / (searchReq.passengers || 1) / 2).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ₺)</span>` : ''}
+                                ${totalPaxText} ${isEn ? 'total' : 'için toplam'}${isRoundTrip && ticket.price ? ` <span class="text-amber-700 font-semibold">(${isEn ? 'One-way avg.' : 'Tek yön ort.'} ~${Math.round(ticket.price / (searchReq.passengers || 1) / 2).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${ticket.currency || '₺'})</span>` : ''}
                             </div>
                         </div>
 
@@ -2868,11 +2915,12 @@ async function executeHotelSearch(e) {
         return;
     }
 
+    const safeCity = escapeHtml(city);
     const resultsArea = document.getElementById("hotelResultsArea");
     resultsArea.innerHTML = `
         <div class="p-12 text-center bg-gradient-to-b from-amber-50/50 to-white rounded-3xl border border-amber-200/60 shadow-xs">
             <div class="inline-block w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <div class="text-lg font-black text-slate-800">${city} Otelleri ve Ulaşım Seçenekleri Canlı Taranıyor...</div>
+            <div class="text-lg font-black text-slate-800">${safeCity} Otelleri ve Ulaşım Seçenekleri Canlı Taranıyor...</div>
             <div class="text-xs text-slate-500 mt-1.5 font-medium">Uçak, tren, otobüs ve feribot alternatifleri ile canlı otel odaları sorgulanıyor.</div>
         </div>
     `;
@@ -2880,8 +2928,18 @@ async function executeHotelSearch(e) {
     resultsArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
     try {
+        if (window._activeHotelAbort) {
+            try { window._activeHotelAbort.abort(); } catch (_) {}
+        }
+        const abortCtrl = new AbortController();
+        window._activeHotelAbort = abortCtrl;
+
+        const dynamicOrigin = (window.HakikiTravelContext && window.HakikiTravelContext.origin_name)
+            || (document.getElementById("transOrigin") && document.getElementById("transOrigin").value.trim())
+            || "İstanbul";
+
         const payload = {
-            origin: "İstanbul",
+            origin: dynamicOrigin,
             destination: city,
             departure_date: cin,
             return_date: cout,
@@ -2895,17 +2953,19 @@ async function executeHotelSearch(e) {
         const res = await fetch("/api/search", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal: abortCtrl.signal
         });
 
         const data = await res.json();
         renderHotelResults(data.hotel_info, city, cin, cout, guests, data);
     } catch (err) {
+        if (err && err.name === "AbortError") return;
         resultsArea.innerHTML = `
             <div class="p-8 text-center bg-rose-50 border border-rose-200 rounded-3xl text-rose-800">
                 <i class="fa-solid fa-circle-exclamation text-2xl mb-2 text-rose-500"></i>
                 <div class="font-bold">Otel araması sırasında bir hata oluştu.</div>
-                <div class="text-xs mt-1 text-rose-600">${err.message}</div>
+                <div class="text-xs mt-1 text-rose-600">${escapeHtml(err.message)}</div>
             </div>
         `;
     }
@@ -2914,12 +2974,16 @@ async function executeHotelSearch(e) {
 // OTEL ARAMA SONUÇLARI: MULTI-MODAL ULAŞIM BANDI + KOMBİNE SEPET + CANLI OTELLER
 function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     const resultsArea = document.getElementById("hotelResultsArea");
+    const safeCity = escapeHtml(city);
+    const safeCityJs = String(city || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    const activeOrigName = (data && data.origin) || (window.HakikiTravelContext && window.HakikiTravelContext.origin_name) || 'İstanbul';
+    const safeOrigJs = String(activeOrigName).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     if (!hotelInfo) {
         resultsArea.innerHTML = `
             <div class="bg-white p-10 rounded-3xl border border-slate-200 text-center shadow-xs">
-                <div class="font-black text-lg text-slate-800">${city} için resmi arama linki hazırlandı.</div>
+                <div class="font-black text-lg text-slate-800">${safeCity} için resmi arama linki hazırlandı.</div>
                 <div class="mt-4">
-                    <a href="https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&aid=585474" target="_blank" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
+                    <a href="https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&aid=585474" target="_blank" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
                         <span>Booking.com'da Canlı Odaları Aç</span>
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
@@ -2985,11 +3049,11 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950">
                             🧭 Şehre Ulaşım Alternatifleri
                         </span>
-                        <span class="text-xs text-slate-400 font-bold">${city} Seyahatiniz İçin Ulaşım Seçenekleri</span>
+                        <span class="text-xs text-slate-400 font-bold">${safeCity} Seyahatiniz İçin Ulaşım Seçenekleri</span>
                     </div>
-                    <h4 class="text-base sm:text-lg font-black text-white">${city} Şehrine Nasıl Gidilir? (Doğrulanmış Taban Fiyatlar)</h4>
+                    <h4 class="text-base sm:text-lg font-black text-white">${safeCity} Şehrine Nasıl Gidilir? (Doğrulanmış Taban Fiyatlar)</h4>
                 </div>
-                <button onclick="prefillTransportAndSwitch('İstanbul', '${city}', '${cin}', '${cout}')" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-amber-300 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0">
+                <button onclick="prefillTransportAndSwitch('${safeOrigJs}', '${safeCityJs}', '${escapeHtml(cin)}', '${escapeHtml(cout)}')" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-amber-300 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0">
                     <span>Tüm Sefer Saatlerini Listele ▾</span>
                 </button>
             </div>
@@ -3107,7 +3171,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-xs">
                             🎒 Akıllı Kombine Paket
                         </span>
-                        <span class="text-xs text-slate-500 font-bold">${city} Seyahati (${hotelInfo.nights || 2} Gece • ${guests} Kişi)</span>
+                        <span class="text-xs text-slate-500 font-bold">${safeCity} Seyahati (${hotelInfo.nights || 2} Gece • ${escapeHtml(guests)} Kişi)</span>
                     </div>
                     <h3 class="text-xl font-black text-slate-900 leading-snug">Ulaşım + Otel Birlikte Planlayın</h3>
                     <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-700 mt-2 font-medium">
@@ -3166,18 +3230,18 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                             <span class="px-2 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-900 border border-blue-200">Canlı Otel Arama</span>
                         </div>
                         <p class="text-[11px] text-slate-600 leading-relaxed font-normal">
-                            ${city} genelindeki tüm müsait otel, pansiyon ve butik konaklama seçeneklerini tarihleriniz ve ${guests} misafir için önceden doldurulmuş ekranda inceleyin.
+                            ${safeCity} genelindeki tüm müsait otel, pansiyon ve butik konaklama seçeneklerini tarihleriniz ve ${escapeHtml(guests)} misafir için önceden doldurulmuş ekranda inceleyin.
                         </p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-100">
                         ${hotelInfo.is_international ? `
                             <a href="${hotelInfo.booking_url || bookingCityLink}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                                <span>🏨 Tüm ${city} Otellerini Listele (Booking.com)</span>
+                                <span>🏨 Tüm ${safeCity} Otellerini Listele (Booking.com)</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                             </a>
                         ` : `
                             <a href="${hotelInfo.agoda_url || hotelInfo.enuygun_url || bookingCityLink}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                                <span>🏨 Tüm ${city} Otellerini Listele (Agoda / Enuygun)</span>
+                                <span>🏨 Tüm ${safeCity} Otellerini Listele (Agoda / Enuygun)</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                             </a>
                         `}
@@ -3523,8 +3587,8 @@ function setupEventListeners() {
     }
 }
 
-// Etkinlik & Festival Habercisi Abonelik Yöneticisi
-function handleRadarSubscribe(event) {
+// Etkinlik & Festival Habercisi Abonelik Yöneticisi (Gerçek Backend & Resend Entegreli)
+async function handleRadarSubscribe(event) {
     if (event) event.preventDefault();
     const input = document.getElementById("radarEmailInput");
     const form = document.getElementById("radarSubscribeForm");
@@ -3546,10 +3610,25 @@ function handleRadarSubscribe(event) {
         console.warn("Storage error", e);
     }
 
+    let serverMsg = "Tebrikler! Yeni festival & yarış takvimleri açıldığında ilk sizin haberiniz olacak.";
+    try {
+        const res = await fetch("/api/erken-kayit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, kvkk_consent: true })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.message) serverMsg = data.message;
+        }
+    } catch (e) {
+        console.warn("Radar backend kayıt uyarısı:", e);
+    }
+
     form.innerHTML = `
         <div class="px-4 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-xs flex items-center gap-2">
             <i class="fa-solid fa-circle-check text-emerald-400"></i>
-            <span>Tebrikler! Yeni festival & yarış takvimleri açıldığında ilk sizin haberiniz olacak.</span>
+            <span>${escapeHtml(serverMsg)}</span>
         </div>
     `;
 }
@@ -3565,7 +3644,8 @@ window.selectFlightCabin = selectFlightCabin;
 window.switchTransportSubTab = switchTransportSubTab;
 window.switchMasterTab = switchMasterTab;
 window.switchHotelScope = switchHotelScope;
-window.filterCuratedEvents = filterCuratedEvents;
+window.filterEvents = filterEvents;
+window.filterCuratedEvents = filterEvents;
 window.planEventTrip = planEventTrip;
 window.prefillTransportAndSwitch = prefillTransportAndSwitch;
 window.executeTransportSearch = executeTransportSearch;

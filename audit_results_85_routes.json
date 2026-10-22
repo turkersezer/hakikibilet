@@ -1,0 +1,775 @@
+{
+  "stats": {
+    "PASS": 85,
+    "FAIL": 0,
+    "WARN": 0,
+    "TOTAL": 85
+  },
+  "results": [
+    {
+      "id": "A01",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "İstanbul -> İzmir",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A02",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Ankara -> Antalya",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A03",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Trabzon -> Adana",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A04",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Gaziantep -> İstanbul",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A05",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Erzurum -> Bursa",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A06",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Bodrum (Muğla) -> İstanbul",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A07",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Diyarbakır -> İzmir",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A08",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Samsun -> Antalya",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A09",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Kayseri -> İstanbul",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A10",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Van -> Ankara",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A11",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Kars -> İstanbul",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A12",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Dalaman (Muğla) -> İstanbul",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A13",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Malatya -> İstanbul",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A14",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Sivas -> İzmir",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "A15",
+      "group": "Grup A: Yurt İçi Uçuş",
+      "route": "Şanlıurfa -> Ankara",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B01",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İstanbul -> Londra",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B02",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İstanbul -> Paris",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B03",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İzmir -> Berlin",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B04",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "Antalya -> Moskova",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B05",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "Ankara -> Bakü",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B06",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İstanbul -> Tokyo",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B07",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İstanbul -> New York",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B08",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İstanbul -> Roma",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B09",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İstanbul -> Dubai",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B10",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İstanbul -> Amsterdam",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B11",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İzmir -> Atina",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B12",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "Antalya -> Frankfurt",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B13",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "İstanbul -> Barselona",
+      "mode": "flight",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B14",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "Ankara -> Viyana",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "B15",
+      "group": "Grup B: Yurt Dışı Uçuş",
+      "route": "Trabzon -> Tiflis",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C01",
+      "group": "Grup C: Otobüs",
+      "route": "İstanbul -> Ankara",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C02",
+      "group": "Grup C: Otobüs",
+      "route": "İzmir -> Bodrum (Muğla)",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C03",
+      "group": "Grup C: Otobüs",
+      "route": "Antalya -> Konya",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C04",
+      "group": "Grup C: Otobüs",
+      "route": "Bursa -> Eskişehir",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C05",
+      "group": "Grup C: Otobüs",
+      "route": "Adana -> Mersin",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C06",
+      "group": "Grup C: Otobüs",
+      "route": "Trabzon -> Rize",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C07",
+      "group": "Grup C: Otobüs",
+      "route": "Gaziantep -> Şanlıurfa",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C08",
+      "group": "Grup C: Otobüs",
+      "route": "Diyarbakır -> Mardin",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C09",
+      "group": "Grup C: Otobüs",
+      "route": "Kayseri -> Nevşehir",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C10",
+      "group": "Grup C: Otobüs",
+      "route": "İstanbul -> Edirne",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C11",
+      "group": "Grup C: Otobüs (Uluslararası)",
+      "route": "İstanbul -> Sofya",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C12",
+      "group": "Grup C: Otobüs (Uluslararası)",
+      "route": "İstanbul -> Selanik",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C13",
+      "group": "Grup C: Otobüs (Avrupa)",
+      "route": "Berlin -> Prag",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C14",
+      "group": "Grup C: Otobüs (Avrupa)",
+      "route": "Paris -> Brüksel",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "C15",
+      "group": "Grup C: Otobüs (Avrupa)",
+      "route": "Viyana -> Budapeşte",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D01",
+      "group": "Grup D: Demiryolu (TCDD YHT)",
+      "route": "İstanbul -> Ankara",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D02",
+      "group": "Grup D: Demiryolu (TCDD YHT)",
+      "route": "Ankara -> Konya",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D03",
+      "group": "Grup D: Demiryolu (TCDD YHT)",
+      "route": "İstanbul -> Eskişehir",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D04",
+      "group": "Grup D: Demiryolu (TCDD YHT)",
+      "route": "Ankara -> Eskişehir",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D05",
+      "group": "Grup D: Demiryolu (TCDD YHT)",
+      "route": "İstanbul -> Konya",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D06",
+      "group": "Grup D: Demiryolu (TCDD YHT)",
+      "route": "Ankara -> Sivas",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D07",
+      "group": "Grup D: Demiryolu (TCDD YHT)",
+      "route": "İstanbul -> Karaman",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D08",
+      "group": "Grup D: Demiryolu (Doğu Ekspresi)",
+      "route": "Ankara -> Kars",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D09",
+      "group": "Grup D: Demiryolu (İzmir Mavi)",
+      "route": "İzmir -> Ankara",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D10",
+      "group": "Grup D: Demiryolu (Bölgesel)",
+      "route": "Adana -> Mersin",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D11",
+      "group": "Grup D: Demiryolu (Ege Bölgesel)",
+      "route": "İzmir -> Denizli",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "D12",
+      "group": "Grup D: Demiryolu (Avrupa)",
+      "route": "Paris -> Londra",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "📌 [ONAY BEKLENİYOR] Omio Travelpayouts ortaklık onayı bekleniyor (Onaylanınca tp.media eklenecek)."
+    },
+    {
+      "id": "D13",
+      "group": "Grup D: Demiryolu (Avrupa)",
+      "route": "Roma -> Milano",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "📌 [ONAY BEKLENİYOR] Omio Travelpayouts ortaklık onayı bekleniyor (Onaylanınca tp.media eklenecek)."
+    },
+    {
+      "id": "D14",
+      "group": "Grup D: Demiryolu (Avrupa)",
+      "route": "Viyana -> Budapeşte",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "📌 [ONAY BEKLENİYOR] Omio Travelpayouts ortaklık onayı bekleniyor (Onaylanınca tp.media eklenecek)."
+    },
+    {
+      "id": "D15",
+      "group": "Grup D: Demiryolu (Avrupa)",
+      "route": "Münih -> Zürih",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "📌 [ONAY BEKLENİYOR] Omio Travelpayouts ortaklık onayı bekleniyor (Onaylanınca tp.media eklenecek)."
+    },
+    {
+      "id": "E01",
+      "group": "Grup E: Feribot (Marmara)",
+      "route": "Yenikapı (İstanbul - İDO) -> Bursa (Güzelyalı İskelesi - İDO)",
+      "mode": "ferry",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E02",
+      "group": "Grup E: Feribot (Marmara)",
+      "route": "Yenikapı (İstanbul - İDO) -> Yalova İskelesi",
+      "mode": "ferry",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E03",
+      "group": "Grup E: Feribot (Marmara)",
+      "route": "Pendik (İstanbul - İDO) -> Yalova İskelesi",
+      "mode": "ferry",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E04",
+      "group": "Grup E: Feribot (Marmara)",
+      "route": "Yenikapı (İstanbul - İDO) -> Bandırma Limanı",
+      "mode": "ferry",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E05",
+      "group": "Grup E: Feribot (Marmara)",
+      "route": "Yenikapı (İstanbul - İDO) -> Avşa Adası",
+      "mode": "ferry",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E06",
+      "group": "Grup E: Feribot (Yunan Adaları)",
+      "route": "Çeşme Limanı (İzmir) -> Sakız Adası (Chios)",
+      "mode": "ferry",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E07",
+      "group": "Grup E: Feribot (Yunan Adaları)",
+      "route": "Kuşadası Limanı (Aydın) -> Samos Adası (Sisam)",
+      "mode": "ferry",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E08",
+      "group": "Grup E: Feribot (Yunan Adaları)",
+      "route": "Bodrum (Muğla) -> Kos Adası (İstanköy)",
+      "mode": "ferry",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E09",
+      "group": "Grup E: Feribot (Yunan Adaları)",
+      "route": "Fethiye Limanı (Muğla) -> Rodos Adası (Rhodes)",
+      "mode": "ferry",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "E10",
+      "group": "Grup E: Feribot (Yunan Adaları)",
+      "route": "Kaş Limanı (Antalya) -> Meis Adası (Kastellorizo)",
+      "mode": "ferry",
+      "type": "round_trip",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "F01",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "Ankara -> Konya",
+      "mode": "ferry",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "F02",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "Sivas -> Malatya",
+      "mode": "ferry",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "F03",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "Antalya -> Trabzon",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "F04",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "Muğla -> Sinop",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "F05",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "Bursa -> Antalya",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "F06",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "Paris -> Tokyo",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "F07",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "İstanbul -> New York",
+      "mode": "bus",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "F08",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "İstanbul -> İstanbul",
+      "mode": "flight",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Aynı kalkış ve varış noktası başarıyla engellendi ve kullanıcı dostu uyarı verildi."
+    },
+    {
+      "id": "F09",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "Ankara -> Ankara",
+      "mode": "train",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Aynı kalkış ve varış noktası başarıyla engellendi ve kullanıcı dostu uyarı verildi."
+    },
+    {
+      "id": "F10",
+      "group": "Grup F: İmkansız/Negatif",
+      "route": "Yalova -> Kars",
+      "mode": "ferry",
+      "type": "one_way",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "G01",
+      "group": "Grup G: Sınır Durumlar",
+      "route": "İstanbul -> Ankara",
+      "mode": "all",
+      "type": "past_date",
+      "status": "PASS",
+      "notes": "Geçmiş tarih güvenli tarihe çekildi: 2026-10-29"
+    },
+    {
+      "id": "G02",
+      "group": "Grup G: Sınır Durumlar",
+      "route": "İstanbul -> İzmir",
+      "mode": "all",
+      "type": "invalid_pax",
+      "status": "PASS",
+      "notes": "Yolcu sayısı güvenli sınıra (1) normalize edildi."
+    },
+    {
+      "id": "G03",
+      "group": "Grup G: Sınır Durumlar",
+      "route": "İstanbul -> Antalya",
+      "mode": "flight",
+      "type": "currency_eur",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "G04",
+      "group": "Grup G: Sınır Durumlar",
+      "route": "İstanbul -> Londra",
+      "mode": "flight",
+      "type": "currency_usd",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    },
+    {
+      "id": "G05",
+      "group": "Grup G: Sınır Durumlar",
+      "route": "<script>alert(1)</script>İzmir -> Atina'--",
+      "mode": "all",
+      "type": "special_chars",
+      "status": "PASS",
+      "notes": "Eksiksiz & Doğru"
+    }
+  ]
+}
