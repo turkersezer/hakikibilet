@@ -295,6 +295,106 @@ function quickFillBus(origin, dest) {
 }
 window.quickFillBus = quickFillBus;
 
+// Otobüs ve Tren Kapsam Durum Değişkenleri (Yurtiçi vs Yurtdışı)
+let currentBusScope = 'domestic'; // 'domestic', 'intl'
+let currentTrainScope = 'domestic'; // 'domestic', 'intl'
+
+function setBusScope(scope) {
+    currentBusScope = scope;
+    const domBtn = document.getElementById("busScope-domestic");
+    const intlBtn = document.getElementById("busScope-intl");
+    const domPills = document.getElementById("busDomesticPills");
+    const intlPills = document.getElementById("busIntlPills");
+    const summary = document.getElementById("busSummaryText");
+    const originInput = document.getElementById("transOrigin");
+    const destInput = document.getElementById("transDest");
+
+    const activeCls = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-2xs transition";
+    const inactiveCls = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition";
+
+    if (domBtn) domBtn.className = scope === 'domestic' ? activeCls : inactiveCls;
+    if (intlBtn) intlBtn.className = scope === 'intl' ? activeCls : inactiveCls;
+
+    if (domPills) {
+        domPills.classList.toggle("hidden", scope !== 'domestic');
+        domPills.classList.toggle("flex", scope === 'domestic');
+    }
+    if (intlPills) {
+        intlPills.classList.toggle("hidden", scope !== 'intl');
+        intlPills.classList.toggle("flex", scope === 'intl');
+    }
+
+    if (summary) {
+        if (scope === 'domestic') {
+            summary.innerHTML = `<i class="fa-solid fa-bus text-emerald-600"></i><span>Kamil Koç, Pamukkale & Obilet Canlı Seferleri</span>`;
+        } else {
+            summary.innerHTML = `<i class="fa-solid fa-earth-europe text-emerald-600"></i><span>FlixBus ile Balkanlar & Avrupa Şehirlerarası Hatları</span>`;
+        }
+    }
+
+    if (originInput && !originInput.value) {
+        originInput.placeholder = scope === 'domestic' 
+            ? "Örn: İstanbul (Esenler / Alibeyköy / Harem)" 
+            : "Örn: İstanbul, Edirne, Berlin, Paris";
+    }
+    if (destInput && !destInput.value) {
+        destInput.placeholder = scope === 'domestic'
+            ? "Örn: Ankara (AŞTİ), İzmir, Antalya, Bursa"
+            : "Örn: Selanik, Sofya, Bükreş, Varna, Prag, Amsterdam";
+    }
+
+    populateDatalists('bus', scope);
+}
+window.setBusScope = setBusScope;
+
+function setTrainScope(scope) {
+    currentTrainScope = scope;
+    const domBtn = document.getElementById("trainScope-domestic");
+    const intlBtn = document.getElementById("trainScope-intl");
+    const domPills = document.getElementById("trainDomesticPills");
+    const intlPills = document.getElementById("trainIntlPills");
+    const summary = document.getElementById("trainSummaryText");
+    const originInput = document.getElementById("transOrigin");
+    const destInput = document.getElementById("transDest");
+
+    const activeCls = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-slate-800 to-slate-950 text-white shadow-2xs transition";
+    const inactiveCls = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition";
+
+    if (domBtn) domBtn.className = scope === 'domestic' ? activeCls : inactiveCls;
+    if (intlBtn) intlBtn.className = scope === 'intl' ? activeCls : inactiveCls;
+
+    if (domPills) {
+        domPills.classList.toggle("hidden", scope !== 'domestic');
+        domPills.classList.toggle("flex", scope === 'domestic');
+    }
+    if (intlPills) {
+        intlPills.classList.toggle("hidden", scope !== 'intl');
+        intlPills.classList.toggle("flex", scope === 'intl');
+    }
+
+    if (summary) {
+        if (scope === 'domestic') {
+            summary.innerHTML = `<i class="fa-solid fa-train text-indigo-600"></i><span>TCDD Taşımacılık Resmi E-Bilet Tarifesi</span>`;
+        } else {
+            summary.innerHTML = `<i class="fa-solid fa-earth-europe text-indigo-600"></i><span>Trainline ile Eurostar, TGV & Avrupa Hızlı Trenleri</span>`;
+        }
+    }
+
+    if (originInput && !originInput.value) {
+        originInput.placeholder = scope === 'domestic' 
+            ? "Örn: İstanbul (Söğütlüçeşme / Bostancı / Halkalı)" 
+            : "Örn: İstanbul (Halkalı), Paris, Roma, Amsterdam, Berlin";
+    }
+    if (destInput && !destInput.value) {
+        destInput.placeholder = scope === 'domestic'
+            ? "Örn: Ankara Garı, Eskişehir, Konya, Sivas, Kars"
+            : "Örn: Sofya, Bükreş, Londra, Milano, Münih, Prag";
+    }
+
+    populateDatalists('train', scope);
+}
+window.setTrainScope = setTrainScope;
+
 // Gemi & Feribot Segment & Araç Durum Değişkenleri
 let currentFerryCategory = 'all'; // 'all', 'domestic', 'greek_islands', 'cruise'
 let currentFerryVehicleType = 'passenger'; // 'passenger', 'car'
@@ -621,58 +721,98 @@ function populateDatalists(transportMode, scope) {
         }).join("");
         if (destList) destList.innerHTML = specialDests + restDests;
     } else if (transportMode === 'train') {
-        const trainStationsHtml = `
-            <option value="İstanbul">🚆 İstanbul - Söğütlüçeşme / Bostancı / Halkalı YHT</option>
-            <option value="Ankara">🚆 Ankara Gar (YHT / Anahat)</option>
-            <option value="Eskişehir">🚆 Eskişehir Gar (YHT)</option>
-            <option value="Konya">🚆 Konya Gar (YHT)</option>
-            <option value="Sivas">🚆 Sivas Gar (YHT)</option>
-            <option value="Karaman">🚆 Karaman Gar (YHT)</option>
-            <option value="Kars">🚆 Kars Gar (Doğu Ekspresi)</option>
-            <option value="İzmir">🚆 İzmir Basmane (İzmir Mavi Treni)</option>
-            <option value="Denizli">🚆 Denizli Gar (Pamukkale Ekspresi)</option>
-            <option value="Adana">🚆 Adana Gar</option>
-            <option value="Mersin">🚆 Mersin Gar</option>
-            <option value="Kayseri">🚆 Kayseri Gar</option>
-            <option value="Tatvan">🚆 Tatvan Gar (Van Gölü Ekspresi)</option>
-            <option value="Londra">🚆 Londra St Pancras (Eurostar Hızlı Tren)</option>
-            <option value="Paris">🚆 Paris Gare du Nord (Eurostar / TGV)</option>
-            <option value="Roma">🚆 Roma Termini (Frecciarossa 1000)</option>
-            <option value="Milano">🚆 Milano Centrale (Frecciarossa)</option>
-            <option value="Berlin">🚆 Berlin Hbf (ICE Hızlı Tren)</option>
-            <option value="Münih">🚆 Münih Hbf (ICE)</option>
-            <option value="Madrid">🚆 Madrid Atocha (Renfe AVE)</option>
-            <option value="Barselona">🚆 Barselona Sants (Renfe AVE)</option>
-        `;
+        const trainScope = scope || currentTrainScope;
+        let trainStationsHtml = '';
+        if (trainScope === 'intl') {
+            trainStationsHtml = `
+                <option value="İstanbul">🚆 İstanbul - Halkalı Garı (Balkan Ekspresi)</option>
+                <option value="Sofya">🌍 Sofya - Merkez Gar (Bulgaristan)</option>
+                <option value="Bükreş">🌍 Bükreş - Gara de Nord (Romanya)</option>
+                <option value="Paris">🌍 Paris - Gare du Nord / de Lyon (Eurostar/TGV)</option>
+                <option value="Londra">🌍 Londra - St Pancras Int. (Eurostar)</option>
+                <option value="Roma">🌍 Roma - Termini (Frecciarossa)</option>
+                <option value="Milano">🌍 Milano - Centrale (Frecciarossa)</option>
+                <option value="Amsterdam">🌍 Amsterdam - Centraal (Eurostar)</option>
+                <option value="Berlin">🌍 Berlin - Hbf (ICE)</option>
+                <option value="Münih">🌍 Münih - Hbf (ICE)</option>
+                <option value="Madrid">🌍 Madrid - Puerta de Atocha (AVE)</option>
+                <option value="Barselona">🌍 Barselona - Sants (AVE)</option>
+                <option value="Zürih">🌍 Zürih - HB (Railjet)</option>
+                <option value="Viyana">🌍 Viyana - Hbf (Railjet)</option>
+                <option value="Prag">🌍 Prag - Hlavni Nadrazi (EuroCity)</option>
+            `;
+        } else {
+            trainStationsHtml = `
+                <option value="İstanbul">🚆 İstanbul - Söğütlüçeşme / Bostancı / Halkalı YHT</option>
+                <option value="Ankara">🚆 Ankara Gar (YHT / Anahat)</option>
+                <option value="Eskişehir">🚆 Eskişehir Gar (YHT)</option>
+                <option value="Konya">🚆 Konya Gar (YHT)</option>
+                <option value="Sivas">🚆 Sivas Gar (YHT)</option>
+                <option value="Karaman">🚆 Karaman Gar (YHT)</option>
+                <option value="Kars">🚆 Kars Gar (Doğu Ekspresi)</option>
+                <option value="İzmir">🚆 İzmir Basmane (İzmir Mavi Treni)</option>
+                <option value="Denizli">🚆 Denizli Gar (Pamukkale Ekspresi)</option>
+                <option value="Adana">🚆 Adana Gar</option>
+                <option value="Mersin">🚆 Mersin Gar</option>
+                <option value="Kayseri">🚆 Kayseri Gar</option>
+                <option value="Tatvan">🚆 Tatvan Gar (Van Gölü Ekspresi)</option>
+                <option value="Kurtalan">🚆 Kurtalan Gar (Güney Kurtalan Ekspresi)</option>
+            `;
+        }
         if (originList) originList.innerHTML = trainStationsHtml;
         if (destList) destList.innerHTML = trainStationsHtml;
     } else if (transportMode === 'bus') {
-        const busTerminalsHtml = `
-            <option value="İstanbul">🚌 İstanbul - Esenler / Alibeyköy / Harem Otogarı</option>
-            <option value="Ankara">🚌 Ankara - AŞTİ Otobüs Terminali</option>
-            <option value="İzmir">🚌 İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)</option>
-            <option value="Antalya">🚌 Antalya - Şehirlerarası Otobüs Terminali</option>
-            <option value="Bursa">🚌 Bursa - Şehirlerarası Otobüs Terminali</option>
-            <option value="Eskişehir">🚌 Eskişehir - Şehirlerarası Otobüs Terminali</option>
-            <option value="Adana">🚌 Adana - Merkez Otogarı</option>
-            <option value="Trabzon">🚌 Trabzon - Şehirlerarası Otogarı</option>
-            <option value="Gaziantep">🚌 Gaziantep - Şehirlerarası Otogarı</option>
-            <option value="Konya">🚌 Konya - Şehirlerarası Otobüs Terminali</option>
-            <option value="Kayseri">🚌 Kayseri - Şehirlerarası Otobüs Terminali</option>
-            <option value="Mersin">🚌 Mersin - Şehirlerarası Otobüs Terminali (MEŞOT)</option>
-            <option value="Bodrum">🚌 Muğla - Bodrum Şehirlerarası Otogarı</option>
-            <option value="Fethiye">🚌 Muğla - Fethiye Otogarı</option>
-            <option value="Marmaris">🚌 Muğla - Marmaris Otogarı</option>
-            <option value="Denizli">🚌 Denizli - Şehirlerarası Otobüs Terminali</option>
-            <option value="Diyarbakır">🚌 Diyarbakır - Şehirlerarası Otobüs Terminali</option>
-            <option value="Samsun">🚌 Samsun - Şehirlerarası Otobüs Terminali</option>
-            <option value="Balıkesir">🚌 Balıkesir - Şehirlerarası Otogarı</option>
-            <option value="Çanakkale">🚌 Çanakkale - Şehirlerarası Otogarı</option>
-            <option value="Edirne">🚌 Edirne - Şehirlerarası Otogarı</option>
-            <option value="Sofya">🌍 Sofya - Uluslararası Otogar (Bulgaristan)</option>
-            <option value="Selanik">🌍 Selanik - Makedonia Otobüs Terminali (Yunanistan)</option>
-            <option value="Bükreş">🌍 Bükreş - Filaret / Militari Otogarı (Romanya)</option>
-        `;
+        const busScope = scope || currentBusScope;
+        let busTerminalsHtml = '';
+        if (busScope === 'intl') {
+            busTerminalsHtml = `
+                <option value="İstanbul">🚌 İstanbul - Esenler / Alibeyköy Otogarı</option>
+                <option value="Edirne">🚌 Edirne - Şehirlerarası Otogarı</option>
+                <option value="Bursa">🚌 Bursa - Uluslararası Otobüs Terminali</option>
+                <option value="İzmir">🚌 İzmir - Şehirlerarası Otobüs Terminali</option>
+                <option value="Selanik">🌍 Selanik - Makedonia Otobüs Terminali (Yunanistan)</option>
+                <option value="Atina">🌍 Atina - Kifisou Otogarı (Yunanistan)</option>
+                <option value="Sofya">🌍 Sofya - Central Bus Station (Bulgaristan)</option>
+                <option value="Filibe">🌍 Filibe / Plovdiv - Yug Otogarı (Bulgaristan)</option>
+                <option value="Varna">🌍 Varna - Şehirlerarası Otogarı (Bulgaristan)</option>
+                <option value="Burgas">🌍 Burgas - Şehirlerarası Otogarı (Bulgaristan)</option>
+                <option value="Bükreş">🌍 Bükreş - Filaret Otobüs Terminali (Romanya)</option>
+                <option value="Berlin">🌍 Berlin - ZOB (Almanya - FlixBus)</option>
+                <option value="Prag">🌍 Prag - Florenc Bus Station (Çekya - FlixBus)</option>
+                <option value="Paris">🌍 Paris - Bercy Seine (Fransa - FlixBus)</option>
+                <option value="Amsterdam">🌍 Amsterdam - Sloterdijk (Hollanda - FlixBus)</option>
+                <option value="Münih">🌍 Münih - ZOB (Almanya - FlixBus)</option>
+                <option value="Zürih">🌍 Zürih - Carpark Sihlquai (İsviçre - FlixBus)</option>
+                <option value="Viyana">🌍 Viyana - Erdberg VIB (Avusturya - FlixBus)</option>
+                <option value="Budapeşte">🌍 Budapeşte - Nepliget (Macaristan - FlixBus)</option>
+                <option value="Roma">🌍 Roma - Tiburtina (İtalya - FlixBus)</option>
+                <option value="Floransa">🌍 Floransa - Villa Costanza (İtalya - FlixBus)</option>
+            `;
+        } else {
+            busTerminalsHtml = `
+                <option value="İstanbul">🚌 İstanbul - Esenler / Alibeyköy / Harem Otogarı</option>
+                <option value="Ankara">🚌 Ankara - AŞTİ Otobüs Terminali</option>
+                <option value="İzmir">🚌 İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)</option>
+                <option value="Antalya">🚌 Antalya - Şehirlerarası Otobüs Terminali</option>
+                <option value="Bursa">🚌 Bursa - Şehirlerarası Otobüs Terminali</option>
+                <option value="Eskişehir">🚌 Eskişehir - Şehirlerarası Otobüs Terminali</option>
+                <option value="Adana">🚌 Adana - Merkez Otogarı</option>
+                <option value="Trabzon">🚌 Trabzon - Şehirlerarası Otogarı</option>
+                <option value="Gaziantep">🚌 Gaziantep - Şehirlerarası Otogarı</option>
+                <option value="Konya">🚌 Konya - Şehirlerarası Otobüs Terminali</option>
+                <option value="Kayseri">🚌 Kayseri - Şehirlerarası Otobüs Terminali</option>
+                <option value="Mersin">🚌 Mersin - Şehirlerarası Otobüs Terminali (MEŞOT)</option>
+                <option value="Bodrum">🚌 Muğla - Bodrum Şehirlerarası Otogarı</option>
+                <option value="Fethiye">🚌 Muğla - Fethiye Otogarı</option>
+                <option value="Marmaris">🚌 Muğla - Marmaris Otogarı</option>
+                <option value="Denizli">🚌 Denizli - Şehirlerarası Otobüs Terminali</option>
+                <option value="Diyarbakır">🚌 Diyarbakır - Şehirlerarası Otobüs Terminali</option>
+                <option value="Samsun">🚌 Samsun - Şehirlerarası Otobüs Terminali</option>
+                <option value="Balıkesir">🚌 Balıkesir - Şehirlerarası Otogarı</option>
+                <option value="Çanakkale">🚌 Çanakkale - Şehirlerarası Otogarı</option>
+                <option value="Edirne">🚌 Edirne - Şehirlerarası Otogarı</option>
+            `;
+        }
         if (originList) originList.innerHTML = busTerminalsHtml;
         if (destList) destList.innerHTML = busTerminalsHtml;
     } else if (transportMode === 'ferry') {

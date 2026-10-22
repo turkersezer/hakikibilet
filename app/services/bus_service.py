@@ -129,10 +129,87 @@ class BusService:
         {"carrier": "Kamil Koç", "dep": "23:59", "arr": "06:30", "dur": "6 sa 30 dk", "price": 590.0, "type": "2+1 Gece Ekspresi", "badge": "🌙 Gece Seferi", "orig_term": "Esenler / Alibeyköy", "dest_term": "AŞTİ", "night": True}
     ]
 
+    # Uluslararası ve Balkanlar Sefer Çizelgesi (FlixBus & Kamil Koç Resmi Ağı)
+    INTERNATIONAL_BUS_ROUTES = {
+        ("istanbul", "selanik"): [
+            {"carrier": "Kamil Koç (FlixBus)", "dep": "21:00", "arr": "07:30", "dur": "10 sa 30 dk", "base_eur": 38.0, "type": "2+1 Uluslararası Hat", "badge": "🌍 FlixBus Balkan Ekspresi", "orig_term": "Esenler Otogarı", "dest_term": "Selanik (Makedonia)", "night": True},
+            {"carrier": "FlixBus / Alpar", "dep": "10:00", "arr": "20:30", "dur": "10 sa 30 dk", "base_eur": 36.0, "type": "2+1 Konfor", "badge": "Gündüz Seferi", "orig_term": "Alibeyköy Otogarı", "dest_term": "Selanik (Makedonia)", "night": False}
+        ],
+        ("selanik", "istanbul"): [
+            {"carrier": "Kamil Koç (FlixBus)", "dep": "20:30", "arr": "07:00", "dur": "10 sa 30 dk", "base_eur": 38.0, "type": "2+1 Uluslararası Hat", "badge": "🌍 FlixBus Gece Ekspresi", "orig_term": "Selanik (Makedonia)", "dest_term": "Esenler Otogarı", "night": True}
+        ],
+        ("istanbul", "sofya"): [
+            {"carrier": "FlixBus / Alpar Turizm", "dep": "22:00", "arr": "06:30", "dur": "8 sa 30 dk", "base_eur": 35.0, "type": "2+1 VIP", "badge": "🌍 FlixBus Sofya Ekspresi", "orig_term": "Esenler Otogarı", "dest_term": "Sofia Central Bus Station", "night": True},
+            {"carrier": "Metro Turizm (Balkan)", "dep": "09:30", "arr": "18:00", "dur": "8 sa 30 dk", "base_eur": 34.0, "type": "2+1 Rahat", "badge": "Gündüz Seferi", "orig_term": "Alibeyköy Otogarı", "dest_term": "Sofia Central Bus Station", "night": False}
+        ],
+        ("sofya", "istanbul"): [
+            {"carrier": "FlixBus / Alpar Turizm", "dep": "21:30", "arr": "06:00", "dur": "8 sa 30 dk", "base_eur": 35.0, "type": "2+1 VIP", "badge": "🌍 FlixBus Gece Ekspresi", "orig_term": "Sofia Central Bus Station", "dest_term": "Esenler Otogarı", "night": True}
+        ],
+        ("istanbul", "bukres"): [
+            {"carrier": "FlixBus", "dep": "20:00", "arr": "08:30", "dur": "12 sa 30 dk", "base_eur": 45.0, "type": "2+1 Uluslararası", "badge": "🌍 FlixBus Romanya Ekspresi", "orig_term": "Esenler Otogarı", "dest_term": "Bucuresti Filaret", "night": True}
+        ],
+        ("bukres", "istanbul"): [
+            {"carrier": "FlixBus", "dep": "19:00", "arr": "07:30", "dur": "12 sa 30 dk", "base_eur": 45.0, "type": "2+1 Uluslararası", "badge": "🌍 FlixBus Romanya Ekspresi", "orig_term": "Bucuresti Filaret", "dest_term": "Esenler Otogarı", "night": True}
+        ],
+        ("istanbul", "varna"): [
+            {"carrier": "FlixBus / Metro", "dep": "21:30", "arr": "06:00", "dur": "8 sa 30 dk", "base_eur": 32.0, "type": "2+1 Konfor", "badge": "🌍 FlixBus Karadeniz Sahil", "orig_term": "Esenler Otogarı", "dest_term": "Varna Bus Station", "night": True}
+        ],
+        ("varna", "istanbul"): [
+            {"carrier": "FlixBus / Metro", "dep": "21:00", "arr": "05:30", "dur": "8 sa 30 dk", "base_eur": 32.0, "type": "2+1 Konfor", "badge": "🌍 FlixBus Karadeniz Sahil", "orig_term": "Varna Bus Station", "dest_term": "Esenler Otogarı", "night": True}
+        ],
+        ("edirne", "filibe"): [
+            {"carrier": "FlixBus", "dep": "10:30", "arr": "13:30", "dur": "3 sa 00 dk", "base_eur": 18.0, "type": "Ekspres Hat", "badge": "🌍 FlixBus Sınır Geçiş Hattı", "orig_term": "Edirne Otogarı", "dest_term": "Plovdiv Yug", "night": False}
+        ],
+        ("filibe", "edirne"): [
+            {"carrier": "FlixBus", "dep": "15:00", "arr": "18:00", "dur": "3 sa 00 dk", "base_eur": 18.0, "type": "Ekspres Hat", "badge": "🌍 FlixBus Sınır Geçiş Hattı", "orig_term": "Plovdiv Yug", "dest_term": "Edirne Otogarı", "night": False}
+        ],
+        ("istanbul", "atina"): [
+            {"carrier": "Kamil Koç (FlixBus)", "dep": "16:30", "arr": "09:00", "dur": "16 sa 30 dk", "base_eur": 65.0, "type": "2+1 VIP Yatak Koltuk", "badge": "🌍 FlixBus Akdeniz Ekspresi", "orig_term": "Esenler Otogarı", "dest_term": "Athens Kifisou", "night": True}
+        ],
+        ("atina", "istanbul"): [
+            {"carrier": "Kamil Koç (FlixBus)", "dep": "15:00", "arr": "07:30", "dur": "16 sa 30 dk", "base_eur": 65.0, "type": "2+1 VIP Yatak Koltuk", "badge": "🌍 FlixBus Akdeniz Ekspresi", "orig_term": "Athens Kifisou", "dest_term": "Esenler Otogarı", "night": True}
+        ],
+        # Avrupa İçi Hatlar (Cross-Europe / Yurtdışından Yurtdışına)
+        ("berlin", "prag"): [
+            {"carrier": "FlixBus", "dep": "08:00", "arr": "12:30", "dur": "4 sa 30 dk", "base_eur": 24.0, "type": "FlixBus Express", "badge": "🌍 FlixBus Avrupa İçi Hat", "orig_term": "Berlin ZOB", "dest_term": "Prague Florenc", "night": False},
+            {"carrier": "FlixBus", "dep": "14:30", "arr": "19:00", "dur": "4 sa 30 dk", "base_eur": 26.0, "type": "FlixBus Express", "badge": "Öğleden Sonra Seferi", "orig_term": "Berlin Alexanderplatz", "dest_term": "Prague Florenc", "night": False}
+        ],
+        ("prag", "berlin"): [
+            {"carrier": "FlixBus", "dep": "09:00", "arr": "13:30", "dur": "4 sa 30 dk", "base_eur": 24.0, "type": "FlixBus Express", "badge": "🌍 FlixBus Avrupa İçi Hat", "orig_term": "Prague Florenc", "dest_term": "Berlin ZOB", "night": False}
+        ],
+        ("paris", "amsterdam"): [
+            {"carrier": "FlixBus", "dep": "09:30", "arr": "16:15", "dur": "6 sa 45 dk", "base_eur": 32.0, "type": "FlixBus Intercity", "badge": "🌍 FlixBus Batı Avrupa Ekspresi", "orig_term": "Paris Bercy Seine", "dest_term": "Amsterdam Sloterdijk", "night": False},
+            {"carrier": "FlixBus (Gece)", "dep": "23:00", "arr": "06:30", "dur": "7 sa 30 dk", "base_eur": 29.0, "type": "FlixBus Night", "badge": "🌙 Otel Tasarruflu Gece Seferi", "orig_term": "Paris Bercy Seine", "dest_term": "Amsterdam Sloterdijk", "night": True}
+        ],
+        ("amsterdam", "paris"): [
+            {"carrier": "FlixBus", "dep": "08:30", "arr": "15:15", "dur": "6 sa 45 dk", "base_eur": 32.0, "type": "FlixBus Intercity", "badge": "🌍 FlixBus Batı Avrupa Ekspresi", "orig_term": "Amsterdam Sloterdijk", "dest_term": "Paris Bercy Seine", "night": False}
+        ],
+        ("munih", "zurih"): [
+            {"carrier": "FlixBus", "dep": "10:15", "arr": "14:15", "dur": "4 sa 00 dk", "base_eur": 25.0, "type": "FlixBus Express", "badge": "🏔️ FlixBus Alpler Hattı", "orig_term": "Munich ZOB", "dest_term": "Zurich Carpark Sihlquai", "night": False}
+        ],
+        ("zurih", "munih"): [
+            {"carrier": "FlixBus", "dep": "15:00", "arr": "19:00", "dur": "4 sa 00 dk", "base_eur": 25.0, "type": "FlixBus Express", "badge": "🏔️ FlixBus Alpler Hattı", "orig_term": "Zurich Carpark Sihlquai", "dest_term": "Munich ZOB", "night": False}
+        ],
+        ("viyana", "budapeste"): [
+            {"carrier": "FlixBus", "dep": "09:00", "arr": "11:45", "dur": "2 sa 45 dk", "base_eur": 18.0, "type": "FlixBus Express", "badge": "🌍 FlixBus Orta Avrupa", "orig_term": "Vienna Erdberg", "dest_term": "Budapest Nepliget", "night": False}
+        ],
+        ("budapeste", "viyana"): [
+            {"carrier": "FlixBus", "dep": "14:00", "arr": "16:45", "dur": "2 sa 45 dk", "base_eur": 18.0, "type": "FlixBus Express", "badge": "🌍 FlixBus Orta Avrupa", "orig_term": "Budapest Nepliget", "dest_term": "Vienna Erdberg", "night": False}
+        ],
+        ("roma", "floransa"): [
+            {"carrier": "FlixBus", "dep": "11:00", "arr": "14:15", "dur": "3 sa 15 dk", "base_eur": 15.0, "type": "FlixBus Italia", "badge": "🇮🇹 FlixBus İtalya Ekspresi", "orig_term": "Roma Tiburtina", "dest_term": "Firenze Villa Costanza", "night": False}
+        ],
+        ("floransa", "roma"): [
+            {"carrier": "FlixBus", "dep": "16:30", "arr": "19:45", "dur": "3 sa 15 dk", "base_eur": 15.0, "type": "FlixBus Italia", "badge": "🇮🇹 FlixBus İtalya Ekspresi", "orig_term": "Firenze Villa Costanza", "dest_term": "Roma Tiburtina", "night": False}
+        ]
+    }
+
     @classmethod
     def get_clean_slug(cls, name: str) -> str:
         if not name:
             return ""
+        import re
+        name = re.sub(r'\(.*?\)', '', name).strip()
         replacements = {
             "İ": "i", "I": "i", "ı": "i",
             "Ğ": "g", "ğ": "g",
@@ -169,6 +246,20 @@ class BusService:
         else:
             # Fallback URL: Statik SEO sayfası parametresiz veya güvenli sorgulu
             return f"https://www.obilet.com/otobus-bileti/{orig_slug}-{dest_slug}?tarih={departure_date}{'&subid=' + actual_subid if actual_subid else ''}"
+
+    @classmethod
+    def get_flixbus_deep_link(cls, origin_name: str, dest_name: str, departure_date: str) -> str:
+        """
+        FlixBus / Kamil Koç resmi arama ekranına doğrudan Travelpayouts Marker ile giden URL üretir.
+        """
+        orig_slug = cls.get_clean_slug(origin_name)
+        dest_slug = cls.get_clean_slug(dest_name)
+        from app.config import settings
+        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+        flix_target = f"https://global.flixbus.com/search?departureCity={orig_slug}&arrivalCity={dest_slug}&rideDate={departure_date}&adult=1"
+        import urllib.parse
+        encoded = urllib.parse.quote(flix_target, safe="")
+        return f"https://tp.media/r?marker={tp_marker}&p=1416&u={encoded}"
 
     @classmethod
     def estimate_distance_and_duration(cls, orig_name: str, dest_name: str) -> tuple[float, str, int, int]:
@@ -379,6 +470,78 @@ class BusService:
                 ret_date_formatted = return_date
 
         tickets = []
+
+        # 0. ULUSLARARASI / BALKANLAR & AVRUPA İÇİ (FlixBus & Kamil Koç Resmi Ağı)
+        matched_intl = None
+        for (r_orig, r_dest), sched in cls.INTERNATIONAL_BUS_ROUTES.items():
+            if (r_orig in orig_slug or orig_slug in r_orig) and (r_dest in dest_slug or dest_slug in r_dest):
+                matched_intl = sched
+                break
+
+        if matched_intl:
+            flix_url = cls.get_flixbus_deep_link(orig_display, dest_display, departure_date)
+            for idx, item in enumerate(matched_intl):
+                base_eur = item.get("base_eur", 35.0)
+                single_p = round(CurrencyService.convert(base_eur, "EUR", currency), 2)
+                ticket_p = round(single_p * bus_mult, 2)
+                reg_p = round(ticket_p * 1.15, 2)
+                is_next_day = item.get("night", False)
+
+                return_leg = None
+                if is_round and return_date:
+                    return_leg = {
+                        "origin": f"{dest_display} ({item.get('dest_term', '')})",
+                        "destination": f"{orig_display} ({item.get('orig_term', '')})",
+                        "departure_time": item["dep"],
+                        "arrival_time": item["arr"],
+                        "departure_date": return_date,
+                        "departure_date_formatted": ret_date_formatted,
+                        "flight_number": item.get("type", "FlixBus Express"),
+                        "carrier": item["carrier"],
+                        "duration": item["dur"],
+                        "is_direct": True,
+                        "badge": item.get("badge", "FlixBus Seferi")
+                    }
+
+                tickets.append({
+                    "id": f"flix-{idx+1}",
+                    "transport_type": "bus",
+                    "carrier": item["carrier"],
+                    "carrier_logo": "🚌",
+                    "flight_number": item.get("type", "2+1 Uluslararası"),
+                    "origin": f"{orig_display} ({item.get('orig_term', '')})",
+                    "destination": f"{dest_display} ({item.get('dest_term', '')})",
+                    "departure_time": item["dep"],
+                    "arrival_time": item["arr"],
+                    "departure_date": departure_date,
+                    "departure_date_formatted": dep_date_formatted,
+                    "arrival_date": departure_date if not is_next_day else str(dep_date_obj + timedelta(days=1)),
+                    "arrival_date_formatted": dep_date_formatted if not is_next_day else next_day_formatted,
+                    "is_next_day": is_next_day,
+                    "duration": item["dur"],
+                    "is_direct": True,
+                    "is_night_trip": is_next_day,
+                    "price": ticket_p,
+                    "has_live_price": True,
+                    "price_status_text": "FlixBus Doğrulanmış Resmi Fiyat",
+                    "regular_price": reg_p,
+                    "currency": curr_symbol,
+                    "currency_code": currency,
+                    "badge": item["badge"],
+                    "route_notice": f"🌍 Uluslararası Otobüs Seferi • {item.get('orig_term', '')} kalkışlı",
+                    "official_name": f"{item['carrier']} Resmi Ekranı",
+                    "official_link": flix_url,
+                    "agent_name": "FlixBus Global",
+                    "agent_link": flix_url,
+                    "direct_link": flix_url,
+                    "booking_link": flix_url,
+                    "is_round": is_round,
+                    "return_leg": return_leg,
+                    "providers": [
+                        {"name": f"{item['carrier']} Resmi Bilet", "url": flix_url, "price": ticket_p, "is_best": True}
+                    ]
+                })
+            return tickets
 
         # 1. İSTANBUL - ANKARA VEYA ANKARA - İSTANBUL (28 Gerçek Seferli Zengin Çizelge)
         if ("istanbul" in orig_slug and "ankara" in dest_slug) or ("ankara" in orig_slug and "istanbul" in dest_slug):

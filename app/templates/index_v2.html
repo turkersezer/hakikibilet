@@ -519,8 +519,22 @@
 
                     <span class="text-slate-300">|</span>
 
-                    <!-- Popüler YHT ve Anahat Rotaları -->
-                    <div class="flex flex-wrap items-center gap-1.5">
+                    <!-- Tren Kapsam Butonları (Yurtiçi TCDD vs Uluslararası Trainline) -->
+                    <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+                        <button type="button" id="trainScope-domestic" onclick="setTrainScope('domestic')"
+                                class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-slate-800 to-slate-950 text-white shadow-2xs transition">
+                            <span>🇹🇷 TCDD Hatları</span>
+                        </button>
+                        <button type="button" id="trainScope-intl" onclick="setTrainScope('intl')"
+                                class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition">
+                            <span>🌍 Uluslararası (Trainline)</span>
+                        </button>
+                    </div>
+
+                    <span class="text-slate-300">|</span>
+
+                    <!-- Popüler YHT Hatları (Yurtiçi) -->
+                    <div id="trainDomesticPills" class="flex flex-wrap items-center gap-1.5">
                         <span class="text-[11px] font-black text-slate-400 mr-1 hidden sm:inline-flex items-center gap-1">
                             <i class="fa-solid fa-bolt text-amber-500"></i> Popüler:
                         </span>
@@ -540,9 +554,31 @@
                             ⭐ Doğu Ekspresi
                         </button>
                     </div>
+
+                    <!-- Popüler Uluslararası Tren Hatları (Yurtdışı) -->
+                    <div id="trainIntlPills" class="hidden flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-black text-slate-400 mr-1 hidden sm:inline-flex items-center gap-1">
+                            <i class="fa-solid fa-earth-europe text-indigo-500"></i> Avrupa:
+                        </span>
+                        <button type="button" onclick="quickFillTrain('İstanbul', 'Sofya')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-600 hover:text-white border border-indigo-200 text-indigo-900 font-bold text-[11px] transition">
+                            🌙 İst ➔ Sofya Ekspresi
+                        </button>
+                        <button type="button" onclick="quickFillTrain('Paris', 'Londra')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ Paris ➔ Londra (Eurostar)
+                        </button>
+                        <button type="button" onclick="quickFillTrain('Roma', 'Milano')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ Roma ➔ Milano (Frecciarossa)
+                        </button>
+                        <button type="button" onclick="quickFillTrain('Amsterdam', 'Paris')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ Amsterdam ➔ Paris
+                        </button>
+                        <button type="button" onclick="quickFillTrain('Berlin', 'Prag')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ Berlin ➔ Prag (ICE)
+                        </button>
+                    </div>
                 </div>
 
-                <div class="text-[11px] font-bold text-indigo-700 flex items-center gap-1.5">
+                <div id="trainSummaryText" class="text-[11px] font-bold text-indigo-700 flex items-center gap-1.5">
                     <i class="fa-solid fa-train text-indigo-600"></i>
                     <span>TCDD Taşımacılık Resmi E-Bilet Tarifesi</span>
                 </div>
@@ -565,8 +601,22 @@
 
                     <span class="text-slate-300">|</span>
 
-                    <!-- Popüler Otobüs Hatları -->
-                    <div class="flex flex-wrap items-center gap-1.5">
+                    <!-- Otobüs Kapsam Butonları (Yurtiçi Obilet vs Yurtdışı FlixBus) -->
+                    <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+                        <button type="button" id="busScope-domestic" onclick="setBusScope('domestic')"
+                                class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-2xs transition">
+                            <span>🇹🇷 Yurtiçi</span>
+                        </button>
+                        <button type="button" id="busScope-intl" onclick="setBusScope('intl')"
+                                class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition">
+                            <span>🌍 Yurtdışı (FlixBus)</span>
+                        </button>
+                    </div>
+
+                    <span class="text-slate-300">|</span>
+
+                    <!-- Popüler Yurtiçi Otobüs Hatları -->
+                    <div id="busDomesticPills" class="flex flex-wrap items-center gap-1.5">
                         <span class="text-[11px] font-black text-slate-400 mr-1 hidden sm:inline-flex items-center gap-1">
                             <i class="fa-solid fa-bolt text-amber-500"></i> Popüler:
                         </span>
@@ -589,9 +639,31 @@
                             ⭐ İst ➔ Trabzon
                         </button>
                     </div>
+
+                    <!-- Popüler Uluslararası Otobüs Hatları (FlixBus) -->
+                    <div id="busIntlPills" class="hidden flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-black text-slate-400 mr-1 hidden sm:inline-flex items-center gap-1">
+                            <i class="fa-solid fa-earth-europe text-emerald-500"></i> FlixBus:
+                        </span>
+                        <button type="button" onclick="quickFillBus('İstanbul', 'Selanik')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-600 hover:text-white border border-emerald-200 text-emerald-900 font-bold text-[11px] transition">
+                            ⚡ İst ➔ Selanik
+                        </button>
+                        <button type="button" onclick="quickFillBus('İstanbul', 'Sofya')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-600 hover:text-white border border-emerald-200 text-emerald-900 font-bold text-[11px] transition">
+                            ⚡ İst ➔ Sofya
+                        </button>
+                        <button type="button" onclick="quickFillBus('İstanbul', 'Bükreş')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ İst ➔ Bükreş
+                        </button>
+                        <button type="button" onclick="quickFillBus('Berlin', 'Prag')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ Berlin ➔ Prag
+                        </button>
+                        <button type="button" onclick="quickFillBus('Paris', 'Amsterdam')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition">
+                            ⚡ Paris ➔ Amsterdam
+                        </button>
+                    </div>
                 </div>
 
-                <div class="text-[11px] font-bold text-emerald-700 flex items-center gap-1.5">
+                <div id="busSummaryText" class="text-[11px] font-bold text-emerald-700 flex items-center gap-1.5">
                     <i class="fa-solid fa-bus text-emerald-600"></i>
                     <span>Kamil Koç, Pamukkale & Obilet Canlı Seferleri</span>
                 </div>

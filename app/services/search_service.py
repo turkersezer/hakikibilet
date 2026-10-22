@@ -1099,174 +1099,44 @@ class SearchService:
                 elif transport_type == "all":
                     notices.append(msg)
 
-        # 2. TREN SEÇENEKLERİ (TCDD YHT & Avrupa Trainline/Omio Hızlı Trenleri)
+        # 2. TREN SEÇENEKLERİ (TCDD YHT & Trainline Avrupa Hızlı Trenleri)
         if transport_type in ("all", "train"):
-            if links["train"].get("available"):
-                if links["train"].get("is_international"):
-                    trainline_url = links["train"]["trainline"]
-                    omio_url = links["train"]["omio"]
-                    orig_l = origin_name.lower()
-                    dest_l = dest_name.lower()
-
-                    if ("londra" in orig_l or "london" in orig_l or "paris" in orig_l) and ("paris" in dest_l or "londra" in dest_l or "london" in dest_l):
-                        operator = "Eurostar"
-                        flight_num = "e320 Yüksek Hızlı Tren (300 km/s)"
-                        duration = "2 sa 17 dk"
-                        dep_time = "09:31"
-                        arr_time = "12:48"
-                        badge = "⚡ Eurostar 300 km/s (Aktarmasız)"
-                    elif ("roma" in orig_l or "rome" in orig_l or "milano" in orig_l) and ("milano" in dest_l or "roma" in dest_l or "rome" in dest_l):
-                        operator = "Trenitalia (Frecciarossa 1000)"
-                        flight_num = "Frecciarossa 300 km/s"
-                        duration = "3 sa 10 dk"
-                        dep_time = "08:50"
-                        arr_time = "12:00"
-                        badge = "⚡ Frecciarossa YHT (Roma - Milano)"
-                    elif ("berlin" in orig_l or "munih" in orig_l or "münchen" in orig_l or "frankfurt" in orig_l) and ("munih" in dest_l or "münchen" in dest_l or "berlin" in dest_l or "frankfurt" in dest_l):
-                        operator = "Deutsche Bahn (ICE 4)"
-                        flight_num = "Intercity-Express (ICE)"
-                        duration = "3 sa 55 dk"
-                        dep_time = "09:04"
-                        arr_time = "12:59"
-                        badge = "⚡ Deutsche Bahn ICE (Almanya)"
-                    elif ("madrid" in orig_l or "barselona" in orig_l) and ("barselona" in dest_l or "madrid" in dest_l):
-                        operator = "Renfe (AVE)"
-                        flight_num = "Alta Velocidad Española"
-                        duration = "2 sa 30 dk"
-                        dep_time = "08:30"
-                        arr_time = "11:00"
-                        badge = "⚡ Renfe AVE (Madrid - Barselona)"
-                    elif ("paris" in orig_l and ("amsterdam" in dest_l or "bruksel" in dest_l)) or ("amsterdam" in orig_l and "paris" in dest_l):
-                        operator = "Eurostar (Paris ⇄ Amsterdam)"
-                        flight_num = "Eurostar Kırmızı YHT"
-                        duration = "3 sa 20 dk"
-                        dep_time = "08:25"
-                        arr_time = "11:45"
-                        badge = "⚡ Eurostar Uluslararası YHT"
-                    else:
-                        operator = f"Avrupa Hızlı Tren ({origin_name} - {dest_name})"
-                        flight_num = "Uluslararası Ekspres"
-                        duration = "3 sa 30 dk"
-                        dep_time = "09:15"
-                        arr_time = "12:45"
-                        badge = "🚆 Uluslararası Tren Seferi"
-
-                    train_base_price = 1450 if currency == "TRY" else 42
-                    train_reg_price = 1750 if currency == "TRY" else 50
-                    results.append({
-                        "id": "tr-intl-1",
-                        "transport_type": "train",
-                        "carrier": operator,
-                        "carrier_logo": "🚆",
-                        "flight_number": flight_num,
-                        "origin": origin.get("train_station", f"{origin_name} İstasyonu") if origin else f"{origin_name} İstasyonu",
-                        "destination": dest.get("train_station", f"{dest_name} İstasyonu") if dest else f"{dest_name} İstasyonu",
-                        "departure_time": dep_time,
-                        "arrival_time": arr_time,
-                        "departure_date_formatted": dep_date_formatted,
-                        "arrival_date_formatted": dep_date_formatted,
-                        "is_next_day": False,
-                        "duration": duration,
-                        "is_direct": True,
-                        "is_night_trip": False,
-                        "price": train_base_price,
-                        "has_live_price": True,
-                        "price_status_text": "Trainline Doğrulanmış Taban Fiyat",
-                        "regular_price": train_reg_price,
-                        "currency": curr_symbol,
-                        "currency_code": currency,
-                        "badge": badge,
-                        "official_name": "Trainline Resmi Bilet Ekranı",
-                        "official_link": trainline_url,
-                        "agent_name": "Omio",
-                        "agent_link": omio_url,
-                        "direct_link": trainline_url,
-                        "booking_link": trainline_url,
-                        "note": f"Kalkış: {origin.get('train_station', origin_name) if origin else origin_name} -> Varış: {dest.get('train_station', dest_name) if dest else dest_name}",
-                        "providers": [
-                            {"name": "Trainline Koltuk Seçimi", "url": trainline_url, "price": train_base_price, "is_best": True},
-                            {"name": "Omio Bilet", "url": omio_url, "price": train_reg_price, "is_best": False}
-                        ]
-                    })
-                elif links["train"].get("is_tcdd"):
-                    from app.services.train_service import TrainService
-                    tcdd_tickets = TrainService.search_trains(
-                        origin_name=origin_name,
-                        dest_name=dest_name,
-                        departure_date=departure_date,
-                        passengers=passengers,
-                        currency=currency,
-                        is_round=is_round,
-                        return_date=return_date
-                    )
-                    results.extend(tcdd_tickets)
+            from app.services.train_service import TrainService
+            train_tickets = TrainService.search_trains(
+                origin_name=origin_name,
+                dest_name=dest_name,
+                departure_date=departure_date,
+                passengers=passengers,
+                currency=currency,
+                is_round=is_round,
+                return_date=return_date
+            )
+            if train_tickets:
+                results.extend(train_tickets)
             else:
-                msg = links["train"].get("reason") or f"ℹ️ {origin_name} - {dest_name} arasında doğrudan tren seferi bulunmamaktadır."
+                msg = links["train"].get("reason") or f"ℹ️ {origin_name} - {dest_name} arasında doğrudan tarifeli tren seferi bulunmamaktadır."
                 if transport_type == "train":
                     notices.append(f"⚠️ {msg}")
                 elif transport_type == "all":
                     notices.append(msg)
 
-        # 3. OTOBÜS SEÇENEKLERİ (Obilet - Kamil Koç & Pamukkale / Uluslararası Komşular)
-        is_dest_intl = bool(dest and dest.get("is_international"))
-        is_overland = bool(dest and dest.get("is_overland_neighbor"))
-
+        # 3. OTOBÜS SEÇENEKLERİ (Obilet & FlixBus Uluslararası Ağı)
         if transport_type in ("all", "bus"):
-            if is_dest_intl and not is_overland:
-                # Denizaşırı veya karayolu bağlantısı olmayan uzak yurt dışı
-                if transport_type == "bus":
-                    notices.append(f"ℹ️ {dest_name} rotasına doğrudan otobüs seferi bulunmamaktadır. Lütfen uçak seferlerini veya Akıllı Çok Modlu Kombine Rota alternatiflerini inceleyiniz.")
+            from app.services.bus_service import BusService
+            bus_tickets = BusService.search_buses(
+                origin_name=origin_name,
+                dest_name=dest_name,
+                departure_date=departure_date,
+                passengers=passengers,
+                currency=currency,
+                is_round=is_round,
+                return_date=return_date
+            )
+            if bus_tickets:
+                results.extend(bus_tickets)
             else:
-                obilet_url = links["bus"]["obilet"]
-                if is_overland:
-                    # Uluslararası Komşu Ülke Otobüsü (Kamil Koç / FlixBus)
-                    bus_intl_price = 980 if currency == "TRY" else 28
-                    bus_intl_reg = 1150 if currency == "TRY" else 34
-                    results.append({
-                        "id": "bus-intl-kk",
-                        "transport_type": "bus",
-                        "carrier": "Kamil Koç / FlixBus",
-                        "carrier_logo": "🚌",
-                        "flight_number": "Uluslararası Sefer",
-                        "origin": f"{origin_name} Otogarı",
-                        "destination": f"{dest_name} Otogarı",
-                        "departure_time": "18:00",
-                        "arrival_time": "08:30",
-                        "departure_date_formatted": dep_date_formatted,
-                        "arrival_date_formatted": next_day_formatted,
-                        "is_next_day": True,
-                        "duration": "14 sa 30 dk",
-                        "is_direct": True,
-                        "is_night_trip": True,
-                        "price": bus_intl_price,
-                        "has_live_price": True,
-                        "price_status_text": "Obilet / FlixBus Doğrulanmış Taban Fiyat",
-                        "regular_price": bus_intl_reg,
-                        "currency": curr_symbol,
-                        "currency_code": currency,
-                        "badge": "🌍 Uluslararası Otobüs Seferi",
-                        "official_name": "Kamil Koç (Obilet)",
-                        "official_link": obilet_url,
-                        "agent_name": "Obilet",
-                        "agent_link": obilet_url,
-                        "direct_link": obilet_url,
-                        "booking_link": obilet_url,
-                        "providers": [
-                            {"name": "Obilet Uluslararası Koltuk", "url": obilet_url, "price": bus_intl_price, "is_best": True}
-                        ]
-                    })
-                else:
-                    from app.services.bus_service import BusService
-                    bus_tickets = BusService.search_buses(
-                        origin_name=origin_name,
-                        dest_name=dest_name,
-                        departure_date=departure_date,
-                        passengers=passengers,
-                        currency=currency,
-                        is_round=is_round,
-                        return_date=return_date
-                    )
-                    results.extend(bus_tickets)
+                if transport_type == "bus":
+                    notices.append(f"ℹ️ {origin_name} - {dest_name} rotasında doğrudan otobüs seferi bulunamamıştır. Lütfen uçak veya alternatif kalkış noktalarını inceleyiniz.")
 
         # 4. DENİZ YOLLARI & FERİBOT SEÇENEKLERİ (İDO, BUDO, Ertürk, Turyol, Feribotlines)
         if transport_type in ("all", "ferry"):
