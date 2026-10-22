@@ -402,6 +402,19 @@ class TrainService:
         return f"https://tp.media/r?marker={tp_marker}&p=4523&u={encoded}"
 
     @classmethod
+    def get_omio_deep_link(cls, origin_slug: str, dest_slug: str, departure_date: str) -> str:
+        """
+        Omio Avrupa hızlı tren ve çok modlu biletleme ekranına Travelpayouts Marker ile yönlendirir.
+        Travelpayouts Program 91 (%6 Komisyon)
+        """
+        from app.config import settings
+        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+        omio_target = f"https://www.omio.com.tr/travel/{origin_slug}/{dest_slug}?date={departure_date}"
+        import urllib.parse
+        encoded = urllib.parse.quote(omio_target, safe="")
+        return f"https://tp.media/r?marker={tp_marker}&p=4083&u={encoded}"
+
+    @classmethod
     def search_trains(
         cls, origin_name: str, dest_name: str, departure_date: str,
         passengers: int = 1, currency: str = "TRY", is_round: bool = False,
@@ -457,12 +470,20 @@ class TrainService:
 
             if is_trainline:
                 booking_url = cls.get_trainline_deep_link(orig_clean, dest_clean, departure_date)
+                omio_url = cls.get_omio_deep_link(orig_clean, dest_clean, departure_date)
                 provider_name = "Trainline Resmi Bilet Ekranı"
                 price_status = "Trainline Doğrulanmış Taban Fiyat"
+                providers_list = [
+                    {"name": "Trainline Resmi Ekran", "url": booking_url, "price": conv_p, "is_best": True},
+                    {"name": "Omio Hızlı Tren Karşılaştırması", "url": omio_url, "price": conv_p, "is_best": False}
+                ]
             else: # Balkan Ekspresi
                 booking_url = "https://ebilet.tcddtasimacilik.gov.tr/"
                 provider_name = "TCDD Uluslararası E-Bilet"
                 price_status = "TCDD / BDZ Doğrulanmış Tarife"
+                providers_list = [
+                    {"name": "TCDD Uluslararası E-Bilet", "url": booking_url, "price": conv_p, "is_best": True}
+                ]
 
             return_leg = None
             if is_round and return_date:
@@ -519,9 +540,7 @@ class TrainService:
                     "yas_65_ustu": round(conv_p * 0.70, 2),
                     "cocuk": round(conv_p * 0.50, 2)
                 },
-                "providers": [
-                    {"name": provider_name, "url": booking_url, "price": conv_p, "is_best": True}
-                ]
+                "providers": providers_list
             })
             return tickets
 

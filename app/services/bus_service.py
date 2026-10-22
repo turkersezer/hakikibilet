@@ -262,6 +262,21 @@ class BusService:
         return f"https://tp.media/r?marker={tp_marker}&p=1416&u={encoded}"
 
     @classmethod
+    def get_omio_deep_link(cls, origin_name: str, dest_name: str, departure_date: str) -> str:
+        """
+        Omio resmi arama ekranına doğrudan Travelpayouts Marker ile giden URL üretir.
+        Travelpayouts Program 91 (Omio) - Bilet başına %6 Komisyon
+        """
+        orig_slug = cls.get_clean_slug(origin_name)
+        dest_slug = cls.get_clean_slug(dest_name)
+        from app.config import settings
+        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+        omio_target = f"https://www.omio.com.tr/travel/{orig_slug}/{dest_slug}?date={departure_date}"
+        import urllib.parse
+        encoded = urllib.parse.quote(omio_target, safe="")
+        return f"https://tp.media/r?marker={tp_marker}&p=4083&u={encoded}"
+
+    @classmethod
     def estimate_distance_and_duration(cls, orig_name: str, dest_name: str) -> tuple[float, str, int, int]:
         """
         Şehir koordinatlarını kullanarak karayolu viraj katsayılı yaklaşık mesafe (km) ve süreyi hesaplar.
@@ -480,6 +495,7 @@ class BusService:
 
         if matched_intl:
             flix_url = cls.get_flixbus_deep_link(orig_display, dest_display, departure_date)
+            omio_url = cls.get_omio_deep_link(orig_display, dest_display, departure_date)
             for idx, item in enumerate(matched_intl):
                 base_eur = item.get("base_eur", 35.0)
                 single_p = round(CurrencyService.convert(base_eur, "EUR", currency), 2)
@@ -538,7 +554,8 @@ class BusService:
                     "is_round": is_round,
                     "return_leg": return_leg,
                     "providers": [
-                        {"name": f"{item['carrier']} Resmi Bilet", "url": flix_url, "price": ticket_p, "is_best": True}
+                        {"name": f"{item['carrier']} Resmi Bilet", "url": flix_url, "price": ticket_p, "is_best": True},
+                        {"name": "Omio Çoklu Karşılaştırma", "url": omio_url, "price": ticket_p, "is_best": False}
                     ]
                 })
             return tickets
