@@ -228,11 +228,23 @@ class BusService:
     @classmethod
     def get_obilet_deep_link(cls, origin_name: str, dest_name: str, departure_date: str, subid: Optional[str] = None) -> str:
         """
-        Obilet'in canlı sefer listesi ve koltuk seçim ekranına hatasız (500 vermeyen) giden URL üretir.
+        Obilet'in canlı sefer listesi ve koltuk seçim ekranına hatasız (500 veya boş sayfa vermeyen) giden URL üretir.
         Format: https://www.obilet.com/seferler/{orig_id}-{dest_id}/{date}
         """
         orig_slug = cls.get_clean_slug(origin_name)
         dest_slug = cls.get_clean_slug(dest_name)
+
+        # Tarih formatı standardizasyonu (YYYY-MM-DD garantisi - Obilet boş sayfa hatasını engeller)
+        clean_date = (departure_date or "").strip()[:10]
+        try:
+            if "." in clean_date:
+                dt = datetime.strptime(clean_date, "%d.%m.%Y")
+                clean_date = dt.strftime("%Y-%m-%d")
+            else:
+                dt = datetime.strptime(clean_date, "%Y-%m-%d")
+                clean_date = dt.strftime("%Y-%m-%d")
+        except Exception:
+            clean_date = departure_date
 
         orig_id = cls.OBILET_CITY_IDS.get(orig_slug)
         dest_id = cls.OBILET_CITY_IDS.get(dest_slug)
@@ -242,10 +254,10 @@ class BusService:
         aff_query = f"?subid={actual_subid}" if actual_subid else ""
 
         if orig_id and dest_id:
-            return f"https://www.obilet.com/seferler/{orig_id}-{dest_id}/{departure_date}{aff_query}"
+            return f"https://www.obilet.com/seferler/{orig_id}-{dest_id}/{clean_date}{aff_query}"
         else:
             # Fallback URL: Statik SEO sayfası parametresiz veya güvenli sorgulu
-            return f"https://www.obilet.com/otobus-bileti/{orig_slug}-{dest_slug}?tarih={departure_date}{'&subid=' + actual_subid if actual_subid else ''}"
+            return f"https://www.obilet.com/otobus-bileti/{orig_slug}-{dest_slug}?tarih={clean_date}{'&subid=' + actual_subid if actual_subid else ''}"
 
     @classmethod
     def get_flixbus_deep_link(cls, origin_name: str, dest_name: str, departure_date: str) -> str:
