@@ -1,7 +1,8 @@
 import urllib.parse
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
-from app.cities import find_city, TURKEY_CITIES
+from app.cities import find_city, resolve_nearest_airport_city, TURKEY_CITIES
 from app.config import settings
 from app.services.currency_service import CurrencyService
 from app.services.hotel_service import HotelService
@@ -82,13 +83,16 @@ class SearchService:
     ):
         origin = find_city(origin_city_name)
         dest = find_city(dest_city_name)
-        
-        origin_iata = origin["iata"] if origin and origin.get("iata") else None
-        dest_iata = dest["iata"] if dest and dest.get("iata") else None
-        
+
+        eff_orig_airport, _ = resolve_nearest_airport_city(origin or origin_city_name)
+        eff_dest_airport, _ = resolve_nearest_airport_city(dest or dest_city_name)
+
+        origin_iata = (origin.get("iata") if origin and origin.get("iata") else None) or (eff_orig_airport.get("iata") if eff_orig_airport else None)
+        dest_iata = (dest.get("iata") if dest and dest.get("iata") else None) or (eff_dest_airport.get("iata") if eff_dest_airport else None)
+
         origin_slug = origin["slug"] if origin else origin_city_name.lower().replace(" ", "-")
         dest_slug = dest["slug"] if dest else dest_city_name.lower().replace(" ", "-")
-        
+
         # 0. Aynı Kalkış ve Varış Noktası Kontrolü
         if origin_slug == dest_slug or origin_city_name.strip().lower() == dest_city_name.strip().lower():
             return {
@@ -101,8 +105,8 @@ class SearchService:
         sky_dep = cls.format_date_for_skyscanner(departure_date)
         enuygun_dep = cls.format_date_for_enuygun(departure_date)
 
-        origin_has_airport = bool(origin and origin.get("has_airport") and origin_iata)
-        dest_has_airport = bool(dest and dest.get("has_airport") and dest_iata)
+        origin_has_airport = bool(origin_iata and ((origin and origin.get("has_airport")) or eff_orig_airport))
+        dest_has_airport = bool(dest_iata and ((dest and dest.get("has_airport")) or eff_dest_airport) and origin_iata != dest_iata)
         origin_has_train = bool(origin and origin.get("has_train"))
         dest_has_train = bool(dest and dest.get("has_train"))
         origin_is_intl = bool(origin and origin.get("is_international"))
@@ -1000,8 +1004,15 @@ class SearchService:
                 "price_calendar": {"days": [], "days_count": 0, "range_type": calendar_range, "tip": ""}
             }
         
-        origin_has_airport = bool(origin and origin.get("has_airport"))
-        dest_has_airport = bool(dest and dest.get("has_airport"))
+        eff_orig_airport, orig_nearby_airport = resolve_nearest_airport_city(origin or origin_name)
+        eff_dest_airport, dest_nearby_airport = resolve_nearest_airport_city(dest or dest_name)
+        origin_has_airport = bool(eff_orig_airport and eff_orig_airport.get("has_airport"))
+        dest_has_airport = bool(
+            eff_dest_airport
+            and eff_dest_airport.get("has_airport")
+            and eff_orig_airport
+            and eff_orig_airport.get("iata") != eff_dest_airport.get("iata")
+        )
         origin_has_train = bool(origin and origin.get("has_train"))
         dest_has_train = bool(dest and dest.get("has_train"))
 
@@ -1017,6 +1028,21 @@ class SearchService:
         notices = []
 
         is_round = (trip_type == "round_trip" and return_date)
+
+        # Alternatif ulaşım rozetlerini (Örn: Otobüs ararken Uçak + Tren fiyatlarını) ana aramayla EŞ ZAMANLI (paralel) başlat!
+        _alt_executor = ThreadPoolExecutor(max_workers=1)
+        _alt_badges_future = _alt_executor.submit(
+            cls.build_alternative_mode_badges,
+            origin_name=origin_name,
+            dest_name=dest_name,
+            departure_date=departure_date,
+            current_mode=transport_type,
+            passengers=total_pax,
+            currency=currency,
+            curr_symbol=curr_symbol,
+            links=links,
+            summary={},
+        )
 
         # Tarih formatlamaları
         try:
@@ -1370,18 +1396,13 @@ class SearchService:
             infants=infants,
         )
 
-        # Adım 2.2: Haftanın En Ucuz Otobüs / Tren / Alternatif Ulaşım Rozetleri
-        alternative_badges = cls.build_alternative_mode_badges(
-            origin_name=origin_name,
-            dest_name=dest_name,
-            departure_date=departure_date,
-            current_mode=transport_type,
-            passengers=total_pax,
-            currency=currency,
-            curr_symbol=curr_symbol,
-            links=links,
-            summary=summary
-        )
+        # Adım 2.2: Haftanın En Ucuz Otobüs / Tren / Alternatif Ulaşım Rozetleri (Paralel Görevden Al)
+        try:
+            alternative_badges = _alt_badges_future.result(timeout=8) or []
+        except Exception:
+            alternative_badges = []
+        finally:
+            _alt_executor.shutdown(wait=False)
 
         # Adım 2.3: Uçuş / Sefer Altı "Gittiğiniz Yerde Bunlar Var!" (Otel + Araç + Etkinlik/Gezi Tavsiyesi)
         destination_cross_sell = cls.build_destination_cross_sell(
@@ -1499,12 +1520,13 @@ class SearchService:
         months_tr = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
         months_en = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-        orig_obj = find_city(origin_name)
-        dest_obj = find_city(dest_name)
+        orig_obj, _ = resolve_nearest_airport_city(origin_name)
+        dest_obj, _ = resolve_nearest_airport_city(dest_name)
         can_query_flights = bool(
             transport_type in ("flight", "all")
             and orig_obj and orig_obj.get("has_airport")
             and dest_obj and dest_obj.get("has_airport")
+            and orig_obj.get("iata") != dest_obj.get("iata")
         )
 
         target_dates = [start_dt + timedelta(days=i) for i in range(7)]
@@ -1532,6 +1554,7 @@ class SearchService:
                             adults=adults,
                             children=children,
                             infants=infants,
+                            include_multi_ota=False,
                         )
                         valid_p = [float(f["price"]) for f in (day_flights or []) if f.get("price") is not None and float(f["price"]) > 0]
                         if not valid_p:
@@ -1688,13 +1711,12 @@ class SearchService:
         summary: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         """
-        Uçuş (veya diğer ulaşım) aramalarında üst barda 'Bu Haftanın En Ucuz Otobüs Bileti'
-        ve 'En Ucuz Tren (YHT) Bileti' rozetlerini gerçek servis verisiyle üretir.
+        Uçuş (veya diğer ulaşım) aramalarında üst barda 'Bu Haftanın En Ucuz Otobüs Bileti',
+        'En Ucuz Tren (YHT) Bileti' ve 'En Ucuz Uçak Bileti' rozetlerini paralel canlı sorgularla üretir.
         """
-        badges: List[Dict[str, Any]] = []
-
-        # 1. En Ucuz Otobüs Rozeti (Uçak veya Tren ararken göster)
-        if current_mode != "bus" and links.get("bus", {}).get("available"):
+        def _fetch_bus_badge() -> Optional[Dict[str, Any]]:
+            if current_mode == "bus" or not links.get("bus", {}).get("available"):
+                return None
             try:
                 from app.services.bus_service import BusService
                 bus_list = BusService.search_buses(
@@ -1709,7 +1731,7 @@ class SearchService:
                 if bus_prices:
                     min_bus = int(round(min(bus_prices)))
                     min_dur = bus_list[0].get("duration", "") if bus_list else ""
-                    badges.append({
+                    return {
                         "mode": "bus",
                         "icon": "🚌",
                         "title_tr": "En Ucuz Otobüs",
@@ -1719,12 +1741,14 @@ class SearchService:
                         "duration": min_dur,
                         "provider": "Obilet / Kamil Koç",
                         "deep_link": links["bus"].get("obilet")
-                    })
+                    }
             except Exception:
                 pass
+            return None
 
-        # 2. En Ucuz Tren (YHT / Anahat) Rozeti
-        if current_mode != "train" and links.get("train", {}).get("available"):
+        def _fetch_train_badge() -> Optional[Dict[str, Any]]:
+            if current_mode == "train" or not links.get("train", {}).get("available"):
+                return None
             try:
                 if links["train"].get("is_tcdd"):
                     from app.services.train_service import TrainService
@@ -1740,7 +1764,7 @@ class SearchService:
                     if tr_prices:
                         min_tr = int(round(min(tr_prices)))
                         min_dur = tr_list[0].get("duration", "") if tr_list else ""
-                        badges.append({
+                        return {
                             "mode": "train",
                             "icon": "🚆",
                             "title_tr": "En Ucuz Tren (YHT)",
@@ -1750,10 +1774,10 @@ class SearchService:
                             "duration": min_dur,
                             "provider": "TCDD Taşımacılık",
                             "deep_link": links["train"].get("tcdd")
-                        })
+                        }
                 elif links["train"].get("is_international"):
                     min_intl_tr = 1450 if currency == "TRY" else 42
-                    badges.append({
+                    return {
                         "mode": "train",
                         "icon": "🚆",
                         "title_tr": "Avrupa Hızlı Tren",
@@ -1763,41 +1787,75 @@ class SearchService:
                         "duration": "3 sa 15 dk",
                         "provider": "Trainline / Eurostar",
                         "deep_link": links["train"].get("trainline")
-                    })
+                    }
             except Exception:
                 pass
+            return None
 
-        # 3. Kullanıcı Otobüs veya Tren arıyorsa "✈️ Uçak Seferlerini Gör" rozeti ekle
-        if current_mode in ("bus", "train") and links.get("flight", {}).get("available"):
-            fl_min_price = summary.get("flight", {}).get("min_price")
+        def _fetch_flight_badge() -> Optional[Dict[str, Any]]:
+            if current_mode not in ("bus", "train"):
+                return None
+            eff_orig, orig_nearby = resolve_nearest_airport_city(origin_name)
+            eff_dest, dest_nearby = resolve_nearest_airport_city(dest_name)
+            if not eff_orig or not eff_dest or eff_orig.get("iata") == eff_dest.get("iata"):
+                return None
+
+            fl_min_price = (summary or {}).get("flight", {}).get("min_price")
+            fl_duration = "1 sa 15 dk"
             if fl_min_price is None:
-                # Canlı Google Flights servisinden en ucuz uçuşu hızlıca çek
                 try:
                     from app.services.live_flights import fetch_live_flights_from_google
                     f_list = fetch_live_flights_from_google(
-                        origin_city_name=origin_name,
-                        dest_city_name=dest_name,
+                        origin_city_name=eff_orig["name"],
+                        dest_city_name=eff_dest["name"],
                         departure_date=departure_date,
-                        passengers=passengers
+                        passengers=passengers,
+                        include_multi_ota=False,
                     )
                     valid_fp = [float(f["price"]) for f in (f_list or []) if f.get("price") is not None and float(f["price"]) > 0]
                     if valid_fp:
                         raw_min_fp = min(valid_fp)
                         fl_min_price = round(CurrencyService.convert(raw_min_fp, "TRY", currency), 2) if currency != "TRY" else round(raw_min_fp)
+                        if f_list and f_list[0].get("duration"):
+                            fl_duration = f_list[0]["duration"]
                 except Exception:
                     fl_min_price = None
 
-            badges.append({
+            dest_iata_label = eff_dest.get("iata") or ""
+            dest_city_short = (eff_dest.get("name") or "").split("(")[0].strip()
+            if dest_nearby and dest_iata_label:
+                title_tr = f"En Ucuz Uçak ({dest_city_short} {dest_iata_label})"
+                title_en = f"Cheapest Flight ({dest_city_short} {dest_iata_label})"
+            else:
+                title_tr = "Direkt Uçak Bileti"
+                title_en = "Direct Flights"
+
+            return {
                 "mode": "flight",
                 "icon": "✈️",
-                "title_tr": "Direkt Uçak Bileti",
-                "title_en": "Direct Flights",
+                "title_tr": title_tr,
+                "title_en": title_en,
                 "min_price": fl_min_price,
                 "currency": curr_symbol,
-                "duration": "1 sa 15 dk",
+                "duration": fl_duration,
                 "provider": "THY / Pegasus / AJet",
-                "deep_link": links["flight"].get("enuygun") or links["flight"].get("trip")
-            })
+                "deep_link": links.get("flight", {}).get("enuygun") or links.get("flight", {}).get("trip"),
+                "flight_origin": eff_orig["name"] if orig_nearby else None,
+                "flight_dest": eff_dest["name"] if dest_nearby else None,
+            }
+
+        badges: List[Dict[str, Any]] = []
+        with ThreadPoolExecutor(max_workers=3) as ex:
+            fut_bus = ex.submit(_fetch_bus_badge)
+            fut_tr = ex.submit(_fetch_train_badge)
+            fut_fl = ex.submit(_fetch_flight_badge)
+            for fut in (fut_bus, fut_tr, fut_fl):
+                try:
+                    res_b = fut.result(timeout=7)
+                    if res_b:
+                        badges.append(res_b)
+                except Exception:
+                    pass
 
         return badges
 

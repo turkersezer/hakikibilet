@@ -329,3 +329,116 @@ def get_cities_by_transport(transport_type: str = "all", scope: str = "all"):
         return tr_airports + INTERNATIONAL_CITIES + [p for p in FERRY_PORTS if p.get("country") != "Türkiye"]
         
     return ALL_LOCATIONS
+
+
+_SPECIAL_DISTRICT_AIRPORT_SLUGS = {
+    "manavgat": "antalya",
+    "side": "antalya",
+    "alanya": "antalya",
+    "gazipasa": "antalya",
+    "kemer": "antalya",
+    "kas": "dalaman",
+    "serik": "antalya",
+    "belek": "antalya",
+    "kumluca": "antalya",
+    "finike": "antalya",
+    "demre": "antalya",
+    "fethiye": "dalaman",
+    "marmaris": "dalaman",
+    "datca": "dalaman",
+    "ortaca": "dalaman",
+    "koycegiz": "dalaman",
+    "dalaman": "dalaman",
+    "ula": "dalaman",
+    "mentese": "dalaman",
+    "mugla": "dalaman",
+    "bodrum": "bodrum",
+    "milas": "bodrum",
+    "cesme": "izmir",
+    "alacati": "izmir",
+    "urla": "izmir",
+    "seferihisar": "izmir",
+    "foca": "izmir",
+    "selcuk": "izmir",
+    "kusadasi": "izmir",
+    "didim": "bodrum",
+    "soke": "izmir",
+    "nazilli": "izmir",
+    "aydin": "izmir",
+    "manisa": "izmir",
+    "akhisar": "izmir",
+    "turgutlu": "izmir",
+    "salihli": "izmir",
+    "soma": "izmir",
+    "ayvalik": "balikesir",
+    "edremit": "balikesir",
+    "burhaniye": "balikesir",
+    "bandirma": "balikesir",
+    "erdek": "balikesir",
+    "gonen": "balikesir",
+    "kocaeli": "istanbul-sabiha-gokcen",
+    "izmit": "istanbul-sabiha-gokcen",
+    "gebze": "istanbul-sabiha-gokcen",
+    "sakarya": "istanbul-sabiha-gokcen",
+    "adapazari": "istanbul-sabiha-gokcen",
+    "sapanca": "istanbul-sabiha-gokcen",
+    "yalova": "istanbul-sabiha-gokcen",
+    "bolu": "istanbul-sabiha-gokcen",
+    "duzce": "istanbul-sabiha-gokcen",
+    "edirne": "istanbul-havalimani",
+    "kirklareli": "istanbul-havalimani",
+    "luleburgaz": "istanbul-havalimani",
+    "corlu": "tekirdag",
+    "cerkezkoy": "istanbul-havalimani",
+}
+
+
+def resolve_nearest_airport_city(location_or_name):
+    """
+    Havalimanı olmayan ilçe veya şehirler (Örn: Manavgat, Alanya, Fethiye, Marmaris, Çeşme, Kuşadası, Bolu)
+    için en yakın aktif havalimanına sahip şehir nesnesini (city dict) ve (is_nearby: bool) bayrağını döndürür.
+    Doğrudan havalimanı olan şehirlerde (city, False) döner.
+    """
+    loc = location_or_name if isinstance(location_or_name, dict) else find_location(str(location_or_name or ""))
+    if not loc:
+        return None, False
+
+    if loc.get("has_airport") and loc.get("iata"):
+        return loc, False
+
+    slug = (loc.get("slug") or "").lower().strip()
+    raw_slug = re.sub(r"[^a-z0-9-]+", "-", (loc.get("raw_name") or "").lower().strip()).strip("-")
+
+    for candidate_slug in (slug, raw_slug):
+        if candidate_slug and candidate_slug in _SPECIAL_DISTRICT_AIRPORT_SLUGS:
+            target_slug = _SPECIAL_DISTRICT_AIRPORT_SLUGS[candidate_slug]
+            for c in TURKEY_CITIES:
+                if c.get("slug") == target_slug and c.get("has_airport") and c.get("iata"):
+                    return c, True
+
+    # İl (Province) üzerinden çözümle (Örn: Manavgat (Antalya) -> Antalya (AYT))
+    province_name = loc.get("province")
+    if province_name:
+        prov_norm = province_name.lower().strip()
+        if prov_norm in ("muğla", "mugla"):
+            for c in TURKEY_CITIES:
+                if c.get("slug") == "dalaman":
+                    return c, True
+        prov_city = find_location(province_name)
+        if prov_city:
+            if prov_city.get("has_airport") and prov_city.get("iata"):
+                return prov_city, True
+            hub = prov_city.get("nearest_intl_hub") or prov_city.get("nearest_domestic_hub")
+            if hub:
+                hub_city = find_location(hub.get("iata") or hub.get("city") or "")
+                if hub_city and hub_city.get("has_airport") and hub_city.get("iata"):
+                    return hub_city, True
+
+    # Şehir nesnesinin kendi nearest_intl_hub / nearest_domestic_hub bilgisi üzerinden çözümle
+    hub = loc.get("nearest_intl_hub") or loc.get("nearest_domestic_hub")
+    if hub:
+        hub_city = find_location(hub.get("iata") or hub.get("city") or "")
+        if hub_city and hub_city.get("has_airport") and hub_city.get("iata"):
+            return hub_city, True
+
+    return None, False

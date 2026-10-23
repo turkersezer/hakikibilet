@@ -28,7 +28,7 @@ from selectolax.lexbor import LexborHTMLParser
 from fast_flights.fetcher import fetch_flights_html
 from fast_flights.querying import create_query
 from fast_flights import FlightQuery, Passengers
-from app.cities import find_city
+from app.cities import find_city, resolve_nearest_airport_city
 from app.config import settings
 from app.services.commission_service import select_winning_offer, calculate_expected_commission
 from app.services.multi_ota_service import fetch_multi_ota_flight_map, normalize_flight_key
@@ -305,19 +305,24 @@ def fetch_live_flights_from_google(
     cabin_class: str = "economy",
     adults: int = 1,
     children: int = 0,
-    infants: int = 0
+    infants: int = 0,
+    include_multi_ota: bool = True,
 ) -> List[Dict[str, Any]]:
     """
     Google Flights altyapısını kullanarak canlı havayolu seferlerini, net fiyatlarını ve kabin sınıfını çeker.
     Tüm kategorileri ve havalimanı çiftlerini tarayarak eksiksiz sefer listesi döndürür.
+    Havalimanı olmayan ilçe/şehir aramalarında (ör. Manavgat, Alanya, Fethiye, Çeşme) en yakın aktif havalimanını çözümler.
     """
-    origin_city = find_city(origin_city_name)
-    dest_city = find_city(dest_city_name)
+    origin_city, _ = resolve_nearest_airport_city(origin_city_name)
+    dest_city, _ = resolve_nearest_airport_city(dest_city_name)
 
     if not origin_city or not dest_city:
         return []
 
     if not origin_city.get("has_airport") or not dest_city.get("has_airport"):
+        return []
+
+    if origin_city.get("iata") and origin_city.get("iata") == dest_city.get("iata"):
         return []
 
     # Yolcu sayılarını normalize et
@@ -422,7 +427,7 @@ def fetch_live_flights_from_google(
 
     # Paralel isteklerle hem gidiş (veya gidiş-dönüş), hem gerçek dönüş seferlerini,
     # hem de Çoklu Acente (Multi-OTA: Kiwi + RapidAPI + Travelpayouts) canlı fiyatlarını aynı anda tara
-    max_workers = max(2, len(pairs) * (2 if is_round else 1) + 1)
+    max_workers = max(2, len(pairs) * (2 if is_round else 1) + (1 if include_multi_ota else 0))
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         outbound_futures = [
             executor.submit(query_single_pair, o, d, departure_date, is_round_str, return_date if is_round else None)
@@ -434,26 +439,46 @@ def fetch_live_flights_from_google(
                 executor.submit(query_single_pair, d, o, return_date, "one-way", None)
                 for o, d in pairs
             ]
-        multi_ota_future = executor.submit(
-            fetch_multi_ota_flight_map,
-            orig_codes,
-            dest_codes,
-            departure_date,
-            return_date if is_round else None,
-            seat_mode,
-            adults,
-            children,
-            infants,
+        multi_ota_future = (
+            executor.submit(
+                fetch_multi_ota_flight_map,
+                orig_codes,
+                dest_codes,
+                departure_date,
+                return_date if is_round else None,
+                seat_mode,
+                adults,
+                children,
+                infants,
+            )
+            if include_multi_ota
+            else None
         )
 
         for f in as_completed(outbound_futures):
             all_raw_flights.extend(f.result())
         for f in as_completed(return_futures):
             all_raw_return_flights.extend(f.result())
+        if multi_ota_future is not None:
+            try:
+                multi_ota_map = multi_ota_future.result() or {}
+            except Exception as ota_err:
+                logger.debug(f"Multi-OTA map error: {ota_err}")
+                multi_ota_map = {}
+
+    if not all_raw_flights and not include_multi_ota:
         try:
-            multi_ota_map = multi_ota_future.result() or {}
-        except Exception as ota_err:
-            logger.debug(f"Multi-OTA map error: {ota_err}")
+            multi_ota_map = fetch_multi_ota_flight_map(
+                orig_codes,
+                dest_codes,
+                departure_date,
+                return_date if is_round else None,
+                seat_mode,
+                adults,
+                children,
+                infants,
+            ) or {}
+        except Exception:
             multi_ota_map = {}
 
     sorted_raw = _parse_unique_flights(all_raw_flights) if all_raw_flights else []

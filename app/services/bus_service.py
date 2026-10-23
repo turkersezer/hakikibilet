@@ -647,7 +647,7 @@ class BusService:
     @classmethod
     def _ensure_obilet_session(cls, orig_id: str, dest_id: str, clean_date: str, force_refresh: bool = False) -> urllib.request.OpenerDirector:
         now = time.time()
-        if not force_refresh and cls._OPENER is not None and (now - cls._SESSION_INIT_TS) < 1200:
+        if not force_refresh and cls._OPENER is not None and (now - cls._SESSION_INIT_TS) < 300:
             return cls._OPENER
 
         cj = http.cookiejar.CookieJar()
@@ -659,7 +659,11 @@ class BusService:
         }
         init_url = f"https://www.obilet.com/seferler/{orig_id}-{dest_id}/{clean_date}"
         req = urllib.request.Request(init_url, headers=init_headers)
-        opener.open(req, timeout=8).read()
+        resp = opener.open(req, timeout=5)
+        try:
+            resp.read(256)
+        finally:
+            resp.close()
 
         cls._COOKIE_JAR = cj
         cls._OPENER = opener
@@ -795,10 +799,10 @@ class BusService:
         cls._LIVE_JOURNEY_CACHE[cache_key] = (now, parsed_list)
         return parsed_list
 
-    _ROUTE_BASELINE_LOWPRICE: Dict[Tuple[str, str], float] = {}
+    _ROUTE_BASELINE_LOWPRICE: Dict[Tuple[str, str], Optional[float]] = {}
 
     @classmethod
-    def get_route_baseline_min_price(cls, origin_name: str, dest_name: str) -> Optional[float]:
+    def get_route_baseline_min_price(cls, origin_name: str, dest_name: str, allow_network: bool = False) -> Optional[float]:
         """Obilet SEO sayfasındaki resmi AggregateOffer lowPrice değerini çeker ve önbelleğe alır."""
         orig_slug = cls.get_clean_slug(origin_name)
         dest_slug = cls.get_clean_slug(dest_name)
@@ -807,6 +811,8 @@ class BusService:
         cache_key = (orig_slug, dest_slug)
         if cache_key in cls._ROUTE_BASELINE_LOWPRICE:
             return cls._ROUTE_BASELINE_LOWPRICE[cache_key]
+        if not allow_network:
+            return None
 
         probe_urls = [
             f"https://www.obilet.com/otobus-bileti/{orig_slug}-{dest_slug}",
@@ -814,7 +820,7 @@ class BusService:
         for url in probe_urls:
             try:
                 req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"})
-                html = urllib.request.urlopen(req, timeout=4).read().decode("utf-8", errors="ignore")
+                html = urllib.request.urlopen(req, timeout=3).read().decode("utf-8", errors="ignore")
                 m = re.search(r'itemprop="lowPrice"\s+content="(\d+)"', html)
                 if m:
                     price = float(m.group(1))
@@ -822,13 +828,16 @@ class BusService:
                     return price
             except Exception:
                 continue
+        cls._ROUTE_BASELINE_LOWPRICE[cache_key] = None
         return None
 
     @classmethod
     def get_cached_min_price(cls, origin_name: str, dest_name: str, departure_date: str, passengers: int = 1, currency: str = "TRY", is_round: bool = False) -> Optional[float]:
-        """Esnek 7 günlük şerit için önbellekte gerçek Obilet/FlixBus verisi veya taban fiyatı döndürür."""
-        orig_id = cls.resolve_obilet_city_id(origin_name)
-        dest_id = cls.resolve_obilet_city_id(dest_name)
+        """Esnek 7 günlük şerit için önbellekte gerçek Obilet/FlixBus verisi veya taban fiyatı döndürür (Sıfır bloklama)."""
+        orig_slug = cls.get_clean_slug(origin_name)
+        dest_slug = cls.get_clean_slug(dest_name)
+        orig_id = cls.OBILET_CITY_IDS.get(orig_slug) or cls._DYNAMIC_CITY_ID_CACHE.get(orig_slug)
+        dest_id = cls.OBILET_CITY_IDS.get(dest_slug) or cls._DYNAMIC_CITY_ID_CACHE.get(dest_slug)
         clean_date = cls._normalize_date_str(departure_date)
         pax_mult = max(1, passengers) * (2 if is_round else 1)
 
@@ -838,8 +847,8 @@ class BusService:
             if cached and (time.time() - cached[0]) < cls._CACHE_TTL_SECONDS and cached[1]:
                 candidates.append(min(j["price_try"] for j in cached[1]))
 
-        f_uuid = cls.FLIXBUS_CITY_UUIDS.get(cls.get_clean_slug(origin_name)) or cls._FLIXBUS_UUID_CACHE.get(cls.get_clean_slug(origin_name))
-        t_uuid = cls.FLIXBUS_CITY_UUIDS.get(cls.get_clean_slug(dest_name)) or cls._FLIXBUS_UUID_CACHE.get(cls.get_clean_slug(dest_name))
+        f_uuid = cls.FLIXBUS_CITY_UUIDS.get(orig_slug) or cls._FLIXBUS_UUID_CACHE.get(orig_slug)
+        t_uuid = cls.FLIXBUS_CITY_UUIDS.get(dest_slug) or cls._FLIXBUS_UUID_CACHE.get(dest_slug)
         if f_uuid and t_uuid:
             f_cached = cls._FLIXBUS_JOURNEY_CACHE.get((f_uuid, t_uuid, clean_date))
             if f_cached and (time.time() - f_cached[0]) < cls._CACHE_TTL_SECONDS and f_cached[1]:
@@ -851,7 +860,7 @@ class BusService:
                 return round(CurrencyService.convert(min_try, "TRY", currency), 2)
             return round(min_try)
 
-        base_low = cls.get_route_baseline_min_price(origin_name, dest_name)
+        base_low = cls.get_route_baseline_min_price(origin_name, dest_name, allow_network=False)
         if base_low:
             total_low = base_low * pax_mult
             if currency != "TRY":
