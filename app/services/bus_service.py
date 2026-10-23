@@ -381,8 +381,17 @@ class BusService:
                 "departureCountryCode": "TR",
                 "arrivalCountryCode": "TR",
             }
-            return "https://shop.flixbus.com.tr/search?" + urllib.parse.urlencode(params)
-        return "https://www.kamilkoc.com.tr/"
+            target_url = "https://shop.flixbus.com.tr/search?" + urllib.parse.urlencode(params)
+        else:
+            target_url = "https://www.kamilkoc.com.tr/"
+
+        from app.config import settings
+        awin_pub_id = getattr(settings, "AFFILIATE_AWIN_PUBLISHER_ID", "3132253")
+        awin_mid = getattr(settings, "AFFILIATE_FLIXBUS_AWIN_MID", "")
+        if awin_mid and awin_pub_id:
+            encoded_target = urllib.parse.quote(target_url, safe="")
+            return f"https://www.awin1.com/cread.php?awinmid={awin_mid}&awinaffid={awin_pub_id}&clickref=hakikibilet&ued={encoded_target}"
+        return target_url
 
     @classmethod
     def get_obilet_deep_link(cls, origin_name: str, dest_name: str, departure_date: str, subid: Optional[str] = None) -> str:
@@ -847,7 +856,7 @@ class BusService:
         return None
 
     @classmethod
-    def estimate_distance_and_duration(cls, orig_name: str, dest_name: str) -> tuple[float, str, int, int]:
+    def estimate_distance_and_duration(cls, orig_name: str, dest_name: str) -> Tuple[float, str, int, int]:
         try:
             from app.cities import find_city
             c1 = find_city(orig_name)
@@ -987,12 +996,64 @@ class BusService:
         # Fiyat ve kalkış saatine göre sırala
         merged_journeys.sort(key=lambda x: (x["price_try"], x["dep_time"]))
 
+        if merged_journeys:
+            overall_min_try = min(float(x["price_try"]) for x in merged_journeys)
+            cls._ROUTE_BASELINE_LOWPRICE[(orig_slug, dest_slug)] = overall_min_try
+
+            # Kamil Koç / FlixBus resmi seferlerinden en avantajlı 3 seferi (Sabah, Öğle/Akşam, Gece)
+            # listenin en üstünde vitrine çıkar (Awin/FlixBus denetimi ve doğrudan yüksek komisyon için)
+            kk_candidates = [
+                j for j in merged_journeys
+                if j.get("source") == "flixbus_official"
+                or "kamil" in j["carrier"].lower()
+                or "flix" in j["carrier"].lower()
+            ]
+            if kk_candidates:
+                kk_sorted = sorted(
+                    kk_candidates,
+                    key=lambda x: (0 if x.get("is_discounted") else 1, float(x["price_try"]), x["dep_time"])
+                )
+                featured_kk = []
+                # Farklı zaman dilimlerinden (Sabah 06-14, Öğle/Akşam 14-24, Gece 00-06) 1'er aday seç
+                buckets = [
+                    lambda h: 6 <= h < 14,
+                    lambda h: 14 <= h < 24,
+                    lambda h: 0 <= h < 6,
+                ]
+                for b_fn in buckets:
+                    for cand in kk_sorted:
+                        if cand in featured_kk:
+                            continue
+                        try:
+                            dep_h = int(cand["dep_time"].split(":")[0])
+                        except Exception:
+                            dep_h = 12
+                        if b_fn(dep_h):
+                            featured_kk.append(cand)
+                            break
+                for cand in kk_sorted:
+                    if len(featured_kk) >= 3:
+                        break
+                    if cand not in featured_kk:
+                        featured_kk.append(cand)
+
+                featured_kk.sort(key=lambda x: (float(x["price_try"]), x["dep_time"]))
+                for rank_idx, fk in enumerate(featured_kk, start=1):
+                    fk["is_featured_partner"] = True
+                    fk["featured_rank"] = rank_idx
+
+                rest_journeys = [j for j in merged_journeys if not j.get("is_featured_partner")]
+                merged_journeys = featured_kk + rest_journeys
+        else:
+            overall_min_try = None
+
         obilet_url = cls.get_obilet_deep_link(origin_name, dest_name, clean_date, subid=subid) if (orig_id and dest_id) else None
         enuygun_url = cls.get_enuygun_bus_deep_link(origin_name, dest_name, clean_date)
         kamilkoc_url = cls.get_kamilkoc_deep_link(origin_name, dest_name, clean_date, passengers=pax_count)
         omio_url = cls.get_omio_deep_link(origin_name, dest_name, clean_date)
 
         tickets: List[Dict[str, Any]] = []
+        cheapest_badge_assigned = False
 
         if merged_journeys:
             for idx, item in enumerate(merged_journeys):
@@ -1003,6 +1064,13 @@ class BusService:
                     or "kamil" in item["carrier"].lower()
                     or "flix" in item["carrier"].lower()
                 )
+                is_overall_cheapest = (
+                    overall_min_try is not None
+                    and abs(outbound_try - overall_min_try) < 0.5
+                    and not cheapest_badge_assigned
+                )
+                if is_overall_cheapest:
+                    cheapest_badge_assigned = True
 
                 return_leg = None
                 ret_try = outbound_try
@@ -1061,12 +1129,12 @@ class BusService:
                 }
 
                 avail_seats = item.get("available_seats")
-                if item.get("is_discounted") and reg_p > conv_p:
+                if is_overall_cheapest:
+                    badge_text = "🏆 En Uygun Canlı Sefer"
+                elif item.get("is_discounted") and reg_p > conv_p:
                     badge_text = f"🔥 İndirimli Saat ({reg_p} {curr_symbol} yerine {conv_p} {curr_symbol})"
                 elif isinstance(avail_seats, int) and 0 < avail_seats <= 6:
                     badge_text = f"🔥 Son {avail_seats} Koltuk • Canlı"
-                elif idx == 0:
-                    badge_text = "🏆 En Uygun Canlı Sefer"
                 elif is_kamil_or_flix:
                     badge_text = "🛡️ Kamil Koç Resmi Sefer"
                 elif item["is_night"]:
@@ -1110,6 +1178,8 @@ class BusService:
                     "transport_type": "bus",
                     "source": item.get("source", "obilet"),
                     "winner_channel": primary_channel,
+                    "is_featured_partner": bool(item.get("is_featured_partner")),
+                    "featured_rank": item.get("featured_rank", 999),
                     "carrier": item["carrier"],
                     "carrier_logo": "🚌",
                     "flight_number": seat_label,

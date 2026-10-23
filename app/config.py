@@ -40,6 +40,8 @@ class Settings:
     AFFILIATE_AGODA_CID: str = os.getenv("AFFILIATE_AGODA_CID", "hakikibilet")
     AFFILIATE_TRIP_ALLIANCE_ID: str = os.getenv("AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
     AFFILIATE_TRIP_SID: str = os.getenv("AFFILIATE_TRIP_SID", "333747492")
+    AFFILIATE_AWIN_PUBLISHER_ID: str = os.getenv("AFFILIATE_AWIN_PUBLISHER_ID", "3132253")
+    AFFILIATE_FLIXBUS_AWIN_MID: str = os.getenv("AFFILIATE_FLIXBUS_AWIN_MID", "")
 
     # Merkezi Gelir Modeli ve Komisyon Oranları Tablosu
     # İleride yeni ortaklıklar onaylandığında veya komisyon oranları değiştiğinde

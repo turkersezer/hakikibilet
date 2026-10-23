@@ -1225,8 +1225,14 @@ class SearchService:
         if night_only:
             results = [t for t in results if t.get("is_night_trip")]
 
-        # Fiyata göre artan sırada sırala (En ucuz bilet her zaman en üstte!)
-        results.sort(key=lambda t: t.get("price") if t.get("price") is not None else 999999)
+        # Fiyata göre artan sırada sırala (Otobüs sekmesinde vitrindeki ilk 3 Kamil Koç Resmi seferi en üstte!)
+        results.sort(
+            key=lambda t: (
+                t.get("featured_rank", 999) if (transport_type == "bus" and t.get("is_featured_partner")) else 999,
+                t.get("price") if t.get("price") is not None else 999999,
+                t.get("departure_time") or "23:59",
+            )
+        )
 
         # Özet İstatistikleri
         flight_tickets = [t for t in results if t["transport_type"] == "flight"]
@@ -1563,6 +1569,8 @@ class SearchService:
                     )
                 except Exception:
                     day_price = None
+                if day_price is None and selected_min_price and selected_min_price > 0:
+                    day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
 
             day_diff = (d_dt - base_dt).days
             days_strip.append({

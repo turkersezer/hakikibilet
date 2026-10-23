@@ -2918,8 +2918,13 @@ function applyFlightSortAndFilter() {
     };
 
     if (window.currentFlightSort === 'cheapest') {
-        // En ucuz biletler; fiyatlar eşitse en erken saat en başa gelsin (00:20 -> 06:25 -> 12:00)
+        // Otobüs sekmesinde vitrindeki ilk 3 Kamil Koç Resmi seferini en üstte tut, ardından en ucuz biletleri sırala
         list.sort((a, b) => {
+            if (currentTransportSubTab === 'bus') {
+                const aFeat = a.is_featured_partner ? (Number(a.featured_rank) || 1) : 999;
+                const bFeat = b.is_featured_partner ? (Number(b.featured_rank) || 1) : 999;
+                if (aFeat !== bFeat) return aFeat - bFeat;
+            }
             const pDiff = (Number(a.price) || 0) - (Number(b.price) || 0);
             if (Math.abs(pDiff) > 0.01) return pDiff;
             return parseMins(a.departure_time) - parseMins(b.departure_time);
