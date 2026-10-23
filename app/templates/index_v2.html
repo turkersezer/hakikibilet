@@ -760,10 +760,23 @@
                                     <span data-i18n="origin">Nereden</span>
                                 </label>
                                 <input type="text" id="transOrigin" list="originCitiesList" placeholder="" value="" required
-                                       autocomplete="off"
                                        data-i18n-ph="originPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
-                                <datalist id="originCitiesList"></datalist>
+                                <datalist id="originCitiesList">
+                                    <option value="İstanbul">✈️ İstanbul - Tüm Havalimanları (IST, SAW)</option>
+                                    <option value="İstanbul Sabiha Gökçen (SAW)">✈️ Sabiha Gökçen Havalimanı (SAW)</option>
+                                    <option value="İstanbul Havalimanı (IST)">✈️ İstanbul Havalimanı (IST)</option>
+                                    <option value="Ankara (ESB)">✈️ Ankara Esenboğa Havalimanı (ESB)</option>
+                                    <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes Havalimanı (ADB)</option>
+                                    <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT)</option>
+                                    <option value="Adana / Çukurova (COV)">✈️ Adana / Çukurova Uluslararası (COV)</option>
+                                    <option value="Trabzon (TZX)">✈️ Trabzon Havalimanı (TZX)</option>
+                                    <option value="Bodrum (BJV)">✈️ Bodrum Milas Havalimanı (BJV)</option>
+                                    <option value="Dalaman (DLM)">✈️ Dalaman Havalimanı (DLM)</option>
+                                    {% for city in cities %}
+                                    <option value="{{ city.name }}{% if city.iata %} ({{ city.iata }}){% endif %}">{{ city.name }}{% if city.iata %} ({{ city.iata }}){% endif %}</option>
+                                    {% endfor %}
+                                </datalist>
                             </div>
                             <!-- Hızlı Değiştir (Swap) Butonu -->
                             <button type="button" id="swapAirportsBtn" title="Kalkış ve Varış Noktalarını Değiştir"
@@ -780,10 +793,23 @@
                                     <span data-i18n="dest">Nereye</span>
                                 </label>
                                 <input type="text" id="transDest" list="destCitiesList" placeholder="" value="" required
-                                       autocomplete="off"
                                        data-i18n-ph="destDomesticPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
-                                <datalist id="destCitiesList"></datalist>
+                                <datalist id="destCitiesList">
+                                    <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT)</option>
+                                    <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes Havalimanı (ADB)</option>
+                                    <option value="Adana / Çukurova (COV)">✈️ Adana / Çukurova Uluslararası (COV)</option>
+                                    <option value="Trabzon (TZX)">✈️ Trabzon Havalimanı (TZX)</option>
+                                    <option value="Bodrum (BJV)">✈️ Bodrum Milas Havalimanı (BJV)</option>
+                                    <option value="Dalaman (DLM)">✈️ Dalaman Havalimanı (DLM)</option>
+                                    <option value="İstanbul">✈️ İstanbul - Tüm Havalimanları (IST, SAW)</option>
+                                    <option value="İstanbul Sabiha Gökçen (SAW)">✈️ Sabiha Gökçen Havalimanı (SAW)</option>
+                                    <option value="İstanbul Havalimanı (IST)">✈️ İstanbul Havalimanı (IST)</option>
+                                    <option value="Ankara (ESB)">✈️ Ankara Esenboğa Havalimanı (ESB)</option>
+                                    {% for city in cities %}
+                                    <option value="{{ city.name }}{% if city.iata %} ({{ city.iata }}){% endif %}">{{ city.name }}{% if city.iata %} ({{ city.iata }}){% endif %}</option>
+                                    {% endfor %}
+                                </datalist>
                             </div>
                         </div>
 

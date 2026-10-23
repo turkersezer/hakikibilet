@@ -3821,20 +3821,7 @@ function setupEventListeners() {
     [originInput, destInput, hotelCityInput].forEach(inp => {
         if (!inp) return;
         inp.addEventListener("focus", function() {
-            if (this.value) {
-                this.dataset.prevValue = this.value;
-                this.value = "";
-            }
-        });
-        inp.addEventListener("blur", function() {
-            if (!this.value.trim() && this.dataset.prevValue) {
-                this.value = this.dataset.prevValue;
-            }
-        });
-        inp.addEventListener("change", function() {
-            if (this.value.trim()) {
-                this.dataset.prevValue = this.value;
-            }
+            try { this.select(); } catch (_) {}
         });
     });
 
