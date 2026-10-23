@@ -1771,6 +1771,11 @@ class SearchService:
                             "provider": "Trainline / Eurostar",
                             "deep_link": links.get("train", {}).get("trainline") or "https://www.thetrainline.com/",
                         }
+                    disc_tcdd = {
+                        "yas_65_ustu": int(round(min_tr * 0.50)),
+                        "emekli": int(round(min_tr * 0.80)),
+                        "genc_ogrenci": int(round(min_tr * 0.85)),
+                    }
                     return {
                         "mode": "train",
                         "icon": "🚆",
@@ -1781,6 +1786,7 @@ class SearchService:
                         "duration": min_dur,
                         "provider": "TCDD Taşımacılık",
                         "deep_link": links.get("train", {}).get("tcdd") or "https://ebilet.tcddtasimacilik.gov.tr/",
+                        "discounts": disc_tcdd,
                     }
 
                 if not links.get("train", {}).get("available"):
@@ -1799,6 +1805,11 @@ class SearchService:
                     if tr_prices:
                         min_tr = int(round(min(tr_prices)))
                         min_dur = tr_list[0].get("duration", "") if tr_list else ""
+                        disc_tcdd = {
+                            "yas_65_ustu": int(round(min_tr * 0.50)),
+                            "emekli": int(round(min_tr * 0.80)),
+                            "genc_ogrenci": int(round(min_tr * 0.85)),
+                        }
                         return {
                             "mode": "train",
                             "icon": "🚆",
@@ -1808,7 +1819,8 @@ class SearchService:
                             "currency": curr_symbol,
                             "duration": min_dur,
                             "provider": "TCDD Taşımacılık",
-                            "deep_link": links["train"].get("tcdd")
+                            "deep_link": links["train"].get("tcdd"),
+                            "discounts": disc_tcdd,
                         }
                 elif links["train"].get("is_international"):
                     min_intl_tr = 1450 if currency == "TRY" else 42

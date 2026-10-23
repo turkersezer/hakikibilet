@@ -1611,12 +1611,24 @@ function renderTransportResults(data, searchReq) {
                         ${altBadges.map(b => {
                             const bTitle = isEn ? b.title_en : b.title_tr;
                             const bPrice = b.min_price ? `${fmtNum(b.min_price)} ${b.currency}` : (isEn ? 'Live Fares' : 'Canlı Seferler');
+                            const disc = b.discounts;
+                            let discHtml = '';
+                            if (b.mode === 'train' && disc && (disc.yas_65_ustu || disc.emekli || disc.genc_ogrenci)) {
+                                discHtml = `
+                                    <span class="inline-flex flex-wrap items-center gap-1.5 text-[10.5px] font-bold text-slate-700 bg-white/90 border border-slate-200/90 px-2 py-0.5 rounded-lg shadow-3xs">
+                                        ${disc.yas_65_ustu ? `<span class="text-amber-800" title="65 Yaş ve Üzeri %50 İndirimli">👴 65+: <strong class="text-slate-900">${fmtNum(disc.yas_65_ustu)} ${b.currency}</strong></span>` : ''}
+                                        ${disc.emekli ? `<span class="text-emerald-800" title="Emekli %20 İndirimli">🧓 Emekli: <strong class="text-slate-900">${fmtNum(disc.emekli)} ${b.currency}</strong></span>` : ''}
+                                        ${disc.genc_ogrenci ? `<span class="text-indigo-800" title="13-26 Yaş Öğrenci/Genç %15 İndirimli">🎓 Öğrenci: <strong class="text-slate-900">${fmtNum(disc.genc_ogrenci)} ${b.currency}</strong></span>` : ''}
+                                    </span>
+                                `;
+                            }
                             return `
                                 <button type="button" onclick="switchUnifiedTab('${b.mode}'); executeTransportSearch();"
-                                        class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-800 border border-slate-200 text-xs font-bold transition cursor-pointer flex items-center gap-2 shadow-2xs group">
+                                        class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-800 border border-slate-200 text-xs font-bold transition cursor-pointer flex flex-wrap items-center gap-2 shadow-2xs group">
                                     <span>${b.icon} <strong>${bTitle}:</strong></span>
                                     <span class="px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 font-black text-xs">${bPrice}</span>
                                     ${b.duration ? `<span class="text-[10.5px] opacity-75">(${b.duration})</span>` : ''}
+                                    ${discHtml}
                                     <span class="text-[10px] font-black text-amber-600 group-hover:text-amber-300">${isEn ? 'Switch →' : 'Gör →'}</span>
                                 </button>
                             `;
@@ -2138,16 +2150,22 @@ function generateTicketCardsHtml(tickets, searchReq) {
             const btnLabel = isIntlTrain ? (isEn ? 'Book on Trainline ↗' : 'Trainline ile Al ↗') : (isEn ? 'TCDD Official E-Ticket ↗' : 'TCDD E-Bilet Resmi Portalı ↗');
 
             let discountsHtml = '';
-            if (discounts.genc_ogrenci || discounts.yas_65_ustu) {
+            if (discounts.genc_ogrenci || discounts.yas_65_ustu || discounts.emekli) {
                 discountsHtml = `
                     <div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-bold text-slate-600">
                         <span class="text-indigo-800 font-extrabold flex items-center gap-1">
                             <i class="fa-solid fa-tags text-indigo-600"></i> ${isEn ? 'Legal Discounts:' : 'Kanuni İndirimler:'}
                         </span>
-                        ${discounts.genc_ogrenci ? `<span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">🎓 ${isEn ? 'Youth/Student:' : 'Genç/Öğrenci:'} <strong>${Number(discounts.genc_ogrenci).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
-                        ${discounts.yas_65_ustu ? `<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200">👴 65+ Yaş: <strong>${Number(discounts.yas_65_ustu).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
-                        ${discounts.ogretmen ? `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">Öğretmen: <strong>${Number(discounts.ogretmen).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
+                        ${discounts.yas_65_ustu ? `<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200" title="65 Yaş ve Üzeri %50 İndirim">👴 65+ Yaş: <strong>${Number(discounts.yas_65_ustu).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
+                        ${discounts.emekli ? `<span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200" title="TCDD Emekli %20 İndirim">🧓 ${isEn ? 'Retiree:' : 'Emekli:'} <strong>${Number(discounts.emekli).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
+                        ${discounts.genc_ogrenci ? `<span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200" title="13-26 Yaş Genç ve Öğrenci %15 İndirim">🎓 ${isEn ? 'Youth/Student:' : 'Genç/Öğrenci:'} <strong>${Number(discounts.genc_ogrenci).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
+                        ${discounts.cocuk_7_12 ? `<span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200" title="7-12 Yaş Çocuk %50 İndirim">🧒 7-12 Yaş: <strong>${Number(discounts.cocuk_7_12).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
+                        ${discounts.ogretmen ? `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700" title="Öğretmen %15 İndirim">👩‍🏫 Öğretmen: <strong>${Number(discounts.ogretmen).toLocaleString('tr-TR')} ${ticket.currency || '₺'}</strong></span>` : ''}
                         <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">👶 0-6 Yaş: <strong>${isEn ? 'Free' : 'Ücretsiz'}</strong></span>
+                    </div>
+                    <div class="mt-1.5 text-[10.5px] text-slate-500 font-medium flex items-center gap-1.5 bg-slate-50/80 px-2.5 py-1 rounded-lg border border-slate-100">
+                        <i class="fa-solid fa-circle-info text-indigo-600 text-xs"></i>
+                        <span>${isEn ? '💡 Tip: Select your discount category (Retiree, Student, 65+) on TCDD official booking screen to purchase at this rate.' : '💡 İpucu: TCDD resmi biletleme ekranında yolcu tipinizi (Emekli, Öğrenci, 65+ Yaş) seçerek bu indirimli fiyatla biletinizi alabilirsiniz.'}</span>
                     </div>
                 `;
             }

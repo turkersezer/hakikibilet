@@ -956,6 +956,7 @@ class TrainService:
         return {
             "tam": round(base_price, 2),
             "genc_ogrenci": round(base_price * 0.85, 2),     # %15 indirim (13-26 yaş)
+            "emekli": round(base_price * 0.80, 2),           # %20 indirim (TCDD Emekliler Yılı resmi tarifesi)
             "ogretmen": round(base_price * 0.85, 2),         # %15 indirim
             "yas_60_64": round(base_price * 0.85, 2),        # %15 indirim
             "yas_65_ustu": round(base_price * 0.50, 2),      # %50 indirim
@@ -1109,6 +1110,7 @@ class TrainService:
                 "return_leg": return_leg,
                 "discounts": {
                     "genc_ogrenci": round(conv_p * 0.85, 2),
+                    "emekli": round(conv_p * 0.85, 2),
                     "yas_65_ustu": round(conv_p * 0.70, 2),
                     "cocuk": round(conv_p * 0.50, 2)
                 },
@@ -1141,7 +1143,8 @@ class TrainService:
 
                 ogrenci_fmt = cls.format_price_tr(discounts_converted["genc_ogrenci"])
                 yas65_fmt = cls.format_price_tr(discounts_converted["yas_65_ustu"])
-                discount_info_text = f"💡 İndirimli Bilet: Öğrenci: {ogrenci_fmt} {curr_symbol} • 65+ Yaş: {yas65_fmt} {curr_symbol} (TCDD Ekranında Seçilebilir)"
+                emekli_fmt = cls.format_price_tr(discounts_converted.get("emekli", discounts_converted["genc_ogrenci"]))
+                discount_info_text = f"💡 İndirimli Bilet: 65+ Yaş: {yas65_fmt} {curr_symbol} • Emekli: {emekli_fmt} {curr_symbol} • Öğrenci: {ogrenci_fmt} {curr_symbol} (TCDD Ekranında Seçilebilir)"
 
                 return_leg = None
                 if is_round and return_date:
@@ -1251,7 +1254,8 @@ class TrainService:
 
                 ogrenci_fmt = cls.format_price_tr(discounts_converted['genc_ogrenci'])
                 yas65_fmt = cls.format_price_tr(discounts_converted['yas_65_ustu'])
-                discount_info_text = f"💡 İndirimli Bilet: Öğrenci: {ogrenci_fmt} {curr_symbol} • 65+ Yaş: {yas65_fmt} {curr_symbol} (TCDD Ekranında Seçilebilir)"
+                emekli_fmt = cls.format_price_tr(discounts_converted.get('emekli', discounts_converted['genc_ogrenci']))
+                discount_info_text = f"💡 İndirimli Bilet: 65+ Yaş: {yas65_fmt} {curr_symbol} • Emekli: {emekli_fmt} {curr_symbol} • Öğrenci: {ogrenci_fmt} {curr_symbol} (TCDD Ekranında Seçilebilir)"
 
                 return_leg = None
                 if is_round and return_date and ret_timetable:
@@ -1359,7 +1363,7 @@ class TrainService:
                 "currency": curr_symbol,
                 "currency_code": currency,
                 "badge": tariff["badge"],
-                "route_notice": f"💡 İndirimli Bilet: Öğrenci: {cls.format_price_tr(disc_conv['genc_ogrenci'])} {curr_symbol} • 65+ Yaş: {cls.format_price_tr(disc_conv['yas_65_ustu'])} {curr_symbol} (TCDD Ekranında Seçilebilir)",
+                "route_notice": f"💡 İndirimli Bilet: 65+ Yaş: {cls.format_price_tr(disc_conv['yas_65_ustu'])} {curr_symbol} • Emekli: {cls.format_price_tr(disc_conv.get('emekli', disc_conv['genc_ogrenci']))} {curr_symbol} • Öğrenci: {cls.format_price_tr(disc_conv['genc_ogrenci'])} {curr_symbol} (TCDD Ekranında Seçilebilir)",
                 "official_name": "TCDD Taşımacılık",
                 "official_link": tcdd_link,
                 "agent_name": "TCDD E-Bilet",
@@ -1443,7 +1447,7 @@ class TrainService:
                     "currency": curr_symbol,
                     "currency_code": currency,
                     "badge": badge_str,
-                    "route_notice": f"💡 İndirimli Bilet: Öğrenci: {cls.format_price_tr(disc_conv['genc_ogrenci'])} {curr_symbol} • 65+ Yaş: {cls.format_price_tr(disc_conv['yas_65_ustu'])} {curr_symbol} (TCDD Ekranında Seçilebilir)",
+                    "route_notice": f"💡 İndirimli Bilet: 65+ Yaş: {cls.format_price_tr(disc_conv['yas_65_ustu'])} {curr_symbol} • Emekli: {cls.format_price_tr(disc_conv.get('emekli', disc_conv['genc_ogrenci']))} {curr_symbol} • Öğrenci: {cls.format_price_tr(disc_conv['genc_ogrenci'])} {curr_symbol} (TCDD Ekranında Seçilebilir)",
                     "official_name": "TCDD Taşımacılık",
                     "official_link": tcdd_link,
                     "agent_name": "TCDD E-Bilet",
