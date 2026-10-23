@@ -759,7 +759,8 @@
                                     <i class="fa-solid fa-plane-departure text-amber-500"></i>
                                     <span data-i18n="origin">Nereden</span>
                                 </label>
-                                <input type="text" id="transOrigin" list="originCitiesList" placeholder="Örn: İstanbul (IST / SAW)" value="" required
+                                <input type="text" id="transOrigin" list="originCitiesList" placeholder="" value="" required
+                                       autocomplete="off"
                                        data-i18n-ph="originPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="originCitiesList"></datalist>
@@ -778,7 +779,8 @@
                                     <i class="fa-solid fa-plane-arrival text-amber-500"></i>
                                     <span data-i18n="dest">Nereye</span>
                                 </label>
-                                <input type="text" id="transDest" list="destCitiesList" placeholder="Örn: Adana / Çukurova, Antalya" value="" required
+                                <input type="text" id="transDest" list="destCitiesList" placeholder="" value="" required
+                                       autocomplete="off"
                                        data-i18n-ph="destDomesticPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="destCitiesList"></datalist>
@@ -1458,17 +1460,13 @@
             const originInput = document.getElementById("transOrigin");
             const destInput = document.getElementById("transDest");
             const summary = document.getElementById("ferryModeSummary");
+            if (originInput) originInput.placeholder = "";
+            if (destInput) destInput.placeholder = "";
             if (subMode === 'cruise') {
-                if (originInput) originInput.placeholder = "Örn: İstanbul (Galataport), Kuşadası, Pire (Atina)";
-                if (destInput) destInput.placeholder = "Örn: Yunan Adaları Kruvaziyer, Akdeniz Turu";
                 if (summary) summary.textContent = "Galataport, Kuşadası & Akdeniz Cruise / Kruvaziyer Gemi Turları";
             } else if (subMode === 'ferry_car') {
-                if (originInput) originInput.placeholder = "Örn: Yenikapı, Pendik, Eskihisar, Çanakkale";
-                if (destInput) destInput.placeholder = "Örn: Bandırma, Yalova, Bursa (Mudanya), Gökçeada";
                 if (summary) summary.textContent = "Araçlı Feribot: İDO, Gestaş, Marmara & Ege Arabalı Vapur Hatları";
             } else {
-                if (originInput) originInput.placeholder = "Örn: Çeşme, Bodrum, Kuşadası, Kadıköy";
-                if (destInput) destInput.placeholder = "Örn: Sakız Adası (Chios), Kos, Rodos, Samos";
                 if (summary) summary.textContent = "İDO, BUDO, Turyol & Kapıda Vize Yunan Adaları Hızlı Katamaran Seferleri";
             }
         }
@@ -1800,10 +1798,10 @@
                 scopeDomesticSummary: "Türkiye İçi 55+ Teyitli Havalimanı",
                 scopeIntlSummary: "Dünya Metropolleri & Popüler Havalimanları",
                 origin: "Nereden",
-                originPh: "Örn: İstanbul (IST / SAW)",
+                originPh: "",
                 dest: "Nereye",
-                destDomesticPh: "Örn: Adana / Çukurova, Antalya",
-                destIntlPh: "Dünya havalimanları (Örn: Paris, Londra, Roma, Berlin, Dubai)",
+                destDomesticPh: "",
+                destIntlPh: "",
                 swapTitle: "Kalkış ve Varış Noktalarını Değiştir",
                 depDate: "Gidiş Tarihi",
                 retDate: "Dönüş Tarihi",
@@ -1875,10 +1873,10 @@
                 scopeDomesticSummary: "55+ Verified Airports Across Turkey",
                 scopeIntlSummary: "Global Hubs & International Airports",
                 origin: "From",
-                originPh: "e.g. Istanbul (IST / SAW)",
+                originPh: "",
                 dest: "To",
-                destDomesticPh: "e.g. Antalya, Izmir, Ankara, Trabzon",
-                destIntlPh: "Global airports (e.g. London, Paris, Rome, Berlin, Dubai)",
+                destDomesticPh: "",
+                destIntlPh: "",
                 swapTitle: "Swap Origin & Destination",
                 depDate: "Departure Date",
                 retDate: "Return Date",

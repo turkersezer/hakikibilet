@@ -610,6 +610,7 @@ def fetch_live_flights_from_google(
                 obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}?{obilet_pax}"
             if obilet_subid:
                 obilet_flight_link += f"&subid={obilet_subid}"
+            obilet_flight_link += "&sorting=price&sort=price"
 
 
             # Havayolu kimliği ve resmi bilet seçim linkleri (Provider Registry üzerinden kural bazlı)

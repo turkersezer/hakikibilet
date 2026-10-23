@@ -408,11 +408,16 @@ class BusService:
 
         from app.config import settings
         actual_subid = subid or getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
-        aff_query = f"?subid={actual_subid}" if actual_subid else ""
+        aff_params = []
+        if actual_subid:
+            aff_params.append(f"subid={actual_subid}")
+        aff_params.append("sorting=price")
+        aff_params.append("sort=price")
+        aff_query = "?" + "&".join(aff_params)
 
         if orig_id and dest_id:
             return f"https://www.obilet.com/seferler/{orig_id}-{dest_id}/{clean_date}{aff_query}"
-        return f"https://www.obilet.com/otobus-bileti/{orig_slug}-{dest_slug}?tarih={clean_date}{'&subid=' + actual_subid if actual_subid else ''}"
+        return f"https://www.obilet.com/otobus-bileti/{orig_slug}-{dest_slug}?tarih={clean_date}&sorting=price&sort=price{'&subid=' + actual_subid if actual_subid else ''}"
 
     @classmethod
     def get_enuygun_bus_deep_link(cls, origin_name: str, dest_name: str, departure_date: str) -> str:

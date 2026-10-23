@@ -796,7 +796,7 @@ class SearchService:
             trans_label = "YHT Hızlı Tren" if "train" in trans_type else ("Hızlı Feribot" if "ferry" in trans_type else "Otobüs / Servis")
             trans_icon = "🚆" if "train" in trans_type else ("⛴️" if "ferry" in trans_type else "🚌")
             
-            hub_bus_link = f"https://www.obilet.com/otobus-bileti/{origin_slug}-{domestic_hub.get('city', '').lower()}/{departure_date}"
+            hub_bus_link = f"https://www.obilet.com/otobus-bileti/{origin_slug}-{domestic_hub.get('city', '').lower()}/{departure_date}?sorting=price&sort=price"
             flight_connect_link = f"https://www.google.com/travel/flights?q=flights+from+{hub_iata}+to+{dest_iata}+on+{departure_date}&curr={currency}"
             
             steps = [
@@ -844,7 +844,7 @@ class SearchService:
             i_trans_label = "YHT Hızlı Tren" if "train" in i_trans_type else ("Hızlı Feribot / İDO" if "ferry" in i_trans_type else "Havalimanı Otobüsü / Servis")
             i_trans_icon = "🚆" if "train" in i_trans_type else ("⛴️" if "ferry" in i_trans_type else "🚌")
             
-            intl_bus_link = f"https://www.obilet.com/otobus-bileti/{origin_slug}-istanbul/{departure_date}"
+            intl_bus_link = f"https://www.obilet.com/otobus-bileti/{origin_slug}-istanbul/{departure_date}?sorting=price&sort=price"
             direct_flight_link = f"https://www.google.com/travel/flights?q=flights+from+{i_hub_iata}+to+{dest_iata}+on+{departure_date}&curr={currency}"
             
             steps_2 = [
@@ -1088,9 +1088,9 @@ class SearchService:
                     if infants > 0:
                         obilet_pax_str += f"&bebek={infants}"
                     if is_round and return_date:
-                        obilet_fallback_url = f"https://www.obilet.com/ucak-bileti/{orig_iata.lower()}-{dst_iata.lower()}/{departure_date}/{return_date}?{obilet_pax_str}&subid={obilet_subid}"
+                        obilet_fallback_url = f"https://www.obilet.com/ucak-bileti/{orig_iata.lower()}-{dst_iata.lower()}/{departure_date}/{return_date}?{obilet_pax_str}&subid={obilet_subid}&sorting=price&sort=price"
                     else:
-                        obilet_fallback_url = f"https://www.obilet.com/ucak-bileti/{orig_iata.lower()}-{dst_iata.lower()}/{departure_date}?{obilet_pax_str}&subid={obilet_subid}"
+                        obilet_fallback_url = f"https://www.obilet.com/ucak-bileti/{orig_iata.lower()}-{dst_iata.lower()}/{departure_date}?{obilet_pax_str}&subid={obilet_subid}&sorting=price&sort=price"
 
                     booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
                     try:

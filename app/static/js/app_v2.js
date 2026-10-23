@@ -121,10 +121,10 @@ async function switchFlightScope(scope) {
             summaryBadge.innerHTML = `<i class="fa-solid fa-plane-departure text-amber-500"></i><span>${isEn ? '55+ Verified Airports Across Turkey' : 'Türkiye İçi 55+ Teyitli Havalimanı'}</span>`;
         }
         if (originInput) {
-            originInput.placeholder = isEn ? "Where will you fly from? (e.g. Istanbul, Ankara)" : "Örn: İstanbul (IST / SAW)";
+            originInput.placeholder = "";
         }
         if (destInput) {
-            destInput.placeholder = isEn ? "Where do you want to fly? (e.g. Antalya, Izmir, Ankara)" : "Nereye uçmak istiyorsunuz? (Örn: Antalya, İzmir, Ankara, Trabzon)";
+            destInput.placeholder = "";
         }
     } else {
         if (intlBtn) {
@@ -137,10 +137,10 @@ async function switchFlightScope(scope) {
             summaryBadge.innerHTML = `<i class="fa-solid fa-globe text-amber-500"></i><span>${isEn ? 'Global Hubs & International Airports' : 'Dünya Metropolleri & Popüler Havalimanları'}</span>`;
         }
         if (originInput) {
-            originInput.placeholder = isEn ? "Departure airport / city (e.g. Istanbul, London)" : "Kalkış havalimanı / şehir (Örn: İstanbul, Londra)";
+            originInput.placeholder = "";
         }
         if (destInput) {
-            destInput.placeholder = isEn ? "Global airports (e.g. Paris, London, Rome, Berlin, Dubai)" : "Dünya havalimanları (Örn: Paris, Londra, Roma, Berlin, Dubai)";
+            destInput.placeholder = "";
         }
     }
 
@@ -333,12 +333,12 @@ function setBusScope(scope) {
     }
 
     if (originInput && !originInput.value) {
-        originInput.placeholder = scope === 'domestic' 
+        originInput.placeholder = "";
             ? "Örn: İstanbul (Esenler / Alibeyköy / Harem)" 
             : "Örn: İstanbul, Edirne, Berlin, Paris";
     }
     if (destInput && !destInput.value) {
-        destInput.placeholder = scope === 'domestic'
+        destInput.placeholder = "";
             ? "Örn: Ankara (AŞTİ), İzmir, Antalya, Bursa"
             : "Örn: Selanik, Sofya, Bükreş, Varna, Prag, Amsterdam";
     }
@@ -381,12 +381,12 @@ function setTrainScope(scope) {
     }
 
     if (originInput && !originInput.value) {
-        originInput.placeholder = scope === 'domestic' 
+        originInput.placeholder = "";
             ? "Örn: İstanbul (Söğütlüçeşme / Bostancı / Halkalı)" 
             : "Örn: İstanbul (Halkalı), Paris, Roma, Amsterdam, Berlin";
     }
     if (destInput && !destInput.value) {
-        destInput.placeholder = scope === 'domestic'
+        destInput.placeholder = "";
             ? "Örn: Ankara Garı, Eskişehir, Konya, Sivas, Kars"
             : "Örn: Sofya, Bükreş, Londra, Milano, Münih, Prag";
     }
@@ -417,14 +417,14 @@ function setFerryCategory(cat) {
     const originInput = document.getElementById("transOrigin");
     const destInput = document.getElementById("transDest");
     if (cat === 'domestic') {
-        if (originInput && !originInput.value) originInput.placeholder = "Örn: Yenikapı (İDO), Eminönü (BUDO)";
-        if (destInput && !destInput.value) destInput.placeholder = "Örn: Bursa, Yalova, Bandırma, Avşa";
+        originInput.placeholder = "";
+        destInput.placeholder = "";
     } else if (cat === 'greek_islands') {
-        if (originInput && !originInput.value) originInput.placeholder = "Örn: Çeşme, Bodrum, Ayvalık, Kuşadası";
-        if (destInput && !destInput.value) destInput.placeholder = "Örn: Sakız Adası, Kos, Midilli, Rodos";
+        originInput.placeholder = "";
+        destInput.placeholder = "";
     } else if (cat === 'cruise') {
-        if (originInput && !originInput.value) originInput.placeholder = "Örn: Galataport Limanı, Kuşadası";
-        if (destInput && !destInput.value) destInput.placeholder = "Örn: Ege & Adalar Cruise, Atina";
+        originInput.placeholder = "";
+        destInput.placeholder = "";
     }
 }
 window.setFerryCategory = setFerryCategory;
@@ -527,7 +527,7 @@ function toggleCarDropoffLocation(checked) {
         if (destInput) {
             destInput.disabled = false;
             destInput.value = "";
-            destInput.placeholder = "Örn: İzmir, Bodrum, Antalya Merkez";
+            destInput.placeholder = "";
             destInput.focus();
         }
         if (destLabel) destLabel.innerHTML = '📍 Farklı İade Noktası';
@@ -535,7 +535,7 @@ function toggleCarDropoffLocation(checked) {
         const originVal = document.getElementById("transOrigin")?.value || "";
         if (destInput) {
             destInput.value = originVal;
-            destInput.placeholder = "Aynı noktaya iade";
+            destInput.placeholder = "";
         }
         if (destLabel) destLabel.innerHTML = '📍 İade Noktası (Aynı Yer)';
     }
@@ -1004,34 +1004,34 @@ async function switchTransportSubTab(subTab) {
     if (subTab === 'car') {
         if (originLabel) originLabel.innerHTML = '🚗 Alış Noktası (Havalimanı / Şehir)';
         if (destLabel) destLabel.innerHTML = currentCarDifferentDropoff ? '📍 Farklı İade Noktası' : '📍 İade Noktası (Aynı Yer)';
-        if (originInput) originInput.placeholder = 'Örn: Antalya Havalimanı (AYT)';
-        if (destInput) destInput.placeholder = currentCarDifferentDropoff ? 'Örn: İzmir, Bodrum, Antalya Merkez' : 'Aynı noktaya iade';
+        originInput.placeholder = "";
+        destInput.placeholder = "";
         if (subHintBadge) subHintBadge.innerHTML = '🚗 Enuygun, Yolcu360, Avis & Garenta Havalimanı Araç Kiralama Karşılaştırması';
         // Araç kiralamada alış ve iade tarihi gerektiğinden varsayılan olarak tarih aralığını aç
         setFlightTripType('round');
     } else if (subTab === 'bus') {
         if (originLabel) originLabel.innerHTML = '🚌 Kalkış Şehri / Otogarı';
         if (destLabel) destLabel.innerHTML = '🎯 Varış Şehri (Türkiye & Balkanlar)';
-        if (originInput) originInput.placeholder = 'Örn: İstanbul (Esenler/Alibeyköy)';
-        if (destInput) destInput.placeholder = 'Örn: Sofya, Selanik, Ankara, İzmir';
+        originInput.placeholder = "";
+        destInput.placeholder = "";
         if (subHintBadge) subHintBadge.innerHTML = '🚌 Türkiye Şehirlerarası & Balkan Hatları (Kamil Koç/FlixBus, Metro, Obilet)';
     } else if (subTab === 'train') {
         if (originLabel) originLabel.innerHTML = '🚆 Kalkış İstasyonu / Garı';
         if (destLabel) destLabel.innerHTML = '🏁 Varış İstasyonu';
-        if (originInput) originInput.placeholder = 'Örn: İstanbul (Söğütlüçeşme YHT)';
-        if (destInput) destInput.placeholder = 'Örn: Ankara YHT Garı, Eskişehir';
+        originInput.placeholder = "";
+        destInput.placeholder = "";
         if (subHintBadge) subHintBadge.innerHTML = '🚆 TCDD Yüksek Hızlı Tren (YHT) & Doğu Ekspresi Hatları';
     } else if (subTab === 'ferry') {
         if (originLabel) originLabel.innerHTML = '⛴️ Kalkış Limanı / İskelesi';
         if (destLabel) destLabel.innerHTML = '🏝️ Varış Adası veya İskelesi';
-        if (originInput) originInput.placeholder = 'Örn: Çeşme Limanı, Bodrum, Galataport';
-        if (destInput) destInput.placeholder = 'Örn: Sakız Adası (Chios), Kos, Rodos';
+        originInput.placeholder = "";
+        destInput.placeholder = "";
         if (subHintBadge) subHintBadge.innerHTML = '⛴️ Kapıda Vize Yunan Adaları (Sakız, Rodos, Kos) & Galataport Kruvaziyer Gemi Turları';
     } else {
         if (originLabel) originLabel.innerHTML = '✈️ Kalkış Havalimanı';
         if (destLabel) destLabel.innerHTML = '🛬 Varış Havalimanı';
-        if (originInput) originInput.placeholder = 'Örn: İstanbul (IST / SAW)';
-        if (destInput) destInput.placeholder = currentFlightScope === 'domestic' ? 'Örn: Antalya (AYT), İzmir (ADB), Ankara (ESB)' : 'Örn: Nice (NCE), Roma (FCO), Paris (CDG)';
+        originInput.placeholder = "";
+        destInput.placeholder = "";
         if (subHintBadge) subHintBadge.innerHTML = '✈️ THY, Pegasus, AJet & Dünya Havayolları Canlı Bilet Karşılaştırması';
     }
 
@@ -1087,6 +1087,14 @@ async function switchTransportSubTab(subTab) {
     updateAirportHints();
 }
 
+
+function ensureObiletPriceSort(url) {
+    if (!url || typeof url !== 'string' || !url.includes('obilet.com')) return url;
+    if (url.includes('sorting=price') || url.includes('sort=price')) return url;
+    const sep = url.includes('?') ? '&' : '?';
+    return url + sep + 'sorting=price&sort=price';
+}
+
 // 4. ULAŞIM ARAMASI ÇALIŞTIRMA (Uçak Odaklı, Kusursuz Yolcu & Kapsam Desteği)
 async function executeTransportSearch(e) {
     if (e) e.preventDefault();
@@ -1115,47 +1123,83 @@ async function executeTransportSearch(e) {
     }
 
     const resultsArea = document.getElementById("transportResultsArea");
+
+    // Ulaşım türüne özel simge, etiket, açı ve tema renkleri
+    let vehicleIcon = "fa-plane";
+    let vehicleRotate = "rotate(15deg)";
+    let vehicleBg = "from-amber-500 to-amber-300";
+    let vehicleShadow = "shadow-amber-500/40";
+    let loadingStep1 = "Canlı Uçak Seferleri & Hakiki Fiyatlar Taranıyor...";
+    let loadingStep2 = "Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.";
+
+    if (currentTransportSubTab === 'bus') {
+        vehicleIcon = "fa-bus-simple";
+        vehicleRotate = "rotate(0deg)";
+        vehicleBg = "from-emerald-500 to-teal-300";
+        vehicleShadow = "shadow-emerald-500/40";
+        loadingStep1 = "Obilet & Kamil Koç Otobüs Seferleri Taranıyor...";
+        loadingStep2 = "Kamil Koç / FlixBus resmi seferleri, Pamukkale, Varan, Metro ve 180+ firmanın canlı koltuk fiyatları doğrulanıyor.";
+    } else if (currentTransportSubTab === 'train') {
+        vehicleIcon = "fa-train-subway";
+        vehicleRotate = "rotate(0deg)";
+        vehicleBg = "from-sky-500 to-blue-300";
+        vehicleShadow = "shadow-sky-500/40";
+        loadingStep1 = "TCDD Yüksek Hızlı Tren (YHT) Seferleri Taranıyor...";
+        loadingStep2 = "TCDD Taşımacılık resmi e-bilet portalı, 597 istasyonluk tren ağı ve YHT canlı tarife saatleri doğrulanıyor.";
+    } else if (currentTransportSubTab === 'ferry') {
+        vehicleIcon = "fa-ship";
+        vehicleRotate = "rotate(0deg)";
+        vehicleBg = "from-cyan-500 to-teal-300";
+        vehicleShadow = "shadow-cyan-500/40";
+        loadingStep1 = "İDO, BUDO & Gemi Seferleri Taranıyor...";
+        loadingStep2 = "İç hat Marmara arabalı vapurları, Kapıda Vize Yunan Adaları hızlı katamaranları ve Cruise turları doğrulanıyor.";
+    } else if (currentTransportSubTab === 'car') {
+        vehicleIcon = "fa-car";
+        vehicleRotate = "rotate(0deg)";
+        vehicleBg = "from-violet-500 to-indigo-300";
+        vehicleShadow = "shadow-violet-500/40";
+        loadingStep1 = "Kiralık Araç Filoları Taranıyor...";
+        loadingStep2 = "Yolcu360, Enuygun, Avis & Garenta müsait filoları, kasko ve depozito koşulları karşılaştırılıyor.";
+    }
+
     resultsArea.innerHTML = `
         <style>
-            @keyframes flyAcrossPlane {
-                0% { left: 4%; transform: translateY(0px) rotate(45deg) scale(0.95); }
-                50% { left: 48%; transform: translateY(-8px) rotate(42deg) scale(1.1); }
-                100% { left: calc(96% - 36px); transform: translateY(0px) rotate(45deg) scale(0.95); }
+            @keyframes moveVehicleSingleWay {
+                0% { left: 0%; opacity: 0; transform: translateY(0px) ${vehicleRotate} scale(0.9); }
+                10% { opacity: 1; transform: translateY(-4px) ${vehicleRotate} scale(1.05); }
+                85% { opacity: 1; transform: translateY(-2px) ${vehicleRotate} scale(1.02); }
+                100% { left: calc(100% - 36px); opacity: 0; transform: translateY(0px) ${vehicleRotate} scale(0.9); }
             }
             @keyframes streamTrail {
                 0% { transform: translateX(-100%); }
                 100% { transform: translateX(100%); }
             }
-            @keyframes pulseCloud {
-                0%, 100% { opacity: 0.3; transform: scale(1); }
-                50% { opacity: 0.6; transform: scale(1.15); }
-            }
-            .hakiki-plane-flyer {
+            .hakiki-vehicle-mover {
                 position: absolute;
                 top: -16px;
-                animation: flyAcrossPlane 2.4s ease-in-out infinite alternate;
+                animation: moveVehicleSingleWay 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
             }
             .hakiki-route-trail {
                 animation: streamTrail 1.8s linear infinite;
             }
         </style>
-        <div class="p-8 sm:p-12 text-center bg-gradient-to-br from-slate-950 via-[#0B1728] to-slate-900 rounded-3xl border border-sky-500/30 shadow-2xl relative overflow-hidden my-6">
+        <div class="p-6 sm:p-10 text-center bg-gradient-to-br from-slate-950 via-[#0B1728] to-slate-900 rounded-3xl border border-sky-500/30 shadow-2xl relative overflow-hidden my-6">
             <!-- Arka Plan Radar Ağı & Yumuşak Parıltı -->
             <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#38bdf8 1px, transparent 1px); background-size: 28px 28px;"></div>
             <div class="absolute -top-12 -left-12 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <!-- Uçuş Yolu & Süzülen Uçak -->
-            <div class="relative max-w-md mx-auto my-6 px-4">
+            <!-- Ulaşım Yolu & Tek Yöne İlerleyen Simge -->
+            <div class="relative max-w-md mx-auto my-4 px-4">
                 <!-- Rota Çizgisi -->
-                <div class="h-1.5 w-full bg-slate-800/80 rounded-full relative overflow-hidden border border-sky-900/50">
+                <div class="h-2 w-full bg-slate-800/90 rounded-full relative overflow-hidden border border-sky-900/50">
                     <div class="hakiki-route-trail h-full w-full bg-gradient-to-r from-transparent via-amber-400 to-sky-400"></div>
                 </div>
 
-                <!-- Uçan Uçak Figürü -->
-                <div class="hakiki-plane-flyer">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/40 ring-2 ring-white/30">
-                        <i class="fa-solid fa-plane text-lg text-slate-950"></i>
+                <!-- Tek Yönlü Hareket Eden Araç Simgesi -->
+                <div class="hakiki-vehicle-mover">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr ${vehicleBg} text-slate-950 flex items-center justify-center shadow-lg ${vehicleShadow} ring-2 ring-white/30">
+                        <i class="fa-solid ${vehicleIcon} text-lg text-slate-950"></i>
                     </div>
                 </div>
 
@@ -1172,8 +1216,22 @@ async function executeTransportSearch(e) {
                 </div>
             </div>
 
+            <!-- İlerleme Çubuğu ve Yüzde Göstergesi -->
+            <div class="max-w-md mx-auto mt-6 px-4">
+                <div class="flex items-center justify-between text-xs font-bold text-slate-300 mb-1.5">
+                    <span id="searchProgressStatus" class="flex items-center gap-1.5 text-sky-300">
+                        <i class="fa-solid fa-circle-notch fa-spin text-sky-400 text-[11px]"></i>
+                        <span>Canlı veriler sorgulanıyor...</span>
+                    </span>
+                    <span id="searchProgressPct" class="text-amber-400 font-extrabold text-sm">%18</span>
+                </div>
+                <div class="w-full bg-slate-800/90 h-2.5 rounded-full overflow-hidden border border-slate-700 p-0.5 shadow-inner">
+                    <div id="searchProgressBar" class="h-full bg-gradient-to-r from-amber-500 via-sky-400 to-emerald-400 rounded-full transition-all duration-300 ease-out" style="width: 18%;"></div>
+                </div>
+            </div>
+
             <!-- Bilgilendirme Metinleri -->
-            <div class="relative z-10 space-y-2 mt-4">
+            <div class="relative z-10 space-y-1.5 mt-5">
                 <div class="text-lg sm:text-xl font-black text-white flex items-center justify-center gap-2">
                     <span>${escapeHtml(origin)}</span>
                     <i class="fa-solid fa-arrow-right-long text-amber-400 text-sm"></i>
@@ -1181,16 +1239,138 @@ async function executeTransportSearch(e) {
                 </div>
                 <div class="text-xs sm:text-sm text-amber-300 font-extrabold flex items-center justify-center gap-2">
                     <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span>${currentTransportSubTab === 'train' ? 'TCDD Yüksek Hızlı Tren (YHT) Seferleri Taranıyor...' : (currentTransportSubTab === 'bus' ? 'Obilet Canlı Otobüs Seferleri & Koltuk Fiyatları Taranıyor...' : (currentTransportSubTab === 'ferry' ? 'İDO, BUDO, Ertürk Lines, Turyol & Cruise Seferleri Taranıyor...' : (currentTransportSubTab === 'car' ? 'Yolcu360, Enuygun, Avis & Garenta Canlı Filoları Taranıyor...' : 'Canlı Seferler & Hakiki Fiyatlar Taranıyor...')))}</span>
+                    <span>${loadingStep1}</span>
                 </div>
                 <div class="text-[11px] sm:text-xs text-slate-400 font-medium max-w-lg mx-auto">
-                    ${currentTransportSubTab === 'train' ? 'TCDD Taşımacılık resmi e-bilet portalı ve YHT tarife saatleri doğrulanıyor.' : (currentTransportSubTab === 'bus' ? 'Kamil Koç, Pamukkale, Varan, Metro ve 180+ firmanın seferleri Obilet üzerinden anlık doğrulanıyor.' : (currentTransportSubTab === 'ferry' ? 'İç hat Marmara arabalı vapurları, Kapıda Vize Yunan Adaları hızlı katamaranları ve Cruise turları doğrulanıyor.' : (currentTransportSubTab === 'car' ? 'Havalimanı ve şehir ofislerindeki müsait kiralık araçlar, depozito koşulları ve taban fiyatlar taranıyor.' : 'Trip.com, Booking/Kayak, Skyscanner, THY, Pegasus, AJet ve SunExpress resmi acente biletleri anlık taranıyor.')))}
+                    ${loadingStep2}
+                </div>
+            </div>
+        </div>
+
+        <!-- Modern Skeleton Screen (İskelet Kartlar) -->
+        <div class="mt-6 space-y-4 max-w-5xl mx-auto">
+            <div class="flex items-center justify-between px-2">
+                <div class="h-4 bg-slate-200 rounded-md w-48 animate-pulse"></div>
+                <div class="h-4 bg-slate-200 rounded-md w-28 animate-pulse"></div>
+            </div>
+            <!-- İskelet Kart 1 -->
+            <div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm animate-pulse flex flex-col md:flex-row items-center justify-between gap-5">
+                <div class="flex items-center gap-3.5 w-full md:w-auto">
+                    <div class="w-12 h-12 rounded-xl bg-slate-200 shrink-0"></div>
+                    <div class="space-y-2 flex-1">
+                        <div class="h-4 bg-slate-200 rounded w-32"></div>
+                        <div class="h-3 bg-slate-100 rounded w-20"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-center">
+                    <div class="space-y-1 text-center">
+                        <div class="h-5 bg-slate-200 rounded w-16 mx-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-10 mx-auto"></div>
+                    </div>
+                    <div class="w-28 flex flex-col items-center gap-1.5">
+                        <div class="h-2 bg-slate-200 rounded-full w-full"></div>
+                        <div class="h-2.5 bg-slate-100 rounded w-14"></div>
+                    </div>
+                    <div class="space-y-1 text-center">
+                        <div class="h-5 bg-slate-200 rounded w-16 mx-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-10 mx-auto"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+                    <div class="space-y-1 text-right">
+                        <div class="h-6 bg-slate-200 rounded w-20 ml-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-14 ml-auto"></div>
+                    </div>
+                    <div class="w-32 h-10 bg-slate-200 rounded-xl shrink-0"></div>
+                </div>
+            </div>
+            <!-- İskelet Kart 2 -->
+            <div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm animate-pulse flex flex-col md:flex-row items-center justify-between gap-5">
+                <div class="flex items-center gap-3.5 w-full md:w-auto">
+                    <div class="w-12 h-12 rounded-xl bg-slate-200 shrink-0"></div>
+                    <div class="space-y-2 flex-1">
+                        <div class="h-4 bg-slate-200 rounded w-36"></div>
+                        <div class="h-3 bg-slate-100 rounded w-24"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-center">
+                    <div class="space-y-1 text-center">
+                        <div class="h-5 bg-slate-200 rounded w-16 mx-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-10 mx-auto"></div>
+                    </div>
+                    <div class="w-28 flex flex-col items-center gap-1.5">
+                        <div class="h-2 bg-slate-200 rounded-full w-full"></div>
+                        <div class="h-2.5 bg-slate-100 rounded w-14"></div>
+                    </div>
+                    <div class="space-y-1 text-center">
+                        <div class="h-5 bg-slate-200 rounded w-16 mx-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-10 mx-auto"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+                    <div class="space-y-1 text-right">
+                        <div class="h-6 bg-slate-200 rounded w-20 ml-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-14 ml-auto"></div>
+                    </div>
+                    <div class="w-32 h-10 bg-slate-200 rounded-xl shrink-0"></div>
+                </div>
+            </div>
+            <!-- İskelet Kart 3 -->
+            <div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm animate-pulse flex flex-col md:flex-row items-center justify-between gap-5">
+                <div class="flex items-center gap-3.5 w-full md:w-auto">
+                    <div class="w-12 h-12 rounded-xl bg-slate-200 shrink-0"></div>
+                    <div class="space-y-2 flex-1">
+                        <div class="h-4 bg-slate-200 rounded w-28"></div>
+                        <div class="h-3 bg-slate-100 rounded w-20"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-center">
+                    <div class="space-y-1 text-center">
+                        <div class="h-5 bg-slate-200 rounded w-16 mx-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-10 mx-auto"></div>
+                    </div>
+                    <div class="w-28 flex flex-col items-center gap-1.5">
+                        <div class="h-2 bg-slate-200 rounded-full w-full"></div>
+                        <div class="h-2.5 bg-slate-100 rounded w-14"></div>
+                    </div>
+                    <div class="space-y-1 text-center">
+                        <div class="h-5 bg-slate-200 rounded w-16 mx-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-10 mx-auto"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+                    <div class="space-y-1 text-right">
+                        <div class="h-6 bg-slate-200 rounded w-20 ml-auto"></div>
+                        <div class="h-3 bg-slate-100 rounded w-14 ml-auto"></div>
+                    </div>
+                    <div class="w-32 h-10 bg-slate-200 rounded-xl shrink-0"></div>
                 </div>
             </div>
         </div>
     `;
     resultsArea.classList.remove("hidden");
     resultsArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    // Dinamik Yüzde & Durum Simülatörü
+    let progressVal = 18;
+    const progressInterval = setInterval(() => {
+        if (progressVal < 92) {
+            progressVal += Math.floor(Math.random() * 8) + 4;
+            if (progressVal > 92) progressVal = 92;
+            const barEl = document.getElementById("searchProgressBar");
+            const pctEl = document.getElementById("searchProgressPct");
+            const statusEl = document.getElementById("searchProgressStatus");
+            if (barEl) barEl.style.width = progressVal + "%";
+            if (pctEl) pctEl.textContent = "%" + progressVal;
+            if (statusEl) {
+                if (progressVal > 70) {
+                    statusEl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-emerald-400 text-[11px]"></i><span>En uygun hakiki fiyatlar teyit ediliyor...</span>`;
+                } else if (progressVal > 40) {
+                    statusEl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-[11px]"></i><span>Canlı seferler ve koltuklar taranıyor...</span>`;
+                }
+            }
+        }
+    }, 240);
 
     try {
         if (window._activeTransportAbort) {
@@ -1228,11 +1408,17 @@ async function executeTransportSearch(e) {
         if (!res.ok) throw new Error("Arama sunucusundan yanıt alınamadı.");
         const data = await res.json();
         if (searchSeq !== window._activeTransportSearchSeq) return;
+        clearInterval(progressInterval);
+        const finalBar = document.getElementById("searchProgressBar");
+        const finalPct = document.getElementById("searchProgressPct");
+        if (finalBar) finalBar.style.width = "100%";
+        if (finalPct) finalPct.textContent = "%100";
         if (data.travel_context) {
             window.HakikiTravelContext = data.travel_context;
         }
         renderTransportResults(data, payload);
     } catch (err) {
+        clearInterval(progressInterval);
         if (err && err.name === "AbortError") return;
         resultsArea.innerHTML = `
             <div class="p-8 text-center bg-rose-50 border border-rose-200 rounded-3xl text-rose-800 shadow-xs">
@@ -2116,7 +2302,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
             );
             const targetUrl = isKamilOrFlix
                 ? (ticket.kamilkoc_link || ticket.direct_link || ticket.official_link || 'https://www.kamilkoc.com.tr/')
-                : (ticket.obilet_link || ticket.direct_link || ticket.official_link || 'https://www.obilet.com/');
+                : (ensureObiletPriceSort(ticket.obilet_link) || ticket.direct_link || ticket.official_link || 'https://www.obilet.com/');
 
             const priceStr = ticket.price ? `${Number(ticket.price).toLocaleString('tr-TR')} ${ticket.currency || '₺'}` : '';
             const btnLabel = isKamilOrFlix
@@ -2158,7 +2344,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         </a>
                     ` : ''}
                     ${ticket.obilet_link ? `
-                        <a href="${ticket.obilet_link}" target="_blank" rel="noopener noreferrer"
+                        <a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer"
                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${!isKamilOrFlix ? 'bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-300 font-black' : 'bg-rose-50/80 hover:bg-rose-100 text-rose-950 border border-rose-300/80 font-bold'} shadow-2xs transition"
                            title="Obilet canlı sefer ve koltuk seçimi ekranında aç">
                             <span class="flex items-center gap-1"><i class="fa-solid fa-ticket-simple text-rose-600 text-[10px]"></i> Obilet</span>
@@ -2790,7 +2976,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     </a>
                                 ` : ''}
                                 ${ticket.obilet_link ? `
-                                    <a href="${ticket.obilet_link}" target="_blank" rel="noopener noreferrer" 
+                                    <a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" 
                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-rose-50/80 hover:bg-rose-100 text-rose-950 border border-rose-300/80 font-bold shadow-2xs transition" 
                                        title="${isEn ? 'Compare live offers on Obilet' : 'Obilet canlı bilet ve acente tekliflerini inceleyin'}">
                                         <span class="flex items-center gap-1"><i class="fa-solid fa-ticket-simple text-rose-600 text-[10px]"></i> Obilet</span>
@@ -3057,6 +3243,7 @@ async function executeHotelSearch(e) {
         const data = await res.json();
         renderHotelResults(data.hotel_info, city, cin, cout, guests, data);
     } catch (err) {
+        clearInterval(progressInterval);
         if (err && err.name === "AbortError") return;
         resultsArea.innerHTML = `
             <div class="p-8 text-center bg-rose-50 border border-rose-200 rounded-3xl text-rose-800">
