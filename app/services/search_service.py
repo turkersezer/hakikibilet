@@ -108,9 +108,11 @@ class SearchService:
         origin_is_intl = bool(origin and origin.get("is_international"))
         dest_is_intl = bool(dest and dest.get("is_international"))
 
-        # Tren Kuralları: TCDD sadece yurt içi, Trainline sadece iki Avrupa şehri arasında
-        is_tcdd_train = bool(origin_has_train and dest_has_train and not origin_is_intl and not dest_is_intl)
-        is_intl_train = bool(origin_has_train and dest_has_train and origin_is_intl and dest_is_intl)
+        # Tren Kuralları: TCDD 597 istasyon canlı ağı + Balkan Ekspresi + Trainline Avrupa Hızlı Trenleri
+        from app.services.train_service import TrainService
+        has_live_tcdd = TrainService.has_direct_tcdd_connection(origin_city_name, dest_city_name)
+        is_tcdd_train = bool((origin_has_train and dest_has_train and not origin_is_intl and not dest_is_intl) or (has_live_tcdd and not (origin_is_intl and dest_is_intl)))
+        is_intl_train = bool((origin_has_train and dest_has_train and origin_is_intl and dest_is_intl) or (has_live_tcdd and (origin_is_intl or dest_is_intl)))
         train_available = is_tcdd_train or is_intl_train
 
         train_reason = None
@@ -217,7 +219,7 @@ class SearchService:
             "tcdd": "https://ebilet.tcddtasimacilik.gov.tr/" if is_tcdd_train else None,
             "trainline": f"https://www.thetrainline.com/book/results?origin={origin_slug}&destination={dest_slug}&outwardDate={departure_date}&currency={currency}" if is_intl_train else None,
             "omio": f"https://www.omio.com/search-frontend/results/{origin_slug}/{dest_slug}/{departure_date}?locale=tr&currency={currency}" if is_intl_train else None,
-            "tcdd_search_hint": f"Kalkış: {origin.get('train_station', origin_city_name)} -> Varış: {dest.get('train_station', dest_city_name)}" if is_tcdd_train else "Demiryolu hattı yok"
+            "tcdd_search_hint": f"Kalkış: {origin.get('train_station', origin_city_name) if origin else origin_city_name} -> Varış: {dest.get('train_station', dest_city_name) if dest else dest_city_name}" if is_tcdd_train else "Demiryolu hattı yok"
         }
 
         # 3. Otobüs Deep Linkleri (Obilet yurt içi, FlixBus/Omio Avrupa ve komşu ağlar)
@@ -1255,8 +1257,8 @@ class SearchService:
             "train": {
                 "count": len(train_tickets),
                 "min_price": calc_min_price(train_tickets),
-                "min_duration": "4 sa 25 dk" if train_tickets else None,
-                "available": origin_has_train and dest_has_train,
+                "min_duration": train_tickets[0]["duration"] if train_tickets else None,
+                "available": bool(train_tickets) or (origin_has_train and dest_has_train),
                 "reason": links["train"]["reason"]
             },
             "bus": {
@@ -1570,6 +1572,24 @@ class SearchService:
                 except Exception:
                     day_price = None
                 if day_price is None and selected_min_price and selected_min_price > 0:
+                    day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
+            elif transport_type == "train":
+                try:
+                    from app.services.train_service import TrainService
+                    day_price = TrainService.get_cached_min_price(
+                        origin_name=origin_name,
+                        dest_name=dest_name,
+                        departure_date=d_iso,
+                        passengers=passengers,
+                        currency=currency,
+                        is_round=is_round
+                    )
+                except Exception:
+                    day_price = None
+                if day_price is None and selected_min_price and selected_min_price > 0:
+                    day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
+            elif transport_type == "ferry":
+                if selected_min_price and selected_min_price > 0:
                     day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
 
             day_diff = (d_dt - base_dt).days

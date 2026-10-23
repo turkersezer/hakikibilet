@@ -2028,7 +2028,15 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-amber-100 text-amber-900 border border-amber-200">
                                     ${badgeText}
                                 </span>
-                                ${isIntlTrain ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-sky-100 text-sky-800">${isEn ? 'European Rail' : 'Avrupa Hızlı Tren'}</span>` : `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-emerald-100 text-emerald-800">⚡ ${isEn ? 'Station-to-Station 250+ km/h' : 'Gardan Gara 250+ km/s'}</span>`}
+                                ${ticket.platform ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-indigo-100 text-indigo-800 border border-indigo-200">🚏 ${escapeHtml(ticket.platform)}</span>` : ''}
+                                ${ticket.live_status ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">${escapeHtml(ticket.live_status)}</span>` : ''}
+                                ${isIntlTrain
+                                    ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-sky-100 text-sky-800">${isEn ? 'European Rail' : 'Avrupa Hızlı Tren'}</span>`
+                                    : (ticket.train_category === 'anahat'
+                                        ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-purple-100 text-purple-800">🌙 ${isEn ? 'Sleeper / Couchette & Pullman' : 'Pulman / Kuşetli & Yataklı'}</span>`
+                                        : (ticket.train_category === 'bolgesel'
+                                            ? `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-teal-100 text-teal-800">🚆 ${isEn ? 'Regional Express' : 'TCDD Bölgesel Hat'}</span>`
+                                            : `<span class="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-emerald-100 text-emerald-800">⚡ ${isEn ? 'Station-to-Station 250+ km/h' : 'Gardan Gara 250+ km/s'}</span>`))}
                             </div>
 
                             <!-- Gidiş Seferi Zaman Çizelgesi -->
@@ -2048,7 +2056,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                                 <i class="fa-solid fa-train text-indigo-600 text-xs"></i>
                                             </div>
                                         </div>
-                                        <div class="text-[10.5px] font-bold text-emerald-600 mt-1">✓ ${isEn ? 'Direct' : 'Direkt • Aktarmasız'}</div>
+                                        <div class="text-[10.5px] font-bold text-emerald-600 mt-1">✓ ${isEn ? 'Direct' : 'Direkt • Aktarmasız'}${ticket.full_route ? ` <span class="text-slate-500 font-semibold">(${escapeHtml(ticket.full_route)})</span>` : ''}</div>
                                     </div>
                                     <div class="col-span-4 sm:col-span-3 text-right">
                                         <div class="text-2xl font-black text-slate-900 leading-none">${ticket.arrival_time}</div>
