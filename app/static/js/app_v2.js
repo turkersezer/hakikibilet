@@ -334,13 +334,9 @@ function setBusScope(scope) {
 
     if (originInput && !originInput.value) {
         originInput.placeholder = "";
-            ? "Örn: İstanbul (Esenler / Alibeyköy / Harem)" 
-            : "Örn: İstanbul, Edirne, Berlin, Paris";
     }
     if (destInput && !destInput.value) {
         destInput.placeholder = "";
-            ? "Örn: Ankara (AŞTİ), İzmir, Antalya, Bursa"
-            : "Örn: Selanik, Sofya, Bükreş, Varna, Prag, Amsterdam";
     }
 
     populateDatalists('bus', scope);
@@ -382,13 +378,9 @@ function setTrainScope(scope) {
 
     if (originInput && !originInput.value) {
         originInput.placeholder = "";
-            ? "Örn: İstanbul (Söğütlüçeşme / Bostancı / Halkalı)" 
-            : "Örn: İstanbul (Halkalı), Paris, Roma, Amsterdam, Berlin";
     }
     if (destInput && !destInput.value) {
         destInput.placeholder = "";
-            ? "Örn: Ankara Garı, Eskişehir, Konya, Sivas, Kars"
-            : "Örn: Sofya, Bükreş, Londra, Milano, Münih, Prag";
     }
 
     populateDatalists('train', scope);
@@ -3243,7 +3235,6 @@ async function executeHotelSearch(e) {
         const data = await res.json();
         renderHotelResults(data.hotel_info, city, cin, cout, guests, data);
     } catch (err) {
-        clearInterval(progressInterval);
         if (err && err.name === "AbortError") return;
         resultsArea.innerHTML = `
             <div class="p-8 text-center bg-rose-50 border border-rose-200 rounded-3xl text-rose-800">

@@ -749,7 +749,7 @@
 
             <!-- ==================== ULAŞIM FORMU (UÇAK, OTOBÜS, TREN, FERİBOT) ==================== -->
             <div id="transFormWrapper">
-                <form id="transportSearchForm">
+                <form id="transportSearchForm" onsubmit="if(event) event.preventDefault();">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
                         
                         <!-- Kalkış (Nereden) -->
@@ -2096,6 +2096,6 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v2.js?v=20261023_02"></script>
+    <script src="/static/js/app_v2.js?v=20261023_03"></script>
 </body>
 </html>
