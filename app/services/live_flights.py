@@ -188,6 +188,113 @@ def _parse_unique_flights(raw_items: List[Any]) -> List[Dict[str, Any]]:
     return sorted(unique_flights.values(), key=lambda x: (x["price"], x["dep_t"][0] * 60 + x["dep_t"][1]))
 
 
+def _build_fallback_sorted_raw_from_ota(
+    multi_ota_map: Dict[str, Dict[str, Dict[str, Any]]],
+    departure_date: str,
+) -> List[Dict[str, Any]]:
+    """
+    Bulut veri merkezi (Render vb.) IP'lerinde Google Flights'ın yanıt vermediği veya
+    kısıtlama uyguladığı anlarda, paralel çalışan Multi-OTA (Kiwi GraphQL) motorundan
+    gelen gerçek canlı seferleri aynı yapısal şemaya dönüştürür.
+    """
+    if not multi_ota_map:
+        return []
+
+    unique_fallback: Dict[tuple, Dict[str, Any]] = {}
+    try:
+        base_dt = datetime.strptime(departure_date, "%Y-%m-%d")
+    except Exception:
+        base_dt = datetime.now()
+
+    for key, channels in multi_ota_map.items():
+        if not key or key.startswith("TIME:") or key.startswith("SHORT:") or not isinstance(channels, dict):
+            continue
+        kiwi_off = channels.get("kiwi")
+        if not kiwi_off or not isinstance(kiwi_off, dict):
+            continue
+        price = float(kiwi_off.get("price") or 0)
+        from_code = str(kiwi_off.get("from_code") or "").strip().upper()
+        to_code = str(kiwi_off.get("to_code") or "").strip().upper()
+        dep_time = str(kiwi_off.get("dep_time") or "").strip()
+        arr_time = str(kiwi_off.get("arr_time") or dep_time).strip()
+        carrier_code = str(kiwi_off.get("carrier_code") or "").strip().upper()
+        fn_code = str(kiwi_off.get("fn_code") or "").strip()
+        airline_name = str(kiwi_off.get("carrier_name") or carrier_code or "Havayolu").strip()
+        flight_no = str(kiwi_off.get("flight_no") or f"{carrier_code} {fn_code}").strip()
+        is_direct = bool(kiwi_off.get("is_direct", True))
+        via_code = str(kiwi_off.get("via_code") or to_code).strip().upper()
+
+        if price <= 0 or not from_code or not to_code or not dep_time or ":" not in dep_time:
+            continue
+
+        try:
+            dep_h, dep_m = map(int, dep_time.split(":")[:2])
+        except Exception:
+            dep_h, dep_m = 0, 0
+        try:
+            arr_h, arr_m = map(int, arr_time.split(":")[:2])
+        except Exception:
+            arr_h, arr_m = dep_h, dep_m
+
+        dep_dt = base_dt
+        arr_dt = base_dt
+        total_duration_mins = 75
+        dep_local = str(kiwi_off.get("dep_local") or "")
+        arr_local = str(kiwi_off.get("arr_local") or "")
+        try:
+            if len(dep_local) >= 19 and len(arr_local) >= 19:
+                dt1 = datetime.fromisoformat(dep_local[:19])
+                dt2 = datetime.fromisoformat(arr_local[:19])
+                dep_dt = dt1
+                arr_dt = dt2
+                diff_m = int((dt2 - dt1).total_seconds() // 60)
+                if diff_m > 0:
+                    total_duration_mins = diff_m
+        except Exception:
+            pass
+
+        hours = total_duration_mins // 60
+        mins = total_duration_mins % 60
+        duration_str = f"{hours} sa {mins} dk" if hours > 0 else f"{mins} dk"
+
+        leg_first: List[Any] = [None] * 23
+        leg_first[3] = from_code
+        leg_first[6] = via_code if not is_direct else to_code
+        leg_first[11] = total_duration_mins
+        leg_first[17] = "Uçak"
+        leg_first[20] = [dep_dt.year, dep_dt.month, dep_dt.day]
+        leg_first[21] = [arr_dt.year, arr_dt.month, arr_dt.day]
+        legs = [leg_first]
+        if not is_direct:
+            leg_last = list(leg_first)
+            leg_last[6] = to_code
+            legs.append(leg_last)
+
+        sig = (airline_name, from_code, to_code, dep_time, arr_time)
+        if sig not in unique_fallback or price < unique_fallback[sig]["price"]:
+            unique_fallback[sig] = {
+                "f0": [],
+                "legs": legs,
+                "price": price,
+                "booking_token": None,
+                "from_code": from_code,
+                "to_code": to_code,
+                "dep_t": (dep_h, dep_m),
+                "arr_t": (arr_h, arr_m),
+                "dep_time": dep_time,
+                "arr_time": arr_time,
+                "carrier_code": carrier_code,
+                "fn_code": fn_code,
+                "airline_name": airline_name,
+                "flight_no": flight_no,
+                "total_duration_mins": total_duration_mins,
+                "duration_str": duration_str,
+                "is_direct": is_direct,
+            }
+
+    return sorted(unique_fallback.values(), key=lambda x: (x["price"], x["dep_t"][0] * 60 + x["dep_t"][1]))
+
+
 def fetch_live_flights_from_google(
     origin_city_name: str,
     dest_city_name: str,
@@ -272,7 +379,28 @@ def fetch_live_flights_from_google(
                 currency="TRY",
                 language="tr"
             )
-            html = fetch_flights_html(q)
+            html = ""
+            try:
+                from primp import Client as PrimpClient
+                p_client = PrimpClient(
+                    impersonate="chrome_145",
+                    impersonate_os="macos",
+                    referer=True,
+                    cookie_store=True,
+                )
+                p_res = p_client.get(
+                    "https://www.google.com/travel/flights",
+                    params=q.params(),
+                    cookies={
+                        "SOCS": "CAESHAgBEhJnd3NfMjAyMzA4MTAtMF9SQzIaAmVuIAEaBgiAo_CmBg",
+                        "CONSENT": "YES+cb.20230531-04-p0.tr+FX+999",
+                    },
+                )
+                html = p_res.text or ""
+            except Exception:
+                html = fetch_flights_html(q)
+            if not html or "ds:1" not in html:
+                html = fetch_flights_html(q)
             parser = LexborHTMLParser(html)
             script = parser.css_first('script.ds\\:1')
             if not script:
@@ -328,10 +456,11 @@ def fetch_live_flights_from_google(
             logger.debug(f"Multi-OTA map error: {ota_err}")
             multi_ota_map = {}
 
-    if not all_raw_flights:
+    sorted_raw = _parse_unique_flights(all_raw_flights) if all_raw_flights else []
+    if not sorted_raw and multi_ota_map:
+        sorted_raw = _build_fallback_sorted_raw_from_ota(multi_ota_map, departure_date)
+    if not sorted_raw:
         return []
-
-    sorted_raw = _parse_unique_flights(all_raw_flights)
     parsed_return_flights = _parse_unique_flights(all_raw_return_flights) if (is_round and all_raw_return_flights) else []
 
     results: List[Dict[str, Any]] = []

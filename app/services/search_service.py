@@ -1511,41 +1511,44 @@ class SearchService:
         live_day_prices: Dict[str, Optional[float]] = {}
 
         if can_query_flights:
-            from app.services.live_flights import fetch_live_flights_from_google
+            try:
+                from app.services.live_flights import fetch_live_flights_from_google
 
-            def _fetch_real_day_min(d_dt_item) -> tuple:
-                d_iso_str = d_dt_item.strftime("%Y-%m-%d")
-                if d_iso_str == departure_date and selected_min_price is not None and selected_min_price > 0:
-                    val = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
-                    return d_iso_str, val
-                day_ret_str = (d_dt_item + timedelta(days=round_span)).strftime("%Y-%m-%d") if is_round else None
-                try:
-                    day_flights = fetch_live_flights_from_google(
-                        origin_city_name=origin_name,
-                        dest_city_name=dest_name,
-                        departure_date=d_iso_str,
-                        return_date=day_ret_str,
-                        passengers=passengers,
-                        trip_type="round_trip" if is_round else "one_way",
-                        cabin_class=cabin_class,
-                        adults=adults,
-                        children=children,
-                        infants=infants,
-                    )
-                    valid_p = [float(f["price"]) for f in (day_flights or []) if f.get("price") is not None and float(f["price"]) > 0]
-                    if not valid_p:
+                def _fetch_real_day_min(d_dt_item) -> tuple:
+                    d_iso_str = d_dt_item.strftime("%Y-%m-%d")
+                    if d_iso_str == departure_date and selected_min_price is not None and selected_min_price > 0:
+                        val = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
+                        return d_iso_str, val
+                    day_ret_str = (d_dt_item + timedelta(days=round_span)).strftime("%Y-%m-%d") if is_round else None
+                    try:
+                        day_flights = fetch_live_flights_from_google(
+                            origin_city_name=origin_name,
+                            dest_city_name=dest_name,
+                            departure_date=d_iso_str,
+                            return_date=day_ret_str,
+                            passengers=passengers,
+                            trip_type="round_trip" if is_round else "one_way",
+                            cabin_class=cabin_class,
+                            adults=adults,
+                            children=children,
+                            infants=infants,
+                        )
+                        valid_p = [float(f["price"]) for f in (day_flights or []) if f.get("price") is not None and float(f["price"]) > 0]
+                        if not valid_p:
+                            return d_iso_str, None
+                        min_try = min(valid_p)
+                        if currency != "TRY":
+                            conv = round(CurrencyService.convert(min_try, "TRY", currency), 2)
+                            return d_iso_str, conv
+                        return d_iso_str, round(min_try)
+                    except Exception:
                         return d_iso_str, None
-                    min_try = min(valid_p)
-                    if currency != "TRY":
-                        conv = round(CurrencyService.convert(min_try, "TRY", currency), 2)
-                        return d_iso_str, conv
-                    return d_iso_str, round(min_try)
-                except Exception:
-                    return d_iso_str, None
 
-            with ThreadPoolExecutor(max_workers=7) as ex:
-                for d_key, d_val in ex.map(_fetch_real_day_min, target_dates):
-                    live_day_prices[d_key] = d_val
+                with ThreadPoolExecutor(max_workers=7) as ex:
+                    for d_key, d_val in ex.map(_fetch_real_day_min, target_dates):
+                        live_day_prices[d_key] = d_val
+            except Exception as flex_fl_err:
+                logger.warning(f"Esnek tarih uçuş fiyat şeridi hatası: {flex_fl_err}")
 
         days_strip = []
         for d_dt in target_dates:

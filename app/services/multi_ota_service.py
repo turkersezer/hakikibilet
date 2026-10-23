@@ -74,13 +74,15 @@ def _merge_offer(
     flight_bucket = target_map.setdefault(flight_key, {})
     existing = flight_bucket.get(channel)
     if existing is None or price_val < float(existing.get("price", 999999999)):
-        flight_bucket[channel] = {
+        merged = dict(offer)
+        merged.update({
             "name": offer.get("name", channel.capitalize()),
             "price": price_val,
             "url": offer.get("url", ""),
             "channel": channel,
             "dep_time": offer.get("dep_time"),
-        }
+        })
+        flight_bucket[channel] = merged
 
 
 def fetch_kiwi_live_offers(
@@ -235,11 +237,13 @@ def fetch_kiwi_live_offers(
                 continue
 
             first_seg = (segs[0] or {}).get("segment") or {}
+            last_seg = (segs[-1] or {}).get("segment") or first_seg
             flight_code_num = str(first_seg.get("code") or "").strip()
             carrier = first_seg.get("carrier") or {}
             op_carrier = first_seg.get("operatingCarrier") or {}
             carrier_code = str(carrier.get("code") or "").strip().upper()
             op_carrier_code = str(op_carrier.get("code") or "").strip().upper()
+            carrier_name = str(carrier.get("name") or op_carrier.get("name") or carrier_code or "Havayolu").strip()
 
             if not flight_code_num or not carrier_code:
                 continue
@@ -270,7 +274,12 @@ def fetch_kiwi_live_offers(
                 direct_url = f"https://www.kiwi.com/tr/search/results/{orig_codes[0]}/{dest_codes[0]}/{departure_date}?{kiwi_affil_params}"
 
             local_time = str(((first_seg.get("source") or {}).get("localTime")) or "")
+            arr_local_time = str(((last_seg.get("destination") or {}).get("localTime")) or "")
             dep_hhmm = local_time[11:16] if len(local_time) >= 16 else None
+            arr_hhmm = arr_local_time[11:16] if len(arr_local_time) >= 16 else None
+            src_code = str(((first_seg.get("source") or {}).get("station") or {}).get("code") or "").upper()
+            dst_code = str(((last_seg.get("destination") or {}).get("station") or {}).get("code") or "").upper()
+            via_code = str(((first_seg.get("destination") or {}).get("station") or {}).get("code") or "").upper()
 
             offer_item = {
                 "name": "Kiwi.com",
@@ -278,6 +287,17 @@ def fetch_kiwi_live_offers(
                 "url": direct_url,
                 "channel": "kiwi",
                 "dep_time": dep_hhmm,
+                "arr_time": arr_hhmm,
+                "dep_local": local_time,
+                "arr_local": arr_local_time,
+                "from_code": src_code,
+                "to_code": dst_code,
+                "via_code": via_code,
+                "carrier_code": carrier_code,
+                "carrier_name": carrier_name,
+                "fn_code": flight_code_num,
+                "flight_no": f"{carrier_code} {flight_code_num}".strip(),
+                "is_direct": (len(segs) == 1),
             }
 
             primary_key = normalize_flight_key(f"{carrier_code}{flight_code_num}")
@@ -289,8 +309,6 @@ def fetch_kiwi_live_offers(
                 _merge_offer(offers_map, alt_key, "kiwi", offer_item)
 
             # Ayrıca saat bazlı yedek eşleştirme anahtarı (TIME:SAW:ADB:06:00:PC)
-            src_code = str(((first_seg.get("source") or {}).get("station") or {}).get("code") or "").upper()
-            dst_code = str(((first_seg.get("destination") or {}).get("station") or {}).get("code") or "").upper()
             if dep_hhmm and src_code and dst_code:
                 time_key = f"TIME:{src_code}:{dst_code}:{dep_hhmm}:{carrier_code}"
                 _merge_offer(offers_map, time_key, "kiwi", offer_item)
