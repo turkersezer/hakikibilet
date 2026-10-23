@@ -1747,11 +1747,46 @@ class SearchService:
             return None
 
         def _fetch_train_badge() -> Optional[Dict[str, Any]]:
-            if current_mode == "train" or not links.get("train", {}).get("available"):
+            if current_mode == "train":
                 return None
             try:
+                from app.services.train_service import TrainService
+                fast_info = TrainService.get_fast_badge_info(
+                    origin_name=origin_name,
+                    dest_name=dest_name,
+                    passengers=passengers,
+                    currency=currency,
+                )
+                if fast_info:
+                    min_tr, min_dur, b_type = fast_info
+                    if b_type == "intl":
+                        return {
+                            "mode": "train",
+                            "icon": "🚆",
+                            "title_tr": "Avrupa Hızlı Tren",
+                            "title_en": "European High-Speed Rail",
+                            "min_price": min_tr,
+                            "currency": curr_symbol,
+                            "duration": min_dur,
+                            "provider": "Trainline / Eurostar",
+                            "deep_link": links.get("train", {}).get("trainline") or "https://www.thetrainline.com/",
+                        }
+                    return {
+                        "mode": "train",
+                        "icon": "🚆",
+                        "title_tr": "En Ucuz Tren (YHT)",
+                        "title_en": "Cheapest Train (YHT)",
+                        "min_price": min_tr,
+                        "currency": curr_symbol,
+                        "duration": min_dur,
+                        "provider": "TCDD Taşımacılık",
+                        "deep_link": links.get("train", {}).get("tcdd") or "https://ebilet.tcddtasimacilik.gov.tr/",
+                    }
+
+                if not links.get("train", {}).get("available"):
+                    return None
+
                 if links["train"].get("is_tcdd"):
-                    from app.services.train_service import TrainService
                     tr_list = TrainService.search_trains(
                         origin_name=origin_name,
                         dest_name=dest_name,

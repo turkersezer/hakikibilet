@@ -510,6 +510,31 @@ class TrainService:
         return s.lower().strip()
 
     @classmethod
+    def canonical_city_key(cls, text: str) -> str:
+        """
+        'İstanbul Sabiha Gökçen (SAW)', 'İstanbul Havalimanı (IST)', 'Ankara (ESB)' veya
+        ilçe aramalarını ('Çankaya (Ankara)', 'Kadıköy (İstanbul)') ana TCDD şehir anahtarına ('istanbul', 'ankara') dönüştürür.
+        """
+        clean = cls.normalize_tr(text)
+        if not clean:
+            return ""
+        if clean in cls.CITY_PRIMARY_STATION_IDS:
+            return clean
+        for main_city in ("istanbul", "ankara", "izmir", "eskisehir", "konya", "sivas", "karaman", "adana", "mersin", "kayseri", "kars", "erzurum", "malatya", "diyarbakir", "denizli", "kocaeli", "sakarya", "bilecik", "edirne", "balikesir", "kutahya", "afyon", "isparta", "zonguldak", "karabuk", "samsun", "amasya"):
+            if main_city in clean:
+                return main_city
+        try:
+            from app.cities import find_city
+            loc = find_city(text)
+            if loc and loc.get("province"):
+                prov_clean = cls.normalize_tr(loc["province"])
+                if prov_clean:
+                    return prov_clean
+        except Exception:
+            pass
+        return clean
+
+    @classmethod
     def get_tcdd_bearer_token(cls) -> str:
         """TCDD E-Bilet genel istemci Bearer token'ını döndürür (gerekirse JS paketinden tazeler)."""
         if cls._CACHED_TCDD_TOKEN and (time.time() - cls._TOKEN_TS) < 21600:
@@ -541,6 +566,7 @@ class TrainService:
         """Kullanıcının girdiği şehir veya gar adını TCDD istasyon ID adaylarına dönüştürür."""
         stations = cls.fetch_tcdd_stations()
         clean = cls.normalize_tr(query_name)
+        canon = cls.canonical_city_key(query_name)
         if not clean:
             return []
 
@@ -548,9 +574,11 @@ class TrainService:
         # 1. Doğrudan şehir/gar haritasından eşleşme
         if clean in cls.CITY_PRIMARY_STATION_IDS:
             candidates.extend(cls.CITY_PRIMARY_STATION_IDS[clean])
+        elif canon in cls.CITY_PRIMARY_STATION_IDS:
+            candidates.extend(cls.CITY_PRIMARY_STATION_IDS[canon])
         else:
             for k, ids in cls.CITY_PRIMARY_STATION_IDS.items():
-                if k in clean or clean in k:
+                if k in clean or clean in k or (canon and (k in canon or canon in k)):
                     for sid in ids:
                         if sid not in candidates:
                             candidates.append(sid)
@@ -597,14 +625,45 @@ class TrainService:
     @classmethod
     def has_direct_tcdd_connection(cls, origin_name: str, dest_name: str) -> bool:
         """İki şehir/gar arasında doğrudan TCDD veya uluslararası tren bağlantısı olup olmadığını kontrol eder."""
-        orig_clean = cls.normalize_tr(origin_name)
-        dest_clean = cls.normalize_tr(dest_name)
+        orig_clean = cls.canonical_city_key(origin_name)
+        dest_clean = cls.canonical_city_key(dest_name)
         if not orig_clean or not dest_clean or orig_clean == dest_clean:
             return False
         if (orig_clean, dest_clean) in cls.TCDD_TARIFFS or (orig_clean, dest_clean) in cls.INTERNATIONAL_TRAIN_TARIFFS:
             return True
         pairs = cls.resolve_connected_station_pairs(origin_name, dest_name)
         return len(pairs) > 0
+
+    @classmethod
+    def get_fast_badge_info(
+        cls, origin_name: str, dest_name: str, passengers: int = 1, currency: str = "TRY"
+    ) -> Optional[Tuple[int, str, str]]:
+        """
+        Alternatif ulaşım rozeti için ağ gecikmesi olmadan (0 ms) resmi TCDD / Uluslararası
+        tren taban fiyatını ve süresini döndürür: (min_price, duration, badge_type).
+        """
+        orig_key = cls.canonical_city_key(origin_name)
+        dest_key = cls.canonical_city_key(dest_name)
+        if not orig_key or not dest_key or orig_key == dest_key:
+            return None
+        pax_mult = max(1, passengers)
+
+        tariff = cls.TCDD_TARIFFS.get((orig_key, dest_key))
+        if tariff:
+            base_try = float(tariff.get("anahat_pulman") or tariff["price"])
+            total_try = base_try * pax_mult
+            final_p = int(round(CurrencyService.convert(total_try, "TRY", currency))) if currency != "TRY" else int(round(total_try))
+            dur = str(tariff.get("duration") or "4 sa 15 dk")
+            return final_p, dur, "tcdd"
+
+        for (r_orig, r_dest), tariff_intl in cls.INTERNATIONAL_TRAIN_TARIFFS.items():
+            if (r_orig in orig_key or orig_key in r_orig) and (r_dest in dest_key or dest_key in r_dest):
+                total_eur = float(tariff_intl.get("price_eur", 50.0)) * pax_mult
+                final_p = int(round(CurrencyService.convert(total_eur, "EUR", currency)))
+                dur = str(tariff_intl.get("duration") or "3 sa 15 dk")
+                return final_p, dur, "intl"
+
+        return None
 
     @classmethod
     def fetch_station_live_status(cls, station_id: int) -> List[Dict[str, Any]]:
@@ -677,7 +736,9 @@ class TrainService:
         Resmi TCDD tarifesinde doğrudan kayıtlıysa net fiyatı, ara duraklar için ise
         TCDD'nin kategori (YHT / Anahat / Bölgesel) ve süre/mesafe bazlı resmi tarife skalasını döndürür.
         """
-        tariff = cls.TCDD_TARIFFS.get((orig_clean, dest_clean))
+        o_key = cls.canonical_city_key(orig_clean)
+        d_key = cls.canonical_city_key(dest_clean)
+        tariff = cls.TCDD_TARIFFS.get((o_key, d_key)) or cls.TCDD_TARIFFS.get((orig_clean, dest_clean))
         if tariff:
             if train_category == "anahat" and tariff.get("anahat_pulman"):
                 return float(tariff["anahat_pulman"])
@@ -866,8 +927,8 @@ class TrainService:
         passengers: int = 1, currency: str = "TRY", is_round: bool = False
     ) -> Optional[float]:
         """7 günlük esnek fiyat şeridi için TCDD veya uluslararası tren taban fiyatını döndürür."""
-        orig_clean = cls.normalize_tr(origin_name)
-        dest_clean = cls.normalize_tr(dest_name)
+        orig_clean = cls.canonical_city_key(origin_name)
+        dest_clean = cls.canonical_city_key(dest_name)
         mult = max(1, passengers) * (2 if is_round else 1)
 
         base_try = cls._ROUTE_MIN_PRICE_CACHE.get((orig_clean, dest_clean))
