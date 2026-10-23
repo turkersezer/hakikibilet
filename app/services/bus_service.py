@@ -80,6 +80,18 @@ class BusService:
         "istanbul-havalimani": "349",
         "istanbul-anadolu": "350",
         "istanbul-sabiha-gokcen": "350",
+        "atasehir": "349",
+        "dudullu": "349",
+        "esenler": "349",
+        "alibeykoy": "349",
+        "kadikoy": "349",
+        "harem": "349",
+        "pendik": "349",
+        "kartal": "349",
+        "umraniye": "349",
+        "asti": "356",
+        "yenimahalle": "356",
+        "cankaya": "356",
         "izmir": "383",
         "kahramanmaras": "393",
         "kapadokya": "397",
@@ -137,12 +149,53 @@ class BusService:
 
     # FlixBus / Kamil Koç Doğrulanmış Hızlı UUID Haritası (En Çok Aranan Merkezler + Dinamik Çözümleyici)
     FLIXBUS_CITY_UUIDS: Dict[str, str] = {
+        # İstanbul Avrupa
         "istanbul": "99c50ec5-3ecb-11ea-8017-02437075395e",          # İstanbul Avrupa (Esenler / Alibeyköy)
         "istanbul-avrupa": "99c50ec5-3ecb-11ea-8017-02437075395e",
-        "istanbul-anadolu": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",  # İstanbul Anadolu (Dudullu)
+        "esenler": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "alibeykoy": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "bakirkoy": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "avcilar": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "beylikduzu": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "buyukcekmece": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "silivri": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "taksim": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "besiktas": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "sisli": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        "fatih": "99c50ec5-3ecb-11ea-8017-02437075395e",
+        # İstanbul Anadolu
+        "istanbul-anadolu": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",  # İstanbul Anadolu (Dudullu / Ataşehir / Kadıköy)
+        "atasehir": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "dudullu": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "kadikoy": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "umraniye": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "uskudar": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "pendik": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "kartal": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "maltepe": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "harem": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "sultanbeyli": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "sancaktepe": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "tuzla": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "cekmekoy": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "beykoz": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "sabiha-gokcen": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        # Ankara & İlçeleri
         "ankara": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "asti": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "yenimahalle": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "cankaya": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "kizilay": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "kecioren": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "eryaman": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "etimesgut": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "sincan": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        "polatli": "a02797e9-d4ca-4162-94ae-7631b8207030",
+        # Diğer Büyükşehirler
         "izmir": "e76a49b0-c196-4c4e-92ce-9f63f14adc16",
+        "bornova": "e76a49b0-c196-4c4e-92ce-9f63f14adc16",
         "bursa": "ab21812d-a350-45ee-b2c0-c4af9f3b6943",
+        "inegol": "ab21812d-a350-45ee-b2c0-c4af9f3b6943",
         "antalya": "c55dec45-ee16-407d-9371-b71f28fbbfb8",
         "adana": "7f2e45cb-f06d-4609-86fd-50126ce5ce1f",
         "manavgat": "f0b5b7f4-9317-4c39-b9ae-0b0e58634617",
@@ -247,6 +300,38 @@ class BusService:
         if slug in cls._FLIXBUS_UUID_CACHE:
             return cls._FLIXBUS_UUID_CACHE[slug]
 
+        # İlçe / Semt bağlı olduğu il veya yaka kontrolü (Örn: Ataşehir -> İstanbul Anadolu; Eryaman -> Ankara)
+        try:
+            from app.cities import find_city
+            c_info = find_city(city_name)
+            if c_info:
+                c_slug = c_info.get("slug", "")
+                if c_slug in cls.FLIXBUS_CITY_UUIDS:
+                    uuid_val = cls.FLIXBUS_CITY_UUIDS[c_slug]
+                    cls._FLIXBUS_UUID_CACHE[slug] = uuid_val
+                    return uuid_val
+
+                prov = c_info.get("province", "")
+                prov_slug = cls.get_clean_slug(prov)
+                if prov_slug == "istanbul":
+                    anadolu_districts = {
+                        "atasehir", "dudullu", "kadikoy", "umraniye", "uskudar", "pendik", "kartal",
+                        "maltepe", "harem", "sultanbeyli", "sancaktepe", "tuzla", "cekmekoy", "beykoz", "sile", "sabiha-gokcen"
+                    }
+                    if slug in anadolu_districts or c_slug in anadolu_districts:
+                        uuid_val = cls.FLIXBUS_CITY_UUIDS["istanbul-anadolu"]
+                    else:
+                        uuid_val = cls.FLIXBUS_CITY_UUIDS["istanbul-avrupa"]
+                    cls._FLIXBUS_UUID_CACHE[slug] = uuid_val
+                    return uuid_val
+
+                if prov_slug in cls.FLIXBUS_CITY_UUIDS:
+                    uuid_val = cls.FLIXBUS_CITY_UUIDS[prov_slug]
+                    cls._FLIXBUS_UUID_CACHE[slug] = uuid_val
+                    return uuid_val
+        except Exception:
+            pass
+
         query_str = cls._clean_query_name(city_name)
         url = f"https://global.api.flixbus.com/search/autocomplete/cities?q={urllib.parse.quote(query_str)}&lang=tr"
         try:
@@ -289,7 +374,27 @@ class BusService:
         if slug in cls._DYNAMIC_CITY_ID_CACHE:
             return cls._DYNAMIC_CITY_ID_CACHE[slug]
 
-        # Önce Obilet SEO sayfasından ilçenin kendi ID'sini yakalamayı dene (Örn: Manavgat, İnegöl, Çorlu vb.)
+        # 1. Önce bağlı olduğu ilin/ilçenin kayıtlı ID'sini çöz (0 ms - ağ gecikmesi yok)
+        try:
+            from app.cities import find_city
+            c_obj = find_city(city_name)
+            if c_obj:
+                if c_obj.get("is_international"):
+                    return None
+                c_slug = c_obj.get("slug", "")
+                if c_slug in cls.OBILET_CITY_IDS:
+                    cls._DYNAMIC_CITY_ID_CACHE[slug] = cls.OBILET_CITY_IDS[c_slug]
+                    return cls.OBILET_CITY_IDS[c_slug]
+                prov = c_obj.get("province")
+                if prov:
+                    prov_slug = cls.get_clean_slug(prov)
+                    if prov_slug in cls.OBILET_CITY_IDS:
+                        cls._DYNAMIC_CITY_ID_CACHE[slug] = cls.OBILET_CITY_IDS[prov_slug]
+                        return cls.OBILET_CITY_IDS[prov_slug]
+        except Exception:
+            pass
+
+        # 2. Bulunamazsa Obilet SEO sayfasından dinamik ID yakala (Örn: Side, Çorlu vb.)
         for probe_url, key in (
             (f"https://www.obilet.com/otobus-bileti/istanbul-{slug}", "destination"),
             (f"https://www.obilet.com/otobus-bileti/{slug}-ankara", "origin"),
@@ -299,7 +404,7 @@ class BusService:
                     probe_url,
                     headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
                 )
-                html = urllib.request.urlopen(req, timeout=4).read().decode("utf-8", errors="ignore")
+                html = urllib.request.urlopen(req, timeout=3).read().decode("utf-8", errors="ignore")
                 m = re.search(rf'"{key}":\{{"id":(\d+)', html)
                 if m:
                     resolved_id = m.group(1)
@@ -307,24 +412,6 @@ class BusService:
                     return resolved_id
             except Exception:
                 continue
-
-        # Bulunamazsa bağlı olduğu ilin ID'sine (province) düş
-        try:
-            from app.cities import find_city
-            c_obj = find_city(city_name)
-            if c_obj:
-                if c_obj.get("is_international"):
-                    return None
-                c_slug = c_obj.get("slug", "")
-                if c_slug in cls.OBILET_CITY_IDS:
-                    return cls.OBILET_CITY_IDS[c_slug]
-                prov = c_obj.get("province")
-                if prov:
-                    prov_slug = cls.get_clean_slug(prov)
-                    if prov_slug in cls.OBILET_CITY_IDS:
-                        return cls.OBILET_CITY_IDS[prov_slug]
-        except Exception:
-            pass
 
         return None
 
@@ -995,7 +1082,7 @@ class BusService:
             merged_journeys.append(fj)
 
         if obilet_journeys:
-            for oj in obilet_journeys[:35]:
+            for oj in obilet_journeys:
                 is_oj_kamil = "kamil" in oj["carrier"].lower() or "flix" in oj["carrier"].lower()
                 if is_oj_kamil and oj["dep_time"] in flix_kk_times:
                     # Zaten FlixBus resmi motorundan aynı saatteki Kamil Koç seferi alındı;
@@ -1056,8 +1143,17 @@ class BusService:
                     fk["is_featured_partner"] = True
                     fk["featured_rank"] = rank_idx
 
-                rest_journeys = [j for j in merged_journeys if not j.get("is_featured_partner")]
-                merged_journeys = featured_kk + rest_journeys
+                kk_rest = [
+                    j for j in merged_journeys
+                    if not j.get("is_featured_partner")
+                    and (j.get("source") == "flixbus_official" or "kamil" in j["carrier"].lower() or "flix" in j["carrier"].lower())
+                ]
+                other_rest = [
+                    j for j in merged_journeys
+                    if not j.get("is_featured_partner")
+                    and not (j.get("source") == "flixbus_official" or "kamil" in j["carrier"].lower() or "flix" in j["carrier"].lower())
+                ]
+                merged_journeys = featured_kk + other_rest[:60] + kk_rest
         else:
             overall_min_try = None
 
