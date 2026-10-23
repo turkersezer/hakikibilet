@@ -1253,14 +1253,24 @@ class SearchService:
         if night_only:
             results = [t for t in results if t.get("is_night_trip")]
 
-        # Fiyata göre artan sırada sırala (Otobüs sekmesinde vitrindeki ilk 3 Kamil Koç Resmi seferi en üstte!)
-        results.sort(
-            key=lambda t: (
-                t.get("featured_rank", 999) if (transport_type == "bus" and t.get("is_featured_partner")) else 999,
-                t.get("price") if t.get("price") is not None else 999999,
-                t.get("departure_time") or "23:59",
+        # Sıralama: Otobüs sekmesinde akıllı kürasyon sırasını (Vitrin Kamil Koç + En Ucuz Fırsat + Bölge Kahramanı & Ana Koridor) koru
+        if transport_type == "bus":
+            results.sort(
+                key=lambda t: (
+                    t.get("smart_sort_rank", 9999) if t.get("transport_type") == "bus" else 9999,
+                    t.get("price") if t.get("price") is not None else 999999,
+                    -int(t.get("carrier_score", 0)),
+                    t.get("departure_time") or "23:59",
+                )
             )
-        )
+        else:
+            results.sort(
+                key=lambda t: (
+                    t.get("price") if t.get("price") is not None else 999999,
+                    -int(t.get("carrier_score", 0)),
+                    t.get("departure_time") or "23:59",
+                )
+            )
 
         # Özet İstatistikleri
         flight_tickets = [t for t in results if t["transport_type"] == "flight"]

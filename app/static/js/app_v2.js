@@ -3122,25 +3122,45 @@ function applyFlightSortAndFilter() {
     };
 
     if (window.currentFlightSort === 'cheapest') {
-        // Otobüs sekmesinde vitrindeki ilk 3 Kamil Koç Resmi seferini en üstte tut, ardından en ucuz biletleri sırala
+        // Otobüs sekmesinde akıllı kürasyon sırasını (Vitrin Kamil Koç + En Ucuz Fırsat + Bölge Kahramanı & Ana Koridor) koru
         list.sort((a, b) => {
-            if (currentTransportSubTab === 'bus') {
-                const aFeat = a.is_featured_partner ? (Number(a.featured_rank) || 1) : 999;
-                const bFeat = b.is_featured_partner ? (Number(b.featured_rank) || 1) : 999;
-                if (aFeat !== bFeat) return aFeat - bFeat;
+            if (currentTransportSubTab === 'bus' || (a.transport_type === 'bus' && b.transport_type === 'bus')) {
+                const aRank = Number(a.smart_sort_rank) || 9999;
+                const bRank = Number(b.smart_sort_rank) || 9999;
+                if (aRank !== bRank) return aRank - bRank;
             }
             const pDiff = (Number(a.price) || 0) - (Number(b.price) || 0);
             if (Math.abs(pDiff) > 0.01) return pDiff;
+            const sDiff = (Number(b.carrier_score) || 0) - (Number(a.carrier_score) || 0);
+            if (sDiff !== 0) return sDiff;
             return parseMins(a.departure_time) - parseMins(b.departure_time);
         });
     } else if (window.currentFlightSort === 'fastest') {
-        list.sort((a, b) => getDurMins(a.duration) - getDurMins(b.duration));
+        list.sort((a, b) => {
+            const dDiff = getDurMins(a.duration) - getDurMins(b.duration);
+            if (dDiff !== 0) return dDiff;
+            const sDiff = (Number(b.carrier_score) || 0) - (Number(a.carrier_score) || 0);
+            if (sDiff !== 0) return sDiff;
+            return (Number(a.price) || 0) - (Number(b.price) || 0);
+        });
     } else if (window.currentFlightSort === 'earliest') {
-        // En Erken Kalkış: 00:00'dan 23:59'a doğru artan sıra
-        list.sort((a, b) => parseMins(a.departure_time) - parseMins(b.departure_time));
+        // En Erken Kalkış: 00:00'dan 23:59'a doğru artan sıra (aynı dakikada Bölge Kahramanı / Ulusal Marka üstte)
+        list.sort((a, b) => {
+            const tDiff = parseMins(a.departure_time) - parseMins(b.departure_time);
+            if (tDiff !== 0) return tDiff;
+            const sDiff = (Number(b.carrier_score) || 0) - (Number(a.carrier_score) || 0);
+            if (sDiff !== 0) return sDiff;
+            return (Number(a.price) || 0) - (Number(b.price) || 0);
+        });
     } else if (window.currentFlightSort === 'latest') {
-        // En Geç Kalkış: 23:59'dan 00:00'a doğru azalan sıra
-        list.sort((a, b) => parseMins(b.departure_time) - parseMins(a.departure_time));
+        // En Geç Kalkış: 23:59'dan 00:00'a doğru azalan sıra (aynı dakikada Bölge Kahramanı / Ulusal Marka üstte)
+        list.sort((a, b) => {
+            const tDiff = parseMins(b.departure_time) - parseMins(a.departure_time);
+            if (tDiff !== 0) return tDiff;
+            const sDiff = (Number(b.carrier_score) || 0) - (Number(a.carrier_score) || 0);
+            if (sDiff !== 0) return sDiff;
+            return (Number(a.price) || 0) - (Number(b.price) || 0);
+        });
     }
 
     // 3. Sıralama Buton Stillerini Güncelle
