@@ -414,108 +414,120 @@
                 </div>
 
                 <!-- KART 2: KONAKLAMA -->
-                <div class="bento-showcase-card group" onclick="openFromBento('stay', 'hotel')">
+                <div class="bento-showcase-card group cursor-pointer" onclick="showIntegrationNotice('stay')">
                     <!-- Üst: Resmin Tamamı Görünür (Kırpma Yok, Üzerinde Yazı Yok) -->
-                    <div class="bento-img-box">
+                    <div class="bento-img-box relative">
                         <img src="/static/img/v3/card_stay.jpg" alt="Konaklama" loading="eager">
+                        <span class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-900/85 text-amber-300 border border-amber-400/40 backdrop-blur-xs shadow-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-lock text-[9px]"></i>
+                            <span>Entegrasyon Sürecinde</span>
+                        </span>
                     </div>
                     <!-- Alt: Düzenli Başlık, Açıklama ve Tek Satır Butonlar -->
                     <div class="bento-info-box">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-0.5">
-                                <span data-i18n="bentoStayBadge" class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900">
+                                <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900">
                                     🏨 KONAKLAMA
                                 </span>
-                                <span data-i18n="bentoCompareRoomsLink" class="text-[10.5px] font-bold text-slate-500 group-hover:text-slate-900 transition">
-                                    Oda Karşılaştır →
+                                <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded flex items-center gap-1">
+                                    <span>Faz 2 • Çok Yakında</span>
                                 </span>
                             </div>
-                            <h2 data-i18n="bentoStayTitle" class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
+                            <h2 class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
                                 Otel, Kiralık Ev & Butik Pansiyon
                             </h2>
-                            <p data-i18n="bentoStayDesc" class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
-                                Booking.com, Trip.com ve tesislerdeki net oda fiyatlarını karşılaştırın.
+                            <p class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
+                                Booking.com & Trip.com canlı oda rezervasyon entegrasyonu tamamlanmaktadır.
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-100">
-                            <button type="button" onclick="event.stopPropagation(); openFromBento('stay', 'hotel')" class="bento-pill">
-                                <span data-i18n="pillHotel">🏨 Otel & Tatil</span>
+                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('stay')" class="bento-pill">
+                                <span>🏨 Otel & Tatil</span>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); openFromBento('stay', 'airbnb')" class="bento-pill">
-                                <span data-i18n="pillAirbnb">🏡 Kiralık Ev & Villa</span>
+                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('stay')" class="bento-pill">
+                                <span>🏡 Kiralık Ev & Villa</span>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); openFromBento('stay', 'pension')" class="bento-pill">
-                                <span data-i18n="pillPension">🌿 Pansiyon & Butik</span>
+                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('stay')" class="bento-pill">
+                                <span>🌿 Pansiyon & Butik</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- KART 3: ETKİNLİK & DENEYİM -->
-                <div class="bento-showcase-card group" onclick="openFromBento('events', 'all')">
+                <div class="bento-showcase-card group cursor-pointer" onclick="showIntegrationNotice('events')">
                     <!-- Üst: Resmin Tamamı Görünür (Kırpma Yok, Üzerinde Yazı Yok) -->
-                    <div class="bento-img-box">
+                    <div class="bento-img-box relative">
                         <img src="/static/img/v3/card_events.jpg?v=20261023_full" alt="Etkinlik ve Deneyim" loading="eager">
+                        <span class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-900/85 text-amber-300 border border-amber-400/40 backdrop-blur-xs shadow-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-lock text-[9px]"></i>
+                            <span>Entegrasyon Sürecinde</span>
+                        </span>
                     </div>
                     <!-- Alt: Düzenli Başlık, Açıklama ve Tek Satır Butonlar -->
                     <div class="bento-info-box">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-0.5">
-                                <span data-i18n="bentoEventsBadge" class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-rose-100 text-rose-900">
+                                <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-rose-100 text-rose-900">
                                     🎟️ ETKİNLİK & DENEYİM
                                 </span>
-                                <span data-i18n="bentoExploreCalendarLink" class="text-[10.5px] font-bold text-slate-500 group-hover:text-slate-900 transition">
-                                    Takvimi Keşfet →
+                                <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded flex items-center gap-1">
+                                    <span>Faz 2 • Çok Yakında</span>
                                 </span>
                             </div>
-                            <h2 data-i18n="bentoEventsTitle" class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
+                            <h2 class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
                                 Spor, Kültür-Sanat & Konser Takvimi
                             </h2>
-                            <p data-i18n="bentoEventsDesc" class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
-                                Motorsporları, futbol, sinema, tiyatro ve festivaller için ulaşım + bilet planlayın.
+                            <p class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
+                                Passo, Biletix & Bubilet resmi etkinlik entegrasyonu hazırlık aşamasındadır.
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-100">
-                            <button type="button" onclick="event.stopPropagation(); openFromBento('events', 'sport')" class="bento-pill">
-                                <span data-i18n="pillSport">⚽ Spor</span>
+                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('events')" class="bento-pill">
+                                <span>⚽ Spor</span>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); openFromBento('events', 'culture')" class="bento-pill">
-                                <span data-i18n="pillCulture">🎭 Kültür & Sanat</span>
+                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('events')" class="bento-pill">
+                                <span>🎭 Kültür & Sanat</span>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); openFromBento('events', 'music')" class="bento-pill">
-                                <span data-i18n="pillMusic">🎵 Konser & Festival</span>
+                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('events')" class="bento-pill">
+                                <span>🎵 Konser & Festival</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- KART 4: AKILLI ROTA -->
-                <div class="bento-showcase-card group" onclick="openFromBento('smartroute')">
+                <div class="bento-showcase-card group cursor-pointer" onclick="showIntegrationNotice('smartroute')">
                     <!-- Üst: Resmin Tamamı Görünür (Kırpma Yok, Üzerinde Yazı Yok) -->
-                    <div class="bento-img-box">
+                    <div class="bento-img-box relative">
                         <img src="/static/img/v3/card_smart_route.jpg" alt="Akıllı Rota" loading="eager">
+                        <span class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-900/85 text-amber-300 border border-amber-400/40 backdrop-blur-xs shadow-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-lock text-[9px]"></i>
+                            <span>Entegrasyon Sürecinde</span>
+                        </span>
                     </div>
                     <!-- Alt: Düzenli Başlık, Açıklama ve Tek Satır Butonlar -->
                     <div class="bento-info-box">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-0.5">
-                                <span data-i18n="bentoSmartRouteBadge" class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-sky-100 text-sky-900">
+                                <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-sky-100 text-sky-900">
                                     🧭 AKILLI ROTA
                                 </span>
-                                <span data-i18n="bentoPlanInStepsLink" class="text-[10.5px] font-bold text-slate-500 group-hover:text-slate-900 transition">
-                                    4 Adımda Planla →
+                                <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded flex items-center gap-1">
+                                    <span>Faz 2 • Çok Yakında</span>
                                 </span>
                             </div>
-                            <h2 data-i18n="bentoSmartRouteTitle" class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
+                            <h2 class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
                                 Kapıdan Kapıya Seyahat Sihirbazı
                             </h2>
-                            <p data-i18n="bentoSmartRouteDesc" class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
-                                Evden terminale, inişten otele ve etkinliğe kadar kişisel rota oluşturun.
+                            <p class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
+                                Hızlı tren, otobüs ve transferleri birleştiren multimodal rota motoru hazırlanıyor.
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-100">
-                            <button type="button" onclick="event.stopPropagation(); openFromBento('smartroute')" class="bento-pill">
-                                <span data-i18n="pillSmartRoutePlan">🚀 Kapıdan Kapıya Planla</span>
+                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('smartroute')" class="bento-pill">
+                                <span>🚀 Kapıdan Kapıya Planla</span>
                             </button>
                         </div>
                     </div>
@@ -595,14 +607,14 @@
                     <button type="button" onclick="openFromBento('travel', 'flight')" id="pillarBtn-travel" class="pillar-btn active !py-2 !px-3.5 !rounded-xl">
                         <span data-i18n="pillarTravel" class="font-black text-xs flex items-center gap-1.5">✈️ Seyahat & Ulaşım</span>
                     </button>
-                    <button type="button" onclick="openFromBento('stay', 'hotel')" id="pillarBtn-stay" class="pillar-btn !py-2 !px-3.5 !rounded-xl">
-                        <span data-i18n="pillarStay" class="font-black text-xs flex items-center gap-1.5">🏨 Konaklama</span>
+                    <button type="button" onclick="showIntegrationNotice('stay')" id="pillarBtn-stay" class="pillar-btn !py-2 !px-3.5 !rounded-xl opacity-80 hover:opacity-100">
+                        <span class="font-black text-xs flex items-center gap-1.5">🏨 Konaklama <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">🔒 Yakında</span></span>
                     </button>
-                    <button type="button" onclick="openFromBento('events', 'all')" id="pillarBtn-events" class="pillar-btn !py-2 !px-3.5 !rounded-xl">
-                        <span data-i18n="pillarEvents" class="font-black text-xs flex items-center gap-1.5">🎟️ Etkinlik & Deneyim</span>
+                    <button type="button" onclick="showIntegrationNotice('events')" id="pillarBtn-events" class="pillar-btn !py-2 !px-3.5 !rounded-xl opacity-80 hover:opacity-100">
+                        <span class="font-black text-xs flex items-center gap-1.5">🎟️ Etkinlik <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">🔒 Yakında</span></span>
                     </button>
-                    <button type="button" onclick="openFromBento('smartroute')" id="pillarBtn-smartroute" class="pillar-btn !py-2 !px-3.5 !rounded-xl">
-                        <span data-i18n="pillarSmartRoute" class="font-black text-xs flex items-center gap-1.5">🧭 Akıllı Rota</span>
+                    <button type="button" onclick="showIntegrationNotice('smartroute')" id="pillarBtn-smartroute" class="pillar-btn !py-2 !px-3.5 !rounded-xl opacity-80 hover:opacity-100">
+                        <span class="font-black text-xs flex items-center gap-1.5">🧭 Akıllı Rota <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">🔒 Yakında</span></span>
                     </button>
                 </div>
             </div>
@@ -1767,6 +1779,29 @@
                 switchStaySubTab(subMode || 'hotel');
                 setTimeout(() => {
                     const hc = document.getElementById("hotelCity");
+                    const tDest = document.getElementById("transDest");
+                    const tDep = document.getElementById("transDeptDate");
+                    const tRet = document.getElementById("transRetDate");
+                    const hCin = document.getElementById("hotelCheckin");
+                    const hCout = document.getElementById("hotelCheckout");
+                    
+                    if (hc && (!hc.value || hc.value.trim() === "") && tDest && tDest.value) {
+                        hc.value = tDest.value.trim();
+                    }
+                    if (hCin && (!hCin.value || hCin.value.trim() === "") && tDep && tDep.value) {
+                        hCin.value = tDep.value;
+                    }
+                    if (hCout && (!hCout.value || hCout.value.trim() === "")) {
+                        if (tRet && tRet.value) {
+                            hCout.value = tRet.value;
+                        } else if (hCin && hCin.value) {
+                            try {
+                                const d = new Date(hCin.value);
+                                d.setDate(d.getDate() + 2);
+                                hCout.value = d.toISOString().split('T')[0];
+                            } catch (_) {}
+                        }
+                    }
                     if (hc && !hc.value) hc.focus();
                 }, 80);
             } else if (pillar === 'events') {
@@ -2539,5 +2574,112 @@
         } catch (e) {}
     </script>
     <script src="/static/js/app_v3.js?v=20261024_v7"></script>
+
+    <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
+    <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">
+        <div class="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-200 text-center transform transition-transform duration-200 scale-95" id="integrationModalCard">
+            <!-- Kapat butonu -->
+            <button type="button" onclick="closeIntegrationNotice()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition cursor-pointer">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            
+            <div id="integrationModalIcon" class="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 text-2xl flex items-center justify-center mx-auto mb-4 shadow-xs">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-950 mb-2">
+                <i class="fa-solid fa-gears text-amber-600"></i>
+                <span id="integrationModalBadge">Faz 2 • Entegrasyon Sürecinde</span>
+            </div>
+            
+            <h3 id="integrationModalTitle" class="text-lg font-black text-slate-900 mb-2">
+                Modül Entegrasyon Aşamasındadır
+            </h3>
+            
+            <p id="integrationModalDesc" class="text-xs text-slate-600 font-medium leading-relaxed mb-6">
+                Bu hizmetimiz için resmi sağlayıcı bağlantı ve test süreci devam etmektedir. Çok yakında canlı karşılaştırma özellikleriyle yayında olacaktır.
+            </p>
+            
+            <div class="flex flex-col gap-2">
+                <button type="button" onclick="closeIntegrationNotice(true)" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-plane-departure"></i>
+                    <span>Canlı Seyahat & Ulaşım Motoruna Geç</span>
+                </button>
+                <button type="button" onclick="closeIntegrationNotice()" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition cursor-pointer">
+                    <span>Tamam, Kapat</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showIntegrationNotice(type) {
+            const modal = document.getElementById("integrationNoticeModal");
+            const card = document.getElementById("integrationModalCard");
+            const icon = document.getElementById("integrationModalIcon");
+            const badge = document.getElementById("integrationModalBadge");
+            const title = document.getElementById("integrationModalTitle");
+            const desc = document.getElementById("integrationModalDesc");
+            
+            if (!modal) return;
+            
+            if (type === 'stay') {
+                icon.innerHTML = '<i class="fa-solid fa-hotel text-emerald-600"></i>';
+                icon.className = "w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-2xl flex items-center justify-center mx-auto mb-4 shadow-xs";
+                badge.textContent = "Faz 2 • Otel & Konaklama Entegrasyonu";
+                title.textContent = "Konaklama Modülü Entegrasyon Sürecindedir";
+                desc.textContent = "Booking.com ve Trip.com resmi otel veri altyapısı ortaklık testleri devam etmektedir. Çok yakında seyahatinizin yanına en uygun fiyatlı doğrulanmış otel odalarını doğrudan ekleyebileceksiniz.";
+            } else if (type === 'events') {
+                icon.innerHTML = '<i class="fa-solid fa-ticket text-rose-600"></i>';
+                icon.className = "w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-2xl flex items-center justify-center mx-auto mb-4 shadow-xs";
+                badge.textContent = "Faz 2 • Etkinlik & Deneyim Entegrasyonu";
+                title.textContent = "Etkinlik & Bilet Takvimi Entegrasyon Sürecindedir";
+                desc.textContent = "Passo, Biletix ve Bubilet resmi etkinlik sağlayıcıları teknik entegrasyonu hazırlık aşamasındadır. Çok yakında derbi maçları, F1 yarışları, tiyatro ve festival biletleri bu ekranda canlı listelenecektir.";
+            } else if (type === 'smartroute') {
+                icon.innerHTML = '<i class="fa-solid fa-route text-sky-600"></i>';
+                icon.className = "w-16 h-16 rounded-2xl bg-sky-50 border border-sky-200 text-2xl flex items-center justify-center mx-auto mb-4 shadow-xs";
+                badge.textContent = "Faz 2 • Akıllı Multimodal Seyahat";
+                title.textContent = "Akıllı Rota Sihirbazı Entegrasyon Sürecindedir";
+                desc.textContent = "YHT hızlı tren, otobüs, havalimanı VIP transferi ve şehir içi ulaşımı tek sepette birleştiren yapay zeka destekli kapıdan kapıya rota motorumuz çok yakında yayına alınacaktır.";
+            }
+            
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            setTimeout(() => {
+                card.classList.remove("scale-95");
+                card.classList.add("scale-100");
+            }, 10);
+        }
+        window.showIntegrationNotice = showIntegrationNotice;
+
+        function closeIntegrationNotice(goToTravel) {
+            const modal = document.getElementById("integrationNoticeModal");
+            const card = document.getElementById("integrationModalCard");
+            if (!modal) return;
+            card.classList.remove("scale-100");
+            card.classList.add("scale-95");
+            setTimeout(() => {
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+                if (goToTravel) {
+                    if (typeof openFromBento === 'function') {
+                        openFromBento('travel', 'flight');
+                    }
+                }
+            }, 150);
+        }
+        window.closeIntegrationNotice = closeIntegrationNotice;
+        
+        // ESC tuşuyla kapatma desteği
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                const modal = document.getElementById("integrationNoticeModal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    closeIntegrationNotice();
+                }
+            }
+        });
+    </script>
+
 </body>
 </html>

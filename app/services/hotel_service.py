@@ -276,133 +276,10 @@ class HotelService:
         dest_id: Optional[str] = None,
         dest_type: str = "city"
     ) -> List[Dict[str, Any]]:
-        aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
-        curr_sym = CurrencyService.get_symbol(currency)
-        profile = cls.CITY_HOTEL_PROFILES.get(city_slug, {"min_try": 1400, "max_try": 3500})
-        base_try = profile.get("min_try", 1400)
-        
-        catalog = {
-            "nice": [
-                {"name": "Hôtel Le Negresco", "score": 9.3, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", "mult": 1.45, "address": "Promenade des Anglais, Nice", "direct_url": "https://www.booking.com/hotel/fr/le-negresco.html"},
-                {"name": "Hyatt Regency Palais de la Méditerranée", "score": 8.9, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 1.15, "address": "13 Promenade des Anglais, Nice", "direct_url": "https://www.booking.com/hotel/fr/hyatt-regency-nice-palais-de-la-mediterranee.html"},
-                {"name": "Hôtel Beau Rivage", "score": 8.6, "score_word": "Çok İyi", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 0.85, "address": "24 Rue Saint François de Paule, Vieux Nice", "direct_url": "https://www.booking.com/hotel/fr/hotel-beau-rivage.html"},
-                {"name": "Best Western Plus Hôtel Massena", "score": 8.5, "score_word": "Çok İyi", "photo": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80", "mult": 0.75, "address": "58 Rue Gioffredo, Nice Merkez"}
-            ],
-            "monaco": [
-                {"name": "Hôtel de Paris Monte-Carlo", "score": 9.6, "score_word": "Kusursuz", "photo": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", "mult": 2.2, "address": "Place du Casino, Monte-Carlo", "direct_url": "https://www.booking.com/hotel/mc/de-paris.html"},
-                {"name": "Fairmont Monte Carlo", "score": 8.8, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 1.6, "address": "12 Avenue des Spélugues, Monte-Carlo", "direct_url": "https://www.booking.com/hotel/mc/fairmont-monte-carlo.html"},
-                {"name": "Hôtel Hermitage Monte-Carlo", "score": 9.4, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 1.9, "address": "Square Beaumarchais, Monaco", "direct_url": "https://www.booking.com/hotel/mc/hermitage.html"}
-            ],
-            "sakiz-adasi": [
-                {"name": "Grecian Castle Hotel Chios", "score": 8.8, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=600&q=80", "mult": 1.0, "address": "Liman & Kıyı Yolu, Sakız Adası", "direct_url": "https://www.booking.com/hotel/gr/grecian-castle.html"},
-                {"name": "Chios Chandris Hotel", "score": 8.5, "score_word": "Çok İyi", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 0.9, "address": "Ege Liman Caddesi, Sakız", "direct_url": "https://www.booking.com/hotel/gr/chios-chandris.html"},
-                {"name": "Diana Hotel Chios", "score": 8.7, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 0.85, "address": "Liman & Arkeoloji Müzesi Yakını, Sakız", "direct_url": "https://www.booking.com/hotel/gr/diana-chios.html"}
-            ],
-            "antalya": [
-                {"name": "Akra Hotel Antalya", "score": 9.1, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", "mult": 1.2, "address": "Şirinyalı, Muratpaşa, Antalya"},
-                {"name": "Rixos Downtown Antalya", "score": 8.9, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 1.1, "address": "Konyaaltı Sahili, Antalya"},
-                {"name": "Tuvana Hotel Kaleiçi", "score": 9.2, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 0.85, "address": "Tarihi Kaleiçi, Antalya"}
-            ],
-            "bodrum": [
-                {"name": "The Marmara Bodrum", "score": 9.1, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", "mult": 1.3, "address": "Yokuşbaşı, Bodrum Marina Manzarası"},
-                {"name": "Caresse Luxury Resort & Spa", "score": 9.3, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 1.6, "address": "Asarlık Mevkii, Bodrum"},
-                {"name": "Marina Vista Bodrum", "score": 8.7, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 0.9, "address": "Neyzen Tevfik Cad., Bodrum Liman"}
-            ],
-            "ankara": [
-                {"name": "Ankara Plaza Hotel", "score": 8.7, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", "mult": 1.0, "address": "Kavaklıdere, Bakanlıklar, Ankara"},
-                {"name": "Grand Ankara Hotel & Convention Center", "score": 9.2, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 1.25, "address": "Tunus Caddesi, Çankaya, Ankara"},
-                {"name": "Radisson Blu Hotel Ankara", "score": 8.8, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 1.15, "address": "Ulus, Gençlik Parkı Yanı, Ankara"}
-            ],
-            "baku": [
-                {"name": "Four Seasons Hotel Baku", "score": 9.5, "score_word": "Kusursuz", "photo": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", "mult": 1.7, "address": "Neftchilar Avenue, Bakü Sahil & Pist", "direct_url": "https://www.booking.com/hotel/az/four-seasons-baku.html"},
-                {"name": "Hilton Baku", "score": 9.0, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 1.3, "address": "Azadlig Square, Bakü", "direct_url": "https://www.booking.com/hotel/az/hilton-baku.html"},
-                {"name": "Old Street Boutique Hotel Baku", "score": 8.9, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 0.95, "address": "İçeri Şehir Tarihi Kale, Bakü", "direct_url": "https://www.booking.com/hotel/az/old-street-boutique.html"}
-            ],
-            "balikesir": [
-                {"name": "Balıkesir Onhann Luxury Hotel", "score": 8.8, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", "mult": 1.0, "address": "Bursa Yolu Üzeri, Balıkesir Merkez"},
-                {"name": "Asya Otel Balıkesir", "score": 8.5, "score_word": "Çok İyi", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 0.85, "address": "Milli Kuvvetler Caddesi, Balıkesir"},
-                {"name": "Ramada Residences by Wyndham Balıkesir", "score": 9.0, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 1.25, "address": "Paşaalanı, Balıkesir"}
-            ]
-        }
-
-        city_items = catalog.get(city_slug)
-        if not city_items:
-            city_items = [
-                {"name": f"{city_clean} Grand Palace Hotel & Suites", "score": 9.0, "score_word": "Olağanüstü", "photo": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", "mult": 1.15, "address": f"{city_clean} Şehir Merkezi"},
-                {"name": f"{city_clean} Central Boutique Hotel", "score": 8.8, "score_word": "Harika", "photo": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80", "mult": 0.95, "address": f"{city_clean} Tarihi Meydan"},
-                {"name": f"{city_clean} Express Comfort Suites", "score": 8.5, "score_word": "Çok İyi", "photo": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80", "mult": 0.75, "address": f"{city_clean} Ulaşım & İstasyon Yakını"}
-            ]
-
-        fallback_list = []
-        agoda_cid = getattr(settings, "AFFILIATE_AGODA_CID", "1924128")
-        for item in city_items:
-            nightly_val = CurrencyService.convert(base_try * item.get("mult", 1.0), "TRY", currency)
-            total_val = nightly_val * nights
-            hotel_name = item["name"]
-            hotel_slug = cls.slugify_hotel_name(hotel_name)
-            
-            # Doğrudan Agoda & Google Hotels linkleri
-            agoda_direct = (
-                f"https://www.agoda.com/tr-tr/search?"
-                f"text={urllib.parse.quote(hotel_name + ' ' + city_clean)}"
-                f"&checkIn={cin}&checkOut={cout}&rooms=1&adults={guests}"
-                f"&cid={agoda_cid}"
-            )
-            google_direct = (
-                f"https://www.google.com/travel/hotels?"
-                f"q={urllib.parse.quote(hotel_name + ' ' + city_clean)}"
-            )
-
-            if is_international:
-                # Uluslararası tesislerde doğrudan mülk/oda sayfası (.html ile WAF yönlendirmesi önlenir)
-                if item.get("direct_url"):
-                    clean_direct = item['direct_url'].replace(".tr.html", ".html")
-                    b_link = (
-                        f"{clean_direct}?"
-                        f"checkin={cin}&checkout={cout}"
-                        f"&group_adults={guests}&no_rooms=1"
-                        f"&aid={aid}"
-                    )
-                else:
-                    b_link = (
-                        f"https://www.booking.com/hotel/gr/{hotel_slug}.html?"
-                        f"checkin={cin}&checkout={cout}"
-                        f"&group_adults={guests}&no_rooms=1"
-                        f"&aid={aid}"
-                    )
-                primary_url = b_link
-                primary_provider = "Booking.com"
-            else:
-                # Türkiye içi tesislerde Booking.com Türk IP'lerine kapalı olduğu için Agoda / Google Hotels
-                primary_url = agoda_direct
-                primary_provider = "Agoda"
-                b_link = agoda_direct
-
-            fallback_list.append({
-                "name": item["name"],
-                "score": item["score"],
-                "review_score": item["score"],
-                "score_word": item["score_word"],
-                "photo": item["photo"],
-                "photo_url": item["photo"],
-                "address": item["address"],
-                "city": city_clean,
-                "price": round(nightly_val, 2),
-                "nightly_price": round(nightly_val, 2),
-                "total_price": round(total_val, 2),
-                "price_formatted": f"{int(round(nightly_val)):,} {curr_sym}".replace(",", "."),
-                "total_price_formatted": f"{int(round(total_val)):,} {curr_sym}".replace(",", "."),
-                "currency": curr_sym,
-                "booking_url": primary_url,
-                "url": primary_url,
-                "direct_url": primary_url,
-                "direct_booking_url": b_link,
-                "agoda_url": agoda_direct,
-                "google_url": google_direct,
-                "provider": primary_provider,
-                "is_domestic_tr": not is_international
-            })
-        return fallback_list
+        # SIFIR VARSAYIM KURALI: Canlı API'den doğrulanmış gerçek otel odası gelmediyse
+        # ASLA hayali gecelik fiyat veya uydurma otel üretilmez.
+        # Kullanıcı doğrudan Trip.com, Booking.com, Enuygun ve Agoda'nın canlı sonuçlarına yönlendirilir.
+        return []
 
     @classmethod
     def get_hotel_recommendation(
@@ -421,14 +298,22 @@ class HotelService:
         cin, cout, nights = cls.calculate_dates(checkin_date, checkout_date)
         city_clean = dest_city.split("(")[0].strip()
         city_slug = (
-            city_clean.lower()
-            .replace(" ", "-")
+            city_clean.replace("İ", "i")
+            .replace("I", "i")
             .replace("ı", "i")
-            .replace("ç", "c")
             .replace("ş", "s")
+            .replace("Ş", "s")
+            .replace("ç", "c")
+            .replace("Ç", "c")
             .replace("ö", "o")
+            .replace("Ö", "o")
             .replace("ü", "u")
+            .replace("Ü", "u")
             .replace("ğ", "g")
+            .replace("Ğ", "g")
+            .lower()
+            .replace("\u0307", "")
+            .replace(" ", "-")
         )
         
         # Destinasyonun yurt dışı / ada kontrolü (Önce şehir veritabanından, yoksa haritadan teyit)
@@ -448,8 +333,20 @@ class HotelService:
         currency = (currency or "TRY").upper()
         curr_sym = CurrencyService.get_symbol(currency)
         aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+        trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
+        trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
 
-        # Booking.com Doğrudan Canlı Arama Linki (.html uzantısı ile WAF tr_redirected önlenir)
+        # 1. Trip.com Otel Resmi Derin Arama Linki (%4 - %7 Net Komisyon, TR'de Engellemesiz)
+        trip_domain = "www.trip.com" if is_international else "tr.trip.com"
+        trip_hotel_url = (
+            f"https://{trip_domain}/hotels/list?"
+            f"keyword={urllib.parse.quote(city_clean)}"
+            f"&checkin={cin}&checkout={cout}"
+            f"&crn=1&adult={guests}"
+            f"&Allianceid={trip_aid}&SID={trip_sid}"
+        )
+
+        # 2. Booking.com Doğrudan Canlı Arama Linki (.html uzantısı ile WAF tr_redirected önlenir)
         dest_q = f"&dest_id={dest_id}&dest_type={dest_type}" if dest_id else ""
         booking_url = (
             f"https://www.booking.com/searchresults.html?"
@@ -461,7 +358,7 @@ class HotelService:
             f"&aid={aid}"
         )
 
-        # Agoda Doğrudan Canlı Arama Linki
+        # 3. Agoda Doğrudan Canlı Arama Linki
         agoda_url = (
             f"https://www.agoda.com/tr-tr/search?"
             f"city={urllib.parse.quote(city_clean)}"
@@ -469,7 +366,7 @@ class HotelService:
             f"&cid={settings.AFFILIATE_AGODA_CID}"
         )
 
-        # Enuygun Otel Linki (SADECE YURT İÇİ TÜRKİYE İÇİN AKTİF, YURT DIŞINDA 404 ÖNLEMEK İÇİN NONE)
+        # 4. Enuygun Otel Linki (SADECE YURT İÇİ TÜRKİYE İÇİN AKTİF, YURT DIŞINDA 404 ÖNLEMEK İÇİN NONE)
         if not is_international:
             try:
                 cin_dt = datetime.strptime(cin, "%Y-%m-%d")
@@ -483,8 +380,8 @@ class HotelService:
                 f"https://www.enuygun.com/otel/arama/{city_slug}/?"
                 f"giris={enuygun_cin}&cikis={enuygun_cout}&yetiskin={guests}"
             )
-            primary_city_url = agoda_url
-            primary_provider = "Agoda"
+            primary_city_url = trip_hotel_url
+            primary_provider = "Trip.com"
         else:
             enuygun_url = None
             primary_city_url = booking_url
@@ -576,7 +473,9 @@ class HotelService:
             "primary_provider": primary_provider,
             "enuygun_url": enuygun_url,
             "agoda_url": agoda_url,
+            "trip_hotel_url": trip_hotel_url,
             "deep_links": {
+                "trip": trip_hotel_url,
                 "booking": booking_url,
                 "agoda": agoda_url,
                 "enuygun": enuygun_url,

@@ -2947,30 +2947,34 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
         <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm mb-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 mb-6">
                 <div>
-                    <h3 class="font-black text-xl text-slate-900">${hotelInfo.destination} Canlı Otel Seçenekleri</h3>
-                    <div class="text-xs text-slate-500 mt-1 font-medium">${cin} — ${cout} (${hotelInfo.nights} Gece) • ${guests} Misafir • Canlı Müsaitlik</div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900">
+                            🏨 Resmi Partner Karşılaştırma Ağı
+                        </span>
+                        <span class="text-xs text-slate-400 font-bold">Sıfır Komisyon & Aracısız Fiyatlar</span>
+                    </div>
+                    <h3 class="font-black text-xl text-slate-900">${hotelInfo.destination} Otel & Konaklama Seçenekleri</h3>
+                    <div class="text-xs text-slate-500 mt-1 font-medium">${cin} — ${cout} (${hotelInfo.nights} Gece) • ${guests} Misafir • Canlı Karşılaştırma Ağı</div>
                 </div>
-                <div class="flex items-center gap-2.5">
-                    ${hotelInfo.is_international ? `
-                        <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-hotel"></i>
-                            <span>Booking.com Resmi Liste</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                        </a>
-                    ` : `
-                        <a href="${hotelInfo.agoda_url || '#'}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-hotel"></i>
-                            <span>Agoda Canlı Liste</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                        </a>
-                    `}
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="${hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || `https://tr.trip.com/hotels/list?keyword=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&Allianceid=11051531&SID=333747492`}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-hotel"></i>
+                        <span>Trip.com Otelleri ↗</span>
+                    </a>
+                    <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-bed"></i>
+                        <span>Booking.com ↗</span>
+                    </a>
                     ${enuygunUrl ? `
-                        <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-bed"></i>
-                            <span>Enuygun Otel</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                        </a>
+                    <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-building"></i>
+                        <span>Enuygun Otel ↗</span>
+                    </a>
                     ` : ''}
+                    <a href="${hotelInfo.agoda_url || '#'}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-suitcase"></i>
+                        <span>Agoda ↗</span>
+                    </a>
                 </div>
             </div>
 
@@ -2988,7 +2992,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                         </span>
                                     ` : ''}
                                     <span class="absolute bottom-3 left-3 px-2.5 py-1 bg-slate-900/80 text-white font-bold text-[10px] rounded-lg shadow-sm backdrop-blur-xs">
-                                        ${h.provider || (hotelInfo.is_international ? 'Booking.com' : 'Agoda')}
+                                        ${h.provider || (hotelInfo.is_international ? 'Booking.com' : 'Trip.com')}
                                     </span>
                                 </div>
                                 <div class="p-5">
@@ -3013,22 +3017,113 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                 </a>
                             </div>
                         </div>
-                    `).join("")}
+                    `).join('')}
                 </div>
             ` : `
-                <div class="p-8 bg-slate-50/80 rounded-2xl border border-slate-200 text-center">
-                    <div class="text-base font-black text-slate-800">Canlı otel odalarını doğrudan ${hotelInfo.is_international ? 'Booking.com' : 'Agoda'} üzerinden görüntüleyin.</div>
-                    <div class="text-xs text-slate-500 mt-1 font-medium">Gecelik tahmini fiyat yerine resmi rezervasyon motorunda teyitli müsaitlik açılacaktır.</div>
-                    <div class="mt-4">
-                        <a href="${hotelInfo.primary_city_url || bookingUrl}" target="_blank" class="px-6 py-3 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl inline-flex items-center gap-2 shadow-md transition">
-                            <span>${city} İçin Tüm Odaları Listele</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
+                <!-- SIFIR VARSAYIM ÇOKLU ACENTE OTEL VİTRİNİ -->
+                <div class="p-6 sm:p-8 bg-slate-50/80 rounded-3xl border border-slate-200">
+                    <div class="text-center max-w-xl mx-auto mb-6">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 mb-2">
+                            <i class="fa-solid fa-shield-check text-amber-600"></i>
+                            <span>Sıfır Varsayım: Doğrulanmış Canlı Müsaitlik</span>
+                        </div>
+                        <h4 class="text-lg font-black text-slate-900">${safeCity} için En Avantajlı Odaları Karşılaştırın</h4>
+                        <p class="text-xs text-slate-500 mt-1">
+                            ${cin} — ${cout} tarihleri ve ${escapeHtml(guests)} misafir için resmi partnerlerimizin doğrudan canlı oda arama sayfaları hazırlandı.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Partner 1: Trip.com -->
+                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 hover:shadow-md transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-black text-blue-600 uppercase tracking-wide flex items-center gap-1.5">
+                                        🏨 Trip.com Hotels
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800">Resmi Partner</span>
+                                </div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} Otelleri & Tatil Köyleri</div>
+                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                    Geniş otel ağı, Türkçe arayüz ve ücretsiz iptal seçenekleri.
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100">
+                                <a href="${hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || `https://tr.trip.com/hotels/list?keyword=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&Allianceid=11051531&SID=333747492`}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>Trip.com'da Fiyatları Gör ↗</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Partner 2: Booking.com -->
+                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-[#003580] hover:shadow-md transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-black text-[#003580] uppercase tracking-wide flex items-center gap-1.5">
+                                        🏨 Booking.com
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">Küresel Ağ</span>
+                                </div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} Tesisleri & Daireler</div>
+                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                    Dünya çapında 28 milyon tesis, gerçek gezgin yorumları ve harita filtreleme.
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100">
+                                <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>Booking.com'da Canlı Odaları Aç ↗</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Partner 3: Enuygun Otel / Agoda -->
+                        ${enuygunUrl ? `
+                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-black text-emerald-700 uppercase tracking-wide flex items-center gap-1.5">
+                                        🏨 Enuygun Otel
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800">Yurt İçi Karşılaştırma</span>
+                                </div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} Butik & Şehir Otelleri</div>
+                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                    Türkiye geneli butik oteller, pansiyonlar ve taksit imkanları.
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100">
+                                <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>Enuygun'da Odaları Listele ↗</span>
+                                </a>
+                            </div>
+                        </div>
+                        ` : `
+                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-800 hover:shadow-md transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                                        🏨 Agoda
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">Özel Teklifler</span>
+                                </div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} Tatil Evleri & Oteller</div>
+                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                    Son dakika oda indirimleri ve tatil villaları.
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100">
+                                <a href="${hotelInfo.agoda_url || '#'}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>Agoda'da Odaları Aç ↗</span>
+                                </a>
+                            </div>
+                        </div>
+                        `}
                     </div>
                 </div>
             `}
         </div>
     `;
+
 
     resultsArea.innerHTML = html;
 }
