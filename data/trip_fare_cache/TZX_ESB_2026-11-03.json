@@ -1,0 +1,410 @@
+{
+  "ts": 1792494131.2715244,
+  "offers": {
+    "VF4285": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2499.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "TIME:TZX:ESB:10:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2499.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "SHORT:10:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2499.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "VF4291": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2499.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "TIME:TZX:ESB:21:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2499.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "SHORT:21:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2499.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "VF4287": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2540.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:55"
+      }
+    },
+    "TIME:TZX:ESB:04:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2540.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:55"
+      }
+    },
+    "SHORT:04:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2540.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:55"
+      }
+    },
+    "VF3331": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3178.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:55"
+      }
+    },
+    "TIME:TZX:ESB:22:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3178.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:55"
+      }
+    },
+    "SHORT:22:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3178.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:55"
+      }
+    },
+    "VF3327": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3460.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:35"
+      }
+    },
+    "TIME:TZX:ESB:12:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3460.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:35"
+      }
+    },
+    "SHORT:12:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3460.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:35"
+      }
+    },
+    "PC2827": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3512.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "TIME:TZX:ESB:21:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3512.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "SHORT:21:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3512.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "PC2823": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4106.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "TIME:TZX:ESB:21:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4106.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "SHORT:21:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4106.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "PC2829": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4467.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "TIME:TZX:ESB:05:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4467.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "SHORT:05:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4467.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "PC2811": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4467.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "TIME:TZX:ESB:13:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4467.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "SHORT:13:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4467.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "PC2819": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4522.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "TIME:TZX:ESB:14:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4522.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "SHORT:14:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4522.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "PC2817": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4775.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:25"
+      }
+    },
+    "TIME:TZX:ESB:10:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4775.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:25"
+      }
+    },
+    "SHORT:10:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4775.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:25"
+      }
+    },
+    "PC3241": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5369.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:45"
+      }
+    },
+    "TIME:TZX:ESB:22:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5369.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:45"
+      }
+    },
+    "SHORT:22:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5369.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:45"
+      }
+    },
+    "TK2827": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16231.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TIME:TZX:ESB:09:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16231.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "SHORT:09:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16231.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TK2831": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16328.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TIME:TZX:ESB:15:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16328.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "SHORT:15:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16328.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TK2829": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16543.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TIME:TZX:ESB:11:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16543.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "SHORT:11:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16543.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-ankara/tickets-tzx-esb?flighttype=ow&dcity=tzx&acity=esb&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    }
+  }
+}

@@ -1,0 +1,1085 @@
+{
+  "ts": 1792498499.7577472,
+  "offers": {
+    "PC2660": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:50"
+      }
+    },
+    "TIME:IST:ESB:06:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:50"
+      }
+    },
+    "SHORT:06:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:50"
+      }
+    },
+    "TIME:SAW:ESB:06:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:50"
+      }
+    },
+    "PC2678": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:30"
+      }
+    },
+    "TIME:IST:ESB:00:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:30"
+      }
+    },
+    "SHORT:00:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:30"
+      }
+    },
+    "TIME:SAW:ESB:00:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:30"
+      }
+    },
+    "PC2662": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1426.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:30"
+      }
+    },
+    "TIME:IST:ESB:05:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1426.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:30"
+      }
+    },
+    "SHORT:05:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1426.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:30"
+      }
+    },
+    "TIME:SAW:ESB:05:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1426.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:30"
+      }
+    },
+    "PC2664": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1456.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:30"
+      }
+    },
+    "TIME:IST:ESB:08:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1456.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:30"
+      }
+    },
+    "SHORT:08:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1456.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:30"
+      }
+    },
+    "TIME:SAW:ESB:08:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1456.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:30"
+      }
+    },
+    "VF3000": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1396.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:IST:ESB:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1396.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "SHORT:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1396.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:SAW:ESB:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1396.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "PC4090": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1413.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:10"
+      }
+    },
+    "TIME:IST:ESB:06:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1413.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:10"
+      }
+    },
+    "SHORT:06:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1413.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:10"
+      }
+    },
+    "TIME:SAW:ESB:06:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1413.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:10"
+      }
+    },
+    "VF3002": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:IST:ESB:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:SAW:ESB:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1419.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "VF3004": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1731.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "TIME:IST:ESB:14:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1731.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "SHORT:14:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1731.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "TIME:SAW:ESB:14:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1731.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:40"
+      }
+    },
+    "PC2668": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2088.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TIME:IST:ESB:11:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2088.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "SHORT:11:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2088.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TIME:SAW:ESB:11:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2088.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "VF3006": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2033.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TIME:IST:ESB:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2033.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "SHORT:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2033.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TIME:SAW:ESB:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2033.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TK2126": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2455.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:IST:ESB:08:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2455.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "SHORT:08:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2455.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:SAW:ESB:08:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2455.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TK2134": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2503.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:IST:ESB:09:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2503.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "SHORT:09:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2503.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:SAW:ESB:09:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2503.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TK2146": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2503.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:00"
+      }
+    },
+    "TIME:IST:ESB:12:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2503.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:00"
+      }
+    },
+    "SHORT:12:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2503.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:00"
+      }
+    },
+    "TIME:SAW:ESB:12:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2503.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:00"
+      }
+    },
+    "TK2142": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2547.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "TIME:IST:ESB:11:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2547.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "SHORT:11:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2547.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "TIME:SAW:ESB:11:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2547.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "TK2138": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:IST:ESB:10:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:SAW:ESB:10:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "PC2674": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2871.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:05"
+      }
+    },
+    "TIME:IST:ESB:15:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2871.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:05"
+      }
+    },
+    "SHORT:15:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2871.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:05"
+      }
+    },
+    "TIME:SAW:ESB:15:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2871.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:05"
+      }
+    },
+    "PC4678": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3319.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:30"
+      }
+    },
+    "TIME:IST:ESB:17:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3319.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:30"
+      }
+    },
+    "SHORT:17:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3319.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:30"
+      }
+    },
+    "TIME:SAW:ESB:17:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3319.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:30"
+      }
+    },
+    "TK2150": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3267.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "TIME:IST:ESB:13:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3267.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "SHORT:13:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3267.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "TIME:SAW:ESB:13:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3267.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:00"
+      }
+    },
+    "PC2684": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3906.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:30"
+      }
+    },
+    "TIME:IST:ESB:23:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3906.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:30"
+      }
+    },
+    "SHORT:23:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3906.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:30"
+      }
+    },
+    "TIME:SAW:ESB:23:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3906.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:30"
+      }
+    },
+    "TK2122": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4411.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TIME:IST:ESB:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4411.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "SHORT:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4411.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TIME:SAW:ESB:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4411.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TK2154": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4515.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:00"
+      }
+    },
+    "TIME:IST:ESB:14:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4515.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:00"
+      }
+    },
+    "SHORT:14:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4515.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:00"
+      }
+    },
+    "TIME:SAW:ESB:14:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4515.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:00"
+      }
+    },
+    "TK2174": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4574.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:00"
+      }
+    },
+    "TIME:IST:ESB:19:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4574.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:00"
+      }
+    },
+    "SHORT:19:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4574.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:00"
+      }
+    },
+    "TIME:SAW:ESB:19:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4574.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:00"
+      }
+    },
+    "PC2680": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4856.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:45"
+      }
+    },
+    "TIME:IST:ESB:18:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4856.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:45"
+      }
+    },
+    "SHORT:18:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4856.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:45"
+      }
+    },
+    "TIME:SAW:ESB:18:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4856.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:45"
+      }
+    },
+    "PC2682": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5346.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:35"
+      }
+    },
+    "TIME:IST:ESB:20:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5346.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:35"
+      }
+    },
+    "SHORT:20:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5346.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:35"
+      }
+    },
+    "TIME:SAW:ESB:20:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5346.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:35"
+      }
+    },
+    "TK2170": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6052.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:00"
+      }
+    },
+    "TIME:IST:ESB:18:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6052.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:00"
+      }
+    },
+    "SHORT:18:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6052.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:00"
+      }
+    },
+    "TIME:SAW:ESB:18:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6052.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:00"
+      }
+    },
+    "TK2192": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6720.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "02:00"
+      }
+    },
+    "TIME:IST:ESB:02:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6720.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "02:00"
+      }
+    },
+    "SHORT:02:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6720.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "02:00"
+      }
+    },
+    "TIME:SAW:ESB:02:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6720.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "02:00"
+      }
+    },
+    "TK2184": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7373.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:00"
+      }
+    },
+    "TIME:IST:ESB:22:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7373.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:00"
+      }
+    },
+    "SHORT:22:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7373.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:00"
+      }
+    },
+    "TIME:SAW:ESB:22:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7373.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:00"
+      }
+    },
+    "TK2162": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7500.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:00"
+      }
+    },
+    "TIME:IST:ESB:16:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7500.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:00"
+      }
+    },
+    "SHORT:16:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7500.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:00"
+      }
+    },
+    "TIME:SAW:ESB:16:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7500.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:00"
+      }
+    },
+    "PC3307": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5651.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "TIME:IST:ESB:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5651.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "SHORT:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5651.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "TIME:SAW:ESB:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5651.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "VF3234": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 25965.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:55"
+      }
+    },
+    "TIME:IST:ESB:23:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 25965.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:55"
+      }
+    },
+    "SHORT:23:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 25965.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:55"
+      }
+    },
+    "TIME:SAW:ESB:23:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 25965.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-ankara/tickets-ist-esb?flighttype=ow&dcity=ist&acity=esb&ddate=2026-10-25&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:55"
+      }
+    }
+  }
+}

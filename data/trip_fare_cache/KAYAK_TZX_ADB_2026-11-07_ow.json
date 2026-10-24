@@ -1,0 +1,41 @@
+{
+  "ts": 1792827951.7294836,
+  "offers": {
+    "TIME:TZX:ADB:08:15:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2946.0,
+        "url": "https://www.kayak.com.tr/flights/TZX-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15"
+      }
+    },
+    "SHORT:08:15:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2946.0,
+        "url": "https://www.kayak.com.tr/flights/TZX-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15"
+      }
+    },
+    "TIME:TZX:ADB:23:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3085.0,
+        "url": "https://www.kayak.com.tr/flights/TZX-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:40"
+      }
+    },
+    "SHORT:23:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3085.0,
+        "url": "https://www.kayak.com.tr/flights/TZX-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:40"
+      }
+    }
+  }
+}

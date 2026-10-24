@@ -1,0 +1,545 @@
+{
+  "ts": 1792830195.9483964,
+  "offers": {
+    "XQ9271": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2951.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:15"
+      }
+    },
+    "TIME:TZX:ADB:08:15:XQ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2951.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:15"
+      }
+    },
+    "SHORT:08:15:XQ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2951.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:15"
+      }
+    },
+    "PC3241": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3351.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:40"
+      }
+    },
+    "TIME:TZX:ADB:23:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3351.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:40"
+      }
+    },
+    "SHORT:23:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3351.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:40"
+      }
+    },
+    "PC2821VF3078": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3089.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:25"
+      }
+    },
+    "PC2821": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3089.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:25"
+      }
+    },
+    "VF3333VF3064": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3153.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "03:45"
+      }
+    },
+    "VF3333": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3153.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "03:45"
+      }
+    },
+    "VF3331VF3078": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3153.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:55"
+      }
+    },
+    "VF3331": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3153.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:55"
+      }
+    },
+    "VF3333VF3066": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3153.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "03:45"
+      }
+    },
+    "VF3331VF3064": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3153.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:55"
+      }
+    },
+    "PC2829VF3064": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3349.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "PC2829": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3349.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "VF3329VF3070": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3611.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:30"
+      }
+    },
+    "VF3329": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3611.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:30"
+      }
+    },
+    "VF3327VF3070": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3611.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:45"
+      }
+    },
+    "VF3327": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3611.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:45"
+      }
+    },
+    "VF3329VF3078": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3611.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:30"
+      }
+    },
+    "VF3327VF3078": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3611.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:45"
+      }
+    },
+    "VF4289VF4034": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "VF4289": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "VF4287VF4028": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:55"
+      }
+    },
+    "VF4287": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:55"
+      }
+    },
+    "VF4285VF4030": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "VF4285": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "VF4291VF4028": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "VF4291": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "VF4289VF4028": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3753.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:10"
+      }
+    },
+    "PC2829PC2186": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3495.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "VF5229VF3070": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3865.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:05"
+      }
+    },
+    "VF5229": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3865.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:05"
+      }
+    },
+    "VF5229VF3078": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3865.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:05"
+      }
+    },
+    "VF4285VF4032": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3958.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "VF4287VF4032": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3958.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:55"
+      }
+    },
+    "VF4291VF4032": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3958.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "PC2819PC2194": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4046.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:05"
+      }
+    },
+    "PC2819": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4046.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:05"
+      }
+    },
+    "PC2817PC2192": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5568.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "PC2817": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5568.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:00"
+      }
+    },
+    "TK2833TK2354": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7452.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TK2833": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7452.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TK2833TK2344": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10302.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TK2829TK2334": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10416.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TK2829": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10416.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TK2831TK2340": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10417.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TK2831": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10417.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TK2827TK2334": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10471.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TK2827": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10471.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TK2831TK2344": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10510.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TK2827TK2326": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10663.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TK2827TK2330": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10663.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TK2829TK2336": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10663.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TK2829TK2332": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10670.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TK2829TK2340": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10729.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TK2827TK2332": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10745.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TK2831TK2336": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10938.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TK2829TK2330": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 11088.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-izmir/tickets-tzx-adb?flighttype=ow&dcity=tzx&acity=adb&ddate=2026-11-07&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    }
+  }
+}

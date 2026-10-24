@@ -1,6 +1,6 @@
 # HAKİKİ BİLET - 85 ROTALIK UÇTAN UCA DENETİM RAPORU
 
-**Tarih:** 2026-10-22 13:43:22  
+**Tarih:** 2026-10-22 15:35:53  
 **Toplam Senaryo:** 85  
 **Başarılı (PASS):** 85  
 **Uyarı / İyileştirme (WARN):** 0  

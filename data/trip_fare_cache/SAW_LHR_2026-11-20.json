@@ -1,0 +1,914 @@
+{
+  "ts": 1792485529.9196877,
+  "offers": {
+    "VF1989": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3980.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "TIME:SAW:LHR:13:30:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3980.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "SHORT:13:30:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3980.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "TIME:IST:LHR:13:30:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3980.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:30"
+      }
+    },
+    "VF1987": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4398.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:20"
+      }
+    },
+    "TIME:SAW:LHR:10:20:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4398.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:20"
+      }
+    },
+    "SHORT:10:20:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4398.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:20"
+      }
+    },
+    "TIME:IST:LHR:10:20:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4398.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:20"
+      }
+    },
+    "PC1177": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:10"
+      }
+    },
+    "TIME:SAW:LHR:15:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:10"
+      }
+    },
+    "SHORT:15:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:10"
+      }
+    },
+    "TIME:IST:LHR:15:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:10"
+      }
+    },
+    "PC1173": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:SAW:LHR:21:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "SHORT:21:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:IST:LHR:21:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "PC1165": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4767.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "TIME:SAW:LHR:13:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4767.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "SHORT:13:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4767.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "TIME:IST:LHR:13:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4767.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:35"
+      }
+    },
+    "PC1163": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4796.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:25"
+      }
+    },
+    "TIME:SAW:LHR:07:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4796.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:25"
+      }
+    },
+    "SHORT:07:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4796.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:25"
+      }
+    },
+    "TIME:IST:LHR:07:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4796.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:25"
+      }
+    },
+    "PC1161": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4800.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:50"
+      }
+    },
+    "TIME:SAW:LHR:10:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4800.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:50"
+      }
+    },
+    "SHORT:10:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4800.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:50"
+      }
+    },
+    "TIME:IST:LHR:10:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4800.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:50"
+      }
+    },
+    "PC1169": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4826.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:50"
+      }
+    },
+    "TIME:SAW:LHR:08:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4826.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:50"
+      }
+    },
+    "SHORT:08:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4826.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:50"
+      }
+    },
+    "TIME:IST:LHR:08:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4826.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:50"
+      }
+    },
+    "PC1159": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4800.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:50"
+      }
+    },
+    "TIME:SAW:LHR:09:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4800.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:50"
+      }
+    },
+    "SHORT:09:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4800.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:50"
+      }
+    },
+    "TIME:IST:LHR:09:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4800.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:50"
+      }
+    },
+    "TK1243": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6862.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:15"
+      }
+    },
+    "TIME:SAW:LHR:15:15:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6862.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:15"
+      }
+    },
+    "SHORT:15:15:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6862.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:15"
+      }
+    },
+    "TIME:IST:LHR:15:15:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6862.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:15"
+      }
+    },
+    "TK1981": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6897.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:05"
+      }
+    },
+    "TIME:SAW:LHR:08:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6897.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:05"
+      }
+    },
+    "SHORT:08:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6897.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:05"
+      }
+    },
+    "TIME:IST:LHR:08:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6897.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:05"
+      }
+    },
+    "TK1987": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6964.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "TIME:SAW:LHR:21:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6964.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "SHORT:21:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6964.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "TIME:IST:LHR:21:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6964.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "TK1929": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7038.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "TIME:SAW:LHR:21:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7038.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "SHORT:21:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7038.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "TIME:IST:LHR:21:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7038.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "TK1971": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7209.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:25"
+      }
+    },
+    "TIME:SAW:LHR:15:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7209.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:25"
+      }
+    },
+    "SHORT:15:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7209.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:25"
+      }
+    },
+    "TIME:IST:LHR:15:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7231.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:25"
+      }
+    },
+    "TK1985": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7135.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "TIME:SAW:LHR:13:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7135.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "SHORT:13:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7135.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "TIME:IST:LHR:13:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7135.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "TK1983": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7291.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "TIME:SAW:LHR:20:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7291.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "SHORT:20:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7291.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "TIME:IST:LHR:20:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7291.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "TK1997": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7231.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:25"
+      }
+    },
+    "TK1979": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7380.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "TIME:SAW:LHR:08:40:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7380.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "SHORT:08:40:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7380.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "TIME:IST:LHR:08:40:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7380.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "BA679": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7825.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:45"
+      }
+    },
+    "TIME:SAW:LHR:18:45:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7825.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:45"
+      }
+    },
+    "SHORT:18:45:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7825.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:45"
+      }
+    },
+    "TIME:IST:LHR:18:45:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7825.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:45"
+      }
+    },
+    "BA677": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10245.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:55"
+      }
+    },
+    "TIME:SAW:LHR:14:55:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10245.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:55"
+      }
+    },
+    "SHORT:14:55:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10245.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:55"
+      }
+    },
+    "TIME:IST:LHR:14:55:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 10245.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:55"
+      }
+    },
+    "BA681": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13907.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:SAW:LHR:08:25:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13907.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "SHORT:08:25:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13907.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:IST:LHR:08:25:BA": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13907.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=BA&airlineCode=BA&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "KL3101": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13069.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:SAW:LHR:09:00:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13069.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "SHORT:09:00:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13069.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:IST:LHR:09:00:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 39217.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "KL3107": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13883.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TIME:SAW:LHR:15:55:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13883.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "SHORT:15:55:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13883.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TIME:IST:LHR:15:55:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17461.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "KL3103": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13069.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:55"
+      }
+    },
+    "TIME:SAW:LHR:12:55:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13069.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:55"
+      }
+    },
+    "SHORT:12:55:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 13069.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:55"
+      }
+    },
+    "TIME:IST:LHR:12:55:KL": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 41850.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=KL&airlineCode=KL&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:55"
+      }
+    },
+    "AZ7049": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 28706.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=AZ&airlineCode=AZ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:SAW:LHR:10:00:AZ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 28706.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=AZ&airlineCode=AZ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:AZ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 28706.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=AZ&airlineCode=AZ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:IST:LHR:10:00:AZ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 28706.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=AZ&airlineCode=AZ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "AZ7057": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 19549.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=AZ&airlineCode=AZ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:05"
+      }
+    },
+    "TIME:SAW:LHR:14:05:AZ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 19549.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=AZ&airlineCode=AZ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:05"
+      }
+    },
+    "SHORT:14:05:AZ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 19549.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=AZ&airlineCode=AZ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:05"
+      }
+    },
+    "TIME:IST:LHR:14:05:AZ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 19549.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-londra/tickets-saw-lhr?flighttype=ow&dcity=saw&acity=lhr&ddate=2026-11-20&curr=TRY&airline=AZ&airlineCode=AZ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:05"
+      }
+    }
+  }
+}

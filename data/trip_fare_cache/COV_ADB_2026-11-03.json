@@ -1,0 +1,248 @@
+{
+  "ts": 1792499629.3386798,
+  "offers": {
+    "PC3015": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1879.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:50"
+      }
+    },
+    "TIME:COV:ADB:21:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1879.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:50"
+      }
+    },
+    "SHORT:21:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1879.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:50"
+      }
+    },
+    "PC3013": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1887.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:50"
+      }
+    },
+    "TIME:COV:ADB:16:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1887.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:50"
+      }
+    },
+    "SHORT:16:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1887.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:50"
+      }
+    },
+    "XQ9307": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2057.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:45"
+      }
+    },
+    "TIME:COV:ADB:22:45:XQ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2057.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:45"
+      }
+    },
+    "SHORT:22:45:XQ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2057.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:45"
+      }
+    },
+    "XQ9007": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2221.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:50"
+      }
+    },
+    "TIME:COV:ADB:08:50:XQ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2221.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:50"
+      }
+    },
+    "SHORT:08:50:XQ": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2221.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=XQ&airlineCode=XQ&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:50"
+      }
+    },
+    "PC3011": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2400.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:COV:ADB:09:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2400.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "SHORT:09:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2400.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:00"
+      }
+    },
+    "VF3147": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2807.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "TIME:COV:ADB:23:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2807.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "SHORT:23:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2807.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "VF3149": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2830.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "TIME:COV:ADB:05:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2830.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "SHORT:05:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2830.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:05"
+      }
+    },
+    "VF4087": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3557.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:50"
+      }
+    },
+    "TIME:COV:ADB:09:50:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3557.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:50"
+      }
+    },
+    "SHORT:09:50:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3557.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:50"
+      }
+    },
+    "VF4089": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4255.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "TIME:COV:ADB:21:25:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4255.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "SHORT:21:25:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4255.0,
+        "url": "https://tr.trip.com/flights/adana-to-izmir/tickets-cov-adb?flighttype=ow&dcity=cov&acity=adb&ddate=2026-11-03&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    }
+  }
+}

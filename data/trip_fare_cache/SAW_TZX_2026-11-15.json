@@ -1,0 +1,617 @@
+{
+  "ts": 1792485467.8764784,
+  "offers": {
+    "PC2824": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3467.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "TIME:SAW:TZX:00:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3467.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "SHORT:00:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3467.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "TIME:IST:TZX:00:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3467.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "PC2810": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3467.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "TIME:SAW:TZX:06:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3467.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "SHORT:06:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3467.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "TIME:IST:TZX:06:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3467.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "PC2826": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3608.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "TIME:SAW:TZX:18:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3608.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "SHORT:18:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3608.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "TIME:IST:TZX:18:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3608.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "PC2816": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3646.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:SAW:TZX:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3646.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "SHORT:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3646.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:IST:TZX:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3646.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "PC2828": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3675.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "TIME:SAW:TZX:23:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3675.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "SHORT:23:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3675.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "TIME:IST:TZX:23:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3675.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "VF3330": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:SAW:TZX:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "SHORT:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:IST:TZX:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "PC2822": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4663.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "TIME:SAW:TZX:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4663.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "SHORT:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4663.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "TIME:IST:TZX:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4663.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "VF3328": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4707.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:40"
+      }
+    },
+    "TIME:SAW:TZX:12:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4707.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:40"
+      }
+    },
+    "SHORT:12:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4707.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:40"
+      }
+    },
+    "TIME:IST:TZX:12:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4707.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:40"
+      }
+    },
+    "VF3332": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "01:00"
+      }
+    },
+    "TIME:SAW:TZX:01:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "01:00"
+      }
+    },
+    "SHORT:01:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "01:00"
+      }
+    },
+    "TIME:IST:TZX:01:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4744.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "01:00"
+      }
+    },
+    "VF3326": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4904.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:45"
+      }
+    },
+    "TIME:SAW:TZX:09:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4904.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:45"
+      }
+    },
+    "SHORT:09:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4904.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:45"
+      }
+    },
+    "TIME:IST:TZX:09:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4904.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:45"
+      }
+    },
+    "PC2818": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5056.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:15"
+      }
+    },
+    "TIME:SAW:TZX:13:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5056.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:15"
+      }
+    },
+    "SHORT:13:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5056.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:15"
+      }
+    },
+    "TIME:IST:TZX:13:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5056.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:15"
+      }
+    },
+    "VF3012": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6103.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:SAW:TZX:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6103.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "SHORT:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6103.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:IST:TZX:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6244.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "VF3006": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TIME:SAW:TZX:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "SHORT:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TIME:IST:TZX:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6281.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "VF3002": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6242.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:SAW:TZX:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6242.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6242.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:IST:TZX:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6444.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "VF3000": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6244.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:SAW:TZX:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6244.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "SHORT:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6244.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:IST:TZX:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6333.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "VF3008": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9273.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:SAW:TZX:21:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9273.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "SHORT:21:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9273.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:IST:TZX:21:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 27528.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TK8446": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 37928.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:50"
+      }
+    },
+    "TIME:SAW:TZX:10:50:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 37928.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:50"
+      }
+    },
+    "SHORT:10:50:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 37928.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:50"
+      }
+    },
+    "TIME:IST:TZX:10:50:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 38196.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-trabzon/tickets-saw-tzx?flighttype=ow&dcity=saw&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:50"
+      }
+    }
+  }
+}

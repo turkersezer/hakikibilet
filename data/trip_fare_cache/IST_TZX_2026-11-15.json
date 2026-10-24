@@ -1,0 +1,761 @@
+{
+  "ts": 1792485454.055174,
+  "offers": {
+    "PC2810": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3482.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "TIME:IST:TZX:06:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3482.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "SHORT:06:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3482.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "TIME:SAW:TZX:06:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3482.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "PC2824": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3496.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "TIME:IST:TZX:00:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3496.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "SHORT:00:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3496.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "TIME:SAW:TZX:00:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3496.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:05"
+      }
+    },
+    "PC2828": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3571.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "TIME:IST:TZX:23:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3571.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "SHORT:23:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3571.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "TIME:SAW:TZX:23:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3571.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "PC2816": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3649.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:IST:TZX:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3649.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "SHORT:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3649.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:SAW:TZX:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3649.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "PC2826": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3742.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "TIME:IST:TZX:18:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3742.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "SHORT:18:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3742.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "TIME:SAW:TZX:18:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3742.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:55"
+      }
+    },
+    "PC2822": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4655.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "TIME:IST:TZX:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4655.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "SHORT:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4655.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "TIME:SAW:TZX:17:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4655.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:25"
+      }
+    },
+    "VF3330": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:IST:TZX:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "SHORT:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:SAW:TZX:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "VF3332": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "01:00"
+      }
+    },
+    "TIME:IST:TZX:01:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "01:00"
+      }
+    },
+    "SHORT:01:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "01:00"
+      }
+    },
+    "TIME:SAW:TZX:01:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4559.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "01:00"
+      }
+    },
+    "VF3328": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:40"
+      }
+    },
+    "TIME:IST:TZX:12:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:40"
+      }
+    },
+    "SHORT:12:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:40"
+      }
+    },
+    "TIME:SAW:TZX:12:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:40"
+      }
+    },
+    "VF3326": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:45"
+      }
+    },
+    "TIME:IST:TZX:09:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:45"
+      }
+    },
+    "SHORT:09:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:45"
+      }
+    },
+    "TIME:SAW:TZX:09:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4641.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:45"
+      }
+    },
+    "PC2818": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5162.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:15"
+      }
+    },
+    "TIME:IST:TZX:13:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5162.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:15"
+      }
+    },
+    "SHORT:13:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5162.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:15"
+      }
+    },
+    "TIME:SAW:TZX:13:15:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5162.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:15"
+      }
+    },
+    "TK2826": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5234.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TIME:IST:TZX:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5234.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "SHORT:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5234.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TIME:SAW:TZX:07:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5234.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:00"
+      }
+    },
+    "TK2830": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5375.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:25"
+      }
+    },
+    "TIME:IST:TZX:13:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5375.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:25"
+      }
+    },
+    "SHORT:13:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5375.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:25"
+      }
+    },
+    "TIME:SAW:TZX:13:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5375.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:25"
+      }
+    },
+    "TK2828": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5375.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:20"
+      }
+    },
+    "TIME:IST:TZX:09:20:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5375.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:20"
+      }
+    },
+    "SHORT:09:20:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5375.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:20"
+      }
+    },
+    "TIME:SAW:TZX:09:20:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5375.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:20"
+      }
+    },
+    "TK2838": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5472.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:IST:TZX:21:15:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5472.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "SHORT:21:15:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5472.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:SAW:TZX:21:15:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5472.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:15"
+      }
+    },
+    "TK2832": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7766.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:20"
+      }
+    },
+    "TIME:IST:TZX:17:20:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7766.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:20"
+      }
+    },
+    "SHORT:17:20:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7766.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:20"
+      }
+    },
+    "TIME:SAW:TZX:17:20:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7766.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:20"
+      }
+    },
+    "VF3000": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:IST:TZX:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "SHORT:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:SAW:TZX:05:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:45"
+      }
+    },
+    "VF3006": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6177.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TIME:IST:TZX:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6177.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "SHORT:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6177.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "TIME:SAW:TZX:17:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6550.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:55"
+      }
+    },
+    "VF3002": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:IST:TZX:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:SAW:TZX:10:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6133.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "VF3012": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6348.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:IST:TZX:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6348.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "SHORT:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6348.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:SAW:TZX:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6348.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "PC3307": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8063.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "TIME:IST:TZX:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8063.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "SHORT:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8063.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    },
+    "TIME:SAW:TZX:20:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8063.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-trabzon/tickets-ist-tzx?flighttype=ow&dcity=ist&acity=tzx&ddate=2026-11-15&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:55"
+      }
+    }
+  }
+}

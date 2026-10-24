@@ -452,7 +452,21 @@ def fetch_rapidapi_skyscanner_offers(
         if resp.status_code != 200:
             return offers_map
 
-        itins = (resp.json().get("data") or {}).get("itineraries") or []
+        data_obj = resp.json().get("data") or {}
+        itins = list(data_obj.get("itineraries") or [])
+        sess_id = (data_obj.get("context") or {}).get("sessionId")
+        if sess_id and (data_obj.get("context") or {}).get("status") == "incomplete":
+            try:
+                r2 = requests.get(
+                    f"https://{api_host}/api/v2/flights/searchIncomplete",
+                    headers=headers,
+                    params={"sessionId": sess_id, "currency": "TRY", "market": "tr-TR", "countryCode": "TR"},
+                    timeout=4.5,
+                )
+                if r2.status_code == 200:
+                    itins.extend((r2.json().get("data") or {}).get("itineraries") or [])
+            except Exception:
+                pass
         sky_dep = departure_date.replace("-", "")[2:]
         if return_date:
             sky_ret = return_date.replace("-", "")[2:]
@@ -499,20 +513,31 @@ def fetch_rapidapi_skyscanner_offers(
             dep_dt_str = str(first_leg.get("departure") or "")
             dep_time = dep_dt_str[11:16] if len(dep_dt_str) >= 16 else None
 
+            orig_disp = str((first_leg.get("origin") or {}).get("displayCode") or o_code).upper()
+            dest_disp = str((first_leg.get("destination") or {}).get("displayCode") or d_code).upper()
+            seg_orig = str((first_seg.get("origin") or {}).get("displayCode") or orig_disp).upper()
+            seg_dest = str((first_seg.get("destination") or {}).get("displayCode") or dest_disp).upper()
+
+            if return_date:
+                sky_item_url = (
+                    f"https://www.skyscanner.com.tr/transport/flights/{orig_disp.lower()}/{dest_disp.lower()}/{sky_dep}/{sky_ret}/?"
+                    f"adultsv2={adults}&cabinclass={'business' if seat_mode == 'business' else 'economy'}&currency=TRY&locale=tr-TR&rtn=1"
+                )
+            else:
+                sky_item_url = (
+                    f"https://www.skyscanner.com.tr/transport/flights/{orig_disp.lower()}/{dest_disp.lower()}/{sky_dep}/?"
+                    f"adultsv2={adults}&cabinclass={'business' if seat_mode == 'business' else 'economy'}&currency=TRY&locale=tr-TR&rtn=0"
+                )
+
             offer_item = {
                 "name": "Skyscanner",
                 "price": clean_price,
-                "url": skyscanner_base_url,
+                "url": sky_item_url,
                 "channel": "skyscanner",
                 "dep_time": dep_time,
             }
 
             _merge_offer(offers_map, f_key, "skyscanner", offer_item)
-
-            orig_disp = str((first_leg.get("origin") or {}).get("displayCode") or o_code).upper()
-            dest_disp = str((first_leg.get("destination") or {}).get("displayCode") or d_code).upper()
-            seg_orig = str((first_seg.get("origin") or {}).get("displayCode") or orig_disp).upper()
-            seg_dest = str((first_seg.get("destination") or {}).get("displayCode") or dest_disp).upper()
 
             if dep_time:
                 _merge_offer(offers_map, f"TIME:{orig_disp}:{dest_disp}:{dep_time}:{carrier_code}", "skyscanner", offer_item)
@@ -583,6 +608,11 @@ def fetch_rapidapi_booking_offers(
             timeout=5.0,
         )
         if resp.status_code != 200:
+            from app.services.trip_fare_service import fetch_kayak_live_offers
+            fallback_kayak = fetch_kayak_live_offers(orig_codes, dest_codes, departure_date, return_date)
+            if fallback_kayak:
+                _save_to_cache(cache_key, fallback_kayak)
+                return fallback_kayak
             return offers_map
 
         payload = resp.json() or {}
@@ -750,7 +780,7 @@ def fetch_multi_ota_flight_map(
     """
     combined_map: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         from app.services.trip_fare_service import fetch_trip_live_offers
         futures = [
             executor.submit(
@@ -758,6 +788,15 @@ def fetch_multi_ota_flight_map(
                 orig_codes,
                 dest_codes,
                 departure_date,
+            ),
+            executor.submit(
+                fetch_rapidapi_skyscanner_offers,
+                orig_codes,
+                dest_codes,
+                departure_date,
+                return_date,
+                seat_mode,
+                adults,
             ),
             executor.submit(
                 fetch_rapidapi_booking_offers,

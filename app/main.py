@@ -233,7 +233,13 @@ async def home_page(request: Request):
     radar_deals = await CampaignService.get_radar_deals()
     announcements = await CampaignService.get_official_announcements()
     curated_events = SearchService.get_curated_events()
-    template_name = "index.html" if request.query_params.get("v") == "1" else "index_v2.html"
+    v_param = request.query_params.get("v")
+    if v_param == "1":
+        template_name = "index.html"
+    elif v_param == "2":
+        template_name = "index_v2.html"
+    else:
+        template_name = "index_v3.html"
     return templates.TemplateResponse(
         request=request,
         name=template_name,

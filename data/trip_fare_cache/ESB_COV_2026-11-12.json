@@ -1,0 +1,545 @@
+{
+  "ts": 1792485421.65345,
+  "offers": {
+    "VF4086": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2205.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:ESB:COV:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2205.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "SHORT:08:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2205.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "VF4088": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2242.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:55"
+      }
+    },
+    "TIME:ESB:COV:16:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2242.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:55"
+      }
+    },
+    "SHORT:16:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2242.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:55"
+      }
+    },
+    "VF4090": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2440.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "TIME:ESB:COV:19:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2440.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "SHORT:19:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2440.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:35"
+      }
+    },
+    "PC2661": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2777.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "TIME:ESB:COV:08:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2777.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "SHORT:08:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2777.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "PC2665": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3015.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "TIME:ESB:COV:10:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3015.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "SHORT:10:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3015.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:05"
+      }
+    },
+    "PC2679": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3947.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:25"
+      }
+    },
+    "TIME:ESB:COV:19:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3947.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:25"
+      }
+    },
+    "SHORT:19:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3947.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:25"
+      }
+    },
+    "PC2675": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3846.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:45"
+      }
+    },
+    "TIME:ESB:COV:15:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3846.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:45"
+      }
+    },
+    "SHORT:15:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3846.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:45"
+      }
+    },
+    "VF3007": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3530.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "TIME:ESB:COV:20:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3530.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "SHORT:20:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3530.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:45"
+      }
+    },
+    "PC2669": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3460.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:40"
+      }
+    },
+    "TIME:ESB:COV:13:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3460.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:40"
+      }
+    },
+    "SHORT:13:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3460.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:40"
+      }
+    },
+    "VF3005": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3530.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:35"
+      }
+    },
+    "TIME:ESB:COV:16:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3530.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:35"
+      }
+    },
+    "SHORT:16:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3530.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:35"
+      }
+    },
+    "VF3009": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2918.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:15"
+      }
+    },
+    "TIME:ESB:COV:00:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2918.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:15"
+      }
+    },
+    "SHORT:00:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2918.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "00:15"
+      }
+    },
+    "PC2685": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5300.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "TIME:ESB:COV:06:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5300.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "SHORT:06:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5300.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:20"
+      }
+    },
+    "PC3167": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5435.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:30"
+      }
+    },
+    "TIME:ESB:COV:17:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5435.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:30"
+      }
+    },
+    "SHORT:17:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5435.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:30"
+      }
+    },
+    "VF3003": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3564.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:05"
+      }
+    },
+    "TIME:ESB:COV:13:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3564.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:05"
+      }
+    },
+    "SHORT:13:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3564.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:05"
+      }
+    },
+    "PC2683": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3552.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:40"
+      }
+    },
+    "TIME:ESB:COV:21:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3552.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:40"
+      }
+    },
+    "SHORT:21:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3552.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:40"
+      }
+    },
+    "PC3165": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5761.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:45"
+      }
+    },
+    "TIME:ESB:COV:08:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5761.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:45"
+      }
+    },
+    "SHORT:08:45:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5761.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:45"
+      }
+    },
+    "VF3013": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3839.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:55"
+      }
+    },
+    "TIME:ESB:COV:09:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3839.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:55"
+      }
+    },
+    "SHORT:09:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3839.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:55"
+      }
+    },
+    "PC3169": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6753.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:30"
+      }
+    },
+    "TIME:ESB:COV:22:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6753.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:30"
+      }
+    },
+    "SHORT:22:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6753.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:30"
+      }
+    },
+    "PC3171": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6986.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "TIME:ESB:COV:21:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6986.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "SHORT:21:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6986.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:30"
+      }
+    },
+    "VF3001": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4967.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:45"
+      }
+    },
+    "TIME:ESB:COV:07:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4967.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:45"
+      }
+    },
+    "SHORT:07:45:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4967.0,
+        "url": "https://tr.trip.com/flights/ankara-to-adana/tickets-esb-cov?flighttype=ow&dcity=esb&acity=cov&ddate=2026-11-12&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:45"
+      }
+    }
+  }
+}

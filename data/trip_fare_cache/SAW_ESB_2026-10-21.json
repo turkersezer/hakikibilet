@@ -1,0 +1,221 @@
+{
+  "ts": 1792564002.499905,
+  "offers": {
+    "PC2676": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1679.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "TIME:SAW:ESB:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1679.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "SHORT:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1679.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "TIME:IST:ESB:23:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1679.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:10"
+      }
+    },
+    "PC2670": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2482.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:05"
+      }
+    },
+    "TIME:SAW:ESB:19:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2482.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:05"
+      }
+    },
+    "SHORT:19:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2482.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:05"
+      }
+    },
+    "TIME:IST:ESB:19:05:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2482.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:05"
+      }
+    },
+    "PC2668": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3856.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:20"
+      }
+    },
+    "TIME:SAW:ESB:17:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3856.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:20"
+      }
+    },
+    "SHORT:17:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3856.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:20"
+      }
+    },
+    "TIME:IST:ESB:17:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3856.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:20"
+      }
+    },
+    "VF3004": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1412.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:30"
+      }
+    },
+    "TIME:SAW:ESB:23:30:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1412.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:30"
+      }
+    },
+    "SHORT:23:30:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1412.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:30"
+      }
+    },
+    "TIME:IST:ESB:23:30:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1412.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:30"
+      }
+    },
+    "VF3008": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6270.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:15"
+      }
+    },
+    "TIME:SAW:ESB:18:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6270.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:15"
+      }
+    },
+    "SHORT:18:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6270.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:15"
+      }
+    },
+    "TIME:IST:ESB:18:15:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6270.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:15"
+      }
+    },
+    "VF3010": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6990.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:SAW:ESB:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6990.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "SHORT:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6990.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:IST:ESB:19:55:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6990.0,
+        "url": "https://tr.trip.com/flights/istanbul-sabiha-gokcen-to-ankara/tickets-saw-esb?flighttype=ow&dcity=saw&acity=esb&ddate=2026-10-21&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    }
+  }
+}

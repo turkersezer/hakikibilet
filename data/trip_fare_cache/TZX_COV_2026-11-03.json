@@ -1,0 +1,194 @@
+{
+  "ts": 1792487662.7767444,
+  "offers": {
+    "PC3707": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1865.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:40"
+      }
+    },
+    "TIME:TZX:COV:07:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1865.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:40"
+      }
+    },
+    "SHORT:07:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 1865.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:40"
+      }
+    },
+    "TK2829": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29253.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TIME:TZX:COV:11:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29253.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "SHORT:11:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29253.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:55"
+      }
+    },
+    "TK2827": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29485.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TIME:TZX:COV:09:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29485.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "SHORT:09:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29485.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:30"
+      }
+    },
+    "TK2833": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29253.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:TZX:COV:19:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29253.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "SHORT:19:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29253.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:55"
+      }
+    },
+    "TK2841": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 30172.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:25"
+      }
+    },
+    "TIME:TZX:COV:04:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 30172.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:25"
+      }
+    },
+    "SHORT:04:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 30172.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:25"
+      }
+    },
+    "TK2831": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29485.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TIME:TZX:COV:15:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29485.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "SHORT:15:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29485.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TK2839": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29713.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:45"
+      }
+    },
+    "TIME:TZX:COV:23:45:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29713.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:45"
+      }
+    },
+    "SHORT:23:45:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29713.0,
+        "url": "https://tr.trip.com/flights/trabzon-to-adana/tickets-tzx-cov?flighttype=ow&dcity=tzx&acity=cov&ddate=2026-11-03&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:45"
+      }
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "ts": 1792485504.270847,
+  "offers": {
+    "TIME:IST:LHR:13:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "SHORT:13:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "TIME:SAW:LHR:13:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:55"
+      }
+    },
+    "TIME:IST:LHR:15:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:25"
+      }
+    },
+    "SHORT:15:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:25"
+      }
+    },
+    "TIME:SAW:LHR:15:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:25"
+      }
+    },
+    "TIME:IST:LHR:21:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "SHORT:21:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "TIME:SAW:LHR:21:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9644.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:25"
+      }
+    },
+    "TIME:IST:LHR:08:40:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9867.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "SHORT:08:40:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9867.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "TIME:SAW:LHR:08:40:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9867.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:40"
+      }
+    },
+    "TIME:IST:LHR:20:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9867.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "SHORT:20:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9867.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    },
+    "TIME:SAW:LHR:20:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 9867.0,
+        "url": "https://tr.trip.com/flights/istanbul-havalimani-to-londra/tickets-ist-lhr?flighttype=ow&dcity=ist&acity=lhr&ddate=2026-11-20&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:05"
+      }
+    }
+  }
+}

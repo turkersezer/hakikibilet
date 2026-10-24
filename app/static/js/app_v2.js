@@ -2112,6 +2112,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     flightActionText = isEn ? `Book on Kiwi.com (${formattedTicketPrice})` : `Kiwi.com'dan Al (${formattedTicketPrice})`;
                 } else if (winnerChannel === 'agency') {
                     flightActionText = isEn ? `Book on ${winnerLabel} (${formattedTicketPrice})` : `${winnerLabel}'dan Al (${formattedTicketPrice})`;
+                } else if ((flightTargetUrl || '').includes('google.com/travel/flights')) {
+                    flightActionText = isEn ? `Book on Google Flights (${formattedTicketPrice})` : `Google Flights'ta Al (${formattedTicketPrice})`;
                 } else {
                     let carrierBrand = 'Resmi Web';
                     if (ticket.carrier) {
@@ -2976,6 +2978,12 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 <span class="text-slate-400 font-bold text-[10px] uppercase flex items-center gap-1">
                                     <i class="fa-solid fa-store text-emerald-600"></i> ${isEn ? 'Local OTAs:' : 'Yerli Acenteler:'}
                                 </span>
+                                ${ticket.airline_direct_url ? `
+                                    <a href="${ticket.airline_direct_url}" target="_blank" rel="noopener noreferrer" 
+                                       class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-50/80 hover:bg-indigo-100 text-indigo-950 border border-indigo-300/80 font-bold shadow-2xs transition">
+                                        <span>${escapeHtml(isEn ? (ticket.airline_label_en || "✈️ Airline Site ↗") : (ticket.airline_label_tr || "✈️ Havayolunda Gör ↗"))}</span>
+                                    </a>
+                                ` : ''}
                                 ${ticket.enuygun_link ? `
                                     <a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" 
                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 text-emerald-950 border border-emerald-300/80 font-bold shadow-2xs transition" 

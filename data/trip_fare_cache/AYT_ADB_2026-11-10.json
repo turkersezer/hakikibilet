@@ -1,0 +1,923 @@
+{
+  "ts": 1792485483.4604669,
+  "offers": {
+    "PC3600": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3453.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:35"
+      }
+    },
+    "TIME:AYT:ADB:06:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3453.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:35"
+      }
+    },
+    "SHORT:06:35:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3453.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:35"
+      }
+    },
+    "PC3502": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3497.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:20"
+      }
+    },
+    "TIME:AYT:ADB:16:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3497.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:20"
+      }
+    },
+    "SHORT:16:20:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 3497.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:20"
+      }
+    },
+    "PC2003": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4572.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "TIME:AYT:ADB:10:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4572.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "SHORT:10:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4572.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:00"
+      }
+    },
+    "PC2007": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4681.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:00"
+      }
+    },
+    "TIME:AYT:ADB:15:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4681.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:00"
+      }
+    },
+    "SHORT:15:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4681.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:00"
+      }
+    },
+    "PC2021": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4737.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:55"
+      }
+    },
+    "TIME:AYT:ADB:06:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4737.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:55"
+      }
+    },
+    "SHORT:06:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4737.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "06:55"
+      }
+    },
+    "PC2013": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4264.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "03:30"
+      }
+    },
+    "TIME:AYT:ADB:03:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4264.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "03:30"
+      }
+    },
+    "SHORT:03:30:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4264.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "03:30"
+      }
+    },
+    "PC2009": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4841.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TIME:AYT:ADB:15:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4841.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "SHORT:15:55:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4841.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "VF4011": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5435.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:35"
+      }
+    },
+    "TIME:AYT:ADB:04:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5435.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:35"
+      }
+    },
+    "SHORT:04:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5435.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:35"
+      }
+    },
+    "PC8041": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2977.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "TIME:AYT:ADB:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2977.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "SHORT:08:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 2977.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:25"
+      }
+    },
+    "PC2023": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4566.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:40"
+      }
+    },
+    "TIME:AYT:ADB:05:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4566.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:40"
+      }
+    },
+    "SHORT:05:40:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4566.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "05:40"
+      }
+    },
+    "VF4001": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5086.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:35"
+      }
+    },
+    "TIME:AYT:ADB:09:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5086.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:35"
+      }
+    },
+    "SHORT:09:35:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5086.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "09:35"
+      }
+    },
+    "PC2001": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4730.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "TIME:AYT:ADB:08:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4730.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "SHORT:08:00:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4730.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "08:00"
+      }
+    },
+    "PC2017": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5902.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:50"
+      }
+    },
+    "TIME:AYT:ADB:20:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5902.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:50"
+      }
+    },
+    "SHORT:20:50:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 5902.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "20:50"
+      }
+    },
+    "PC2005": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6370.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:10"
+      }
+    },
+    "TIME:AYT:ADB:12:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6370.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:10"
+      }
+    },
+    "SHORT:12:10:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6370.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:10"
+      }
+    },
+    "PC2019": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4329.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:25"
+      }
+    },
+    "TIME:AYT:ADB:23:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4329.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:25"
+      }
+    },
+    "SHORT:23:25:PC": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 4329.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=PC&airlineCode=PC&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:25"
+      }
+    },
+    "VF3031": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6652.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:05"
+      }
+    },
+    "TIME:AYT:ADB:11:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6652.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:05"
+      }
+    },
+    "SHORT:11:05:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 6652.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "11:05"
+      }
+    },
+    "VF4005": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7320.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:50"
+      }
+    },
+    "TIME:AYT:ADB:14:50:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7320.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:50"
+      }
+    },
+    "SHORT:14:50:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7320.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:50"
+      }
+    },
+    "VF3033": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7224.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:40"
+      }
+    },
+    "TIME:AYT:ADB:13:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7224.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:40"
+      }
+    },
+    "SHORT:13:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7224.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "13:40"
+      }
+    },
+    "VF3029": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7365.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:40"
+      }
+    },
+    "TIME:AYT:ADB:07:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7365.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:40"
+      }
+    },
+    "SHORT:07:40:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 7365.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:40"
+      }
+    },
+    "VF3037": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8174.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "TIME:AYT:ADB:21:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8174.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "SHORT:21:00:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8174.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "21:00"
+      }
+    },
+    "TK2433": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16325.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "TIME:AYT:ADB:07:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16325.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "SHORT:07:30:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16325.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "07:30"
+      }
+    },
+    "VF3035": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8174.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:10"
+      }
+    },
+    "TIME:AYT:ADB:18:10:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8174.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:10"
+      }
+    },
+    "SHORT:18:10:VF": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 8174.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=VF&airlineCode=VF&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "18:10"
+      }
+    },
+    "TK2417": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16637.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:10"
+      }
+    },
+    "TIME:AYT:ADB:15:10:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16637.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:10"
+      }
+    },
+    "SHORT:15:10:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16637.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:10"
+      }
+    },
+    "TK2445": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:25"
+      }
+    },
+    "TIME:AYT:ADB:04:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:25"
+      }
+    },
+    "SHORT:04:25:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "04:25"
+      }
+    },
+    "TK2419": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17157.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TIME:AYT:ADB:15:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17157.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "SHORT:15:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17157.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "15:55"
+      }
+    },
+    "TK2415": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17053.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:10"
+      }
+    },
+    "TIME:AYT:ADB:14:10:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17053.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:10"
+      }
+    },
+    "SHORT:14:10:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17053.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "14:10"
+      }
+    },
+    "TK2409": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16734.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:10"
+      }
+    },
+    "TIME:AYT:ADB:10:10:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16734.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:10"
+      }
+    },
+    "SHORT:10:10:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16734.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "10:10"
+      }
+    },
+    "TK2413": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:50"
+      }
+    },
+    "TIME:AYT:ADB:12:50:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:50"
+      }
+    },
+    "SHORT:12:50:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:50"
+      }
+    },
+    "TK2423": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16734.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:50"
+      }
+    },
+    "TIME:AYT:ADB:17:50:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16734.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:50"
+      }
+    },
+    "SHORT:17:50:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16734.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "17:50"
+      }
+    },
+    "TK2411": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16533.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:05"
+      }
+    },
+    "TIME:AYT:ADB:12:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16533.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:05"
+      }
+    },
+    "SHORT:12:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16533.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "12:05"
+      }
+    },
+    "TK2425": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17580.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:15"
+      }
+    },
+    "TIME:AYT:ADB:19:15:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17580.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:15"
+      }
+    },
+    "SHORT:19:15:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 17580.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "19:15"
+      }
+    },
+    "TK2421": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:55"
+      }
+    },
+    "TIME:AYT:ADB:16:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:55"
+      }
+    },
+    "SHORT:16:55:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 16214.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "16:55"
+      }
+    },
+    "TK2431": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29366.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "TIME:AYT:ADB:23:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29366.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "SHORT:23:05:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 29366.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "23:05"
+      }
+    },
+    "TK2429": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 30973.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:00"
+      }
+    },
+    "TIME:AYT:ADB:22:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 30973.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:00"
+      }
+    },
+    "SHORT:22:00:TK": {
+      "trip": {
+        "name": "Trip.com",
+        "price": 30973.0,
+        "url": "https://tr.trip.com/flights/antalya-to-izmir/tickets-ayt-adb?flighttype=ow&dcity=ayt&acity=adb&ddate=2026-11-10&curr=TRY&airline=TK&airlineCode=TK&Allianceid=11051531&SID=333747492",
+        "channel": "trip",
+        "dep_time": "22:00"
+      }
+    }
+  }
+}

@@ -48,11 +48,11 @@ PROVIDERS_REGISTRY: Dict[str, Dict[str, Any]] = {
     },
     "booking": {
         "id": "booking",
-        "name": "Booking.com Flights",
+        "name": "Booking / Kayak",
         "channel": "booking",
         "category": "ota",
-        "prefix_tr": "Booking'den",
-        "prefix_en": "Booking.com",
+        "prefix_tr": "Booking / Kayak'tan",
+        "prefix_en": "Booking / Kayak",
         "pill_css": "bg-blue-50 text-blue-950 border border-blue-300 font-bold shadow-2xs hover:bg-blue-100",
         "pill_icon": '<i class="fa-solid fa-plane-departure text-blue-700 text-[9px]"></i>',
         "active_affiliate": True,
@@ -118,55 +118,71 @@ PROVIDERS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "active_affiliate": False,
         "default_rank": 75,
     },
-    # --- RESMİ HAVAYOLLARI (OFFICIAL CARRIERS) ---
+    # --- RESMİ HAVAYOLLARI & REFERANS KÖPRÜLERİ (OFFICIAL / GOOGLE FLIGHTS BRIDGE) ---
     "official_pegasus": {
         "id": "official_pegasus",
-        "name": "Pegasus Resmi",
+        "name": "Google Flights",
         "channel": "official",
-        "category": "airline",
-        "prefix_tr": "Pegasus'tan",
-        "prefix_en": "Pegasus",
+        "category": "meta",
+        "prefix_tr": "Google Flights'ta",
+        "prefix_en": "Google Flights",
         "carrier_codes": ["PC"],
+        "active_affiliate": False,
         "default_rank": 10,
     },
     "official_ajet": {
         "id": "official_ajet",
-        "name": "AJet Resmi",
+        "name": "Google Flights",
         "channel": "official",
-        "category": "airline",
-        "prefix_tr": "AJet'ten",
-        "prefix_en": "AJet",
+        "category": "meta",
+        "prefix_tr": "Google Flights'ta",
+        "prefix_en": "Google Flights",
         "carrier_codes": ["VF"],
+        "active_affiliate": False,
         "default_rank": 10,
     },
     "official_thy": {
         "id": "official_thy",
-        "name": "THY Resmi",
+        "name": "Google Flights",
         "channel": "official",
-        "category": "airline",
-        "prefix_tr": "THY'den",
-        "prefix_en": "THY",
+        "category": "meta",
+        "prefix_tr": "Google Flights'ta",
+        "prefix_en": "Google Flights",
         "carrier_codes": ["TK"],
+        "active_affiliate": False,
         "default_rank": 10,
     },
     "official_sunexpress": {
         "id": "official_sunexpress",
-        "name": "SunExpress Resmi",
+        "name": "Google Flights",
         "channel": "official",
-        "category": "airline",
-        "prefix_tr": "SunExpress'ten",
-        "prefix_en": "SunExpress",
+        "category": "meta",
+        "prefix_tr": "Google Flights'ta",
+        "prefix_en": "Google Flights",
         "carrier_codes": ["XQ"],
+        "active_affiliate": False,
         "default_rank": 10,
     },
     "official_generic": {
         "id": "official_generic",
-        "name": "Resmi Havayolu",
+        "name": "Google Flights",
         "channel": "official",
-        "category": "airline",
-        "prefix_tr": "Havayolundan",
-        "prefix_en": "Official Airline",
+        "category": "meta",
+        "prefix_tr": "Google Flights'ta",
+        "prefix_en": "Google Flights",
         "carrier_codes": [],
+        "active_affiliate": False,
+        "default_rank": 10,
+    },
+    "official": {
+        "id": "official",
+        "name": "Google Flights",
+        "channel": "official",
+        "category": "meta",
+        "prefix_tr": "Google Flights'ta",
+        "prefix_en": "Google Flights",
+        "carrier_codes": [],
+        "active_affiliate": False,
         "default_rank": 10,
     },
 }
@@ -188,8 +204,11 @@ def resolve_carrier_meta(
     cabin_class: str = "economy"
 ) -> Dict[str, Any]:
     """
-    Havayolu ismine ve IATA koduna göre (PC, VF, TK, XQ vb.) doğru Türkçe takı,
-    resmi arama bağlantısı ve gösterim etiketlerini oluşturur.
+    Havayolu ismine ve IATA koduna göre (PC, VF, TK, XQ vb.) doğru havayolu gösterim adını,
+    rozetini ve ana sayfaya düşmeyen parametreli Google Flights doğrulama köprüsünü oluşturur.
+    KURAL 3 UYARISI: Gidilen URL Google Flights olduğu için sağlayıcı adı ve buton etiketi
+    %100 dürüst şekilde 'Google Flights' olarak kilitlenir; asla 'THY'den Al' veya 'AJet'ten Al'
+    yazıp Google Flights'a yönlendirme yapılmaz.
     """
     c_lower = (carrier_name or "").lower()
     c_code = (carrier_code or "").upper()
@@ -197,26 +216,24 @@ def resolve_carrier_meta(
     # Pegasus (PC)
     if "pegasus" in c_lower or c_code == "PC" or "flypgs" in c_lower:
         display_name = "Pegasus Airlines"
-        official_name = "Pegasus Resmi"
-        prefix_tr = "Pegasus'tan"
-        prefix_en = "Pegasus"
         provider_id = "official_pegasus"
         badge = "Comfort Flex ⭐" if cabin_class == "business" else "Pegasus Seferi"
-        # Pegasus rota bazlı doğrudan arama linki
+        airline_direct_url = "https://www.flypgs.com/"
+        airline_label_tr = "✈️ Pegasus'ta Gör ↗"
+        airline_label_en = "✈️ View on Pegasus ↗"
         if is_round and ret_date:
-            official_link = f"https://web.flypgs.com/booking?departureAirport={from_code}&arrivalAirport={to_code}&departureDate={dep_date}&returnAirport={from_code}&returnDate={ret_date}&currency=TRY&adultCount={adults}"
+            official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+Pegasus&hl=tr&gl=tr&curr=TRY"
         else:
-            official_link = f"https://web.flypgs.com/booking?departureAirport={from_code}&arrivalAirport={to_code}&departureDate={dep_date}&currency=TRY&adultCount={adults}"
+            official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+Pegasus&hl=tr&gl=tr&curr=TRY"
 
     # AJet / AnadoluJet (VF)
     elif "ajet" in c_lower or "anadolu" in c_lower or c_code == "VF":
         display_name = "AJet (AnadoluJet)"
-        official_name = "AJet Resmi"
-        prefix_tr = "AJet'ten"
-        prefix_en = "AJet"
         provider_id = "official_ajet"
         badge = "Business ⭐" if cabin_class == "business" else "AJet Seferi"
-        # AJet doğrudan oturum tokeni gerektirdiği için ana sayfaya düşüşü önleyen parametreli resmi uçuş köprüsü
+        airline_direct_url = "https://ajet.com/tr"
+        airline_label_tr = "✈️ AJet'te Gör ↗"
+        airline_label_en = "✈️ View on AJet ↗"
         if is_round and ret_date:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+AJet&hl=tr&gl=tr&curr=TRY"
         else:
@@ -225,11 +242,11 @@ def resolve_carrier_meta(
     # Türk Hava Yolları (TK)
     elif "turkish" in c_lower or "thy" in c_lower or "türk hava" in c_lower or c_code == "TK":
         display_name = "Türk Hava Yolları"
-        official_name = "THY Resmi"
-        prefix_tr = "THY'den"
-        prefix_en = "THY"
         provider_id = "official_thy"
         badge = "Business Class ⭐" if cabin_class == "business" else "⭐ THY Konforu"
+        airline_direct_url = "https://www.turkishairlines.com/tr-tr/ucak-bileti/"
+        airline_label_tr = "✈️ THY'de Gör ↗"
+        airline_label_en = "✈️ View on Turkish Airlines ↗"
         if is_round and ret_date:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+Turkish+Airlines&hl=tr&gl=tr&curr=TRY"
         else:
@@ -238,11 +255,11 @@ def resolve_carrier_meta(
     # SunExpress (XQ)
     elif "sunexpress" in c_lower or c_code == "XQ":
         display_name = "SunExpress"
-        official_name = "SunExpress Resmi"
-        prefix_tr = "SunExpress'ten"
-        prefix_en = "SunExpress"
         provider_id = "official_sunexpress"
         badge = "SunClassic" if cabin_class == "business" else "SunExpress Seferi"
+        airline_direct_url = "https://www.sunexpress.com/tr-tr/"
+        airline_label_tr = "✈️ SunExpress'te Gör ↗"
+        airline_label_en = "✈️ View on SunExpress ↗"
         if is_round and ret_date:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+SunExpress&hl=tr&gl=tr&curr=TRY"
         else:
@@ -251,25 +268,27 @@ def resolve_carrier_meta(
     # Diğer / Uluslararası Havayolları (Lufthansa, Emirates, Qatar, Corendon vb.)
     else:
         display_name = carrier_name or "Tarifeli Havayolu"
-        official_name = f"{display_name} Resmi"
-        prefix_tr = f"{display_name}'den"
-        prefix_en = display_name
         provider_id = "official_generic"
         badge = "Standart Sefer"
-        # Havayolu özel sayfası için Google Flights parametreli sefer köprüsü
         bridge_code = c_code if c_code else "flights"
         if is_round and ret_date:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+{bridge_code}&hl=tr&gl=tr&curr=TRY"
         else:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+{bridge_code}&hl=tr&gl=tr&curr=TRY"
+        airline_direct_url = official_link
+        airline_label_tr = f"✈️ {display_name} Seferi ↗"
+        airline_label_en = f"✈️ {display_name} Flight ↗"
 
     return {
         "provider_id": provider_id,
         "display_name": display_name,
-        "official_name": official_name,
+        "official_name": "Google Flights",
         "official_link": official_link,
-        "prefix_tr": prefix_tr,
-        "prefix_en": prefix_en,
+        "airline_direct_url": airline_direct_url,
+        "airline_label_tr": airline_label_tr,
+        "airline_label_en": airline_label_en,
+        "prefix_tr": "Google Flights'ta",
+        "prefix_en": "Google Flights",
         "badge": badge,
         "channel": "official",
         "carrier_code": c_code,

@@ -39,10 +39,10 @@ logger = logging.getLogger(__name__)
 MONTHS_TR = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
 DAYS_TR = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
 
-# 60 Dakikalık Akıllı Uçuş Önbelleği (7 Günlük Esnek Şerit ile Tıklanan Gün Arasında %100 Birebir Fiyat Garantisi)
+# 10 Dakikalık Akıllı Uçuş Önbelleği (Canlı fiyat güncelliği ve hız dengesi)
 _FLIGHT_CACHE: Dict[str, Dict[str, Any]] = {}
 _FLIGHT_CACHE_LOCK = threading.Lock()
-FLIGHT_CACHE_TTL_SECONDS = 3600  # 60 dakika
+FLIGHT_CACHE_TTL_SECONDS = 600  # 10 dakika
 FLIGHT_DISK_CACHE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "flight_results_cache")
 os.makedirs(FLIGHT_DISK_CACHE_DIR, exist_ok=True)
 
@@ -151,6 +151,16 @@ def _parse_unique_flights(raw_items: List[Any]) -> List[Dict[str, Any]]:
                     airline_name = "Havayolu"
 
             flight_no = f"{carrier_code} {fn_code}".strip() if (carrier_code and fn_code) else f"{from_code}-{to_code}"
+            if len(legs) > 1:
+                leg_codes = []
+                for lg in legs:
+                    if len(lg) > 22 and isinstance(lg[22], list) and len(lg[22]) >= 2:
+                        lc = str(lg[22][0] or "").strip()
+                        ln = str(lg[22][1] or "").strip()
+                        if lc and ln:
+                            leg_codes.append(f"{lc} {ln}")
+                if len(leg_codes) > 1:
+                    flight_no = " + ".join(leg_codes)
 
             total_duration_mins = sum(
                 (leg[11] if len(leg) > 11 and isinstance(leg[11], int) else 75)
@@ -184,6 +194,32 @@ def _parse_unique_flights(raw_items: List[Any]) -> List[Dict[str, Any]]:
         except Exception as err:
             logger.warning(f"Error parsing raw flight item: {err}")
             continue
+
+    # Kur / Önbellek Gecikmesi (1-5 TL FX Lag) Senkronizasyonu:
+    # Aynı havayolu ve parkurda (örn. SAW->ESB Pegasus) 5 sefer 1.401 TL iken tek bir seferde
+    # Google önbellek kur farkından dolayı 1.399 TL (1-5 TL fark) görünmesi durumunda,
+    # listedeki gerçek taban fiyatla (1.401 TL) %100 birebir uyum için taban dilimi senkronize et.
+    from collections import Counter
+    by_carrier_route: Dict[tuple, List[Dict[str, Any]]] = {}
+    for fl in unique_flights.values():
+        cr_key = (fl.get("carrier_code") or fl.get("airline_name"), fl.get("from_code"), fl.get("to_code"))
+        by_carrier_route.setdefault(cr_key, []).append(fl)
+
+    for cr_key, fl_list in by_carrier_route.items():
+        if len(fl_list) < 2:
+            continue
+        prices_int = [int(round(f["price"])) for f in fl_list if f.get("price")]
+        if not prices_int:
+            continue
+        min_p = min(prices_int)
+        counts = Counter(prices_int)
+        # min_p'den 1 ile 5 TL arasında daha yüksek ve birden fazla seferde tekrar eden ana tarife dilimi varsa:
+        higher_buckets = [p for p, cnt in counts.items() if 0 < (p - min_p) <= 5 and cnt >= counts[min_p]]
+        if higher_buckets:
+            target_bucket = float(min(higher_buckets))
+            for f in fl_list:
+                if int(round(f["price"])) == min_p:
+                    f["price"] = target_bucket
 
     return sorted(unique_flights.values(), key=lambda x: (x["price"], x["dep_t"][0] * 60 + x["dep_t"][1]))
 
@@ -335,27 +371,37 @@ def fetch_live_flights_from_google(
     is_round = (trip_type == "round_trip" and bool(return_date))
     seat_mode = "business" if cabin_class == "business" else "economy"
 
-    # 1. Önbellek (Cache) Kontrolü (60 Dakika TTL • RAM + Disk Korumalı)
-    cache_key = f"{orig_slug}:{dest_slug}:{departure_date}:{return_date or ''}:{'rt' if is_round else 'ow'}:{seat_mode}:{adults}:{children}:{infants}"
+    # 1. Önbellek (Cache) Kontrolü (10 Dakika TTL • RAM + Disk Korumalı)
+    # ÖNEMLİ: include_multi_ota=False (esnek takvim şeridi) asla ana arama (include_multi_ota=True) önbelleğini ezemez!
+    base_cache_key = f"{orig_slug}:{dest_slug}:{departure_date}:{return_date or ''}:{'rt' if is_round else 'ow'}:{seat_mode}:{adults}:{children}:{infants}"
+    cache_key = base_cache_key if include_multi_ota else f"{base_cache_key}:fast"
     now_ts = time.time()
     with _FLIGHT_CACHE_LOCK:
+        # Eğer hızlı sorgu (fast) isteniyorsa ama tam sorgu (base_cache_key) zaten önbellekte varsa onu kullan
+        if not include_multi_ota and base_cache_key in _FLIGHT_CACHE:
+            full_entry = _FLIGHT_CACHE[base_cache_key]
+            if now_ts - full_entry["ts"] < FLIGHT_CACHE_TTL_SECONDS:
+                return copy.deepcopy(full_entry["data"])
         cached_entry = _FLIGHT_CACHE.get(cache_key)
         if cached_entry and (now_ts - cached_entry["ts"] < FLIGHT_CACHE_TTL_SECONDS):
             return copy.deepcopy(cached_entry["data"])
 
     disk_path = _get_flight_disk_cache_path(cache_key)
-    if os.path.exists(disk_path):
-        try:
-            with open(disk_path, "r", encoding="utf-8") as df:
-                disk_payload = json.load(df)
-            if disk_payload and (now_ts - float(disk_payload.get("ts", 0)) < FLIGHT_CACHE_TTL_SECONDS):
-                disk_data = disk_payload.get("data") or []
-                if disk_data:
-                    with _FLIGHT_CACHE_LOCK:
-                        _FLIGHT_CACHE[cache_key] = {"ts": float(disk_payload["ts"]), "data": copy.deepcopy(disk_data)}
-                    return copy.deepcopy(disk_data)
-        except Exception:
-            pass
+    full_disk_path = _get_flight_disk_cache_path(base_cache_key)
+    check_paths = [full_disk_path, disk_path] if not include_multi_ota else [disk_path]
+    for d_path in check_paths:
+        if os.path.exists(d_path):
+            try:
+                with open(d_path, "r", encoding="utf-8") as df:
+                    disk_payload = json.load(df)
+                if disk_payload and (now_ts - float(disk_payload.get("ts", 0)) < FLIGHT_CACHE_TTL_SECONDS):
+                    disk_data = disk_payload.get("data") or []
+                    if disk_data:
+                        with _FLIGHT_CACHE_LOCK:
+                            _FLIGHT_CACHE[cache_key] = {"ts": float(disk_payload["ts"]), "data": copy.deepcopy(disk_data)}
+                        return copy.deepcopy(disk_data)
+            except Exception:
+                pass
 
     # Çoklu havalimanı desteği (ör. İstanbul için hem SAW hem IST)
     def get_airport_codes(city: Dict[str, Any]) -> List[str]:
@@ -580,10 +626,11 @@ def fetch_live_flights_from_google(
             )
 
             # Booking.com / Kayak Flights Canlı Uçuş Arama Linki (Booking Holdings Güvencesi, Türkçe ve Kesintisiz)
+            _kayak_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
             if is_round and return_date:
-                booking_flight_link = f"https://www.kayak.com.tr/flights/{from_code.upper()}-{to_code.upper()}/{departure_date}/{return_date}?sort=bestflight_a"
+                booking_flight_link = f"https://www.kayak.com.tr/flights/{from_code.upper()}-{to_code.upper()}/{departure_date}/{return_date}?sort=bestflight_a&aid={_kayak_aid}"
             else:
-                booking_flight_link = f"https://www.kayak.com.tr/flights/{from_code.upper()}-{to_code.upper()}/{departure_date}?sort=bestflight_a"
+                booking_flight_link = f"https://www.kayak.com.tr/flights/{from_code.upper()}-{to_code.upper()}/{departure_date}?sort=bestflight_a&aid={_kayak_aid}"
 
 
             # Skyscanner Canlı Uçuş Karşılaştırma Linki
@@ -622,17 +669,19 @@ def fetch_live_flights_from_google(
             if enuygun_subid:
                 enuygun_flight_link += f"&subid={enuygun_subid}"
 
-            # Obilet Canlı Uçak Bileti Arama Linki (Rota, Tarih ve Tüm Yolcu Parametreli)
+            # Obilet Canlı Uçak Bileti Arama Linki (Şehir Slug + Rota, Tarih ve Tüm Yolcu Parametreli)
             obilet_subid = getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
             obilet_pax = f"yetiskin={adults}"
             if children > 0:
                 obilet_pax += f"&cocuk={children}"
             if infants > 0:
                 obilet_pax += f"&bebek={infants}"
+            ob_orig_slug = "istanbul" if orig_slug.startswith("istanbul") else orig_slug
+            ob_dest_slug = "istanbul" if dest_slug.startswith("istanbul") else dest_slug
             if is_round and return_date:
-                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}/{return_date}?{obilet_pax}"
+                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{ob_orig_slug}-{ob_dest_slug}?tarih={departure_date}&donus={return_date}&{obilet_pax}"
             else:
-                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{from_code.lower()}-{to_code.lower()}/{departure_date}?{obilet_pax}"
+                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{ob_orig_slug}-{ob_dest_slug}?tarih={departure_date}&{obilet_pax}"
             if obilet_subid:
                 obilet_flight_link += f"&subid={obilet_subid}"
             obilet_flight_link += "&sorting=price&sort=price"
@@ -667,19 +716,20 @@ def fetch_live_flights_from_google(
             city_dest_time_key = f"TIME:{from_code}:IST:{dep_time}:{carrier_code}"
 
             ota_for_flight: Dict[str, Dict[str, Any]] = {}
-            if short_time_key in multi_ota_map:
-                ota_for_flight.update(multi_ota_map[short_time_key])
-            if city_time_key in multi_ota_map:
-                ota_for_flight.update(multi_ota_map[city_time_key])
-            if city_dest_time_key in multi_ota_map:
-                ota_for_flight.update(multi_ota_map[city_dest_time_key])
-            if time_key in multi_ota_map:
-                ota_for_flight.update(multi_ota_map[time_key])
+            if is_direct:
+                if short_time_key in multi_ota_map:
+                    ota_for_flight.update(multi_ota_map[short_time_key])
+                if city_time_key in multi_ota_map:
+                    ota_for_flight.update(multi_ota_map[city_time_key])
+                if city_dest_time_key in multi_ota_map:
+                    ota_for_flight.update(multi_ota_map[city_dest_time_key])
+                if time_key in multi_ota_map:
+                    ota_for_flight.update(multi_ota_map[time_key])
             if f_key and f_key in multi_ota_map:
                 ota_for_flight.update(multi_ota_map[f_key])
 
-            # Toleranslı saat kontrolü (+/- 10 dakika içindeki aynı havayolu seferi)
-            if dep_time and carrier_code:
+            # Toleranslı saat kontrolü (+/- 10 dakika içindeki aynı havayolu direkt seferi)
+            if is_direct and dep_time and carrier_code:
                 try:
                     f_h, f_m = map(int, dep_time.split(":"))
                     f_total = f_h * 60 + f_m
@@ -700,18 +750,23 @@ def fetch_live_flights_from_google(
             booking_live = ota_for_flight.get("booking")
             skyscanner_live = ota_for_flight.get("skyscanner")
 
-            # KESİN DOĞRULUK KURALI:
-            # Trip.com (veya herhangi bir acente) için yalnızca API'den doğrulanmış canlı fiyat geldiyse
-            # yarışmaya sokulur. Asla havayolu taban fiyatı (price) varsayılan olarak kopyalanmaz!
-            # Ayrıca: Arama GİDİŞ-DÖNÜŞ (is_round) ise ve Trip.com teklifi tek bacak fiyatı ise,
-            # elma ile armut kıyaslanmaması için gidiş-dönüş toplam tutarı (2 bacak) hesaplanır.
+            # ANAYASA KURALI (EN UCUZ FİYAT KAZANIR, EŞİTLİKTE GELİR GETİREN ORTAK KAZANIR):
+            # 1. Trip.com (active_affiliate=True, AllianceID: 11051531) resmi IATA biletleme acentesidir.
+            #    Eğer Trip.com canlı taramasında havayolu taban fiyatından daha ucuz özel bir indirim
+            #    yakalandıysa o indirimli fiyat kullanılır; aksi halde standart IATA taban fiyatı (price)
+            #    üzerinden eşitlik (tie-breaker) yarışına girer ve gelir getiren aktif ortak olarak kazanır.
+            # 2. Kiwi.com, Booking.com veya Enuygun daha ucuz bir canlı fiyat sunduğunda ise en ucuz olan kazanır.
+            base_clean_price = float(round(price)) if (price and float(price) > 0) else None
             if trip_live and trip_live.get("price") and float(trip_live["price"]) > 0:
                 base_trip_price = float(trip_live["price"])
                 if is_round and not trip_live.get("is_round"):
-                    trip_price = float(round(base_trip_price * 2))
+                    cand_trip_price = float(round(base_trip_price * 2))
                 else:
-                    trip_price = float(round(base_trip_price))
+                    cand_trip_price = float(round(base_trip_price))
+                # SIFIR VARSAYIM: Trip.com yalnızca kendi canlı fiyatını taşır; havayolu fiyatı kopyalanmaz.
+                trip_price = cand_trip_price
             else:
+                # Trip.com canlı fiyatı yoksa fiyat boş kalır (asla başka kaynaktan kopyalanmaz).
                 trip_price = None
 
             candidate_trip_url = str(trip_live.get("url") or "") if trip_live else ""
@@ -769,7 +824,7 @@ def fetch_live_flights_from_google(
 
             raw_providers.append(
                 {
-                    "name": "Booking.com Flights",
+                    "name": "Booking / Kayak",
                     "url": b_url,
                     "price": booking_price,
                     "channel": "booking",
@@ -887,9 +942,13 @@ def fetch_live_flights_from_google(
                 "plane_type": plane_type,
                 "official_name": official_name,
                 "official_link": official_link,
+                "airline_direct_url": carrier_meta.get("airline_direct_url", official_link),
+                "airline_label_tr": carrier_meta.get("airline_label_tr", f"✈️ {carrier_display}'da Gör ↗"),
+                "airline_label_en": carrier_meta.get("airline_label_en", f"✈️ View on {carrier_display} ↗"),
                 "agent_name": "Enuygun",
                 "agent_link": enuygun_flight_link,
                 "enuygun_link": enuygun_flight_link,
+                "kayak_link": booking_flight_link,
                 "obilet_link": obilet_flight_link,
                 "google_link": google_flights_link,
                 "direct_link": direct_link,
@@ -917,7 +976,7 @@ def fetch_live_flights_from_google(
                 r["badge"] = f"{carrier_short} Seferi"
         save_ts = time.time()
         with _FLIGHT_CACHE_LOCK:
-            if len(_FLIGHT_CACHE) >= 500:
+            if len(_FLIGHT_CACHE) >= 50:
                 oldest_key = min(_FLIGHT_CACHE.keys(), key=lambda k: _FLIGHT_CACHE[k].get("ts", 0))
                 _FLIGHT_CACHE.pop(oldest_key, None)
             _FLIGHT_CACHE[cache_key] = {

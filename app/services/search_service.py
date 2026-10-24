@@ -1577,7 +1577,7 @@ class SearchService:
                     except Exception:
                         return d_iso_str, None
 
-                with ThreadPoolExecutor(max_workers=7) as ex:
+                with ThreadPoolExecutor(max_workers=2) as ex:
                     for d_key, d_val in ex.map(_fetch_real_day_min, target_dates):
                         live_day_prices[d_key] = d_val
             except Exception as flex_fl_err:
