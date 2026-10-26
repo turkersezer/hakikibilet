@@ -39,7 +39,7 @@ let activeCurrency = 'TRY';
 let currentHotelScope = 'intl'; // 'intl' (Booking.com & Agoda) or 'domestic' (Enuygun & Otelz)
 
 // Uçuş Modu Özel Durumları
-let currentFlightScope = 'domestic'; // 'domestic' (Yurtiçi) or 'international' (Yurtdışı)
+let currentFlightScope = 'all'; // 'domestic' (Yurtiçi) or 'international' (Yurtdışı)
 let currentFlightTripType = 'one_way'; // 'one_way' (Tek Yön) or 'round' (Gidiş-Dönüş)
 let currentFlightCabin = 'economy'; // 'economy' or 'business'
 let flightPax = {
@@ -389,7 +389,7 @@ window.setTrainScope = setTrainScope;
 
 // Gemi & Feribot Segment & Araç Durum Değişkenleri
 let currentFerryCategory = 'all'; // 'all', 'domestic', 'greek_islands', 'cruise'
-let currentFerryVehicleType = 'passenger'; // 'passenger', 'car'
+let currentFerryVehicleType = 'passenger'; // 'passenger', 'car', 'motorcycle'
 
 function setFerryCategory(cat) {
     currentFerryCategory = cat;
@@ -398,46 +398,77 @@ function setFerryCategory(cat) {
     const islBtn = document.getElementById("ferryCat-islands");
     const cruBtn = document.getElementById("ferryCat-cruise");
 
-    const activeCls = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-sky-900 text-white transition";
-    const inactiveCls = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition";
+    const activeCls = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-sky-900 text-white transition cursor-pointer";
+    const inactiveCls = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition cursor-pointer";
 
     if (allBtn) allBtn.className = cat === 'all' ? activeCls : inactiveCls;
     if (domBtn) domBtn.className = cat === 'domestic' ? activeCls : inactiveCls;
     if (islBtn) islBtn.className = cat === 'greek_islands' ? activeCls : inactiveCls;
     if (cruBtn) cruBtn.className = cat === 'cruise' ? activeCls : inactiveCls;
 
+    // Cruise kategorisine geçildiğinde araç seçimi otomatik olarak Yaya'ya döner
+    if (cat === 'cruise' && currentFerryVehicleType !== 'passenger') {
+        setFerryVehicleType('passenger', false);
+    }
+
+    // Popüler rota haplarını seçilen kategoriye göre filtrele
+    document.querySelectorAll("[data-ferry-pill]").forEach(pill => {
+        const pillCat = pill.getAttribute("data-ferry-pill");
+        if (cat === 'all' || pillCat === cat) {
+            pill.classList.remove("hidden");
+        } else {
+            pill.classList.add("hidden");
+        }
+    });
+
     const originInput = document.getElementById("transOrigin");
     const destInput = document.getElementById("transDest");
-    if (cat === 'domestic') {
-        originInput.placeholder = "";
-        destInput.placeholder = "";
-    } else if (cat === 'greek_islands') {
-        originInput.placeholder = "";
-        destInput.placeholder = "";
-    } else if (cat === 'cruise') {
-        originInput.placeholder = "";
-        destInput.placeholder = "";
+    if (originInput && destInput) {
+        if (cat === 'domestic') {
+            originInput.placeholder = "Örn: Yenikapı, Pendik, Çanakkale, Taşucu";
+            destInput.placeholder = "Örn: Bursa, Yalova, Bozcaada, Girne";
+        } else if (cat === 'greek_islands') {
+            originInput.placeholder = "Örn: Çeşme, Bodrum, Kuşadası, Ayvalık";
+            destInput.placeholder = "Örn: Sakız Adası, Kos Adası, Samos, Rodos";
+        } else if (cat === 'cruise') {
+            originInput.placeholder = "Örn: Galataport (İstanbul), Kuşadası";
+            destInput.placeholder = "Örn: Cruise, Yunan Adaları";
+        } else {
+            originInput.placeholder = "";
+            destInput.placeholder = "";
+        }
     }
 }
 window.setFerryCategory = setFerryCategory;
 
-function toggleFerryVehicle() {
-    const isCar = currentFerryVehicleType === 'car';
-    currentFerryVehicleType = isCar ? 'passenger' : 'car';
+function setFerryVehicleType(vType, autoSearch = true) {
+    currentFerryVehicleType = vType || 'passenger';
+    const passBtn = document.getElementById("ferryVeh-passenger");
+    const carBtn = document.getElementById("ferryVeh-car");
+    const motoBtn = document.getElementById("ferryVeh-motorcycle");
 
-    const btn = document.getElementById("ferryVehicleToggle");
-    const label = document.getElementById("ferryVehicleLabel");
-    const icon = document.getElementById("ferryVehicleIcon");
+    const activeCls = "py-2 px-3 rounded-xl text-xs font-black bg-sky-900 text-white shadow-2xs flex items-center justify-between cursor-pointer transition";
+    const inactiveCls = "py-2 px-3 rounded-xl text-xs font-bold text-slate-700 bg-slate-50 hover:bg-sky-50 border border-slate-200 flex items-center justify-between cursor-pointer transition";
 
-    if (currentFerryVehicleType === 'car') {
-        if (btn) btn.className = "px-2.5 py-1 rounded-lg border border-sky-600 bg-sky-900 text-white font-black text-[11px] shadow-2xs transition flex items-center gap-1.5";
-        if (label) label.innerText = "🚗 Arabalı Geçiş (Araç Dahil)";
-        if (icon) icon.className = "fa-solid fa-car text-amber-300";
-    } else {
-        if (btn) btn.className = "px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-700 font-bold text-[11px] hover:border-sky-500 transition flex items-center gap-1.5";
-        if (label) label.innerText = "🚶 Yaya (Araçsız)";
-        if (icon) icon.className = "fa-solid fa-person-walking text-slate-500";
+    if (passBtn) passBtn.className = currentFerryVehicleType === 'passenger' ? activeCls : inactiveCls;
+    if (carBtn) carBtn.className = currentFerryVehicleType === 'car' ? activeCls : inactiveCls;
+    if (motoBtn) motoBtn.className = currentFerryVehicleType === 'motorcycle' ? activeCls : inactiveCls;
+
+    updatePaxSummaryDisplay();
+
+    if (autoSearch && currentTransportSubTab === 'ferry') {
+        const oInput = document.getElementById("transOrigin");
+        const dInput = document.getElementById("transDest");
+        if (oInput && dInput && oInput.value.trim() && dInput.value.trim()) {
+            executeTransportSearch();
+        }
     }
+}
+window.setFerryVehicleType = setFerryVehicleType;
+
+function toggleFerryVehicle() {
+    const nextType = currentFerryVehicleType === 'passenger' ? 'car' : 'passenger';
+    setFerryVehicleType(nextType, true);
 }
 window.toggleFerryVehicle = toggleFerryVehicle;
 
@@ -449,11 +480,8 @@ function quickFillFerry(origin, dest, cat = 'all', isVehicle = false) {
     if (cat && window.setFerryCategory) {
         window.setFerryCategory(cat);
     }
-    if (isVehicle && currentFerryVehicleType !== 'car') {
-        toggleFerryVehicle();
-    } else if (!isVehicle && currentFerryVehicleType === 'car') {
-        toggleFerryVehicle();
-    }
+    const vehMode = (isVehicle === true || isVehicle === 'car') ? 'car' : 'passenger';
+    setFerryVehicleType(vehMode, false);
     const oInput = document.getElementById("transOrigin");
     const dInput = document.getElementById("transDest");
     if (oInput) oInput.value = origin;
@@ -461,6 +489,56 @@ function quickFillFerry(origin, dest, cat = 'all', isVehicle = false) {
     executeTransportSearch();
 }
 window.quickFillFerry = quickFillFerry;
+
+// Cruise Kartı Üzerinde Dinamik Kabin Tipi Seçici (İç Kabin / Dış Kabin / Balkonlu Kabin)
+function selectCruiseCabin(cardDomId, tierIdx) {
+    const tickets = window.lastTransportResults || [];
+    const ticket = tickets.find(t => String(t.id) === String(cardDomId));
+    if (!ticket || !Array.isArray(ticket.cabin_tiers) || !ticket.cabin_tiers[tierIdx]) return;
+
+    const selectedTier = ticket.cabin_tiers[tierIdx];
+    const baseTier = ticket.cabin_tiers[0];
+    const ratio = (baseTier && baseTier.price > 0) ? (selectedTier.price / baseTier.price) : 1.0;
+    const paxCount = (window.lastSearchReq && window.lastSearchReq.passengers) ? window.lastSearchReq.passengers : 1;
+
+    // 1. Ana fiyatı ve kırılım metnini güncelle
+    const priceEl = document.getElementById(`ferryPriceVal-${cardDomId}`);
+    if (priceEl && selectedTier.price) {
+        priceEl.textContent = Number(selectedTier.price).toLocaleString('tr-TR');
+    }
+    const breakEl = document.getElementById(`ferryBreakdown-${cardDomId}`);
+    if (breakEl) {
+        breakEl.textContent = `${selectedTier.name} (${selectedTier.per_person_eur} € × ${paxCount} Kişi) • Her Şey Dahil`;
+    }
+
+    // 2. Kabin butonlarının aktif/pasif stillerini güncelle
+    ticket.cabin_tiers.forEach((ct, idx) => {
+        const btn = document.getElementById(`cabinBtn-${cardDomId}-${idx}`);
+        if (!btn) return;
+        const currSym = ct.currency || ticket.currency || '₺';
+        const isSel = (idx === tierIdx);
+        btn.className = `px-2.5 py-1 rounded-lg text-[11px] transition cursor-pointer inline-flex items-center gap-1.5 ${isSel
+            ? 'bg-sky-900 text-white font-black shadow-2xs border border-sky-900'
+            : 'bg-white hover:bg-sky-100 text-slate-700 font-bold border border-sky-200'}`;
+        btn.innerHTML = `
+            <span>${escapeHtml(ct.name)}:</span>
+            <span class="${isSel ? 'text-amber-300 font-black' : 'text-sky-900 font-black'}">${Number(ct.price).toLocaleString('tr-TR')} ${currSym}</span>
+            <span class="text-[9.5px] opacity-80">(${ct.per_person_eur}€/kişi)</span>
+        `;
+    });
+
+    // 3. Alt şeritteki acente fiyatlarını seçilen kabin tipine göre güncelle
+    if (Array.isArray(ticket.providers)) {
+        ticket.providers.forEach((p, pIdx) => {
+            const provEl = document.getElementById(`provPrice-${cardDomId}-${pIdx}`);
+            if (provEl && p.price) {
+                const updatedProvPrice = Math.round(p.price * ratio);
+                provEl.textContent = `${Number(updatedProvPrice).toLocaleString('tr-TR')} ${p.currency || ticket.currency || '₺'}`;
+            }
+        });
+    }
+}
+window.selectCruiseCabin = selectCruiseCabin;
 
 // Araç Kiralama Filtre ve Durum Değişkenleri
 let currentCarCategoryFilter = 'all'; // 'all', 'Ekonomi', 'SUV', 'Konfor', 'Premium'
@@ -633,10 +711,21 @@ function updatePaxSummaryDisplay() {
     if (flightPax.infants > 0) parts.push(`${flightPax.infants} ${infantWord}`);
 
     let str = parts.join(", ");
-    if (currentFlightCabin === 'business') {
-        str += " • Business";
-    } else if (isEn) {
-        str += " • Economy";
+    const subTab = window.currentTransportSubTab || currentTransportSubTab || 'flight';
+    if (subTab === 'ferry') {
+        if (currentFerryVehicleType === 'car') {
+            str += isEn ? " • 🚗 Car" : " • 🚗 Otomobil";
+        } else if (currentFerryVehicleType === 'motorcycle') {
+            str += isEn ? " • 🏍️ Moto" : " • 🏍️ Motosiklet";
+        } else {
+            str += isEn ? " • 🚶 Foot" : " • 🚶 Yaya";
+        }
+    } else if (subTab === 'flight') {
+        if (currentFlightCabin === 'business') {
+            str += " • Business";
+        } else if (isEn) {
+            str += " • Economy";
+        }
     }
     label.textContent = str;
 }
@@ -669,6 +758,1796 @@ function updateAirportHints() {
 }
 window.updateAirportHints = updateAirportHints;
 
+// Türkçe Karakter Normalizasyon Yardımcısı
+function normalizeTurkish(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/I/g, 'ı')
+        .replace(/İ/g, 'i')
+        .toLowerCase()
+        .replace(/ı/g, 'i')
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ş/g, 's')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/[^a-z0-9]/g, '')
+        .trim();
+}
+
+// 81 İl, Tüm Popüler İlçeler & Dünya Metropolleri ➔ Havalimanı Eşleme Sözlüğü
+const DISTRICT_TO_AIRPORT_MAP = {
+    "adana": {
+        "target": "Adana - Mersin / Çukurova (COV)",
+        "label": "Adana",
+        "note": null
+    },
+    "adiyaman": {
+        "target": "Adıyaman (ADF)",
+        "label": "Adıyaman",
+        "note": null
+    },
+    "adıyaman": {
+        "target": "Adıyaman (ADF)",
+        "label": "Adıyaman",
+        "note": null
+    },
+    "afyon": {
+        "target": "Zafer (KZR)",
+        "label": "Afyonkarahisar",
+        "note": "Afyonkarahisar tarifeli uçuşları Kütahya Zafer Bölgesel Havalimanı (KZR) üzerinden icra edilmektedir."
+    },
+    "afyonkarahisar": {
+        "target": "Zafer (KZR)",
+        "label": "Afyonkarahisar",
+        "note": "Afyonkarahisar tarifeli uçuşları Kütahya Zafer Bölgesel Havalimanı (KZR) üzerinden icra edilmektedir."
+    },
+    "agri": {
+        "target": "Ağrı (AJI)",
+        "label": "Ağrı",
+        "note": null
+    },
+    "ağrı": {
+        "target": "Ağrı (AJI)",
+        "label": "Ağrı",
+        "note": null
+    },
+    "aksaray": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Aksaray",
+        "note": "Aksaray için en yakın aktif havalimanı Nevşehir Kapadokya (NAV) uçuşları listelenmektedir."
+    },
+    "amasya": {
+        "target": "Amasya Merzifon (MZH)",
+        "label": "Amasya",
+        "note": null
+    },
+    "merzifon": {
+        "target": "Amasya Merzifon (MZH)",
+        "label": "Merzifon",
+        "note": null
+    },
+    "ankara": {
+        "target": "Ankara (ESB)",
+        "label": "Ankara",
+        "note": null
+    },
+    "antalya": {
+        "target": "Antalya (AYT)",
+        "label": "Antalya",
+        "note": null
+    },
+    "ardahan": {
+        "target": "Kars (KSY)",
+        "label": "Ardahan",
+        "note": "Ardahan için en yakın aktif havalimanı Kars Harakani (KSY) uçuşları listelenmektedir."
+    },
+    "artvin": {
+        "target": "Rize - Artvin (RZV)",
+        "label": "Artvin",
+        "note": "Artvin uçuşları Rize-Artvin Havalimanı (RZV) üzerinden icra edilmektedir."
+    },
+    "aydin": {
+        "target": "İzmir (ADB)",
+        "label": "Aydın",
+        "note": "Aydın için en yakın aktif havalimanı İzmir Adnan Menderes (ADB) uçuşları listelenmektedir."
+    },
+    "aydın": {
+        "target": "İzmir (ADB)",
+        "label": "Aydın",
+        "note": "Aydın için en yakın aktif havalimanı İzmir Adnan Menderes (ADB) uçuşları listelenmektedir."
+    },
+    "balikesir": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Balıkesir",
+        "note": "Balıkesir tarifeli ticari uçuşları Edremit Koca Seyit Havalimanı (EDO) üzerinden gerçekleştirilmektedir."
+    },
+    "balıkesir": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Balıkesir",
+        "note": "Balıkesir tarifeli ticari uçuşları Edremit Koca Seyit Havalimanı (EDO) üzerinden gerçekleştirilmektedir."
+    },
+    "bartin": {
+        "target": "Zonguldak (ONQ)",
+        "label": "Bartın",
+        "note": "Bartın için en yakın aktif havalimanı Zonguldak Çaycuma (ONQ) uçuşları listelenmektedir."
+    },
+    "bartın": {
+        "target": "Zonguldak (ONQ)",
+        "label": "Bartın",
+        "note": "Bartın için en yakın aktif havalimanı Zonguldak Çaycuma (ONQ) uçuşları listelenmektedir."
+    },
+    "batman": {
+        "target": "Batman (BAL)",
+        "label": "Batman",
+        "note": null
+    },
+    "bayburt": {
+        "target": "Trabzon (TZX)",
+        "label": "Bayburt",
+        "note": "Bayburt için en yakın aktif havalimanı Trabzon (TZX) veya Erzurum (ERZ) uçuşları listelenmektedir."
+    },
+    "bilecik": {
+        "target": "Eskişehir (AOE)",
+        "label": "Bilecik",
+        "note": "Bilecik için Eskişehir (AOE) veya Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "bingol": {
+        "target": "Bingöl (BGG)",
+        "label": "Bingöl",
+        "note": null
+    },
+    "bingöl": {
+        "target": "Bingöl (BGG)",
+        "label": "Bingöl",
+        "note": null
+    },
+    "bitlis": {
+        "target": "Muş (MSR)",
+        "label": "Bitlis",
+        "note": "Bitlis için en yakın havalimanı Muş Sultan Alparslan (MSR) veya Van (VAN) uçuşları listelenmektedir."
+    },
+    "bolu": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Bolu",
+        "note": "Bolu için en yakın aktif havalimanı Sabiha Gökçen (SAW) veya Ankara (ESB) uçuşları listelenmektedir."
+    },
+    "burdur": {
+        "target": "Isparta (ISE)",
+        "label": "Burdur",
+        "note": "Burdur için en yakın havalimanı Isparta Süleyman Demirel (ISE) veya Antalya (AYT) uçuşları listelenmektedir."
+    },
+    "bursa": {
+        "target": "Bursa (YEI)",
+        "label": "Bursa",
+        "note": "Bursa tarifeli uçuşları Yenişehir (YEI) veya Sabiha Gökçen (SAW) üzerinden icra edilmektedir."
+    },
+    "canakkale": {
+        "target": "Çanakkale (CKZ)",
+        "label": "Çanakkale",
+        "note": null
+    },
+    "çanakkale": {
+        "target": "Çanakkale (CKZ)",
+        "label": "Çanakkale",
+        "note": null
+    },
+    "cankiri": {
+        "target": "Ankara (ESB)",
+        "label": "Çankırı",
+        "note": "Çankırı için en yakın havalimanı Ankara Esenboğa (ESB) uçuşları listelenmektedir."
+    },
+    "çankırı": {
+        "target": "Ankara (ESB)",
+        "label": "Çankırı",
+        "note": "Çankırı için en yakın havalimanı Ankara Esenboğa (ESB) uçuşları listelenmektedir."
+    },
+    "corum": {
+        "target": "Amasya Merzifon (MZH)",
+        "label": "Çorum",
+        "note": "Çorum için en yakın aktif havalimanı Amasya Merzifon (MZH) uçuşları listelenmektedir."
+    },
+    "çorum": {
+        "target": "Amasya Merzifon (MZH)",
+        "label": "Çorum",
+        "note": "Çorum için en yakın aktif havalimanı Amasya Merzifon (MZH) uçuşları listelenmektedir."
+    },
+    "denizli": {
+        "target": "Denizli (DNZ)",
+        "label": "Denizli",
+        "note": null
+    },
+    "diyarbakir": {
+        "target": "Diyarbakır (DIY)",
+        "label": "Diyarbakır",
+        "note": null
+    },
+    "diyarbakır": {
+        "target": "Diyarbakır (DIY)",
+        "label": "Diyarbakır",
+        "note": null
+    },
+    "duzce": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Düzce",
+        "note": "Düzce için en yakın havalimanı Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "düzce": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Düzce",
+        "note": "Düzce için en yakın havalimanı Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "edirne": {
+        "target": "Tekirdağ (TEQ)",
+        "label": "Edirne",
+        "note": "Edirne için Tekirdağ Çorlu (TEQ) veya İstanbul Havalimanı (IST) uçuşları listelenmektedir."
+    },
+    "elazig": {
+        "target": "Elazığ (EZS)",
+        "label": "Elazığ",
+        "note": null
+    },
+    "elazığ": {
+        "target": "Elazığ (EZS)",
+        "label": "Elazığ",
+        "note": null
+    },
+    "erzincan": {
+        "target": "Erzincan (ERC)",
+        "label": "Erzincan",
+        "note": null
+    },
+    "erzurum": {
+        "target": "Erzurum (ERZ)",
+        "label": "Erzurum",
+        "note": null
+    },
+    "eskisehir": {
+        "target": "Eskişehir (AOE)",
+        "label": "Eskişehir",
+        "note": null
+    },
+    "eskişehir": {
+        "target": "Eskişehir (AOE)",
+        "label": "Eskişehir",
+        "note": null
+    },
+    "gaziantep": {
+        "target": "Gaziantep (GZT)",
+        "label": "Gaziantep",
+        "note": null
+    },
+    "giresun": {
+        "target": "Ordu - Giresun (OGU)",
+        "label": "Giresun",
+        "note": "Giresun uçuşları Ordu-Giresun Havalimanı (OGU) üzerinden icra edilmektedir."
+    },
+    "gumushane": {
+        "target": "Trabzon (TZX)",
+        "label": "Gümüşhane",
+        "note": "Gümüşhane için en yakın havalimanı Trabzon (TZX) uçuşları listelenmektedir."
+    },
+    "gümüşhane": {
+        "target": "Trabzon (TZX)",
+        "label": "Gümüşhane",
+        "note": "Gümüşhane için en yakın havalimanı Trabzon (TZX) uçuşları listelenmektedir."
+    },
+    "hakkari": {
+        "target": "Hakkari Yüksekova (YKO)",
+        "label": "Hakkari",
+        "note": "Hakkari uçuşları Yüksekova Selahaddin Eyyubi Havalimanı (YKO) üzerinden icra edilmektedir."
+    },
+    "hatay": {
+        "target": "Hatay (HTY)",
+        "label": "Hatay",
+        "note": null
+    },
+    "antakya": {
+        "target": "Hatay (HTY)",
+        "label": "Antakya",
+        "note": null
+    },
+    "iskenderun": {
+        "target": "Hatay (HTY)",
+        "label": "İskenderun",
+        "note": "İskenderun için Hatay Havalimanı (HTY) veya Çukurova (COV) uçuşları listelenmektedir."
+    },
+    "igdir": {
+        "target": "Iğdır (IGD)",
+        "label": "Iğdır",
+        "note": null
+    },
+    "ığdır": {
+        "target": "Iğdır (IGD)",
+        "label": "Iğdır",
+        "note": null
+    },
+    "isparta": {
+        "target": "Isparta (ISE)",
+        "label": "Isparta",
+        "note": null
+    },
+    "ısparta": {
+        "target": "Isparta (ISE)",
+        "label": "Isparta",
+        "note": null
+    },
+    "istanbul": {
+        "target": "İstanbul",
+        "label": "İstanbul",
+        "note": null
+    },
+    "sabiha": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Sabiha Gökçen",
+        "note": null
+    },
+    "saw": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "SAW",
+        "note": null
+    },
+    "ist": {
+        "target": "İstanbul Havalimanı (IST)",
+        "label": "IST",
+        "note": null
+    },
+    "izmir": {
+        "target": "İzmir (ADB)",
+        "label": "İzmir",
+        "note": null
+    },
+    "kahramanmaras": {
+        "target": "Kahramanmaraş (KCM)",
+        "label": "Kahramanmaraş",
+        "note": null
+    },
+    "kahramanmaraş": {
+        "target": "Kahramanmaraş (KCM)",
+        "label": "Kahramanmaraş",
+        "note": null
+    },
+    "maras": {
+        "target": "Kahramanmaraş (KCM)",
+        "label": "Maraş",
+        "note": null
+    },
+    "maraş": {
+        "target": "Kahramanmaraş (KCM)",
+        "label": "Maraş",
+        "note": null
+    },
+    "karabuk": {
+        "target": "Zonguldak (ONQ)",
+        "label": "Karabük",
+        "note": "Karabük / Safranbolu için Zonguldak Çaycuma (ONQ) veya Kastamonu (KFS) uçuşları listelenmektedir."
+    },
+    "karabük": {
+        "target": "Zonguldak (ONQ)",
+        "label": "Karabük",
+        "note": "Karabük / Safranbolu için Zonguldak Çaycuma (ONQ) veya Kastamonu (KFS) uçuşları listelenmektedir."
+    },
+    "safranbolu": {
+        "target": "Kastamonu (KFS)",
+        "label": "Safranbolu",
+        "note": "Safranbolu için en yakın aktif havalimanı Kastamonu (KFS) veya Zonguldak (ONQ) uçuşları listelenmektedir."
+    },
+    "karaman": {
+        "target": "Konya (KYA)",
+        "label": "Karaman",
+        "note": "Karaman için en yakın aktif havalimanı Konya (KYA) uçuşları listelenmektedir."
+    },
+    "kars": {
+        "target": "Kars (KSY)",
+        "label": "Kars",
+        "note": null
+    },
+    "kastamonu": {
+        "target": "Kastamonu (KFS)",
+        "label": "Kastamonu",
+        "note": null
+    },
+    "kayseri": {
+        "target": "Kayseri (ASR)",
+        "label": "Kayseri",
+        "note": null
+    },
+    "kilis": {
+        "target": "Gaziantep (GZT)",
+        "label": "Kilis",
+        "note": "Kilis için en yakın havalimanı Gaziantep (GZT) uçuşları listelenmektedir."
+    },
+    "kirikkale": {
+        "target": "Ankara (ESB)",
+        "label": "Kırıkkale",
+        "note": "Kırıkkale için en yakın havalimanı Ankara Esenboğa (ESB) uçuşları listelenmektedir."
+    },
+    "kırıkkale": {
+        "target": "Ankara (ESB)",
+        "label": "Kırıkkale",
+        "note": "Kırıkkale için en yakın havalimanı Ankara Esenboğa (ESB) uçuşları listelenmektedir."
+    },
+    "kirklareli": {
+        "target": "Tekirdağ (TEQ)",
+        "label": "Kırklareli",
+        "note": "Kırklareli için Tekirdağ Çorlu (TEQ) veya İstanbul (IST) uçuşları listelenmektedir."
+    },
+    "kırklareli": {
+        "target": "Tekirdağ (TEQ)",
+        "label": "Kırklareli",
+        "note": "Kırklareli için Tekirdağ Çorlu (TEQ) veya İstanbul (IST) uçuşları listelenmektedir."
+    },
+    "kirsehir": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Kırşehir",
+        "note": "Kırşehir için Nevşehir (NAV) veya Ankara (ESB) uçuşları listelenmektedir."
+    },
+    "kırşehir": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Kırşehir",
+        "note": "Kırşehir için Nevşehir (NAV) veya Ankara (ESB) uçuşları listelenmektedir."
+    },
+    "kocaeli": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Kocaeli",
+        "note": "Kocaeli / İzmit için Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "izmit": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "İzmit",
+        "note": "İzmit için Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "gebze": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Gebze",
+        "note": "Gebze için en yakın havalimanı Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "konya": {
+        "target": "Konya (KYA)",
+        "label": "Konya",
+        "note": null
+    },
+    "kutahya": {
+        "target": "Zafer (KZR)",
+        "label": "Kütahya",
+        "note": "Kütahya uçuşları Zafer Bölgesel Havalimanı (KZR) üzerinden icra edilmektedir."
+    },
+    "kütahya": {
+        "target": "Zafer (KZR)",
+        "label": "Kütahya",
+        "note": "Kütahya uçuşları Zafer Bölgesel Havalimanı (KZR) üzerinden icra edilmektedir."
+    },
+    "malatya": {
+        "target": "Malatya (MLX)",
+        "label": "Malatya",
+        "note": null
+    },
+    "manisa": {
+        "target": "İzmir (ADB)",
+        "label": "Manisa",
+        "note": "Manisa için en yakın havalimanı İzmir Adnan Menderes (ADB - ~40 km) uçuşları listelenmektedir."
+    },
+    "mardin": {
+        "target": "Mardin (MQM)",
+        "label": "Mardin",
+        "note": null
+    },
+    "mersin": {
+        "target": "Adana - Mersin / Çukurova (COV)",
+        "label": "Mersin",
+        "note": null
+    },
+    "tarsus": {
+        "target": "Adana - Mersin / Çukurova (COV)",
+        "label": "Tarsus",
+        "note": null
+    },
+    "cukurova": {
+        "target": "Adana - Mersin / Çukurova (COV)",
+        "label": "Çukurova",
+        "note": null
+    },
+    "çukurova": {
+        "target": "Adana - Mersin / Çukurova (COV)",
+        "label": "Çukurova",
+        "note": null
+    },
+    "mugla": {
+        "target": "Dalaman (DLM)",
+        "label": "Muğla",
+        "note": "Muğla bölgesi Dalaman (DLM) ve Bodrum (BJV) havalimanları üzerinden hizmet almaktadır."
+    },
+    "muğla": {
+        "target": "Dalaman (DLM)",
+        "label": "Muğla",
+        "note": "Muğla bölgesi Dalaman (DLM) ve Bodrum (BJV) havalimanları üzerinden hizmet almaktadır."
+    },
+    "mus": {
+        "target": "Muş (MSR)",
+        "label": "Muş",
+        "note": null
+    },
+    "muş": {
+        "target": "Muş (MSR)",
+        "label": "Muş",
+        "note": null
+    },
+    "nevsehir": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Nevşehir",
+        "note": null
+    },
+    "nevşehir": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Nevşehir",
+        "note": null
+    },
+    "kapadokya": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Kapadokya",
+        "note": "Kapadokya bölgesine doğrudan Nevşehir Kapadokya (NAV) uçuşları listelenmektedir."
+    },
+    "urgup": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Ürgüp",
+        "note": "Ürgüp için Nevşehir Kapadokya (NAV) uçuşları listelenmektedir."
+    },
+    "ürgüp": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Ürgüp",
+        "note": "Ürgüp için Nevşehir Kapadokya (NAV) uçuşları listelenmektedir."
+    },
+    "goreme": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Göreme",
+        "note": "Göreme için Nevşehir Kapadokya (NAV) uçuşları listelenmektedir."
+    },
+    "göreme": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Göreme",
+        "note": "Göreme için Nevşehir Kapadokya (NAV) uçuşları listelenmektedir."
+    },
+    "nigde": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Niğde",
+        "note": "Niğde için Nevşehir (NAV) veya Kayseri (ASR) uçuşları listelenmektedir."
+    },
+    "niğde": {
+        "target": "Nevşehir Kapadokya (NAV)",
+        "label": "Niğde",
+        "note": "Niğde için Nevşehir (NAV) veya Kayseri (ASR) uçuşları listelenmektedir."
+    },
+    "ordu": {
+        "target": "Ordu - Giresun (OGU)",
+        "label": "Ordu",
+        "note": null
+    },
+    "osmaniye": {
+        "target": "Adana - Mersin / Çukurova (COV)",
+        "label": "Osmaniye",
+        "note": "Osmaniye için en yakın havalimanı Çukurova (COV) uçuşları listelenmektedir."
+    },
+    "rize": {
+        "target": "Rize - Artvin (RZV)",
+        "label": "Rize",
+        "note": null
+    },
+    "sakarya": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Sakarya",
+        "note": "Sakarya / Adapazarı için Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "adapazari": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Adapazarı",
+        "note": "Adapazarı için Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "adapazarı": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Adapazarı",
+        "note": "Adapazarı için Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "sapanca": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Sapanca",
+        "note": "Sapanca için en yakın havalimanı Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "samsun": {
+        "target": "Samsun (SZF)",
+        "label": "Samsun",
+        "note": null
+    },
+    "siirt": {
+        "target": "Siirt (SXZ)",
+        "label": "Siirt",
+        "note": null
+    },
+    "sinop": {
+        "target": "Sinop (NOP)",
+        "label": "Sinop",
+        "note": null
+    },
+    "sivas": {
+        "target": "Sivas (VAS)",
+        "label": "Sivas",
+        "note": null
+    },
+    "sanliurfa": {
+        "target": "Şanlıurfa (GNY)",
+        "label": "Şanlıurfa",
+        "note": null
+    },
+    "şanlıurfa": {
+        "target": "Şanlıurfa (GNY)",
+        "label": "Şanlıurfa",
+        "note": null
+    },
+    "urfa": {
+        "target": "Şanlıurfa (GNY)",
+        "label": "Urfa",
+        "note": null
+    },
+    "sirnak": {
+        "target": "Şırnak (NKT)",
+        "label": "Şırnak",
+        "note": null
+    },
+    "şırnak": {
+        "target": "Şırnak (NKT)",
+        "label": "Şırnak",
+        "note": null
+    },
+    "cizre": {
+        "target": "Şırnak (NKT)",
+        "label": "Cizre",
+        "note": "Cizre için Şırnak Şerafettin Elçi Havalimanı (NKT) uçuşları listelenmektedir."
+    },
+    "tekirdag": {
+        "target": "Tekirdağ (TEQ)",
+        "label": "Tekirdağ",
+        "note": null
+    },
+    "tekirdağ": {
+        "target": "Tekirdağ (TEQ)",
+        "label": "Tekirdağ",
+        "note": null
+    },
+    "corlu": {
+        "target": "Tekirdağ (TEQ)",
+        "label": "Çorlu",
+        "note": null
+    },
+    "çorlu": {
+        "target": "Tekirdağ (TEQ)",
+        "label": "Çorlu",
+        "note": null
+    },
+    "tokat": {
+        "target": "Tokat (TJK)",
+        "label": "Tokat",
+        "note": null
+    },
+    "trabzon": {
+        "target": "Trabzon (TZX)",
+        "label": "Trabzon",
+        "note": null
+    },
+    "tunceli": {
+        "target": "Elazığ (EZS)",
+        "label": "Tunceli",
+        "note": "Tunceli için en yakın aktif havalimanı Elazığ (EZS) veya Erzincan (ERC) uçuşları listelenmektedir."
+    },
+    "usak": {
+        "target": "Zafer (KZR)",
+        "label": "Uşak",
+        "note": "Uşak için Zafer Bölgesel Havalimanı (KZR) veya İzmir (ADB) uçuşları listelenmektedir."
+    },
+    "uşak": {
+        "target": "Zafer (KZR)",
+        "label": "Uşak",
+        "note": "Uşak için Zafer Bölgesel Havalimanı (KZR) veya İzmir (ADB) uçuşları listelenmektedir."
+    },
+    "van": {
+        "target": "Van (VAN)",
+        "label": "Van",
+        "note": null
+    },
+    "yalova": {
+        "target": "İstanbul Sabiha Gökçen (SAW)",
+        "label": "Yalova",
+        "note": "Yalova için en yakın havalimanı Sabiha Gökçen (SAW - ~60 km) uçuşları listelenmektedir."
+    },
+    "yozgat": {
+        "target": "Kayseri (ASR)",
+        "label": "Yozgat",
+        "note": "Yozgat için Kayseri (ASR) veya Sivas (VAS) uçuşları listelenmektedir."
+    },
+    "zonguldak": {
+        "target": "Zonguldak (ONQ)",
+        "label": "Zonguldak",
+        "note": null
+    },
+    "marmaris": {
+        "target": "Dalaman (DLM)",
+        "label": "Marmaris",
+        "note": "Marmaris için en yakın havalimanı olan Dalaman Havalimanı (DLM - ~90 km) uçuşları listelenmektedir."
+    },
+    "datca": {
+        "target": "Dalaman (DLM)",
+        "label": "Datça",
+        "note": "Datça için Dalaman Havalimanı (DLM) uçuşları listelenmektedir."
+    },
+    "datça": {
+        "target": "Dalaman (DLM)",
+        "label": "Datça",
+        "note": "Datça için Dalaman Havalimanı (DLM) uçuşları listelenmektedir."
+    },
+    "fethiye": {
+        "target": "Dalaman (DLM)",
+        "label": "Fethiye",
+        "note": "Fethiye için en yakın havalimanı olan Dalaman Havalimanı (DLM - ~45 km) uçuşları listelenmektedir."
+    },
+    "oludeniz": {
+        "target": "Dalaman (DLM)",
+        "label": "Ölüdeniz",
+        "note": "Ölüdeniz için Dalaman Havalimanı (DLM - ~55 km) uçuşları listelenmektedir."
+    },
+    "ölüdeniz": {
+        "target": "Dalaman (DLM)",
+        "label": "Ölüdeniz",
+        "note": "Ölüdeniz için Dalaman Havalimanı (DLM - ~55 km) uçuşları listelenmektedir."
+    },
+    "gocek": {
+        "target": "Dalaman (DLM)",
+        "label": "Göcek",
+        "note": "Göcek için en yakın havalimanı Dalaman (DLM - ~20 km) uçuşları listelenmektedir."
+    },
+    "göcek": {
+        "target": "Dalaman (DLM)",
+        "label": "Göcek",
+        "note": "Göcek için en yakın havalimanı Dalaman (DLM - ~20 km) uçuşları listelenmektedir."
+    },
+    "ortaca": {
+        "target": "Dalaman (DLM)",
+        "label": "Ortaca",
+        "note": "Ortaca için Dalaman Havalimanı (DLM) uçuşları listelenmektedir."
+    },
+    "koycegiz": {
+        "target": "Dalaman (DLM)",
+        "label": "Köyceğiz",
+        "note": "Köyceğiz için Dalaman Havalimanı (DLM) uçuşları listelenmektedir."
+    },
+    "köyceğiz": {
+        "target": "Dalaman (DLM)",
+        "label": "Köyceğiz",
+        "note": "Köyceğiz için Dalaman Havalimanı (DLM) uçuşları listelenmektedir."
+    },
+    "dalyan": {
+        "target": "Dalaman (DLM)",
+        "label": "Dalyan",
+        "note": "Dalyan için en yakın havalimanı Dalaman (DLM - ~30 km) uçuşları listelenmektedir."
+    },
+    "akyaka": {
+        "target": "Dalaman (DLM)",
+        "label": "Akyaka",
+        "note": "Akyaka için en yakın havalimanı Dalaman (DLM - ~70 km) uçuşları listelenmektedir."
+    },
+    "kas": {
+        "target": "Dalaman (DLM)",
+        "label": "Kaş",
+        "note": "Kaş için en yakın havalimanı olan Dalaman (DLM - ~150 km) veya Antalya (AYT) uçuşları listelenmektedir."
+    },
+    "kaş": {
+        "target": "Dalaman (DLM)",
+        "label": "Kaş",
+        "note": "Kaş için en yakın havalimanı olan Dalaman (DLM - ~150 km) veya Antalya (AYT) uçuşları listelenmektedir."
+    },
+    "kalkan": {
+        "target": "Dalaman (DLM)",
+        "label": "Kalkan",
+        "note": "Kalkan için en yakın havalimanı Dalaman (DLM - ~125 km) uçuşları listelenmektedir."
+    },
+    "bodrum": {
+        "target": "Bodrum (BJV)",
+        "label": "Bodrum",
+        "note": null
+    },
+    "milas": {
+        "target": "Bodrum (BJV)",
+        "label": "Milas",
+        "note": null
+    },
+    "didim": {
+        "target": "Bodrum (BJV)",
+        "label": "Didim",
+        "note": "Didim için en yakın havalimanı Bodrum Milas (BJV - ~85 km) veya İzmir (ADB) uçuşları listelenmektedir."
+    },
+    "yalikavak": {
+        "target": "Bodrum (BJV)",
+        "label": "Yalıkavak",
+        "note": "Yalıkavak için Bodrum Milas Havalimanı (BJV) uçuşları listelenmektedir."
+    },
+    "yalıkavak": {
+        "target": "Bodrum (BJV)",
+        "label": "Yalıkavak",
+        "note": "Yalıkavak için Bodrum Milas Havalimanı (BJV) uçuşları listelenmektedir."
+    },
+    "turgutreis": {
+        "target": "Bodrum (BJV)",
+        "label": "Turgutreis",
+        "note": "Turgutreis için Bodrum Milas Havalimanı (BJV) uçuşları listelenmektedir."
+    },
+    "cesme": {
+        "target": "İzmir (ADB)",
+        "label": "Çeşme",
+        "note": "Çeşme için en yakın havalimanı olan İzmir Adnan Menderes (ADB - ~85 km) uçuşları listelenmektedir."
+    },
+    "çeşme": {
+        "target": "İzmir (ADB)",
+        "label": "Çeşme",
+        "note": "Çeşme için en yakın havalimanı olan İzmir Adnan Menderes (ADB - ~85 km) uçuşları listelenmektedir."
+    },
+    "alacati": {
+        "target": "İzmir (ADB)",
+        "label": "Alaçatı",
+        "note": "Alaçatı için en yakın havalimanı olan İzmir Adnan Menderes (ADB - ~80 km) uçuşları listelenmektedir."
+    },
+    "alaçatı": {
+        "target": "İzmir (ADB)",
+        "label": "Alaçatı",
+        "note": "Alaçatı için en yakın havalimanı olan İzmir Adnan Menderes (ADB - ~80 km) uçuşları listelenmektedir."
+    },
+    "urla": {
+        "target": "İzmir (ADB)",
+        "label": "Urla",
+        "note": "Urla için en yakın havalimanı İzmir Adnan Menderes (ADB - ~45 km) uçuşları listelenmektedir."
+    },
+    "seferihisar": {
+        "target": "İzmir (ADB)",
+        "label": "Seferihisar",
+        "note": "Seferihisar için İzmir Adnan Menderes (ADB - ~55 km) uçuşları listelenmektedir."
+    },
+    "sigacik": {
+        "target": "İzmir (ADB)",
+        "label": "Sığacık",
+        "note": "Sığacık için İzmir Adnan Menderes (ADB - ~60 km) uçuşları listelenmektedir."
+    },
+    "sığacık": {
+        "target": "İzmir (ADB)",
+        "label": "Sığacık",
+        "note": "Sığacık için İzmir Adnan Menderes (ADB - ~60 km) uçuşları listelenmektedir."
+    },
+    "kusadasi": {
+        "target": "İzmir (ADB)",
+        "label": "Kuşadası",
+        "note": "Kuşadası için en yakın havalimanı olan İzmir Adnan Menderes (ADB - ~80 km) uçuşları listelenmektedir."
+    },
+    "kuşadası": {
+        "target": "İzmir (ADB)",
+        "label": "Kuşadası",
+        "note": "Kuşadası için en yakın havalimanı olan İzmir Adnan Menderes (ADB - ~80 km) uçuşları listelenmektedir."
+    },
+    "selcuk": {
+        "target": "İzmir (ADB)",
+        "label": "Selçuk",
+        "note": "Selçuk / Efes için İzmir Adnan Menderes (ADB - ~60 km) uçuşları listelenmektedir."
+    },
+    "selçuk": {
+        "target": "İzmir (ADB)",
+        "label": "Selçuk",
+        "note": "Selçuk / Efes için İzmir Adnan Menderes (ADB - ~60 km) uçuşları listelenmektedir."
+    },
+    "alanya": {
+        "target": "Alanya (GZP)",
+        "label": "Alanya",
+        "note": "Alanya için Gazipaşa (GZP - ~40 km) veya Antalya (AYT - ~125 km) uçuşları listelenmektedir."
+    },
+    "gazipasa": {
+        "target": "Alanya (GZP)",
+        "label": "Gazipaşa",
+        "note": null
+    },
+    "gazipaşa": {
+        "target": "Alanya (GZP)",
+        "label": "Gazipaşa",
+        "note": null
+    },
+    "manavgat": {
+        "target": "Antalya (AYT)",
+        "label": "Manavgat",
+        "note": "Manavgat için en yakın havalimanı olan Antalya (AYT - ~65 km) uçuşları listelenmektedir."
+    },
+    "side": {
+        "target": "Antalya (AYT)",
+        "label": "Side",
+        "note": "Side için en yakın havalimanı olan Antalya (AYT - ~65 km) uçuşları listelenmektedir."
+    },
+    "belek": {
+        "target": "Antalya (AYT)",
+        "label": "Belek",
+        "note": "Belek için en yakın havalimanı olan Antalya (AYT - ~30 km) uçuşları listelenmektedir."
+    },
+    "kemer": {
+        "target": "Antalya (AYT)",
+        "label": "Kemer",
+        "note": "Kemer için en yakın havalimanı olan Antalya (AYT - ~55 km) uçuşları listelenmektedir."
+    },
+    "kumluca": {
+        "target": "Antalya (AYT)",
+        "label": "Kumluca",
+        "note": "Kumluca için Antalya (AYT - ~90 km) uçuşları listelenmektedir."
+    },
+    "finike": {
+        "target": "Antalya (AYT)",
+        "label": "Finike",
+        "note": "Finike için Antalya (AYT - ~115 km) uçuşları listelenmektedir."
+    },
+    "demre": {
+        "target": "Antalya (AYT)",
+        "label": "Demre",
+        "note": "Demre için Antalya (AYT - ~140 km) uçuşları listelenmektedir."
+    },
+    "ayvalik": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Ayvalık",
+        "note": "Ayvalık için en yakın havalimanı olan Edremit Koca Seyit (EDO - ~40 km) uçuşları listelenmektedir."
+    },
+    "ayvalık": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Ayvalık",
+        "note": "Ayvalık için en yakın havalimanı olan Edremit Koca Seyit (EDO - ~40 km) uçuşları listelenmektedir."
+    },
+    "akcay": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Akçay",
+        "note": "Akçay için en yakın havalimanı Edremit Koca Seyit (EDO - ~15 km) uçuşları listelenmektedir."
+    },
+    "akçay": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Akçay",
+        "note": "Akçay için en yakın havalimanı Edremit Koca Seyit (EDO - ~15 km) uçuşları listelenmektedir."
+    },
+    "altinoluk": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Altınoluk",
+        "note": "Altınoluk için en yakın havalimanı Edremit Koca Seyit (EDO - ~30 km) uçuşları listelenmektedir."
+    },
+    "altınoluk": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Altınoluk",
+        "note": "Altınoluk için en yakın havalimanı Edremit Koca Seyit (EDO - ~30 km) uçuşları listelenmektedir."
+    },
+    "edremit": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Edremit",
+        "note": null
+    },
+    "bandirma": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Bandırma",
+        "note": "Bandırma için Edremit (EDO) veya Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "bandırma": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Bandırma",
+        "note": "Bandırma için Edremit (EDO) veya Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+    },
+    "burhaniye": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Burhaniye",
+        "note": "Burhaniye için Edremit Koca Seyit (EDO) uçuşları listelenmektedir."
+    },
+    "assos": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Assos",
+        "note": "Assos / Behramkale için en yakın havalimanı Edremit Koca Seyit (EDO - ~65 km) uçuşları listelenmektedir."
+    },
+    "behramkale": {
+        "target": "Balıkesir - Edremit (EDO)",
+        "label": "Behramkale",
+        "note": "Behramkale için Edremit Koca Seyit (EDO) uçuşları listelenmektedir."
+    },
+    "bozcaada": {
+        "target": "Çanakkale (CKZ)",
+        "label": "Bozcaada",
+        "note": "Bozcaada için en yakın havalimanı Çanakkale (CKZ) veya Edremit (EDO) uçuşları listelenmektedir."
+    },
+    "gokceada": {
+        "target": "Çanakkale (CKZ)",
+        "label": "Gökçeada",
+        "note": "Gökçeada için Çanakkale Havalimanı (CKZ) uçuşları listelenmektedir."
+    },
+    "gökçeada": {
+        "target": "Çanakkale (CKZ)",
+        "label": "Gökçeada",
+        "note": "Gökçeada için Çanakkale Havalimanı (CKZ) uçuşları listelenmektedir."
+    },
+    "pamukkale": {
+        "target": "Denizli (DNZ)",
+        "label": "Pamukkale",
+        "note": "Pamukkale için Denizli Çardak Havalimanı (DNZ - ~65 km) uçuşları listelenmektedir."
+    },
+    "girne": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Girne",
+        "note": "Girne ve KKTC seyahatleri için Ercan Havalimanı (ECN) uçuşları listelenmektedir."
+    },
+    "lefkosa": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Lefkoşa",
+        "note": null
+    },
+    "lefkoşa": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Lefkoşa",
+        "note": null
+    },
+    "ercan": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Ercan",
+        "note": null
+    },
+    "kibris": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Kıbrıs",
+        "note": null
+    },
+    "kıbrıs": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Kıbrıs",
+        "note": null
+    },
+    "magusa": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Gazimağusa",
+        "note": "Gazimağusa için Ercan Havalimanı (ECN) uçuşları listelenmektedir."
+    },
+    "gazimagusa": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Gazimağusa",
+        "note": "Gazimağusa için Ercan Havalimanı (ECN) uçuşları listelenmektedir."
+    },
+    "gazimağusa": {
+        "target": "Lefkoşa / Ercan (ECN)",
+        "label": "Gazimağusa",
+        "note": "Gazimağusa için Ercan Havalimanı (ECN) uçuşları listelenmektedir."
+    },
+    "londra": {
+        "target": "Londra (LON)",
+        "label": "Londra",
+        "note": null
+    },
+    "london": {
+        "target": "Londra (LON)",
+        "label": "Londra",
+        "note": null
+    },
+    "paris": {
+        "target": "Paris (PAR)",
+        "label": "Paris",
+        "note": null
+    },
+    "berlin": {
+        "target": "Berlin (BER)",
+        "label": "Berlin",
+        "note": null
+    },
+    "munih": {
+        "target": "Münih (MUC)",
+        "label": "Münih",
+        "note": null
+    },
+    "münih": {
+        "target": "Münih (MUC)",
+        "label": "Münih",
+        "note": null
+    },
+    "munich": {
+        "target": "Münih (MUC)",
+        "label": "Münih",
+        "note": null
+    },
+    "frankfurt": {
+        "target": "Frankfurt (FRA)",
+        "label": "Frankfurt",
+        "note": null
+    },
+    "amsterdam": {
+        "target": "Amsterdam (AMS)",
+        "label": "Amsterdam",
+        "note": null
+    },
+    "roma": {
+        "target": "Roma (ROM)",
+        "label": "Roma",
+        "note": null
+    },
+    "rome": {
+        "target": "Roma (ROM)",
+        "label": "Roma",
+        "note": null
+    },
+    "milano": {
+        "target": "Milano (MXP)",
+        "label": "Milano",
+        "note": null
+    },
+    "milan": {
+        "target": "Milano (MXP)",
+        "label": "Milano",
+        "note": null
+    },
+    "viyana": {
+        "target": "Viyana (VIE)",
+        "label": "Viyana",
+        "note": null
+    },
+    "vienna": {
+        "target": "Viyana (VIE)",
+        "label": "Viyana",
+        "note": null
+    },
+    "zurih": {
+        "target": "Zürih (ZRH)",
+        "label": "Zürih",
+        "note": null
+    },
+    "zürih": {
+        "target": "Zürih (ZRH)",
+        "label": "Zürih",
+        "note": null
+    },
+    "zurich": {
+        "target": "Zürih (ZRH)",
+        "label": "Zürih",
+        "note": null
+    },
+    "cenevre": {
+        "target": "Cenevre (GVA)",
+        "label": "Cenevre",
+        "note": null
+    },
+    "geneva": {
+        "target": "Cenevre (GVA)",
+        "label": "Cenevre",
+        "note": null
+    },
+    "barselona": {
+        "target": "Barselona (BCN)",
+        "label": "Barselona",
+        "note": null
+    },
+    "barcelona": {
+        "target": "Barselona (BCN)",
+        "label": "Barselona",
+        "note": null
+    },
+    "madrid": {
+        "target": "Madrid (MAD)",
+        "label": "Madrid",
+        "note": null
+    },
+    "atina": {
+        "target": "Atina (ATH)",
+        "label": "Atina",
+        "note": null
+    },
+    "athens": {
+        "target": "Atina (ATH)",
+        "label": "Atina",
+        "note": null
+    },
+    "bruksel": {
+        "target": "Brüksel (BRU)",
+        "label": "Brüksel",
+        "note": null
+    },
+    "brüksel": {
+        "target": "Brüksel (BRU)",
+        "label": "Brüksel",
+        "note": null
+    },
+    "brussels": {
+        "target": "Brüksel (BRU)",
+        "label": "Brüksel",
+        "note": null
+    },
+    "dubai": {
+        "target": "Dubai (DXB)",
+        "label": "Dubai",
+        "note": null
+    },
+    "baku": {
+        "target": "Bakü (GYD)",
+        "label": "Bakü",
+        "note": null
+    },
+    "bakü": {
+        "target": "Bakü (GYD)",
+        "label": "Bakü",
+        "note": null
+    },
+    "tiflis": {
+        "target": "Tiflis (TBS)",
+        "label": "Tiflis",
+        "note": null
+    },
+    "tbilisi": {
+        "target": "Tiflis (TBS)",
+        "label": "Tiflis",
+        "note": null
+    },
+    "belgrad": {
+        "target": "Belgrad (BEG)",
+        "label": "Belgrad",
+        "note": null
+    },
+    "belgrade": {
+        "target": "Belgrad (BEG)",
+        "label": "Belgrad",
+        "note": null
+    },
+    "saraybosna": {
+        "target": "Saraybosna (SJJ)",
+        "label": "Saraybosna",
+        "note": null
+    },
+    "sarajevo": {
+        "target": "Saraybosna (SJJ)",
+        "label": "Saraybosna",
+        "note": null
+    },
+    "uskup": {
+        "target": "Üsküp (SKP)",
+        "label": "Üsküp",
+        "note": null
+    },
+    "üsküp": {
+        "target": "Üsküp (SKP)",
+        "label": "Üsküp",
+        "note": null
+    },
+    "skopje": {
+        "target": "Üsküp (SKP)",
+        "label": "Üsküp",
+        "note": null
+    },
+    "newyork": {
+        "target": "New York (NYC)",
+        "label": "New York",
+        "note": null
+    }
+};
+
+// Tüm Kartlar (Uçak, Otobüs, Tren, Feribot, Araç Kiralama) İçin Akıllı Konum Çözümleyici
+
+// Alan Altı Bilgilendirme ve Uyarı Rozeti Yardımcıları
+function showFieldWarningNotice(inputEl, message) {
+    if (!inputEl) return;
+    const parent = inputEl.closest('.input-box') || inputEl.parentElement;
+    if (!parent) return;
+    let badge = parent.querySelector(".field-warning-badge");
+    if (!badge) {
+        badge = document.createElement("div");
+        badge.className = "field-warning-badge text-[11px] font-bold text-amber-900 bg-amber-50 border border-amber-300 rounded-lg px-2.5 py-1 mt-1.5 shadow-2xs flex items-center gap-1.5";
+        parent.appendChild(badge);
+    }
+    badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i><span>${message}</span>`;
+    badge.classList.remove("hidden");
+}
+window.showFieldWarningNotice = showFieldWarningNotice;
+
+function clearFieldWarningNotice(inputEl) {
+    if (!inputEl) return;
+    const parent = inputEl.closest('.input-box') || inputEl.parentElement;
+    if (!parent) return;
+    const badge = parent.querySelector(".field-warning-badge");
+    if (badge) badge.classList.add("hidden");
+}
+window.clearFieldWarningNotice = clearFieldWarningNotice;
+
+// Hızlı Ulaşım Modu Değiştirme ve Aramayı Tetikleme (Örn: Trenden Otobüse veya Uçağa)
+window.switchToTransportAndSearch = function(targetMode) {
+    if (typeof switchTransportSubTab === 'function') {
+        switchTransportSubTab(targetMode);
+    }
+    const oInp = document.getElementById("transOrigin");
+    const dInp = document.getElementById("transDest");
+    if (oInp) {
+        clearFieldWarningNotice(oInp);
+        resolveLocationInput(oInp, targetMode);
+    }
+    if (dInp) {
+        clearFieldWarningNotice(dInp);
+        resolveLocationInput(dInp, targetMode);
+    }
+    if (typeof executeTransportSearch === 'function') {
+        setTimeout(() => executeTransportSearch(), 120);
+    }
+};
+
+function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
+    if (!inputEl || !inputEl.value) return;
+    const currentMode = mode || window.currentTransportSubTab || 'flight';
+    const raw = inputEl.value.trim();
+    if (!raw) return;
+
+    const clean = normalizeTurkish(raw);
+    if (!clean || clean.length < 2) return;
+
+    if (currentMode === 'flight') {
+        clearFieldWarningNotice(inputEl);
+        // UÇAK MODU: Zaten parantezli IATA kodu varsa dokunma
+        if (/\([A-Z0-9/ -]{3,}\)/.test(raw)) return;
+
+        // 1. DISTRICT_TO_AIRPORT_MAP içinde ara
+        for (const [key, item] of Object.entries(DISTRICT_TO_AIRPORT_MAP)) {
+            const normKey = normalizeTurkish(key);
+            const match = onlyExactMatch
+                ? (clean === normKey)
+                : (clean === normKey || (clean.length >= 3 && normKey.startsWith(clean)));
+
+            if (match) {
+                inputEl.value = item.target;
+                if (item.note) {
+                    window._lastDistrictNotice = item.note;
+                }
+                return;
+            }
+        }
+
+        // 2. verifiedCities (Aktif Havalimanı Listesi) içinde ara
+        if (Array.isArray(verifiedCities) && verifiedCities.length > 0) {
+            for (const c of verifiedCities) {
+                const normName = normalizeTurkish(c.name);
+                const normSlug = normalizeTurkish(c.slug);
+                const match = onlyExactMatch
+                    ? (clean === normName || clean === normSlug)
+                    : (clean === normName || clean === normSlug || (clean.length >= 3 && (normName.startsWith(clean) || normSlug.startsWith(clean))));
+
+                if (match) {
+                    if (c.iata) {
+                        inputEl.value = `${c.name} (${c.iata})`;
+                    } else {
+                        inputEl.value = c.name;
+                    }
+                    return;
+                }
+            }
+        }
+    } else if (currentMode === 'bus') {
+        clearFieldWarningNotice(inputEl);
+        // OTOBÜS MODU: İstanbul Anadolu & Avrupa Şemsiye Bölgeleri, Büyükşehirler & İlçe Otogarları
+        const BUS_DISTRICT_TO_TERMINAL_MAP = {
+            // İstanbul Anadolu Yakası (Bostancı, Kadıköy, Ataşehir vb. hepsi İstanbul Anadolu çatısına eşlenir)
+            'bostanci': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: 'Bostancı kalkışlı yolculuklar için İstanbul Anadolu (Dudullu / Harem / Samandıra) kalkışlı tüm seferler listelenir.' },
+            'bostancı': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: 'Bostancı kalkışlı yolculuklar için İstanbul Anadolu (Dudullu / Harem / Samandıra) kalkışlı tüm seferler listelenir.' },
+            'kadikoy': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'kadıköy': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'atasehir': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'ataşehir': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'dudullu': { target: 'İstanbul - Dudullu Terminali', note: null },
+            'harem': { target: 'İstanbul - Harem Otogarı', note: null },
+            'samandira': { target: 'İstanbul - Samandıra Terminali', note: null },
+            'samandıra': { target: 'İstanbul - Samandıra Terminali', note: null },
+            'umraniye': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'ümraniye': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'uskudar': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'üsküdar': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'maltepe': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'kartal': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'pendik': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'tuzla': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'cekmekoy': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'çekmeköy': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'sancaktepe': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'sultanbeyli': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'beykoz': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'kavacik': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'kavacık': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'goztepe': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'göztepe': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'kozyatagi': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'kozyatağı': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'kucukyali': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'küçükyalı': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'suadiye': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'caddebostan': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
+            'sabiha': { target: 'İstanbul (Sabiha Gökçen Havalimanı Otobüs Noktası)', note: null },
+
+            // İstanbul Avrupa Yakası
+            'esenler': { target: 'İstanbul - Esenler Otogarı', note: null },
+            'alibeykoy': { target: 'İstanbul - Alibeyköy Cep Otogarı', note: null },
+            'alibeyköy': { target: 'İstanbul - Alibeyköy Cep Otogarı', note: null },
+            'besiktas': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'beşiktaş': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'sisli': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'şişli': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'bakirkoy': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'bakırköy': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'beyoglu': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'beyoğlu': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'avcilar': { target: 'İstanbul (Avrupa - Esenler / Avcılar)', note: null },
+            'avcılar': { target: 'İstanbul (Avrupa - Esenler / Avcılar)', note: null },
+            'beylikduzu': { target: 'İstanbul (Avrupa - Esenler / Beylikdüzü)', note: null },
+            'beylikdüzü': { target: 'İstanbul (Avrupa - Esenler / Beylikdüzü)', note: null },
+            'buyukcekmece': { target: 'İstanbul (Avrupa - Esenler / Büyükçekmece)', note: null },
+            'büyükçekmece': { target: 'İstanbul (Avrupa - Esenler / Büyükçekmece)', note: null },
+            'sariyer': { target: 'İstanbul (Avrupa - Alibeyköy / Esenler)', note: null },
+            'sarıyer': { target: 'İstanbul (Avrupa - Alibeyköy / Esenler)', note: null },
+            'taksim': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'fatih': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'basaksehir': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'başakşehir': { target: 'İstanbul (Avrupa - Esenler / Alibeyköy)', note: null },
+            'silivri': { target: 'Silivri Otogarı', note: null },
+            'catalca': { target: 'Çatalca Otogarı', note: null },
+            'çatalca': { target: 'Çatalca Otogarı', note: null },
+
+            // Ankara
+            'asti': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'aşti': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'cankaya': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'çankaya': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'kizilay': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'kızılay': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'kecioren': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'keçiören': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'yenimahalle': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'mamak': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'etimesgut': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'sincan': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'eryaman': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'batikent': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'batıkent': { target: 'Ankara - AŞTİ Otobüs Terminali', note: null },
+            'polatli': { target: 'Polatlı Otogarı', note: null },
+            'polatlı': { target: 'Polatlı Otogarı', note: null },
+
+            // İzmir
+            'izotas': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'izotaş': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'bornova': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'karsiyaka': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'karşıyaka': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'konak': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'alsancak': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'buca': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'bayrakli': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'bayraklı': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'cigli': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'çiğli': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'balcova': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'balçova': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'gaziemir': { target: 'İzmir - Şehirlerarası Otobüs Terminali (İZOTAŞ)', note: null },
+            'cesme': { target: 'Çeşme Otogarı', note: null },
+            'çeşme': { target: 'Çeşme Otogarı', note: null },
+            'alacati': { target: 'Alaçatı Otogarı', note: null },
+            'alaçatı': { target: 'Alaçatı Otogarı', note: null },
+            'dikili': { target: 'Dikili Otogarı', note: null },
+            'bergama': { target: 'Bergama Otogarı', note: null },
+
+            // Bursa
+            'nilufer': { target: 'Bursa Otogarı', note: null },
+            'nilüfer': { target: 'Bursa Otogarı', note: null },
+            'osmangazi': { target: 'Bursa Otogarı', note: null },
+            'yildirim': { target: 'Bursa Otogarı', note: null },
+            'yıldırım': { target: 'Bursa Otogarı', note: null },
+            'inegol': { target: 'İnegöl Otogarı', note: null },
+            'inegöl': { target: 'İnegöl Otogarı', note: null },
+            'gemlik': { target: 'Gemlik Otogarı', note: null },
+            'mudanya': { target: 'Mudanya Otogarı', note: null },
+
+            // Antalya
+            'muratpasa': { target: 'Antalya Şehirlerarası Otobüs Terminali', note: null },
+            'muratpaşa': { target: 'Antalya Şehirlerarası Otobüs Terminali', note: null },
+            'kepez': { target: 'Antalya Şehirlerarası Otobüs Terminali', note: null },
+            'konyaalti': { target: 'Antalya Şehirlerarası Otobüs Terminali', note: null },
+            'konyaaltı': { target: 'Antalya Şehirlerarası Otobüs Terminali', note: null },
+            'lara': { target: 'Antalya Şehirlerarası Otobüs Terminali', note: null },
+            'alanya': { target: 'Alanya Otogarı', note: null },
+            'manavgat': { target: 'Manavgat Otogarı', note: null },
+            'side': { target: 'Side Otogarı', note: null },
+            'kemer': { target: 'Kemer Otogarı', note: null },
+            'kas': { target: 'Kaş Otogarı', note: null },
+            'kaş': { target: 'Kaş Otogarı', note: null },
+            'kalkan': { target: 'Kalkan Otogarı', note: null },
+            'serik': { target: 'Serik (Belek) Otogarı', note: null },
+            'belek': { target: 'Serik (Belek) Otogarı', note: null },
+            'finike': { target: 'Finike Otogarı', note: null },
+            'kumluca': { target: 'Kumluca Otogarı', note: null },
+            'gazipasa': { target: 'Gazipaşa Otogarı', note: null },
+            'gazipaşa': { target: 'Gazipaşa Otogarı', note: null },
+
+            // Muğla
+            'bodrum': { target: 'Bodrum Otogarı', note: null },
+            'marmaris': { target: 'Marmaris Otogarı', note: null },
+            'fethiye': { target: 'Fethiye Otogarı', note: null },
+            'oludeniz': { target: 'Fethiye (Ölüdeniz) Otogarı', note: null },
+            'ölüdeniz': { target: 'Fethiye (Ölüdeniz) Otogarı', note: null },
+            'datca': { target: 'Datça Otogarı', note: null },
+            'datça': { target: 'Datça Otogarı', note: null },
+            'dalaman': { target: 'Dalaman Otogarı', note: null },
+            'ortaca': { target: 'Ortaca (Dalyan) Otogarı', note: null },
+            'dalyan': { target: 'Ortaca (Dalyan) Otogarı', note: null },
+            'koycegiz': { target: 'Köyceğiz Otogarı', note: null },
+            'köyceğiz': { target: 'Köyceğiz Otogarı', note: null },
+            'milas': { target: 'Milas Otogarı', note: null },
+
+            // Aydın
+            'kusadasi': { target: 'Kuşadası Otogarı', note: null },
+            'kuşadası': { target: 'Kuşadası Otogarı', note: null },
+            'didim': { target: 'Didim Otogarı', note: null },
+            'soke': { target: 'Söke Otogarı', note: null },
+            'söke': { target: 'Söke Otogarı', note: null },
+            'nazilli': { target: 'Nazilli Otogarı', note: null },
+
+            // Balıkesir
+            'balikesir': { target: 'Balıkesir Şehirlerarası Otobüs Terminali', note: null },
+            'balıkesir': { target: 'Balıkesir Şehirlerarası Otobüs Terminali', note: null },
+            'ayvalik': { target: 'Ayvalık Otogarı', note: null },
+            'ayvalık': { target: 'Ayvalık Otogarı', note: null },
+            'edremit': { target: 'Edremit Otogarı', note: null },
+            'akcay': { target: 'Akçay Otogarı', note: null },
+            'akçay': { target: 'Akçay Otogarı', note: null },
+            'altinoluk': { target: 'Altınoluk Otogarı', note: null },
+            'bandirma': { target: 'Bandırma Otogarı', note: null },
+            'bandırma': { target: 'Bandırma Otogarı', note: null },
+            'erdek': { target: 'Erdek Otogarı', note: null },
+
+            // Çanakkale
+            'canakkale': { target: 'Çanakkale Otogarı', note: null },
+            'çanakkale': { target: 'Çanakkale Otogarı', note: null },
+            'biga': { target: 'Biga Otogarı', note: null },
+            'gelibolu': { target: 'Gelibolu Otogarı', note: null },
+            'assos': { target: 'Assos (Ayvacık) Otogarı', note: null },
+            'ayvacik': { target: 'Ayvacık Otogarı', note: null },
+
+            // Mersin
+            'mesot': { target: 'Mersin - Şehirlerarası Otobüs Terminali (MEŞOT)', note: null },
+            'meşot': { target: 'Mersin - Şehirlerarası Otobüs Terminali (MEŞOT)', note: null },
+            'tarsus': { target: 'Tarsus Otogarı', note: null },
+            'silifke': { target: 'Silifke Otogarı', note: null },
+            'anamur': { target: 'Anamur Otogarı', note: null }
+        };
+
+        for (const [bk, bv] of Object.entries(BUS_DISTRICT_TO_TERMINAL_MAP)) {
+            if (clean === normalizeTurkish(bk)) {
+                inputEl.value = bv.target;
+                if (bv.note) {
+                    window._lastDistrictNotice = bv.note;
+                }
+                return;
+            }
+        }
+        if (Array.isArray(verifiedCities) && verifiedCities.length > 0) {
+            for (const c of verifiedCities) {
+                const normName = normalizeTurkish(c.name);
+                const normSlug = normalizeTurkish(c.slug);
+                if (clean === normName || clean === normSlug || (clean.length >= 3 && normName.startsWith(clean))) {
+                    inputEl.value = c.name;
+                    return;
+                }
+            }
+        }
+        if (DISTRICT_TO_AIRPORT_MAP[clean] && DISTRICT_TO_AIRPORT_MAP[clean].label) {
+            inputEl.value = DISTRICT_TO_AIRPORT_MAP[clean].label;
+            return;
+        }
+    } else if (currentMode === 'train') {
+        // TREN MODU: YHT & TCDD Gar Çözümleme + Aktif Yolcu Hattı Olmayan İller Uyarısı
+        const TRAIN_INACTIVE_PROVINCES = {
+            "antalya": { name: "Antalya", nearest: "Burdur veya Konya Gar (YHT)" },
+            "mugla": { name: "Muğla (Bodrum / Marmaris / Fethiye)", nearest: "Denizli veya Aydın Gar" },
+            "bodrum": { name: "Bodrum", nearest: "Aydın veya İzmir Basmane Gar" },
+            "marmaris": { name: "Marmaris", nearest: "Denizli Gar (Pamukkale Ekspresi)" },
+            "fethiye": { name: "Fethiye", nearest: "Denizli veya Burdur Gar" },
+            "trabzon": { name: "Trabzon", nearest: "Erzincan veya Sivas Gar (YHT)" },
+            "rize": { name: "Rize", nearest: "Erzurum veya Kars Gar" },
+            "artvin": { name: "Artvin", nearest: "Kars Gar (Doğu Ekspresi)" },
+            "giresun": { name: "Giresun", nearest: "Sivas Gar (YHT)" },
+            "ordu": { name: "Ordu", nearest: "Samsun veya Sivas Gar" },
+            "sinop": { name: "Sinop", nearest: "Samsun veya Çankırı Gar" },
+            "kastamonu": { name: "Kastamonu", nearest: "Çankırı veya Karabük Gar" },
+            "bartin": { name: "Bartın", nearest: "Zonguldak veya Karabük Gar" },
+            "bolu": { name: "Bolu", nearest: "Bilecik veya Eskişehir YHT" },
+            "duzce": { name: "Düzce", nearest: "Arifiye (Sakarya) veya İzmit YHT" },
+            "yalova": { name: "Yalova", nearest: "İzmit YHT veya Pendik YHT" },
+            "bursa": { name: "Bursa", nearest: "Bilecik YHT veya Bozüyük YHT (Bursa YHT hattı yapım aşamasındadır)" },
+            "canakkale": { name: "Çanakkale", nearest: "Bandırma veya Balıkesir Gar" },
+            "aksaray": { name: "Aksaray", nearest: "Konya Gar (YHT) veya Niğde Gar" },
+            "nevsehir": { name: "Nevşehir (Kapadokya)", nearest: "Kayseri veya Niğde Gar" },
+            "kapadokya": { name: "Kapadokya", nearest: "Kayseri veya Niğde Gar" },
+            "gaziantep": { name: "Gaziantep", nearest: "Adana veya Osmaniye Gar" },
+            "sanliurfa": { name: "Şanlıurfa", nearest: "Diyarbakır veya Malatya Gar" },
+            "mardin": { name: "Mardin", nearest: "Diyarbakır veya Batman Gar" },
+            "sirnak": { name: "Şırnak", nearest: "Kurtalan (Siirt) Gar" },
+            "hakkari": { name: "Hakkari", nearest: "Tatvan (Bitlis) Gar" },
+            "adiyaman": { name: "Adıyaman", nearest: "Malatya veya Elazığ Gar" },
+            "kilis": { name: "Kilis", nearest: "Adana / Osmaniye Gar" },
+            "agri": { name: "Ağrı", nearest: "Erzurum veya Kars Gar" },
+            "igdir": { name: "Iğdır", nearest: "Kars Gar" },
+            "ardahan": { name: "Ardahan", nearest: "Kars Gar" },
+            "gumushane": { name: "Gümüşhane", nearest: "Erzincan Gar" },
+            "bayburt": { name: "Bayburt", nearest: "Erzincan veya Erzurum Gar" },
+            "tunceli": { name: "Tunceli", nearest: "Elazığ veya Erzincan Gar" },
+            "bingol": { name: "Bingöl", nearest: "Muş veya Elazığ Gar" }
+        };
+
+        const inactiveInfo = TRAIN_INACTIVE_PROVINCES[clean];
+        if (inactiveInfo) {
+            window._lastTrainInactiveWarning = inactiveInfo;
+            showFieldWarningNotice(inputEl, `⚠️ ${inactiveInfo.name} ilinde aktif demiryolu/YHT hattı bulunmamaktadır. En yakın istasyon: ${inactiveInfo.nearest}.`);
+            return;
+        } else {
+            clearFieldWarningNotice(inputEl);
+        }
+
+        const TRAIN_STATION_MAP = {
+            'istanbul': 'İstanbul - Söğütlüçeşme YHT',
+            'sogutlucesme': 'İstanbul - Söğütlüçeşme YHT',
+            'söğütlüçeşme': 'İstanbul - Söğütlüçeşme YHT',
+            'pendik': 'İstanbul - Pendik YHT',
+            'bostanci': 'İstanbul - Bostancı YHT',
+            'bostancı': 'İstanbul - Bostancı YHT',
+            'halkali': 'İstanbul - Halkalı Garı',
+            'halkalı': 'İstanbul - Halkalı Garı',
+            'bakirkoy': 'İstanbul - Bakırköy YHT',
+            'bakırköy': 'İstanbul - Bakırköy YHT',
+            'ankara': 'Ankara Gar (YHT)',
+            'eryaman': 'Ankara - Eryaman YHT',
+            'polatli': 'Ankara - Polatlı YHT',
+            'eskisehir': 'Eskişehir Gar (YHT)',
+            'eskişehir': 'Eskişehir Gar (YHT)',
+            'konya': 'Konya Gar (YHT)',
+            'selcuklu': 'Konya - Selçuklu YHT',
+            'sivas': 'Sivas Gar (YHT)',
+            'karaman': 'Karaman Gar (YHT)',
+            'kocaeli': 'Kocaeli - İzmit YHT',
+            'izmit': 'Kocaeli - İzmit YHT',
+            'gebze': 'Kocaeli - Gebze Garı',
+            'sakarya': 'Sakarya - Arifiye YHT',
+            'adapazari': 'Sakarya - Arifiye YHT',
+            'arifiye': 'Sakarya - Arifiye YHT',
+            'bilecik': 'Bilecik YHT',
+            'bozuyuk': 'Bilecik - Bozüyük YHT',
+            'kirikkale': 'Kırıkkale YHT',
+            'yozgat': 'Yozgat YHT',
+            'kars': 'Kars Gar (Doğu Ekspresi)',
+            'erzurum': 'Erzurum Gar',
+            'erzincan': 'Erzincan Gar',
+            'izmir': 'İzmir - Basmane Garı',
+            'basmane': 'İzmir - Basmane Garı',
+            'denizli': 'Denizli Gar (Pamukkale Ekspresi)',
+            'aydin': 'Aydın Gar',
+            'manisa': 'Manisa Gar',
+            'usak': 'Uşak Gar',
+            'kutahya': 'Kütahya Gar',
+            'afyon': 'Afyonkarahisar Gar',
+            'kayseri': 'Kayseri Gar',
+            'malatya': 'Malatya Gar',
+            'elazig': 'Elazığ Gar',
+            'diyarbakir': 'Diyarbakır Gar',
+            'batman': 'Batman Gar',
+            'kurtalan': 'Siirt - Kurtalan Garı',
+            'tatvan': 'Bitlis - Tatvan Garı (Van Gölü Ekspresi)',
+            'amasya': 'Amasya Gar',
+            'samsun': 'Samsun Gar',
+            'adana': 'Adana Gar',
+            'mersin': 'Mersin Gar',
+            'zonguldak': 'Zonguldak Gar',
+            'karabuk': 'Karabük Gar'
+        };
+
+        for (const [tk, tv] of Object.entries(TRAIN_STATION_MAP)) {
+            if (clean === normalizeTurkish(tk) || (clean.length >= 4 && normalizeTurkish(tk).startsWith(clean))) {
+                inputEl.value = tv;
+                return;
+            }
+        }
+    } else if (currentMode === 'ferry') {
+        // GEMİ & FERİBOT MODU: İskele ve Liman Çözümleme + Karasal İller Kontrolü
+        const FERRY_INLAND_CITIES = {
+            'ankara': 'Ankara',
+            'eskisehir': 'Eskişehir',
+            'konya': 'Konya',
+            'kayseri': 'Kayseri',
+            'sivas': 'Sivas',
+            'erzurum': 'Erzurum',
+            'diyarbakir': 'Diyarbakır',
+            'gaziantep': 'Gaziantep',
+            'malatya': 'Malatya',
+            'denizli': 'Denizli',
+            'afyon': 'Afyonkarahisar',
+            'isparta': 'Isparta',
+            'burdur': 'Burdur',
+            'bolu': 'Bolu',
+            'karaman': 'Karaman',
+            'kahramanmaras': 'Kahramanmaraş',
+            'sanliurfa': 'Şanlıurfa',
+            'elazig': 'Elazığ',
+            'van': 'Van'
+        };
+        const inlandName = FERRY_INLAND_CITIES[clean];
+        if (inlandName) {
+            showFieldWarningNotice(inputEl, `⚠️ ${inlandName} karasal bir ildir ve feribot limanı bulunmamaktadır. Feribot hatları Marmara, Ege Adaları ve Kıbrıs limanları arasında çalışmaktadır.`);
+            return;
+        } else {
+            clearFieldWarningNotice(inputEl);
+        }
+
+        const FERRY_PORT_MAP = {
+            'yenikapi': 'Yenikapı (İstanbul)',
+            'yenikapı': 'Yenikapı (İstanbul)',
+            'eminonu': 'Eminönü (İstanbul)',
+            'eminönü': 'Eminönü (İstanbul)',
+            'pendik': 'Pendik (İstanbul)',
+            'bursa': 'Bursa - Mudanya (BUDO)',
+            'mudanya': 'Bursa - Mudanya (BUDO)',
+            'guzelyali': 'Bursa - Güzelyalı (İDO)',
+            'güzelyalı': 'Bursa - Güzelyalı (İDO)',
+            'yalova': 'Yalova',
+            'bandirma': 'Bandırma',
+            'bandırma': 'Bandırma',
+            'cesme': 'Çeşme',
+            'çeşme': 'Çeşme',
+            'sakiz': 'Sakız Adası (Chios)',
+            'sakız': 'Sakız Adası (Chios)',
+            'bodrum': 'Bodrum',
+            'kos': 'Kos Adası',
+            'midilli': 'Midilli Adası (Lesvos)',
+            'ayvalik': 'Ayvalık',
+            'ayvalık': 'Ayvalık',
+            'kusadasi': 'Kuşadası',
+            'kuşadası': 'Kuşadası',
+            'samos': 'Samos Adası',
+            'marmaris': 'Marmaris',
+            'rodos': 'Rodos Adası',
+            'kas': 'Kaş',
+            'kaş': 'Kaş',
+            'tasucu': 'Taşucu',
+            'taşucu': 'Taşucu',
+            'girne': 'Girne (Kıbrıs)',
+            'canakkale': 'Çanakkale',
+            'çanakkale': 'Çanakkale',
+            'bozcaada': 'Bozcaada',
+            'gokceada': 'Gökçeada',
+            'gökçeada': 'Gökçeada'
+        };
+        for (const [fk, fv] of Object.entries(FERRY_PORT_MAP)) {
+            if (clean === normalizeTurkish(fk) || (clean.length >= 4 && normalizeTurkish(fk).startsWith(clean))) {
+                inputEl.value = fv;
+                return;
+            }
+        }
+    } else if (currentMode === 'car') {
+        clearFieldWarningNotice(inputEl);
+        // ARAÇ KİRALAMA: Havalimanı & Şehir İçi Ofis Çözümleme
+        const CAR_RENTAL_MAP = {
+            'istanbul': 'İstanbul Havalimanı (IST)',
+            'sabiha': 'İstanbul Sabiha Gökçen (SAW)',
+            'saw': 'İstanbul Sabiha Gökçen (SAW)',
+            'ist': 'İstanbul Havalimanı (IST)',
+            'ankara': 'Ankara Esenboğa (ESB)',
+            'izmir': 'İzmir Adnan Menderes (ADB)',
+            'antalya': 'Antalya Havalimanı (AYT)',
+            'bodrum': 'Bodrum Milas (BJV)',
+            'dalaman': 'Dalaman Havalimanı (DLM)',
+            'trabzon': 'Trabzon Havalimanı (TZX)',
+            'adana': 'Adana / Çukurova (COV)',
+            'kayseri': 'Kayseri Havalimanı (ASR)',
+            'gaziantep': 'Gaziantep Havalimanı (GZT)'
+        };
+        for (const [ck, cv] of Object.entries(CAR_RENTAL_MAP)) {
+            if (clean === normalizeTurkish(ck) || (clean.length >= 3 && normalizeTurkish(ck).startsWith(clean))) {
+                inputEl.value = cv;
+                return;
+            }
+        }
+    }
+}
+window.resolveLocationInput = resolveLocationInput;
+window.resolveDistrictOrAirportInput = resolveLocationInput;
+window.resolveDistrictOrAirportInput = resolveLocationInput;
+
 function populateDatalists(transportMode, scope) {
     const originList = document.getElementById("originCitiesList");
     const destList = document.getElementById("destCitiesList");
@@ -680,81 +2559,82 @@ function populateDatalists(transportMode, scope) {
     if (transportMode === "car") prefix = "🚗";
 
     if (transportMode === 'flight') {
-        // Kalkış Havalimanları: İstanbul için çoklu net seçenekler + Türkiye Havalimanları
+        // Kalkış & Varış Havalimanları: Hem Türkiye hem Yurtdışı (Zürih/Zurich vb.) seçenekler her iki kutuda da açık
         const specialOrigins = `
             <option value="İstanbul">✈️ İstanbul - Tüm Havalimanları (IST, SAW)</option>
             <option value="İstanbul Sabiha Gökçen (SAW)">✈️ Sabiha Gökçen Havalimanı (SAW) - Anadolu Yakası</option>
             <option value="İstanbul Havalimanı (IST)">✈️ İstanbul Havalimanı (IST) - Avrupa Yakası</option>
             <option value="Ankara (ESB)">✈️ Ankara Esenboğa Havalimanı (ESB)</option>
-            <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes Havalimanı (ADB)</option>
-            <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT)</option>
-            <option value="Adana / Çukurova (COV)">✈️ Adana / Çukurova Uluslararası (COV)</option>
+            <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes (ADB) • Çeşme / Alaçatı / Urla</option>
+            <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT) • Kemer / Belek / Side / Kaş</option>
+            <option value="Adana - Mersin / Çukurova (COV)">✈️ Adana - Mersin / Çukurova Uluslararası (COV)</option>
             <option value="Trabzon (TZX)">✈️ Trabzon Havalimanı (TZX)</option>
-            <option value="Bodrum (BJV)">✈️ Bodrum Milas Havalimanı (BJV)</option>
-            <option value="Dalaman (DLM)">✈️ Dalaman Havalimanı (DLM)</option>
+            <option value="Bodrum (BJV)">✈️ Muğla - Bodrum Milas Havalimanı (BJV) • Didim</option>
+            <option value="Dalaman (DLM)">✈️ Muğla - Dalaman Havalimanı (DLM) • Marmaris / Fethiye / Göcek</option>
+            <option value="Alanya (GZP)">✈️ Alanya - Gazipaşa Havalimanı (GZP)</option>
+            <option value="Balıkesir - Edremit (EDO)">✈️ Balıkesir - Edremit Koca Seyit (EDO) • Ayvalık / Akçay</option>
         `;
-        const trAirports = verifiedCities.filter(c => (!c.country || c.country === 'Türkiye' || !c.is_international) && !['istanbul', 'ankara', 'izmir', 'antalya', 'adana', 'trabzon', 'bodrum', 'dalaman'].includes(c.slug));
-        const originHtml = specialOrigins + trAirports.map(c => {
-            const iataStr = c.iata ? ` (${c.iata})` : '';
-            return `<option value="${c.name}">${prefix} ${c.name}${iataStr} Havalimanı</option>`;
+        const restOrigins = verifiedCities.filter(c => !['istanbul', 'ankara', 'izmir', 'antalya', 'adana', 'mersin', 'trabzon', 'bodrum', 'dalaman', 'alanya', 'balikesir'].includes(c.slug)).map(c => {
+            const iataStr = (c.iata && !c.name.includes(`(${c.iata}`)) ? ` (${c.iata})` : '';
+            const enAlias = c.en_name ? ` / ${c.en_name}` : '';
+            const countryStr = c.country ? ` • ${c.country}` : ' Havalimanı';
+            const icon = (c.is_international || (c.country && c.country !== 'Türkiye')) ? '🌍' : prefix;
+            return `<option value="${c.name}">${icon} ${c.name}${iataStr}${enAlias}${countryStr}</option>`;
         }).join("");
-        if (originList) originList.innerHTML = originHtml;
+        if (originList) originList.innerHTML = specialOrigins + restOrigins;
 
-        // Varış Havalimanları: Kapsama göre
+        // Varış Havalimanları: Kapsama göre (Türkçe + İngilizce/ASCII arama destekli)
         const specialDests = `
-            <option value="Adana / Çukurova (COV)">✈️ Adana / Çukurova Uluslararası Havalimanı (COV)</option>
-            <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT)</option>
-            <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes Havalimanı (ADB)</option>
+            <option value="Dalaman (DLM)">✈️ Muğla - Dalaman Havalimanı (DLM) • Marmaris / Fethiye / Göcek</option>
+            <option value="Bodrum (BJV)">✈️ Muğla - Bodrum Milas Havalimanı (BJV) • Didim</option>
+            <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT) • Kemer / Belek / Side / Kaş</option>
+            <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes (ADB) • Çeşme / Alaçatı / Urla</option>
+            <option value="Adana - Mersin / Çukurova (COV)">✈️ Adana - Mersin / Çukurova Uluslararası Havalimanı (COV)</option>
+            <option value="Alanya (GZP)">✈️ Alanya - Gazipaşa Havalimanı (GZP)</option>
+            <option value="Balıkesir - Edremit (EDO)">✈️ Balıkesir - Edremit Koca Seyit (EDO) • Ayvalık / Akçay</option>
+            <option value="Trabzon (TZX)">✈️ Trabzon Havalimanı (TZX)</option>
             <option value="İstanbul">✈️ İstanbul - Tüm Havalimanları (IST, SAW)</option>
             <option value="İstanbul Sabiha Gökçen (SAW)">✈️ Sabiha Gökçen Havalimanı (SAW) - Anadolu Yakası</option>
             <option value="İstanbul Havalimanı (IST)">✈️ İstanbul Havalimanı (IST) - Avrupa Yakası</option>
+            <option value="Ankara (ESB)">✈️ Ankara Esenboğa Havalimanı (ESB)</option>
         `;
-        const restDests = verifiedCities.filter(c => !['istanbul', 'antalya', 'izmir', 'adana'].includes(c.slug)).map(c => {
-            const iataStr = c.iata ? ` (${c.iata})` : '';
+        const restDests = verifiedCities.filter(c => !['istanbul', 'ankara', 'antalya', 'izmir', 'adana', 'mersin', 'bodrum', 'dalaman', 'alanya', 'balikesir', 'trabzon'].includes(c.slug)).map(c => {
+            const iataStr = (c.iata && !c.name.includes(`(${c.iata}`)) ? ` (${c.iata})` : '';
+            const enAlias = c.en_name ? ` / ${c.en_name}` : '';
             const countryStr = c.country ? ` • ${c.country}` : '';
             const icon = (c.is_international || (c.country && c.country !== 'Türkiye')) ? '🌍' : '🇹🇷';
-            return `<option value="${c.name}">${icon} ${c.name}${iataStr}${countryStr}</option>`;
+            return `<option value="${c.name}">${icon} ${c.name}${iataStr}${enAlias}${countryStr}</option>`;
         }).join("");
         if (destList) destList.innerHTML = specialDests + restDests;
     } else if (transportMode === 'train') {
-        const trainScope = scope || currentTrainScope;
-        let trainStationsHtml = '';
-        if (trainScope === 'intl') {
-            trainStationsHtml = `
-                <option value="İstanbul">🚆 İstanbul - Halkalı Garı (Balkan Ekspresi)</option>
-                <option value="Sofya">🌍 Sofya - Merkez Gar (Bulgaristan)</option>
-                <option value="Bükreş">🌍 Bükreş - Gara de Nord (Romanya)</option>
-                <option value="Paris">🌍 Paris - Gare du Nord / de Lyon (Eurostar/TGV)</option>
-                <option value="Londra">🌍 Londra - St Pancras Int. (Eurostar)</option>
-                <option value="Roma">🌍 Roma - Termini (Frecciarossa)</option>
-                <option value="Milano">🌍 Milano - Centrale (Frecciarossa)</option>
-                <option value="Amsterdam">🌍 Amsterdam - Centraal (Eurostar)</option>
-                <option value="Berlin">🌍 Berlin - Hbf (ICE)</option>
-                <option value="Münih">🌍 Münih - Hbf (ICE)</option>
-                <option value="Madrid">🌍 Madrid - Puerta de Atocha (AVE)</option>
-                <option value="Barselona">🌍 Barselona - Sants (AVE)</option>
-                <option value="Zürih">🌍 Zürih - HB (Railjet)</option>
-                <option value="Viyana">🌍 Viyana - Hbf (Railjet)</option>
-                <option value="Prag">🌍 Prag - Hlavni Nadrazi (EuroCity)</option>
-            `;
-        } else {
-            trainStationsHtml = `
-                <option value="İstanbul">🚆 İstanbul - Söğütlüçeşme / Bostancı / Halkalı YHT</option>
-                <option value="Ankara">🚆 Ankara Gar (YHT / Anahat)</option>
-                <option value="Eskişehir">🚆 Eskişehir Gar (YHT)</option>
-                <option value="Konya">🚆 Konya Gar (YHT)</option>
-                <option value="Sivas">🚆 Sivas Gar (YHT)</option>
-                <option value="Karaman">🚆 Karaman Gar (YHT)</option>
-                <option value="Kars">🚆 Kars Gar (Doğu Ekspresi)</option>
-                <option value="İzmir">🚆 İzmir Basmane (İzmir Mavi Treni)</option>
-                <option value="Denizli">🚆 Denizli Gar (Pamukkale Ekspresi)</option>
-                <option value="Adana">🚆 Adana Gar</option>
-                <option value="Mersin">🚆 Mersin Gar</option>
-                <option value="Kayseri">🚆 Kayseri Gar</option>
-                <option value="Tatvan">🚆 Tatvan Gar (Van Gölü Ekspresi)</option>
-                <option value="Kurtalan">🚆 Kurtalan Gar (Güney Kurtalan Ekspresi)</option>
-            `;
-        }
+        const trainStationsHtml = `
+            <option value="İstanbul - Söğütlüçeşme YHT">🚆 İstanbul - Söğütlüçeşme / Bostancı / Halkalı YHT</option>
+            <option value="Ankara Gar (YHT)">🚆 Ankara Gar (YHT / Anahat)</option>
+            <option value="Eskişehir Gar (YHT)">🚆 Eskişehir Gar (YHT)</option>
+            <option value="Konya Gar (YHT)">🚆 Konya Gar (YHT)</option>
+            <option value="Sivas Gar (YHT)">🚆 Sivas Gar (YHT)</option>
+            <option value="Karaman Gar (YHT)">🚆 Karaman Gar (YHT)</option>
+            <option value="Kars Gar (Doğu Ekspresi)">🚆 Kars Gar (Doğu Ekspresi)</option>
+            <option value="İzmir - Basmane Garı">🚆 İzmir Basmane (İzmir Mavi Treni)</option>
+            <option value="Denizli">🚆 Denizli Gar (Pamukkale Ekspresi)</option>
+            <option value="Adana">🚆 Adana Gar</option>
+            <option value="Mersin">🚆 Mersin Gar</option>
+            <option value="Kayseri">🚆 Kayseri Gar</option>
+            <option value="Tatvan">🚆 Tatvan Gar (Van Gölü Ekspresi)</option>
+            <option value="Kurtalan">🚆 Kurtalan Gar (Güney Kurtalan Ekspresi)</option>
+            <option value="Sofya">🌍 Sofya - Merkez Gar (Bulgaristan)</option>
+            <option value="Bükreş">🌍 Bükreş - Gara de Nord (Romanya)</option>
+            <option value="Paris">🌍 Paris - Gare du Nord / de Lyon (Eurostar/TGV)</option>
+            <option value="Londra">🌍 Londra - St Pancras Int. (Eurostar)</option>
+            <option value="Roma">🌍 Roma - Termini (Frecciarossa)</option>
+            <option value="Milano">🌍 Milano - Centrale (Frecciarossa)</option>
+            <option value="Amsterdam">🌍 Amsterdam - Centraal (Eurostar)</option>
+            <option value="Berlin">🌍 Berlin - Hbf (ICE)</option>
+            <option value="Münih">🌍 Münih - Hbf (ICE)</option>
+            <option value="Viyana">🌍 Viyana - Hbf (Railjet)</option>
+            <option value="Zürih">🌍 Zürih - HB (Railjet)</option>
+            <option value="Prag">🌍 Prag - Hlavni Nadrazi (EuroCity)</option>
+        `;
         if (originList) originList.innerHTML = trainStationsHtml;
         if (destList) destList.innerHTML = trainStationsHtml;
     } else if (transportMode === 'bus') {
@@ -831,13 +2711,13 @@ function populateDatalists(transportMode, scope) {
             <option value="Galataport">🛳️ İstanbul - Galataport Kruvaziyer Limanı</option>
             <option value="Bursa">⛴️ Bursa - Mudanya (BUDO) / Güzelyalı (İDO)</option>
             <option value="Yalova">⛴️ Yalova İskelesi (İDO Hızlı Arabalı Feribot)</option>
-            <option value="Bandırma">⛴️ Bandırma Limanı (İDO Arabalı Hızlı Feribot)</option>
+            <option value="Bandırma">⛴️ Bandırma Limanı (İDO Hızlı Deniz Otobüsü)</option>
             <option value="Avşa Adası">🏝️ Avşa Adası (Marmara)</option>
-            <option value="Marmara Adası">🏝️ Marmara Adası</option>
             <option value="Çeşme">🇬🇷 İzmir - Çeşme Uluslararası Limanı</option>
             <option value="Sakız Adası">🇬🇷 Sakız Adası (Chios - Kapıda Vize)</option>
             <option value="Bodrum">🇬🇷 Muğla - Bodrum Yolcu Limanı</option>
             <option value="Kos Adası">🇬🇷 Kos Adası (İstanköy - Kapıda Vize)</option>
+            <option value="Simi Adası">🇬🇷 Simi Adası (Symi - Kapıda Vize)</option>
             <option value="Ayvalık">🇬🇷 Balıkesir - Ayvalık Limanı</option>
             <option value="Midilli Adası">🇬🇷 Midilli Adası (Lesvos - Kapıda Vize)</option>
             <option value="Kuşadası">🇬🇷 Aydın - Kuşadası Ege Port Limanı</option>
@@ -849,8 +2729,12 @@ function populateDatalists(transportMode, scope) {
             <option value="Meis Adası">🇬🇷 Meis Adası (Kastellorizo - Kapıda Vize)</option>
             <option value="Çanakkale">⛴️ Çanakkale İskelesi (Gestaş)</option>
             <option value="Eceabat">⛴️ Eceabat / Gelibolu İskelesi (Gestaş)</option>
+            <option value="Geyikli">⛴️ Geyikli İskelesi (Çanakkale - Bozcaada)</option>
             <option value="Bozcaada">🏝️ Bozcaada Limanı (Gestaş)</option>
+            <option value="Kabatepe">⛴️ Kabatepe İskelesi (Çanakkale - Gökçeada)</option>
             <option value="Gökçeada">🏝️ Gökçeada (Kuzu Limanı - Gestaş)</option>
+            <option value="Taşucu">⛴️ Mersin - Taşucu Limanı (KKTC Feribot)</option>
+            <option value="Girne">🪪 KKTC - Girne Limanı (Kıbrıs)</option>
             <option value="Cruise">🛳️ Ege & Yunan Adaları & İtalya Kruvaziyer Turu</option>
         `;
         if (originList) originList.innerHTML = ferryPortsHtml;
@@ -1051,6 +2935,7 @@ async function switchTransportSubTab(subTab) {
 
 function ensureObiletPriceSort(url) {
     if (!url || typeof url !== 'string' || !url.includes('obilet.com')) return url;
+    if (url.includes('/ucuslar/') || url.includes('/feribot-seferleri/')) return url;
     if (url.includes('sorting=price') || url.includes('sort=price')) return url;
     const sep = url.includes('?') ? '&' : '?';
     return url + sep + 'sorting=price&sort=price';
@@ -1060,8 +2945,13 @@ function ensureObiletPriceSort(url) {
 async function executeTransportSearch(e) {
     if (e) e.preventDefault();
 
-    let origin = document.getElementById("transOrigin").value.trim();
-    let destination = document.getElementById("transDest").value.trim();
+    const oInp = document.getElementById("transOrigin");
+    const dInp = document.getElementById("transDest");
+    if (oInp) resolveLocationInput(oInp, currentTransportSubTab);
+    if (dInp) resolveLocationInput(dInp, currentTransportSubTab);
+
+    let origin = oInp ? oInp.value.trim() : "";
+    let destination = dInp ? dInp.value.trim() : "";
     const depDate = document.getElementById("transDepDate").value;
     const retDate = document.getElementById("transRetDate").value;
     const isRound = (currentFlightTripType === 'round');
@@ -1415,12 +3305,25 @@ function renderTransportResults(data, searchReq) {
     const adultWord = isEn ? ((searchReq.adults || 1) > 1 ? "Adults" : "Adult") : "Yetişkin";
     const childWord = isEn ? (searchReq.children > 1 ? "Children" : "Child") : "Çocuk";
     const infantWord = isEn ? (searchReq.infants > 1 ? "Infants" : "Infant") : "Bebek";
-    const paxSummaryText = `${searchReq.adults || 1} ${adultWord}${searchReq.children ? ', ' + searchReq.children + ' ' + childWord : ''}${searchReq.infants ? ', ' + searchReq.infants + ' ' + infantWord : ''}${modeType === 'flight' ? ' • ' + (searchReq.cabin_class === 'business' ? 'Business' : (isEn ? 'Economy' : 'Ekonomi')) : ''}`;
+    let modeExtraSuffix = '';
+    if (modeType === 'flight') {
+        modeExtraSuffix = ' • ' + (searchReq.cabin_class === 'business' ? 'Business' : (isEn ? 'Economy' : 'Ekonomi'));
+    } else if (modeType === 'ferry') {
+        const fVeh = searchReq.ferry_vehicle_type || currentFerryVehicleType || 'passenger';
+        if (fVeh === 'car') {
+            modeExtraSuffix = ' • 🚗 ' + (isEn ? 'Car / SUV' : 'Otomobil');
+        } else if (fVeh === 'motorcycle') {
+            modeExtraSuffix = ' • 🏍️ ' + (isEn ? 'Motorcycle' : 'Motosiklet');
+        } else {
+            modeExtraSuffix = ' • 🚶 ' + (isEn ? 'Foot Passenger' : 'Yaya');
+        }
+    }
+    const paxSummaryText = `${searchReq.adults || 1} ${adultWord}${searchReq.children ? ', ' + searchReq.children + ' ' + childWord : ''}${searchReq.infants ? ', ' + searchReq.infants + ' ' + infantWord : ''}${modeExtraSuffix}`;
     const tripTypeText = searchReq.trip_type === 'round_trip' 
         ? `${isEn ? 'Round-Trip' : 'Gidiş - Dönüş'} (${searchReq.departure_date} ⇄ ${searchReq.return_date})` 
         : `${isEn ? 'One-Way' : 'Tek Yön'} (${searchReq.departure_date})`;
     
-    const isIntlRoute = Boolean(data.travel_context && data.travel_context.is_international) || (modeType === 'flight' && currentFlightScope === 'international');
+    const isIntlRoute = Boolean(data.travel_context && data.travel_context.is_international);
     let scopeLabel = '';
     let headerModeIcon = 'fa-plane-departure';
     if (modeType === 'bus') {
@@ -1461,6 +3364,39 @@ function renderTransportResults(data, searchReq) {
             </div>
         </div>
     `;
+
+    // Adana / Mersin Ortak Bölgesel Havalimanı (Çukurova - COV) Bilgilendirme Bandı
+    const rawSearchCombo = `${searchReq.origin || ''} ${searchReq.destination || ''}`.toLowerCase();
+    const hasCovFlight = modeType === 'flight' && (
+        rawSearchCombo.includes('cov') ||
+        rawSearchCombo.includes('çukurova') ||
+        rawSearchCombo.includes('cukurova') ||
+        rawSearchCombo.includes('adana') ||
+        rawSearchCombo.includes('mersin') ||
+        tickets.some(t => t.from_code === 'COV' || t.to_code === 'COV')
+    );
+    if (hasCovFlight) {
+        html += `
+            <div class="bg-sky-50 border border-sky-200 text-sky-900 rounded-xl px-3.5 py-2 mb-3 text-xs font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-sky-600 shrink-0"></i>
+                <span>
+                    ${isEn
+                        ? '<strong>Regional Airport Info:</strong> All Adana and Mersin flights operate via the shared <strong>Çukurova International Airport (COV)</strong> (listed as <em>"Mersin (COV)"</em> on global portals like Trip.com).'
+                        : '<strong>Bölgesel Havalimanı Bilgilendirmesi:</strong> Adana ve Mersin uçuşları ortak kullanılan <strong>Çukurova Uluslararası Havalimanı (COV)</strong> üzerinden icra edilmektedir (Trip.com gibi global sistemlerde <em>"Mersin (COV)"</em> olarak listelenir).'}
+                </span>
+            </div>
+        `;
+    }
+
+    // Popüler İlçe / Bölge ➔ En Yakın Havalimanı Yönlendirme Bilgilendirmesi (Marmaris ➔ Dalaman vb.)
+    if (modeType === 'flight' && window._lastDistrictNotice) {
+        html += `
+            <div class="bg-amber-50 border border-amber-200 text-amber-950 rounded-xl px-3.5 py-2 mb-3 text-xs font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-location-dot text-amber-600 shrink-0"></i>
+                <span>${escapeHtml(window._lastDistrictNotice)}</span>
+            </div>
+        `;
+    }
 
     // ==================== KOMPAKT 7 GÜNLÜK FİYAT ŞERİDİ + "HAKİKİ İPUCU" ====================
     const flexInsights = data.flexible_insights;
@@ -1635,6 +3571,8 @@ function renderTransportResults(data, searchReq) {
         `;
     }
 
+
+
     // A. SEFER VEYA KİRALIK ARAÇ KARTLARI
     if (searchReq.transport_type === 'car' && data.car_rental && Array.isArray(data.car_rental.vehicles) && data.car_rental.vehicles.length > 0) {
         const cr = data.car_rental;
@@ -1754,6 +3692,7 @@ function renderTransportResults(data, searchReq) {
                                 ${(v.providers || []).map(p => `
                                     <a href="${p.url}" target="_blank" rel="noopener noreferrer"
                                        class="px-2.5 py-1 rounded-xl text-xs font-bold border ${p.is_cheapest ? 'bg-amber-50 border-amber-400 text-amber-950 font-black shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'} transition inline-flex items-center gap-1.5">
+                                        ${getBrandLogoHtml(p.name, '🚗', 'w-4 h-4')}
                                         <span>${escapeHtml(p.name)}</span>
                                         <span class="font-black">${Number(p.daily_price).toLocaleString('tr-TR')} ${cSym}/gün</span>
                                         ${p.is_cheapest ? '<span class="text-[9px] px-1 py-0.2 rounded bg-amber-200 text-amber-900 font-black">🏆 EN UCUZ</span>' : ''}
@@ -1804,22 +3743,106 @@ function renderTransportResults(data, searchReq) {
         const secondaryNotice = routeNotices.length > 1
             ? routeNotices.slice(1).join(" • ")
             : (modeType === 'ferry'
-                ? (isEn ? "Please select a coastal port or use Smart Route for combined travel." : "Lütfen feribot iskelesi olan bir kıyı noktası seçiniz veya Akıllı Rota Sihirbazı'nı kullanınız.")
+                ? (isEn ? "Please select a coastal port or use Smart Route for combined travel." : "Lütfen feribot iskelesi olan bir kıyı noktası seçiniz veya aşağıdaki resmi deniz acentelerinden güncel seferleri sorgulayınız.")
                 : (modeType === 'train'
                     ? (isEn ? "Please check bus or flight options for this route." : "Bu güzergah için otobüs veya uçak alternatiflerini inceleyebilirsiniz.")
                     : (isEn ? "Please try a different date or transport mode." : "Lütfen farklı bir tarih veya alternatif ulaşım modunu seçiniz.")));
         const emptyIcon = modeType === 'ferry' ? 'fa-anchor-circle-xmark' : (modeType === 'train' ? 'fa-train' : (modeType === 'bus' ? 'fa-bus' : 'fa-plane-slash'));
+        const deepLinksList = Array.isArray(data.deep_links) ? data.deep_links : [];
         html += `
-            <div class="bg-white p-10 rounded-3xl border-2 border-slate-200 text-center shadow-xs mb-6">
+            <div class="bg-white p-8 sm:p-10 rounded-3xl border-2 border-slate-200 text-center shadow-xs mb-6">
                 <i class="fa-solid ${emptyIcon} text-3xl text-amber-500 mb-3"></i>
                 <div class="font-black text-slate-800 text-base">${escapeHtml(primaryNotice)}</div>
-                <div class="text-xs text-slate-500 mt-1.5 font-medium">${escapeHtml(secondaryNotice)}</div>
+                <div class="text-xs text-slate-500 mt-1.5 font-medium max-w-2xl mx-auto">${escapeHtml(secondaryNotice)}</div>
+                ${deepLinksList.length > 0 ? `
+                    <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-center gap-2">
+                        ${deepLinksList.map((dl, idx) => `
+                            <a href="${dl.url}" target="_blank" rel="noopener noreferrer"
+                               class="px-3.5 py-2 rounded-xl text-xs font-black transition inline-flex items-center gap-1.5 ${idx === 0 ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-sm' : 'bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-800 border border-slate-200'}">
+                                <span>${escapeHtml(dl.name)}</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            </a>
+                        `).join('')}
+                    </div>
+                ` : ''}
             </div>
         `;
-    } else {
-        html += `<div id="ticketCardsContainer" class="space-y-2.5 mb-5">`;
-        html += generateTicketCardsHtml(tickets, searchReq);
-        html += `</div>`;
+    }
+
+ else {
+        const ferryOperationalNotices = (modeType === 'ferry' && Array.isArray(data.notices))
+            ? data.notices.filter(n => !n.includes("Güven ve Şeffaflık İlkesi"))
+            : [];
+        if (ferryOperationalNotices.length > 0) {
+            html += `
+                <div class="bg-sky-950 text-white rounded-2xl px-4 py-3 mb-3 border border-sky-800 shadow-xs space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved"></i> Deniz Ulaşımı Operasyonel Rehberi & Kalkanlar
+                        </span>
+                        <span class="text-[10px] font-bold text-sky-300">Sıfır Varsayım • Canlı Kanal Karşılaştırmalı</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-sky-100 font-medium leading-relaxed">
+                        ${ferryOperationalNotices.map(fn => `<div class="flex items-start gap-1.5"><span class="text-amber-400 shrink-0">•</span><span>${escapeHtml(fn)}</span></div>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+                if (!tickets || tickets.length === 0) {
+            let emptyIcon = "fa-route";
+            let emptyTitle = "Bu Güzergahta Doğrudan Sefer Bulunamadı";
+            let emptyDesc = `${escapeHtml(searchReq.origin)} ile ${escapeHtml(searchReq.destination)} arasında seçtiğiniz tarihte tarifeli sefer bulunamadı.`;
+            let showAltButtons = true;
+
+            if (modeType === 'train') {
+                emptyIcon = "fa-train-subway";
+                emptyTitle = "Seçilen Güzergahta Aktif Yolcu Treni / YHT Hattı Bulunmamaktadır";
+                emptyDesc = `${escapeHtml(searchReq.origin)} ile ${escapeHtml(searchReq.destination)} arasında doğrudan tarifeli TCDD tren seferi bulunmamaktadır. Türkiye genelinde demiryolu yolcu hattı belirli koridorlarda (YHT ve anahat hatları) hizmet vermektedir. Kesintisiz seyahat için Otobüs veya Uçak alternatiflerini tek tıkla inceleyebilirsiniz.`;
+            } else if (modeType === 'ferry') {
+                emptyIcon = "fa-ship";
+                emptyTitle = "Bu Güzergahta Tarifeli Feribot Seferi Bulunmamaktadır";
+                emptyDesc = `${escapeHtml(searchReq.origin)} ile ${escapeHtml(searchReq.destination)} arasında doğrudan deniz yolu / feribot hattı yoktur. Deniz hatlarımız Marmara Denizi (İDO/BUDO), Ege Adaları (Kapıda Vize) ve KKTC limanlarında hizmet vermektedir.`;
+            } else if (modeType === 'bus') {
+                emptyIcon = "fa-bus";
+                emptyTitle = "Bu Tarihte Doğrudan Otobüs Seferi Bulunamadı";
+                emptyDesc = `${escapeHtml(searchReq.origin)} - ${escapeHtml(searchReq.destination)} rotasında seçilen tarihte doğrudan sefer bulunamamıştır. Lütfen seyahat tarihinizi değiştiriniz veya uçuş alternatiflerini kontrol ediniz.`;
+            }
+
+            html += `
+                <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 text-white rounded-3xl p-6 sm:p-8 my-4 border border-amber-500/40 shadow-xl text-center max-w-3xl mx-auto">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/40 flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
+                        <i class="fa-solid ${emptyIcon}"></i>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-black text-amber-300">
+                        ${emptyTitle}
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl mx-auto leading-relaxed">
+                        ${emptyDesc}
+                    </p>
+                    ${showAltButtons ? `
+                        <div class="mt-6 pt-5 border-t border-slate-800 flex flex-wrap items-center justify-center gap-3">
+                            <span class="w-full text-xs font-bold text-slate-400 mb-1">Kesintisiz Ulaşım İçin Önerilen Alternatifler:</span>
+                            ${modeType !== 'bus' ? `
+                                <button type="button" onclick="switchToTransportAndSearch('bus')" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+                                    <i class="fa-solid fa-bus"></i>
+                                    <span>🚌 Otobüs Seferlerini Gör</span>
+                                </button>
+                            ` : ''}
+                            ${modeType !== 'flight' ? `
+                                <button type="button" onclick="switchToTransportAndSearch('flight')" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-2 shadow-lg shadow-amber-500/20">
+                                    <i class="fa-solid fa-plane"></i>
+                                    <span>✈️ Uçak Biletlerini Gör</span>
+                                </button>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            html += `<div id="ticketCardsContainer" class="space-y-2.5 mb-5">`;
+            html += generateTicketCardsHtml(tickets, searchReq);
+            html += `</div>`;
+        }
     }
 
     // ==================== ADIM 2.3: UÇUŞ / SEFER ALTI "GİTTİĞİNİZ YERDE BUNLAR VAR!" (OTEL + ARAÇ + ETKİNLİK/KEŞİF KÖPRÜSÜ) ====================
@@ -1930,6 +3953,8 @@ function renderTransportResults(data, searchReq) {
         `;
     }
 
+
+
     resultsArea.innerHTML = html;
 }
 
@@ -1988,6 +4013,124 @@ function triggerCrossSellCar(city, pickupDate, dropoffDate) {
 window.triggerCrossSellCar = triggerCrossSellCar;
 
 // Bilet Kartlarını Minimalist & Kompakt Formatla Üret (v3 — Ekranda 3-4 Bilet Görünür, ~120px Yükseklik + Açılır Detay Çekmecesi)
+
+// Tüm Havayolu, Otobüs, Tren, Feribot, Araç Kiralama ve Acente Markaları İçin Resmi Logo Çözümleyici
+const OFFICIAL_BRAND_DOMAINS = {
+    'google': 'google.com',
+    'google flights': 'google.com',
+    'trip.com': 'trip.com',
+    'trip': 'trip.com',
+    'kiwi': 'kiwi.com',
+    'kiwi.com': 'kiwi.com',
+    'skyscanner': 'skyscanner.com.tr',
+    'booking': 'booking.com',
+    'booking.com': 'booking.com',
+    'kayak': 'kayak.com',
+    'enuygun': 'enuygun.com',
+    'obilet': 'obilet.com',
+    'turna': 'turna.com',
+    'bilet.com': 'bilet.com',
+    'biletdukkani': 'biletdukkani.com',
+    'kamil koç': 'kamilkoc.com.tr',
+    'kamil koc': 'kamilkoc.com.tr',
+    'flixbus': 'flixbus.com.tr',
+    'pamukkale': 'pamukkale.com.tr',
+    'metro': 'metroturizm.com.tr',
+    'varan': 'varan.com.tr',
+    'ali osman ulusoy': 'aliosmanulusoy.com.tr',
+    'ulusoy': 'ulusoy.com.tr',
+    'nilüfer': 'nilufer.com.tr',
+    'nilufer': 'nilufer.com.tr',
+    'efe tur': 'efetur.com.tr',
+    'efetur': 'efetur.com.tr',
+    'süha': 'suhaturizm.com.tr',
+    'suha': 'suhaturizm.com.tr',
+    'kontur': 'kontur.com.tr',
+    'özkaymak': 'ozkaymak.com.tr',
+    'ozkaymak': 'ozkaymak.com.tr',
+    'seç': 'secturizm.com.tr',
+    'sec': 'secturizm.com.tr',
+    'has turizm': 'hasturizm.com.tr',
+    'isparta petrol': 'ispartapetrol.com.tr',
+    'buzlu': 'buzlu.com.tr',
+    'kale': 'kaleseyahat.com.tr',
+    'tcdd': 'tcddtasimacilik.gov.tr',
+    'trainline': 'thetrainline.com',
+    'eurostar': 'eurostar.com',
+    'omio': 'omio.com',
+    'ido': 'ido.com.tr',
+    'i̇do': 'ido.com.tr',
+    'budo': 'burulas.com.tr',
+    'gestaş': 'gestasdenizulasim.com.tr',
+    'gestas': 'gestasdenizulasim.com.tr',
+    'turyol': 'turyol.com',
+    'ertürk': 'erturklines.com',
+    'erturk': 'erturklines.com',
+    'feribotlines': 'feribotlines.com',
+    'meander': 'meandertravel.com',
+    'msc': 'msccruises.com.tr',
+    'costa': 'costacruises.com',
+    'yolcu360': 'yolcu360.com',
+    'avis': 'avis.com.tr',
+    'budget': 'budget.com.tr',
+    'garenta': 'garenta.com.tr',
+    'enterprise': 'enterprise.com.tr',
+    'sixt': 'sixt.com.tr',
+    'europcar': 'europcar.com.tr',
+    'green motion': 'greenmotion.com',
+    'goldcar': 'goldcar.es',
+    'hertz': 'hertz.com.tr',
+    'rentalcars': 'rentalcars.com'
+};
+
+function getBrandLogoHtml(name, fallbackEmoji = '🎫', sizeClass = 'w-4 h-4') {
+    if (!name) return `<span>${fallbackEmoji}</span>`;
+    const low = String(name).toLowerCase().trim();
+
+    // 1. Önce Havayolu Kontrolü
+    let iata = '';
+    if (low.includes('pegasus')) iata = 'PC';
+    else if (low.includes('ajet') || low.includes('anadolujet')) iata = 'VF';
+    else if (low.includes('thy') || low.includes('türk hava') || low.includes('turkish airlines')) iata = 'TK';
+    else if (low.includes('sunexpress')) iata = 'XQ';
+    else if (low.includes('lufthansa')) iata = 'LH';
+    else if (low.includes('swiss')) iata = 'LX';
+    else if (low.includes('british')) iata = 'BA';
+    else if (low.includes('air france')) iata = 'AF';
+    else if (low.includes('klm')) iata = 'KL';
+    else if (low.includes('qatar')) iata = 'QR';
+    else if (low.includes('emirates')) iata = 'EK';
+    else if (low.includes('aegean')) iata = 'A3';
+    else if (low.includes('azal') || low.includes('azerbaijan')) iata = 'J2';
+
+    if (iata) {
+        return `<img src="https://www.gstatic.com/flights/airline_logos/70px/${iata}.png"
+                     alt="${escapeHtml(name)}"
+                     loading="lazy"
+                     class="${sizeClass} object-contain inline-block shrink-0 rounded-xs"
+                     onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://pics.avs.io/72/72/${iata}.png';}else{this.outerHTML='<span>${fallbackEmoji}</span>';}">`;
+    }
+
+    // 2. Domain Tabanlı Resmi Marka Logosu Kontrolü
+    let domain = '';
+    for (const [k, dom] of Object.entries(OFFICIAL_BRAND_DOMAINS)) {
+        if (low.includes(k)) {
+            domain = dom;
+            break;
+        }
+    }
+    if (domain) {
+        return `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64"
+                     alt="${escapeHtml(name)}"
+                     loading="lazy"
+                     class="${sizeClass} object-contain inline-block shrink-0 rounded-xs"
+                     onerror="this.outerHTML='<span>${fallbackEmoji}</span>';">`;
+    }
+
+    return `<span>${fallbackEmoji}</span>`;
+}
+window.getBrandLogoHtml = getBrandLogoHtml;
+
 function generateTicketCardsHtml(tickets, searchReq) {
     const isRoundTrip = (searchReq.trip_type === 'round_trip');
     const isEn = window.currentAppLang === 'en';
@@ -2085,7 +4228,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <!-- Sol: Taşıyıcı & Rozetler -->
                         <div class="flex items-center gap-2.5 md:w-56 shrink-0">
-                            <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center text-base shrink-0">🚆</div>
+                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-2xs text-indigo-700 flex items-center justify-center text-base shrink-0 overflow-hidden p-1.5">${getBrandLogoHtml(isIntlTrain ? (ticket.carrier || "Trainline") : "TCDD", "🚆", "w-7 h-7")}</div>
                             <div class="min-w-0">
                                 <div class="font-black text-slate-900 text-sm truncate">${escapeHtml(ticket.carrier)}</div>
                                 <div class="flex flex-wrap items-center gap-1 mt-0.5">
@@ -2164,7 +4307,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <!-- Sol: Firma + Koltuk Tipi & Kompakt İkonlar -->
                         <div class="flex items-center gap-2.5 md:w-56 shrink-0">
-                            <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center text-base shrink-0">🚌</div>
+                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-2xs text-emerald-700 flex items-center justify-center text-base shrink-0 overflow-hidden p-1.5">${getBrandLogoHtml(ticket.carrier, "🚌", "w-7 h-7")}</div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
                                     <span class="font-black text-slate-900 text-sm truncate">${escapeHtml(ticket.carrier)}</span>
@@ -2224,10 +4367,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         </summary>
                         <div class="mt-2 pt-2 border-t border-dashed border-slate-200 flex flex-wrap items-center justify-between gap-2">
                             <div class="flex flex-wrap items-center gap-1.5">
-                                ${isKamilOrFlix && ticket.kamilkoc_link ? `<a href="${ticket.kamilkoc_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-black">🏆 Kamil Koç Resmi (${priceStr}) ↗</a>` : ''}
-                                ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold">🎟️ Obilet (${!isKamilOrFlix && priceStr ? priceStr : 'Koltuk Seç'}) ↗</a>` : ''}
-                                 ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold">💚 Enuygun Teklifleri ↗</a>` : ''}
-                                ${!isKamilOrFlix && ticket.carrier_official_link ? `<a href="${ticket.carrier_official_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold">🚌 ${escapeHtml(ticket.carrier)} Resmi Site ↗</a>` : ''}
+                                ${isKamilOrFlix && ticket.kamilkoc_link ? `<a href="${ticket.kamilkoc_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-black inline-flex items-center gap-1.5">${getBrandLogoHtml('Kamil Koç', '🚌', 'w-4 h-4')}<span>Kamil Koç Resmi (${priceStr}) ↗</span></a>` : ''}
+                                ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}<span>Obilet (${!isKamilOrFlix && priceStr ? priceStr : 'Koltuk Seç'}) ↗</span></a>` : ''}
+                                ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}<span>Enuygun Teklifleri ↗</span></a>` : ''}
+                                ${!isKamilOrFlix && ticket.carrier_official_link ? `<a href="${ticket.carrier_official_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml(ticket.carrier, '🚌', 'w-4 h-4')}<span>${escapeHtml(ticket.carrier)} Resmi Site ↗</span></a>` : ''}
                             </div>
                             <div class="flex flex-wrap items-center gap-1 text-[10.5px] text-slate-600">
                                 ${rawFeatures.slice(0, 4).map(f => `<span class="px-2 py-0.5 rounded bg-slate-100">✓ ${escapeHtml(String(f))}</span>`).join('')}
@@ -2238,29 +4381,45 @@ function generateTicketCardsHtml(tickets, searchReq) {
             `;
         }
 
-        // ==================== 3. FERİBOT & CRUISE KARTI (KOMPAKT TEK SATIR) ====================
+        // ==================== 3. FERİBOT & CRUISE KARTI (ÇOKLU DENİZ ACENTESİ & OPERASYONEL KALKANLI) ====================
         if (ticket.transport_type === 'ferry' || ticket.is_cruise) {
             const hasReturn = isRoundTrip && ticket.return_leg;
             const retLeg = ticket.return_leg;
             const isCruise = ticket.is_cruise || ticket.category === 'cruise';
             const isGreekIsland = ticket.is_greek_island || ticket.category === 'greek_islands';
-            const targetUrl = ticket.direct_link || ticket.official_link || 'https://www.ido.com.tr/';
-            let btnLabel = isCruise ? 'Tur Detayı ↗' : 'Resmi Bilet ↗';
-            if (ticket.carrier && ticket.carrier.includes('İDO')) btnLabel = "İDO'dan Al ↗";
-            else if (ticket.carrier && ticket.carrier.includes('BUDO')) btnLabel = "BUDO'dan Al ↗";
-            else if (ticket.carrier && ticket.carrier.includes('Turyol')) btnLabel = "Turyol'dan Al ↗";
+            const hasVerifiedPrice = ticket.price !== null && ticket.price !== undefined && Number(ticket.price) > 0;
+            const targetUrl = ticket.winner_url || ticket.direct_link || ticket.official_link || 'https://www.obilet.com/feribot-bileti';
+            const btnLabel = (isEn ? ticket.winner_button_text_en : ticket.winner_button_text) || (hasVerifiedPrice ? `${ticket.winner_name || 'Obilet Feribot'}'tan Al ↗` : 'Canlı Fiyatı Gör ↗');
+            const providers = Array.isArray(ticket.providers) ? ticket.providers : [];
+            const cabinTiers = Array.isArray(ticket.cabin_tiers) ? ticket.cabin_tiers : [];
+            const cardDomId = escapeHtml(ticket.id || `ferry-${Math.random().toString(36).slice(2, 7)}`);
+            const breakdownText = ticket.price_breakdown_text || `${totalPaxText} • Doğrulanmış Canlı Fiyat`;
+
+            const shieldItems = [];
+            if (ticket.green_card_notice) shieldItems.push({ text: ticket.green_card_notice, cls: 'text-amber-950 bg-amber-50 border-amber-300 font-bold' });
+            if (ticket.vehicle_pricing_note) shieldItems.push({ text: ticket.vehicle_pricing_note, cls: 'text-emerald-900 bg-emerald-50 border-emerald-200' });
+            if (ticket.passport_notice) shieldItems.push({ text: ticket.passport_notice, cls: 'text-sky-900 bg-sky-50 border-sky-200' });
+            if (ticket.seasonality_note) shieldItems.push({ text: ticket.seasonality_note, cls: 'text-amber-900 bg-amber-50 border-amber-200' });
+            if (ticket.weather_assurance) shieldItems.push({ text: ticket.weather_assurance, cls: 'text-slate-700 bg-slate-50 border-slate-200' });
 
             return `
-                <div class="bg-white border border-slate-200/90 hover:border-sky-500 rounded-2xl px-4 py-3 shadow-2xs hover:shadow-md transition-all">
+                <div id="card-${cardDomId}" class="bg-white border-2 border-slate-200/90 hover:border-sky-500 rounded-2xl px-4 py-3.5 shadow-2xs hover:shadow-md transition-all">
+                    <!-- 1. Ana Sefer ve En Ucuz Kanal Satırı -->
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                        <div class="flex items-center gap-2.5 md:w-56 shrink-0">
-                            <div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center text-base shrink-0">${isCruise ? '🛳️' : '⛴️'}</div>
+                        <div class="flex items-center gap-2.5 md:w-64 shrink-0">
+                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-2xs text-sky-700 flex items-center justify-center text-lg shrink-0 overflow-hidden p-1.5">${getBrandLogoHtml(ticket.carrier, isCruise ? "🛳️" : "⛴️", "w-7 h-7")}</div>
                             <div class="min-w-0">
-                                <div class="font-black text-slate-900 text-sm truncate">${escapeHtml(ticket.carrier)}</div>
-                                <div class="flex flex-wrap items-center gap-1 mt-0.5 text-[10px]">
+                                <div class="font-black text-slate-900 text-sm truncate" title="${escapeHtml(ticket.carrier)}">${escapeHtml(ticket.carrier)}</div>
+                                <div class="text-[10.5px] font-semibold text-slate-500 truncate">${escapeHtml(ticket.vessel_type || 'Tarifeli Deniz Hattı')}</div>
+                                <div class="flex flex-wrap items-center gap-1 mt-1 text-[10px]">
                                     <span class="px-1.5 py-0.2 rounded font-black bg-amber-100 text-amber-900">${escapeHtml(ticket.badge || 'Tarifeli')}</span>
-                                    ${isGreekIsland ? `<span class="px-1.5 py-0.2 rounded font-bold bg-sky-100 text-sky-800">🇬🇷 Kapıda Vize</span>` : ''}
-                                    ${ticket.vehicle_allowed ? `<span class="px-1.5 py-0.2 rounded font-bold bg-emerald-100 text-emerald-800">🚗 Arabalı</span>` : ''}
+                                    ${isGreekIsland && !(ticket.badge || '').includes('Vize') ? `<span class="px-1.5 py-0.2 rounded font-bold bg-sky-100 text-sky-800">🇬🇷 Kapıda Vize</span>` : ''}
+                                    ${ticket.requires_chip_id && !(ticket.badge || '').includes('Kimlik') ? `<span class="px-1.5 py-0.2 rounded font-bold bg-indigo-100 text-indigo-800">🪪 Çipli Kimlik</span>` : ''}
+                                    ${isCruise
+                                        ? `<span class="px-1.5 py-0.2 rounded font-bold bg-purple-100 text-purple-900">🍽️ Tam Pansiyon</span>`
+                                        : (ticket.vehicle_allowed
+                                            ? `<span class="px-1.5 py-0.2 rounded font-bold bg-emerald-100 text-emerald-800">🚗 Arabalı & Yaya</span>`
+                                            : `<span class="px-1.5 py-0.2 rounded font-bold bg-slate-100 text-slate-700">🚶 Sadece Yaya (Katamaran)</span>`)}
                                 </div>
                             </div>
                         </div>
@@ -2268,35 +4427,137 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <div class="flex-1 flex items-center justify-between sm:justify-center gap-3 sm:gap-6 px-2">
                             <div class="text-left">
                                 <div class="text-xl font-black text-slate-900 leading-none">${ticket.departure_time}</div>
-                                <div class="text-[11px] font-bold text-slate-600 mt-1 truncate max-w-[130px]">${escapeHtml(ticket.origin)}</div>
+                                <div class="text-[11px] font-bold text-slate-600 mt-1 truncate max-w-[135px]" title="${escapeHtml(ticket.origin)}">${escapeHtml(ticket.origin)}</div>
                             </div>
-                            <div class="flex flex-col items-center justify-center min-w-[90px] sm:min-w-[120px]">
+                            <div class="flex flex-col items-center justify-center min-w-[95px] sm:min-w-[125px]">
                                 <span class="text-[10.5px] font-bold text-slate-500">${ticket.duration || '1 sa 30 dk'}</span>
                                 <div class="w-full h-[2px] bg-sky-200 my-1 relative flex items-center justify-center">
                                     <i class="fa-solid fa-ship text-sky-600 text-[9px] bg-white px-1"></i>
                                 </div>
-                                <span class="text-[10px] font-bold text-emerald-600">✓ Direkt</span>
+                                <span class="text-[10px] font-bold text-emerald-600">${isCruise ? '✓ Kruvaziyer Rotası' : '✓ Direkt Deniz Hattı'}</span>
                             </div>
                             <div class="text-right">
                                 <div class="text-xl font-black text-slate-900 leading-none">${ticket.arrival_time}</div>
-                                <div class="text-[11px] font-bold text-slate-600 mt-1 truncate max-w-[130px]">${escapeHtml(ticket.destination)}</div>
+                                <div class="text-[11px] font-bold text-slate-600 mt-1 truncate max-w-[145px]" title="${escapeHtml(ticket.destination)}">${escapeHtml(ticket.destination)}</div>
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-between md:justify-end gap-3 md:w-64 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
+                        <div class="flex items-center justify-between md:justify-end gap-3 md:w-80 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
                             <div class="text-left md:text-right">
-                                <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
-                                    ${Number(ticket.price).toLocaleString('tr-TR')} <span class="text-sm font-bold">${currSym}</span>
-                                </div>
-                                <div class="text-[10px] font-semibold text-slate-400 mt-0.5">${isCruise ? 'Her Şey Dahil' : 'Resmi Taban'}</div>
+                                ${hasVerifiedPrice ? `
+                                    <div class="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded mb-0.5">
+                                        <i class="fa-solid fa-circle-check text-[9px]"></i>
+                                        <span>Canlı En Ucuz (${escapeHtml(ticket.winner_name || 'Acente')})</span>
+                                    </div>
+                                    <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
+                                        <span id="ferryPriceVal-${cardDomId}">${Number(ticket.price).toLocaleString('tr-TR')}</span> <span class="text-sm font-bold">${currSym}</span>
+                                    </div>
+                                    <div id="ferryBreakdown-${cardDomId}" class="text-[10px] font-bold text-sky-800 mt-0.5">${escapeHtml(breakdownText)}</div>
+                                ` : `
+                                    <div class="inline-flex items-center gap-1 text-[10px] font-black text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded mb-0.5">
+                                        <i class="fa-solid fa-bolt text-[9px]"></i>
+                                        <span>Canlı Sefer Sorgulama</span>
+                                    </div>
+                                    <div class="text-sm sm:text-base font-black text-slate-900 leading-tight">
+                                        Güncel Gişe Fiyatı
+                                    </div>
+                                    <div class="text-[10px] font-semibold text-slate-400 mt-0.5">Seçili Tarih İçin Tıklayın</div>
+                                `}
                             </div>
                             <a href="${targetUrl}" target="_blank" rel="noopener noreferrer"
-                               class="px-4 py-2.5 bg-sky-900 hover:bg-black text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 whitespace-nowrap">
-                                <span>${btnLabel}</span>
+                               class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 whitespace-nowrap">
+                                <span>${escapeHtml(btnLabel)}</span>
                             </a>
                         </div>
                     </div>
-                    ${hasReturn ? `<div class="mt-2 pt-2 border-t border-slate-100 text-[11px] font-bold text-sky-800 flex items-center justify-between"><span>🔄 Dönüş: ${retLeg.departure_time} ${escapeHtml(retLeg.origin)} ➔ ${retLeg.arrival_time} ${escapeHtml(retLeg.destination)}</span></div>` : ''}
+
+                    ${hasReturn ? `<div class="mt-2 pt-2 border-t border-slate-100 text-[11px] font-bold text-sky-800 flex items-center justify-between"><span>🔄 Dönüş Seferi: ${retLeg.departure_time} ${escapeHtml(retLeg.origin)} ➔ ${retLeg.arrival_time} ${escapeHtml(retLeg.destination)}</span></div>` : ''}
+
+                    <!-- 1.5. CRUISE KABİN TİPİ SEÇİCİ ŞERİDİ (Sadece Cruise Turlarında Görünür) -->
+                    ${isCruise && cabinTiers.length > 0 ? `
+                        <div class="mt-2.5 pt-2.5 border-t border-sky-100 bg-sky-50/60 rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-[11px] font-black text-sky-950 flex items-center gap-1.5">
+                                <i class="fa-solid fa-bed text-sky-700"></i> Kabin Tipi Seçin (${totalPaxText}):
+                            </span>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                ${cabinTiers.map((ct, cIdx) => `
+                                    <button type="button"
+                                            onclick="selectCruiseCabin('${cardDomId}', ${cIdx})"
+                                            id="cabinBtn-${cardDomId}-${cIdx}"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] transition cursor-pointer inline-flex items-center gap-1.5 ${cIdx === 0
+                                                ? 'bg-sky-900 text-white font-black shadow-2xs border border-sky-900'
+                                                : 'bg-white hover:bg-sky-100 text-slate-700 font-bold border border-sky-200'}">
+                                        <span>${escapeHtml(ct.name)}:</span>
+                                        <span class="${cIdx === 0 ? 'text-amber-300 font-black' : 'text-sky-900 font-black'}">${Number(ct.price).toLocaleString('tr-TR')} ${ct.currency || currSym}</span>
+                                        <span class="text-[9.5px] opacity-80">(${ct.per_person_eur}€/kişi)</span>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- 2. Kritik Vize / Yeşil Sigorta / Katamaran Araç Uyarı Bantları -->
+                    ${ticket.visa_urgent_warning ? `
+                        <div class="mt-2.5 px-3 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-[11px] font-bold flex items-start gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5 shrink-0"></i>
+                            <span>${escapeHtml(ticket.visa_urgent_warning)}</span>
+                        </div>
+                    ` : ''}
+                    ${ticket.green_card_notice ? `
+                        <div class="mt-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 text-[11px] font-bold flex items-start gap-2">
+                            <i class="fa-solid fa-id-card-clip text-amber-600 mt-0.5 shrink-0"></i>
+                            <span>${escapeHtml(ticket.green_card_notice)}</span>
+                        </div>
+                    ` : ''}
+                    ${ticket.vehicle_warning ? `
+                        <div class="mt-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 text-[11px] font-bold flex items-start gap-2">
+                            <i class="fa-solid fa-car-burst text-amber-600 mt-0.5 shrink-0"></i>
+                            <span>${escapeHtml(ticket.vehicle_warning)}</span>
+                        </div>
+                    ` : ''}
+
+                    <!-- 3. Açık Tek Satır Deniz Acenteleri & Resmi Gişe Karşılaştırma Şeridi -->
+                    ${providers.length > 0 ? `
+                        <div class="mt-2.5 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="text-[10.5px] font-black text-slate-500 mr-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-scale-balanced text-sky-600"></i> Satış Kanalları:
+                                </span>
+                                ${providers.map((p, pIdx) => {
+                                    const pHasPrice = p.price !== null && p.price !== undefined && Number(p.price) > 0;
+                                    const pPriceTxt = pHasPrice ? `${Number(p.price).toLocaleString('tr-TR')} ${p.currency || currSym}` : (p.badge === 'Araç İçin Çağrı Merkezi' ? 'Çağrı M. (0850 885 00 97)' : 'Canlı Sorgula ↗');
+                                    const isWin = Boolean(p.is_best || p.is_winner);
+                                    return `
+                                        <a href="${p.url}" target="_blank" rel="noopener noreferrer"
+                                           class="px-2.5 py-1 rounded-lg text-[11px] transition inline-flex items-center gap-1.5 ${isWin
+                                               ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-400 font-black shadow-2xs'
+                                               : 'bg-slate-50 hover:bg-slate-900 hover:text-white text-slate-700 border border-slate-200 font-bold'}">
+                                            ${isWin ? `<span class="text-emerald-600 text-[10px]">★</span>` : ''}
+                                            <span>${escapeHtml(p.name)}:</span>
+                                            <span id="provPrice-${cardDomId}-${pIdx}" class="${isWin ? 'text-emerald-700 font-black' : (pHasPrice ? 'text-amber-700 font-black' : 'text-sky-700 font-semibold')}">${pPriceTxt}</span>
+                                        </a>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            ${shieldItems.length > 0 ? `
+                                <details class="text-[11px] group">
+                                    <summary class="cursor-pointer font-bold text-sky-800 hover:text-sky-950 list-none inline-flex items-center gap-1 select-none">
+                                        <i class="fa-solid fa-circle-info text-sky-600"></i>
+                                        <span>Deniz & Vize Kuralları</span>
+                                        <i class="fa-solid fa-chevron-down text-[9px] group-open:rotate-180 transition-transform"></i>
+                                    </summary>
+                                    <div class="mt-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5 text-[11px] font-medium text-slate-700 max-w-2xl">
+                                        ${shieldItems.map(si => `
+                                            <div class="px-2.5 py-1.5 rounded-lg border ${si.cls}">
+                                                <span>${escapeHtml(si.text)}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </details>
+                            ` : ''}
+                        </div>
+                    ` : ''}
                 </div>
             `;
         }
@@ -2335,15 +4596,43 @@ function generateTicketCardsHtml(tickets, searchReq) {
             ? '🧳 15 kg Bagaj + Kabin'
             : '🎒 Kabin Çantası';
 
+        let airlineIata = (ticket.carrier_code || '').trim().toUpperCase();
+        if (!airlineIata && ticket.flight_number) {
+            const fnMatch = String(ticket.flight_number).trim().match(/^([A-Z0-9]{2})\s*\d+/i);
+            if (fnMatch) airlineIata = fnMatch[1].toUpperCase();
+        }
+        if (!airlineIata) {
+            if (carrierUpper.includes('PEGASUS')) airlineIata = 'PC';
+            else if (carrierUpper.includes('SUNEXPRESS')) airlineIata = 'XQ';
+            else if (carrierUpper.includes('AJET') || carrierUpper.includes('ANADOLU')) airlineIata = 'VF';
+            else if (carrierUpper.includes('THY') || carrierUpper.includes('TÜRK HAVA') || carrierUpper.includes('TURKISH')) airlineIata = 'TK';
+            else if (carrierUpper.includes('LUFTHANSA')) airlineIata = 'LH';
+            else if (carrierUpper.includes('SWISS')) airlineIata = 'LX';
+            else if (carrierUpper.includes('AEGEAN')) airlineIata = 'A3';
+            else if (carrierUpper.includes('BRITISH')) airlineIata = 'BA';
+            else if (carrierUpper.includes('AIR FRANCE')) airlineIata = 'AF';
+            else if (carrierUpper.includes('KLM')) airlineIata = 'KL';
+            else if (carrierUpper.includes('QATAR')) airlineIata = 'QR';
+            else if (carrierUpper.includes('EMIRATES')) airlineIata = 'EK';
+            else if (carrierUpper.includes('AZAL') || carrierUpper.includes('AZERBAIJAN')) airlineIata = 'J2';
+        }
+        const airlineLogoHtml = airlineIata
+            ? `<img src="https://www.gstatic.com/flights/airline_logos/70px/${escapeHtml(airlineIata)}.png"
+                    alt="${escapeHtml(ticket.carrier)}"
+                    loading="lazy"
+                    class="w-7 h-7 object-contain"
+                    onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://pics.avs.io/72/72/${escapeHtml(airlineIata)}.png';}else{this.style.display='none';this.parentElement.innerHTML='✈️';}">`
+            : '✈️';
+
         const verifiedProviders = (ticket.providers || []).filter(p => p.price !== null && p.price !== undefined && Number(p.price) > 0);
         const hasDrawer = verifiedProviders.length > 0 || ticket.enuygun_link || ticket.obilet_link || ticket.kayak_link;
 
         return `
             <div class="bg-white border border-slate-200/90 hover:border-amber-400 rounded-2xl px-4 py-3 shadow-2xs hover:shadow-md transition-all">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <!-- Sol: Havayolu & Bagaj Özeti -->
+                    <!-- Sol: Havayolu Logosu & Bagaj Özeti -->
                     <div class="flex items-center gap-2.5 md:w-56 shrink-0">
-                        <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 flex items-center justify-center text-base shrink-0">✈️</div>
+                        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-2xs text-amber-600 flex items-center justify-center text-base shrink-0 overflow-hidden p-1">${airlineLogoHtml}</div>
                         <div class="min-w-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="font-black text-slate-900 text-sm truncate">${escapeHtml(ticket.carrier)}</span>
@@ -2399,19 +4688,22 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         </span>
                         ${verifiedProviders.map(p => `
                             <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg ${p.is_best ? 'bg-amber-50 border-amber-300 text-amber-950 font-black' : 'bg-slate-50 border-slate-200 text-slate-700 font-bold'} border hover:bg-slate-100 transition inline-flex items-center gap-1.5">
+                                ${getBrandLogoHtml(p.name, '🌐', 'w-3.5 h-3.5')}
                                 <span>${escapeHtml(p.name)}</span>
                                 <span class="font-black">${Number(p.price).toLocaleString('tr-TR')} ${currSym}</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[8.5px] opacity-60"></i>
                             </a>
                         `).join('')}
-                        ${ticket.airline_direct_url ? `<a href="${ticket.airline_direct_url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold">${escapeHtml(isEn ? (ticket.airline_label_en || "✈️ Airline Site ↗") : (ticket.airline_label_tr || "✈️ Havayolunda Gör ↗"))}</a>` : ''}
-                        ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold">💚 Enuygun Teklifleri ↗</a>` : ''}
-                        ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold">🎟️ Obilet Teklifleri ↗</a>` : ''}
+                        ${ticket.airline_direct_url ? `<a href="${ticket.airline_direct_url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold inline-flex items-center gap-1.5">${airlineIata ? `<img src="https://www.gstatic.com/flights/airline_logos/70px/${escapeHtml(airlineIata)}.png" alt="" class="w-4 h-4 object-contain inline-block shrink-0" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://pics.avs.io/72/72/${escapeHtml(airlineIata)}.png';}else{this.style.display='none';}">` : getBrandLogoHtml(ticket.carrier, '✈️', 'w-4 h-4')}<span>${escapeHtml((isEn ? (ticket.airline_label_en || "Airline Site ↗") : (ticket.airline_label_tr || "Havayolunda Gör ↗")).replace(/^✈️\s*/, ''))}</span></a>` : ''}
+                        ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-3.5 h-3.5')}<span>Enuygun Teklifleri ↗</span></a>` : ''}
+                        ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}<span>Obilet Teklifleri ↗</span></a>` : ''}
                     </div>
                 ` : ''}
             </div>
         `;
-    }).join("");
+    }
+
+).join("");
 }
 
 // Hızlı Uçuş Sıralama ve Filtreleme Sistemi (En Ucuz | En Hızlı | En Erken Kalkış | En Geç Kalkış + Sabah / Öğle / Akşam)
@@ -2508,7 +4800,9 @@ function applyFlightSortAndFilter() {
                 const bRank = Number(b.smart_sort_rank) || 9999;
                 if (aRank !== bRank) return aRank - bRank;
             }
-            const pDiff = (Number(a.price) || 0) - (Number(b.price) || 0);
+            const ap = (a.price !== null && a.price !== undefined && Number(a.price) > 0) ? Number(a.price) : 999999999;
+            const bp = (b.price !== null && b.price !== undefined && Number(b.price) > 0) ? Number(b.price) : 999999999;
+            const pDiff = ap - bp;
             if (Math.abs(pDiff) > 0.01) return pDiff;
             const sDiff = (Number(b.carrier_score) || 0) - (Number(a.carrier_score) || 0);
             if (sDiff !== 0) return sDiff;
@@ -2661,6 +4955,8 @@ async function executeHotelSearch(e) {
             </div>
         `;
     }
+
+
 }
 
 // OTEL ARAMA SONUÇLARI: MULTI-MODAL ULAŞIM BANDI + KOMBİNE SEPET + CANLI OTELLER
@@ -3256,7 +5552,9 @@ function renderEvents() {
                 </div>
             </div>
         `;
-    }).join("");
+    }
+
+).join("");
 }
 
 // Etkinliğe Ulaşım ve Otel Planla Tetikleyicisi
@@ -3319,12 +5617,39 @@ function setupEventListeners() {
         destInput.addEventListener("change", updateAirportHints);
     }
 
-    // Arama Kutularına tıklandığında içeriği sıfırlama (Kullanıcının hemen rahatça yeni şehir/ilçe yazabilmesi için)
+    // Arama Kutularına tıklandığında içeriği otomatik seçme (Kullanıcının hemen rahatça yeni şehir/ilçe yazabilmesi için)
     const hotelCityInput = document.getElementById("hotelCity");
     [originInput, destInput, hotelCityInput].forEach(inp => {
         if (!inp) return;
         inp.addEventListener("focus", function() {
-            try { this.select(); } catch (_) {}
+            setTimeout(() => {
+                try { this.select(); } catch (_) {}
+            }, 60);
+        });
+        inp.addEventListener("click", function() {
+            if (!this.dataset.clickedOnce) {
+                this.dataset.clickedOnce = '1';
+                try { this.select(); } catch (_) {}
+            }
+        });
+        inp.addEventListener("blur", function() {
+            this.dataset.clickedOnce = '';
+            resolveDistrictOrAirportInput(this);
+        });
+        inp.addEventListener("change", function() {
+            resolveDistrictOrAirportInput(this);
+        });
+        inp.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                resolveDistrictOrAirportInput(this);
+            }
+        });
+        let debounceTimer = null;
+        inp.addEventListener("input", function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                resolveDistrictOrAirportInput(inp, true);
+            }, 400);
         });
     });
 
@@ -3457,6 +5782,56 @@ window.handleRadarSubscribe = handleRadarSubscribe;
 window.setFerryCategory = setFerryCategory;
 window.toggleFerryVehicle = toggleFerryVehicle;
 window.quickFillFerry = quickFillFerry;
+
+// Cruise Kartı Üzerinde Dinamik Kabin Tipi Seçici (İç Kabin / Dış Kabin / Balkonlu Kabin)
+function selectCruiseCabin(cardDomId, tierIdx) {
+    const tickets = window.lastTransportResults || [];
+    const ticket = tickets.find(t => String(t.id) === String(cardDomId));
+    if (!ticket || !Array.isArray(ticket.cabin_tiers) || !ticket.cabin_tiers[tierIdx]) return;
+
+    const selectedTier = ticket.cabin_tiers[tierIdx];
+    const baseTier = ticket.cabin_tiers[0];
+    const ratio = (baseTier && baseTier.price > 0) ? (selectedTier.price / baseTier.price) : 1.0;
+    const paxCount = (window.lastSearchReq && window.lastSearchReq.passengers) ? window.lastSearchReq.passengers : 1;
+
+    // 1. Ana fiyatı ve kırılım metnini güncelle
+    const priceEl = document.getElementById(`ferryPriceVal-${cardDomId}`);
+    if (priceEl && selectedTier.price) {
+        priceEl.textContent = Number(selectedTier.price).toLocaleString('tr-TR');
+    }
+    const breakEl = document.getElementById(`ferryBreakdown-${cardDomId}`);
+    if (breakEl) {
+        breakEl.textContent = `${selectedTier.name} (${selectedTier.per_person_eur} € × ${paxCount} Kişi) • Her Şey Dahil`;
+    }
+
+    // 2. Kabin butonlarının aktif/pasif stillerini güncelle
+    ticket.cabin_tiers.forEach((ct, idx) => {
+        const btn = document.getElementById(`cabinBtn-${cardDomId}-${idx}`);
+        if (!btn) return;
+        const currSym = ct.currency || ticket.currency || '₺';
+        const isSel = (idx === tierIdx);
+        btn.className = `px-2.5 py-1 rounded-lg text-[11px] transition cursor-pointer inline-flex items-center gap-1.5 ${isSel
+            ? 'bg-sky-900 text-white font-black shadow-2xs border border-sky-900'
+            : 'bg-white hover:bg-sky-100 text-slate-700 font-bold border border-sky-200'}`;
+        btn.innerHTML = `
+            <span>${escapeHtml(ct.name)}:</span>
+            <span class="${isSel ? 'text-amber-300 font-black' : 'text-sky-900 font-black'}">${Number(ct.price).toLocaleString('tr-TR')} ${currSym}</span>
+            <span class="text-[9.5px] opacity-80">(${ct.per_person_eur}€/kişi)</span>
+        `;
+    });
+
+    // 3. Alt şeritteki acente fiyatlarını seçilen kabin tipine göre güncelle
+    if (Array.isArray(ticket.providers)) {
+        ticket.providers.forEach((p, pIdx) => {
+            const provEl = document.getElementById(`provPrice-${cardDomId}-${pIdx}`);
+            if (provEl && p.price) {
+                const updatedProvPrice = Math.round(p.price * ratio);
+                provEl.textContent = `${Number(updatedProvPrice).toLocaleString('tr-TR')} ${p.currency || ticket.currency || '₺'}`;
+            }
+        });
+    }
+}
+window.selectCruiseCabin = selectCruiseCabin;
 window.setCarCategoryFilter = setCarCategoryFilter;
 window.setCarTransmissionFilter = setCarTransmissionFilter;
 window.toggleCarDropoffLocation = toggleCarDropoffLocation;
@@ -3483,9 +5858,16 @@ function updateTransportFieldLabels(subTab, lang) {
     const destLabel = document.getElementById("destFieldLabel");
     const subHintBadge = document.getElementById("transportSubHint");
     const searchBtn = document.getElementById("searchSubmitBtnText");
+    const paxTitle = document.getElementById("paxBoxTitleText");
+    const paxCabinSec = document.getElementById("paxCabinSection");
+    const paxFerryVehSec = document.getElementById("paxFerryVehicleSection");
     if (!subTab) subTab = window.currentTransportSubTab || 'flight';
 
+    if (paxCabinSec) paxCabinSec.classList.toggle("hidden", subTab !== 'flight');
+    if (paxFerryVehSec) paxFerryVehSec.classList.toggle("hidden", subTab !== 'ferry');
+
     if (subTab === 'car') {
+        if (paxTitle) paxTitle.textContent = isEn ? "Driver & Pax" : "Yolcu Sayısı";
         if (originLabel) originLabel.innerHTML = isEn ? '🚗 Pick-up Location (Airport / City)' : '🚗 Alış Noktası (Havalimanı / Şehir)';
         if (destLabel) destLabel.innerHTML = (typeof currentCarDifferentDropoff !== 'undefined' && currentCarDifferentDropoff)
             ? (isEn ? '📍 Different Return Location' : '📍 Farklı İade Noktası') 
@@ -3496,6 +5878,7 @@ function updateTransportFieldLabels(subTab, lang) {
         if (searchBtn) searchBtn.textContent = isEn ? "Find Rental Cars →" : "Kiralık Araçları Bul →";
         if (typeof setFlightTripType === 'function') setFlightTripType('round');
     } else if (subTab === 'bus') {
+        if (paxTitle) paxTitle.textContent = isEn ? "Passengers" : "Yolcu Sayısı";
         if (originLabel) originLabel.innerHTML = isEn ? '🚌 Departure City / Terminal' : '🚌 Kalkış Şehri / Otogarı';
         if (destLabel) destLabel.innerHTML = isEn ? '🎯 Destination City (Turkey & Balkans)' : '🎯 Varış Şehri (Türkiye & Balkanlar)';
         if (subHintBadge) subHintBadge.innerHTML = isEn 
@@ -3503,6 +5886,7 @@ function updateTransportFieldLabels(subTab, lang) {
             : '🚌 Türkiye Şehirlerarası & Balkan Hatları (Kamil Koç/FlixBus, Metro, Obilet)';
         if (searchBtn) searchBtn.textContent = isEn ? "Find Bus Routes →" : "Otobüs Seferlerini Bul →";
     } else if (subTab === 'train') {
+        if (paxTitle) paxTitle.textContent = isEn ? "Passengers" : "Yolcu Sayısı";
         if (originLabel) originLabel.innerHTML = isEn ? '🚆 Departure Station' : '🚆 Kalkış İstasyonu / Garı';
         if (destLabel) destLabel.innerHTML = isEn ? '🏁 Arrival Station' : '🏁 Varış İstasyonu';
         if (subHintBadge) subHintBadge.innerHTML = isEn 
@@ -3510,6 +5894,7 @@ function updateTransportFieldLabels(subTab, lang) {
             : '🚆 TCDD Yüksek Hızlı Tren (YHT) & Doğu Ekspresi Hatları';
         if (searchBtn) searchBtn.textContent = isEn ? "Find Trains →" : "Tren Seferlerini Bul →";
     } else if (subTab === 'ferry') {
+        if (paxTitle) paxTitle.textContent = isEn ? "Passengers & Vehicle" : "Yolcu & Araç";
         if (originLabel) originLabel.innerHTML = isEn ? '⛴️ Departure Port / Pier' : '⛴️ Kalkış Limanı / İskelesi';
         if (destLabel) destLabel.innerHTML = isEn ? '🏝️ Destination Island or Port' : '🏝️ Varış Adası veya İskelesi';
         if (subHintBadge) subHintBadge.innerHTML = isEn 
@@ -3517,12 +5902,16 @@ function updateTransportFieldLabels(subTab, lang) {
             : '⛴️ Kapıda Vize Yunan Adaları (Sakız, Rodos, Kos) & Galataport Kruvaziyer Gemi Turları';
         if (searchBtn) searchBtn.textContent = isEn ? "Find Ferry & Cruise →" : "Gemi & Feribot Seferlerini Bul →";
     } else {
+        if (paxTitle) paxTitle.textContent = isEn ? "Passengers & Class" : "Yolcu & Sınıf";
         if (originLabel) originLabel.innerHTML = isEn ? '✈️ Departure Airport' : '✈️ Kalkış Havalimanı';
         if (destLabel) destLabel.innerHTML = isEn ? '🛬 Arrival Airport' : '🛬 Varış Havalimanı';
         if (subHintBadge) subHintBadge.innerHTML = isEn 
             ? '✈️ Live Flight Price Comparison (THY, Pegasus, AJet & Global Airlines)' 
             : '✈️ THY, Pegasus, AJet & Dünya Havayolları Canlı Bilet Karşılaştırması';
         if (searchBtn) searchBtn.textContent = isEn ? "Find Flights →" : "Uçuşları Bul →";
+    }
+    if (typeof updatePaxSummaryDisplay === 'function') {
+        updatePaxSummaryDisplay();
     }
 }
 window.updateTransportFieldLabels = updateTransportFieldLabels;

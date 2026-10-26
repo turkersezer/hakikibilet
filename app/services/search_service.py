@@ -205,12 +205,27 @@ class SearchService:
             trip_aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
             trip_flighttype = "rt" if is_round else "ow"
             flight_links["trip"] = f"https://tr.trip.com/flights/{origin_slug}-to-{dest_slug}/tickets-{origin_iata.lower()}-{dest_iata.lower()}?flighttype={trip_flighttype}&dcity={origin_iata.lower()}&acity={dest_iata.lower()}&ddate={departure_date}{trip_ret_param}&curr={currency}{trip_aff_param}"
+            from app.cities import build_obilet_flight_url
+            flight_links["obilet"] = build_obilet_flight_url(
+                from_code=origin_iata,
+                to_code=dest_iata,
+                departure_date=departure_date,
+                return_date=return_date,
+                is_round=is_round,
+                adults=adults,
+                children=children,
+                infants=infants,
+                cabin_class=cabin_class,
+                orig_slug=origin_slug,
+                dest_slug=dest_slug,
+            )
         else:
             flight_links["pegasus"] = None
             flight_links["skyscanner"] = None
             flight_links["google_flights"] = None
             flight_links["enuygun"] = None
             flight_links["trip"] = None
+            flight_links["obilet"] = None
             flight_links["travelpayouts"] = None
             flight_links["aviasales"] = None
 
@@ -264,19 +279,44 @@ class SearchService:
                 "omio": omio_bus_link
             }
 
-        # 4. Deniz Yolları & Feribot Deep Linkleri
+        # 4. Deniz Yolları & Feribot Deep Linkleri (Asla kuru ana sayfaya yönlendirme yok; parametrik derin linkler)
+        from app.services.ferry_service import FerryService
+        matched_ferry_routes = FerryService.find_matching_routes(origin_city_name, dest_city_name)
         is_sea_origin = bool(origin and origin.get("is_ferry"))
         is_sea_dest = bool(dest and dest.get("is_ferry"))
-        ferry_avail = bool(is_sea_origin and is_sea_dest)
-        ferry_links = {
-            "available": ferry_avail,
-            "reason": None if ferry_avail else "Bu güzergahta doğrudan deniz yolu seferi bulunmamaktadır.",
-            "ido": "https://www.ido.com.tr/" if ferry_avail else None,
-            "budo": "https://budo.burulas.com.tr/" if ferry_avail else None,
-            "erturk": "https://www.erturk.com.tr/tr/" if ferry_avail else None,
-            "turyol": "https://www.turyolonline.com/" if ferry_avail else None,
-            "feribotlines": f"https://www.feribotlines.com/?subid={settings.AFFILIATE_FERRY_SUBID}" if ferry_avail else None
-        }
+        ferry_avail = bool(matched_ferry_routes or (is_sea_origin and is_sea_dest))
+        if matched_ferry_routes:
+            f_deep = FerryService.build_partner_deep_links(
+                route=matched_ferry_routes[0],
+                departure_date=departure_date,
+                return_date=return_date if is_round else None,
+                passengers=adults,
+            )
+            ferry_links = {
+                "available": True,
+                "reason": None,
+                "obilet": f_deep.get("obilet"),
+                "feribotlines": f_deep.get("feribotlines"),
+                "biletcom": f_deep.get("biletcom"),
+                "official": f_deep.get("official"),
+                "ferryhopper": f_deep.get("ferryhopper"),
+                "ido": f_deep.get("official"),
+                "budo": f_deep.get("official"),
+                "erturk": f_deep.get("official"),
+                "turyol": f_deep.get("official"),
+            }
+        else:
+            ferry_links = {
+                "available": ferry_avail,
+                "reason": None if ferry_avail else "Bu güzergahta doğrudan deniz yolu seferi bulunmamaktadır.",
+                "obilet": f"https://www.obilet.com/feribot-bileti?tarih={departure_date}&yetiskin={adults}&utm_source=hakikibilet" if ferry_avail else None,
+                "feribotlines": f"https://feribotlines.com/?gidis_tarihi={departure_date}&yetiskin={adults}&subid={settings.AFFILIATE_FERRY_SUBID}" if ferry_avail else None,
+                "biletcom": f"https://www.bilet.com/feribot-bileti?tarih={departure_date}&ref={settings.AFFILIATE_FERRY_SUBID}" if ferry_avail else None,
+                "ido": f"https://www.ido.com.tr/sefer-saatleri?date={departure_date}&utm_source=hakikibilet" if ferry_avail else None,
+                "budo": f"https://budo.burulas.com.tr/tr/Timetables?DepartureDate={departure_date}" if ferry_avail else None,
+                "erturk": f"https://www.erturk.com.tr/tr/?date={departure_date}&utm_source=hakikibilet" if ferry_avail else None,
+                "turyol": f"https://www.turyolonline.com/?date={departure_date}&utm_source=hakikibilet" if ferry_avail else None,
+            }
 
         return {
             "flight": flight_links,
@@ -1107,16 +1147,20 @@ class SearchService:
                     trip_url = links["flight"]["trip"]
                     google_url = links["flight"]["google_flights"]
                     enuygun_fallback_url = links["flight"].get("enuygun")
-                    obilet_subid = getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
-                    obilet_pax_str = f"yetiskin={adults}"
-                    if children > 0:
-                        obilet_pax_str += f"&cocuk={children}"
-                    if infants > 0:
-                        obilet_pax_str += f"&bebek={infants}"
-                    if is_round and return_date:
-                        obilet_fallback_url = f"https://www.obilet.com/ucak-bileti/{orig_iata.lower()}-{dst_iata.lower()}/{departure_date}/{return_date}?{obilet_pax_str}&subid={obilet_subid}&sorting=price&sort=price"
-                    else:
-                        obilet_fallback_url = f"https://www.obilet.com/ucak-bileti/{orig_iata.lower()}-{dst_iata.lower()}/{departure_date}?{obilet_pax_str}&subid={obilet_subid}&sorting=price&sort=price"
+                    from app.cities import build_obilet_flight_url
+                    obilet_fallback_url = build_obilet_flight_url(
+                        from_code=orig_iata,
+                        to_code=dst_iata,
+                        departure_date=departure_date,
+                        return_date=return_date,
+                        is_round=is_round,
+                        adults=adults,
+                        children=children,
+                        infants=infants,
+                        cabin_class=cabin_class,
+                        orig_slug=orig_slug,
+                        dest_slug=dest_slug,
+                    )
 
                     booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
                     try:
@@ -1230,8 +1274,8 @@ class SearchService:
             try:
                 from app.services.ferry_service import FerryService
                 ferry_results = FerryService.search_ferries(
-                    origin_name=origin_name,
-                    dest_name=dest_name,
+                    origin_name=origin_city or origin_name,
+                    dest_name=dest_city or dest_name,
                     departure_date=departure_date,
                     passengers=passengers,
                     is_round=is_round,
@@ -1253,11 +1297,11 @@ class SearchService:
         if night_only:
             results = [t for t in results if t.get("is_night_trip")]
 
-        # Sıralama: Otobüs sekmesinde akıllı kürasyon sırasını (Vitrin Kamil Koç + En Ucuz Fırsat + Bölge Kahramanı & Ana Koridor) koru
-        if transport_type == "bus":
+        # Sıralama: Otobüs ve Feribot sekmelerinde akıllı kürasyon / iskele sırasını (smart_sort_rank) koru
+        if transport_type in ("bus", "ferry"):
             results.sort(
                 key=lambda t: (
-                    t.get("smart_sort_rank", 9999) if t.get("transport_type") == "bus" else 9999,
+                    t.get("smart_sort_rank", 9999) if t.get("transport_type") in ("bus", "ferry") else 9999,
                     t.get("price") if t.get("price") is not None else 999999,
                     -int(t.get("carrier_score", 0)),
                     t.get("departure_time") or "23:59",
@@ -1279,6 +1323,11 @@ class SearchService:
         ferry_tickets = [t for t in results if t["transport_type"] == "ferry"]
 
         def calc_min_price(ticket_list):
+            if not ticket_list:
+                return None
+            rank1_prices = [t["price"] for t in ticket_list if t.get("price") is not None and int(t.get("smart_sort_rank", 1)) == 1]
+            if rank1_prices:
+                return min(rank1_prices)
             valid_prices = [t["price"] for t in ticket_list if t.get("price") is not None]
             return min(valid_prices) if valid_prices else None
 
@@ -1577,9 +1626,17 @@ class SearchService:
                     except Exception:
                         return d_iso_str, None
 
-                with ThreadPoolExecutor(max_workers=2) as ex:
-                    for d_key, d_val in ex.map(_fetch_real_day_min, target_dates):
-                        live_day_prices[d_key] = d_val
+                ex = ThreadPoolExecutor(max_workers=6)
+                try:
+                    futs = {ex.submit(_fetch_real_day_min, d_item): d_item for d_item in target_dates}
+                    for fut in futs:
+                        try:
+                            d_key, d_val = fut.result(timeout=4)
+                            live_day_prices[d_key] = d_val
+                        except Exception:
+                            pass
+                finally:
+                    ex.shutdown(wait=False)
             except Exception as flex_fl_err:
                 logger.warning(f"Esnek tarih uçuş fiyat şeridi hatası: {flex_fl_err}")
 

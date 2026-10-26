@@ -691,8 +691,8 @@
             </div>
 
             <!-- GEMİ / FERİBOT ALT KIRILIM SEÇENEKLERİ (Sadece d. Gemi & Feribot Seçildiğinde Görünür) -->
-            <div id="ferryOptionsBar" class="hidden flex-wrap items-center justify-between gap-3 mb-4 text-xs font-bold text-slate-600 bg-sky-50/80 p-3 rounded-2xl border border-sky-200">
-                <div class="flex flex-wrap items-center gap-4">
+            <div id="ferryOptionsBar" class="hidden flex-wrap items-center justify-between gap-2.5 mb-3.5 text-xs font-bold text-slate-600">
+                <div class="flex flex-wrap items-center gap-3">
                     <!-- Tek Yön / Gidiş-Dönüş Seçimi -->
                     <div class="inline-flex items-center gap-3">
                         <label class="inline-flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
@@ -707,54 +707,51 @@
 
                     <span class="text-slate-300">|</span>
 
-                    <!-- 3 Ana Deniz Seyahati Segmenti -->
-                    <div class="inline-flex items-center bg-white p-0.5 rounded-xl border border-sky-200 shadow-2xs">
-                        <button type="button" onclick="setFerryCategory('all')" id="ferryCat-all" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-sky-900 text-white transition">
+                    <!-- 4 Ana Deniz Seyahati Segmenti -->
+                    <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+                        <button type="button" onclick="setFerryCategory('all')" id="ferryCat-all" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-sky-900 text-white transition cursor-pointer">
                             Tümü
                         </button>
-                        <button type="button" onclick="setFerryCategory('domestic')" id="ferryCat-domestic" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition">
-                            🇹🇷 İç Hat Feribot
+                        <button type="button" onclick="setFerryCategory('domestic')" id="ferryCat-domestic" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition cursor-pointer">
+                            🇹🇷 İç Hat & KKTC
                         </button>
-                        <button type="button" onclick="setFerryCategory('greek_islands')" id="ferryCat-islands" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition">
-                            🇬🇷 Yunan Adaları (Kapıda Vize)
+                        <button type="button" onclick="setFerryCategory('greek_islands')" id="ferryCat-islands" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition cursor-pointer">
+                            🇬🇷 Yunan Adaları
                         </button>
-                        <button type="button" onclick="setFerryCategory('cruise')" id="ferryCat-cruise" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition">
+                        <button type="button" onclick="setFerryCategory('cruise')" id="ferryCat-cruise" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition cursor-pointer">
                             🛳️ Cruise Turları
                         </button>
                     </div>
 
-                    <span class="text-slate-300">|</span>
+                    <span class="text-slate-300 hidden md:inline">|</span>
 
-                    <!-- Araçlı Vapur Toggle Butonu -->
-                    <button type="button" onclick="toggleFerryVehicle()" id="ferryVehicleToggle" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-700 font-bold text-[11px] hover:border-sky-500 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-car text-slate-500" id="ferryVehicleIcon"></i>
-                        <span id="ferryVehicleLabel">🚗 Yaya (Araçsız)</span>
-                    </button>
-                </div>
-
-                <!-- Popüler Deniz Hatları Hapları -->
-                <div class="flex flex-wrap items-center gap-1.5 w-full pt-2 border-t border-sky-100">
-                    <span class="text-[11px] font-black text-sky-800 mr-1 hidden sm:inline-flex items-center gap-1">
-                        <i class="fa-solid fa-anchor text-sky-600"></i> Popüler Rotalar:
-                    </span>
-                    <button type="button" onclick="quickFillFerry('Yenikapı', 'Bursa', 'domestic')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
-                        ⚡ Yenikapı ➔ Bursa (İDO/BUDO)
-                    </button>
-                    <button type="button" onclick="quickFillFerry('Yenikapı', 'Yalova', 'domestic', true)" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
-                        ⚡ Yenikapı ➔ Yalova (Arabalı)
-                    </button>
-                    <button type="button" onclick="quickFillFerry('Çeşme', 'Sakız Adası', 'greek_islands')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
-                        ⚡ Çeşme ➔ Sakız (25 dk)
-                    </button>
-                    <button type="button" onclick="quickFillFerry('Bodrum', 'Kos Adası', 'greek_islands')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
-                        ⚡ Bodrum ➔ Kos (20 dk)
-                    </button>
-                    <button type="button" onclick="quickFillFerry('Ayvalık', 'Midilli Adası', 'greek_islands')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-900 hover:text-white border border-sky-200 text-slate-800 font-bold text-[11px] transition">
-                        ⚡ Ayvalık ➔ Midilli (45 dk)
-                    </button>
-                    <button type="button" onclick="quickFillFerry('Galataport', 'Cruise', 'cruise')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-600 hover:text-white border border-amber-300 text-amber-900 font-black text-[11px] transition">
-                        ⭐ Galataport Ege Cruise (Celestyal)
-                    </button>
+                    <!-- Hızlı Popüler Hatlar (Sade & Tek Satır) -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-black text-slate-400 mr-0.5 hidden sm:inline-flex items-center gap-1">
+                            <i class="fa-solid fa-anchor text-sky-600"></i> Popüler:
+                        </span>
+                        <button type="button" data-ferry-pill="domestic" onclick="quickFillFerry('Yenikapı', 'Bursa', 'domestic')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
+                            ⚡ Yenikapı ➔ Bursa
+                        </button>
+                        <button type="button" data-ferry-pill="domestic" onclick="quickFillFerry('Yenikapı', 'Yalova', 'domestic', true)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
+                            🚗 Yenikapı ➔ Yalova
+                        </button>
+                        <button type="button" data-ferry-pill="greek_islands" onclick="quickFillFerry('Çeşme', 'Sakız Adası', 'greek_islands')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
+                            🇬🇷 Çeşme ➔ Sakız
+                        </button>
+                        <button type="button" data-ferry-pill="greek_islands" onclick="quickFillFerry('Bodrum', 'Kos Adası', 'greek_islands')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
+                            🇬🇷 Bodrum ➔ Kos
+                        </button>
+                        <button type="button" data-ferry-pill="greek_islands" onclick="quickFillFerry('Ayvalık', 'Midilli Adası', 'greek_islands')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
+                            🇬🇷 Ayvalık ➔ Midilli
+                        </button>
+                        <button type="button" data-ferry-pill="domestic" onclick="quickFillFerry('Taşucu', 'Girne', 'domestic')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
+                            🇹🇷 Taşucu ➔ Girne
+                        </button>
+                        <button type="button" data-ferry-pill="cruise" onclick="quickFillFerry('Galataport', 'Cruise', 'cruise')" class="px-2 py-1 rounded-lg bg-amber-50 hover:bg-amber-600 hover:text-white border border-amber-300 text-amber-900 font-black text-[11px] transition cursor-pointer">
+                            🛳️ Galataport Ege Cruise
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -773,24 +770,11 @@
                         </label>
                     </div>
 
-                    <span class="text-slate-300">|</span>
-
-                    <!-- Yurtiçi / Yurtdışı Kapsamı -->
-                    <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
-                        <button type="button" id="flightScope-domestic"
-                                class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs transition">
-                            <span data-i18n="domestic">🇹🇷 Yurtiçi</span>
-                        </button>
-                        <button type="button" id="flightScope-intl"
-                                class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition">
-                            <span data-i18n="intl">🌍 Yurtdışı</span>
-                        </button>
-                    </div>
-                </div>
+                                    </div>
 
                 <div id="flightScopeSummary" class="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
                     <i class="fa-solid fa-plane-departure text-amber-500"></i>
-                    <span data-i18n="scopeDomesticSummary">Türkiye İçi 55+ Teyitli Havalimanı</span>
+                    <span data-i18n="scopeAllSummary">🇹🇷 Yurtiçi (81 İl) & 🌍 Dünya Geneli Canlı Uçuş Ağı</span>
                 </div>
             </div>
 
@@ -809,19 +793,7 @@
                         </label>
                     </div>
 
-                    <span class="text-slate-300">|</span>
-
-                    <!-- Tren Kapsam Butonları (Yurtiçi TCDD vs Uluslararası Trainline) -->
-                    <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
-                        <button type="button" id="trainScope-domestic" onclick="setTrainScope('domestic')"
-                                class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-slate-800 to-slate-950 text-white shadow-2xs transition">
-                            <span>🇹🇷 TCDD Hatları</span>
-                        </button>
-                        <button type="button" id="trainScope-intl" onclick="setTrainScope('intl')"
-                                class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition">
-                            <span>🌍 Uluslararası (Trainline)</span>
-                        </button>
-                    </div>
+                    
 
                     <span class="text-slate-300">|</span>
 
@@ -891,19 +863,7 @@
                         </label>
                     </div>
 
-                    <span class="text-slate-300">|</span>
-
-                    <!-- Otobüs Kapsam Butonları (Yurtiçi Obilet vs Yurtdışı FlixBus) -->
-                    <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
-                        <button type="button" id="busScope-domestic" onclick="setBusScope('domestic')"
-                                class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-2xs transition">
-                            <span>🇹🇷 Yurtiçi</span>
-                        </button>
-                        <button type="button" id="busScope-intl" onclick="setBusScope('intl')"
-                                class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-slate-900 transition">
-                            <span>🌍 Yurtdışı (FlixBus)</span>
-                        </button>
-                    </div>
+                    
 
                     <span class="text-slate-300">|</span>
 
@@ -1059,12 +1019,14 @@
                                     <option value="İstanbul Sabiha Gökçen (SAW)">✈️ Sabiha Gökçen Havalimanı (SAW)</option>
                                     <option value="İstanbul Havalimanı (IST)">✈️ İstanbul Havalimanı (IST)</option>
                                     <option value="Ankara (ESB)">✈️ Ankara Esenboğa Havalimanı (ESB)</option>
-                                    <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes Havalimanı (ADB)</option>
-                                    <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT)</option>
-                                    <option value="Adana / Çukurova (COV)">✈️ Adana / Çukurova Uluslararası (COV)</option>
+                                    <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes (ADB) • Çeşme / Alaçatı / Urla</option>
+                                    <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT) • Kemer / Belek / Side / Kaş</option>
+                                    <option value="Adana - Mersin / Çukurova (COV)">✈️ Adana - Mersin / Çukurova Uluslararası (COV)</option>
                                     <option value="Trabzon (TZX)">✈️ Trabzon Havalimanı (TZX)</option>
-                                    <option value="Bodrum (BJV)">✈️ Bodrum Milas Havalimanı (BJV)</option>
-                                    <option value="Dalaman (DLM)">✈️ Dalaman Havalimanı (DLM)</option>
+                                    <option value="Bodrum (BJV)">✈️ Muğla - Bodrum Milas Havalimanı (BJV) • Didim</option>
+                                    <option value="Dalaman (DLM)">✈️ Muğla - Dalaman Havalimanı (DLM) • Marmaris / Fethiye / Göcek</option>
+                                    <option value="Alanya (GZP)">✈️ Alanya - Gazipaşa Havalimanı (GZP)</option>
+                                    <option value="Balıkesir - Edremit (EDO)">✈️ Balıkesir - Edremit Koca Seyit (EDO) • Ayvalık / Akçay</option>
                                     {% for city in cities %}
                                     <option value="{{ city.name }}{% if city.iata %} ({{ city.iata }}){% endif %}">{{ city.name }}{% if city.iata %} ({{ city.iata }}){% endif %}</option>
                                     {% endfor %}
@@ -1088,12 +1050,14 @@
                                        data-i18n-ph="destDomesticPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="destCitiesList">
-                                    <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT)</option>
-                                    <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes Havalimanı (ADB)</option>
-                                    <option value="Adana / Çukurova (COV)">✈️ Adana / Çukurova Uluslararası (COV)</option>
+                                    <option value="Dalaman (DLM)">✈️ Muğla - Dalaman Havalimanı (DLM) • Marmaris / Fethiye / Göcek</option>
+                                    <option value="Bodrum (BJV)">✈️ Muğla - Bodrum Milas Havalimanı (BJV) • Didim</option>
+                                    <option value="Antalya (AYT)">✈️ Antalya Havalimanı (AYT) • Kemer / Belek / Side / Kaş</option>
+                                    <option value="İzmir (ADB)">✈️ İzmir Adnan Menderes (ADB) • Çeşme / Alaçatı / Urla</option>
+                                    <option value="Alanya (GZP)">✈️ Alanya - Gazipaşa Havalimanı (GZP)</option>
+                                    <option value="Balıkesir - Edremit (EDO)">✈️ Balıkesir - Edremit Koca Seyit (EDO) • Ayvalık / Akçay</option>
+                                    <option value="Adana - Mersin / Çukurova (COV)">✈️ Adana - Mersin / Çukurova Uluslararası (COV)</option>
                                     <option value="Trabzon (TZX)">✈️ Trabzon Havalimanı (TZX)</option>
-                                    <option value="Bodrum (BJV)">✈️ Bodrum Milas Havalimanı (BJV)</option>
-                                    <option value="Dalaman (DLM)">✈️ Dalaman Havalimanı (DLM)</option>
                                     <option value="İstanbul">✈️ İstanbul - Tüm Havalimanları (IST, SAW)</option>
                                     <option value="İstanbul Sabiha Gökçen (SAW)">✈️ Sabiha Gökçen Havalimanı (SAW)</option>
                                     <option value="İstanbul Havalimanı (IST)">✈️ İstanbul Havalimanı (IST)</option>
@@ -1133,12 +1097,12 @@
                             </div>
                         </div>
 
-                        <!-- Yolcu & Sınıf Popover -->
+                        <!-- Yolcu & Sınıf / Araç Popover -->
                         <div class="lg:col-span-2 relative" id="paxControlContainer">
                             <div class="input-box cursor-pointer" onclick="togglePaxDropdown(event)">
                                 <label class="input-label">
-                                    <i class="fa-solid fa-user-group text-amber-500"></i>
-                                    <span data-i18n="paxLabel">Yolcu & Sınıf</span>
+                                    <i id="paxBoxIcon" class="fa-solid fa-user-group text-amber-500"></i>
+                                    <span id="paxBoxTitleText" data-i18n="paxLabel">Yolcu & Sınıf</span>
                                 </label>
                                 <div class="flex items-center justify-between">
                                     <span id="paxDisplayLabel" class="font-bold text-xs sm:text-sm text-slate-900 truncate">1 Yetişkin</span>
@@ -1192,8 +1156,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Kabin Sınıfı -->
-                                <div class="pt-2.5 pb-1">
+                                <!-- Kabin Sınıfı (Sadece Uçak Sekmesinde Görünür) -->
+                                <div id="paxCabinSection" class="pt-2.5 pb-1">
                                     <div class="text-[10px] font-black uppercase text-slate-400 mb-1.5" data-i18n="cabin">Kabin</div>
                                     <div class="grid grid-cols-2 gap-1.5">
                                         <button type="button" id="cabinBtn-economy" onclick="selectFlightCabin('economy')"
@@ -1203,6 +1167,31 @@
                                         <button type="button" id="cabinBtn-business" onclick="selectFlightCabin('business')"
                                                 class="py-1.5 px-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 text-center">
                                             <span data-i18n="business">Business</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Geçiş / Araç Seçimi (Sadece Feribot Sekmesinde Görünür) -->
+                                <div id="paxFerryVehicleSection" class="hidden pt-2.5 pb-1">
+                                    <div class="text-[10px] font-black uppercase text-sky-700 mb-1.5 flex items-center justify-between">
+                                        <span>Geçiş & Araç Tipi</span>
+                                        <span class="text-[9.5px] font-bold text-slate-400">Yaya / Araçlı</span>
+                                    </div>
+                                    <div class="grid grid-cols-1 gap-1.5">
+                                        <button type="button" id="ferryVeh-passenger" onclick="setFerryVehicleType('passenger')"
+                                                class="py-2 px-3 rounded-xl text-xs font-black bg-sky-900 text-white shadow-2xs flex items-center justify-between cursor-pointer transition">
+                                            <span>🚶 Yaya (Araçsız Yolcu)</span>
+                                            <span class="text-[10px] opacity-80">Standart</span>
+                                        </button>
+                                        <button type="button" id="ferryVeh-car" onclick="setFerryVehicleType('car')"
+                                                class="py-2 px-3 rounded-xl text-xs font-bold text-slate-700 bg-slate-50 hover:bg-sky-50 border border-slate-200 flex items-center justify-between cursor-pointer transition">
+                                            <span>🚗 Otomobil / SUV</span>
+                                            <span class="text-[10px] text-sky-700 font-black">Arabalı Vapur</span>
+                                        </button>
+                                        <button type="button" id="ferryVeh-motorcycle" onclick="setFerryVehicleType('motorcycle')"
+                                                class="py-2 px-3 rounded-xl text-xs font-bold text-slate-700 bg-slate-50 hover:bg-sky-50 border border-slate-200 flex items-center justify-between cursor-pointer transition">
+                                            <span>🏍️ Motosiklet</span>
+                                            <span class="text-[10px] text-sky-700 font-black">Arabalı Vapur</span>
                                         </button>
                                     </div>
                                 </div>
@@ -2573,7 +2562,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261024_v7"></script>
+    <script src="/static/js/app_v3.js?v=20261026_v21"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">

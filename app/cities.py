@@ -31,7 +31,7 @@ TURKEY_CITIES = [
     {"name": "Şanlıurfa", "slug": "sanliurfa", "iata": "GNY", "train_station": None, "has_airport": True, "has_train": False, "lat": 37.1674, "lng": 38.7955},
     {"name": "Malatya", "slug": "malatya", "iata": "MLX", "train_station": "Malatya Gar", "has_airport": True, "has_train": True, "lat": 38.3552, "lng": 38.3095},
     {"name": "Çanakkale", "slug": "canakkale", "iata": "CKZ", "train_station": None, "has_airport": True, "has_train": False, "lat": 40.1553, "lng": 26.4142},
-    {"name": "Balıkesir", "slug": "balikesir", "iata": "BZI", "train_station": "Balıkesir Gar", "has_airport": True, "has_train": True, "lat": 39.6484, "lng": 27.8826},
+    {"name": "Balıkesir", "slug": "balikesir", "iata": "EDO", "en_name": "Edremit Koca Seyit Balikesir BZI", "train_station": "Balıkesir Gar", "has_airport": True, "has_train": True, "lat": 39.6484, "lng": 27.8826},
     {"name": "Kütahya", "slug": "kutahya", "iata": "KZR", "train_station": "Kütahya Gar", "has_airport": True, "has_train": True, "lat": 39.4167, "lng": 29.9833},
     {"name": "Afyonkarahisar", "slug": "afyon", "iata": "AFY", "train_station": "Afyon Ali Çetinkaya Gar", "has_airport": False, "has_train": True, "lat": 38.7507, "lng": 30.5567,
      "nearest_domestic_hub": {"name": "Kütahya Zafer (KZR)", "iata": "KZR", "city": "Kütahya", "duration": "45 dk", "transport": "bus"},
@@ -154,36 +154,43 @@ INTERNATIONAL_CITIES = [
     {"name": "Montreal (YUL)", "slug": "montreal", "country": "Kanada", "region": "Amerika", "iata": "YUL", "has_airport": True, "has_train": False, "is_international": True},
 
     # 🇪🇺 Avrupa Metropolleri & Hızlı Tren Merkezleri
-    {"name": "Paris (CDG/ORY)", "slug": "paris", "country": "Fransa", "region": "Avrupa", "iata": "CDG", "alt_iata": "ORY", "train_station": "Paris Gare du Nord (Eurostar/TGV)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Londra (LHR/STN)", "slug": "londra", "country": "İngiltere", "region": "Avrupa", "iata": "LHR", "alt_iata": "STN", "train_station": "London St Pancras Int (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Roma (FCO)", "slug": "roma", "country": "İtalya", "region": "Avrupa", "iata": "FCO", "alt_iata": "CIA", "train_station": "Roma Termini (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Milano (MXP)", "slug": "milano", "country": "İtalya", "region": "Avrupa", "iata": "MXP", "alt_iata": "LIN", "train_station": "Milano Centrale (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Venedik (VCE)", "slug": "venedik", "country": "İtalya", "region": "Avrupa", "iata": "VCE", "train_station": "Venezia Santa Lucia (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Berlin (BER)", "slug": "berlin", "country": "Almanya", "region": "Avrupa", "iata": "BER", "train_station": "Berlin Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Amsterdam (AMS)", "slug": "amsterdam", "country": "Hollanda", "region": "Avrupa", "iata": "AMS", "train_station": "Amsterdam Centraal (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Brüksel (BRU)", "slug": "bruksel", "country": "Belçika", "region": "Avrupa", "iata": "BRU", "alt_iata": "CRL", "train_station": "Bruxelles-Midi (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Viyana (VIE)", "slug": "viyana", "country": "Avusturya", "region": "Avrupa", "iata": "VIE", "train_station": "Wien Hbf (ÖBB Railjet)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Prag (PRG)", "slug": "prag", "country": "Çekya", "region": "Avrupa", "iata": "PRG", "train_station": "Praha hlavní nádraží", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Budapeşte (BUD)", "slug": "budapeste", "country": "Macaristan", "region": "Avrupa", "iata": "BUD", "train_station": "Budapest Keleti", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Barselona (BCN)", "slug": "barselona", "country": "İspanya", "region": "Avrupa", "iata": "BCN", "train_station": "Barcelona Sants (AVE)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Madrid (MAD)", "slug": "madrid", "country": "İspanya", "region": "Avrupa", "iata": "MAD", "train_station": "Madrid Puerta de Atocha (AVE)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Frankfurt (FRA)", "slug": "frankfurt", "country": "Almanya", "region": "Avrupa", "iata": "FRA", "train_station": "Frankfurt (Main) Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Münih (MUC)", "slug": "munih", "country": "Almanya", "region": "Avrupa", "iata": "MUC", "train_station": "München Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Zürih (ZRH)", "slug": "zurih", "country": "İsviçre", "region": "Avrupa", "iata": "ZRH", "train_station": "Zürich HB (SBB)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Nice (NCE)", "slug": "nice", "country": "Fransa", "region": "Avrupa", "iata": "NCE", "train_station": "Gare de Nice-Ville (TER Monaco)", "has_airport": True, "has_train": True, "is_international": True},
-    {"name": "Monaco / Monte Carlo", "slug": "monaco", "country": "Monaco", "region": "Avrupa", "iata": "NCE", "train_station": "Gare de Monaco-Monte Carlo", "has_airport": True, "nearest_airport_iata": "NCE", "nearest_airport_name": "Nice Côte d'Azur (NCE)", "has_train": True, "is_international": True},
-    {"name": "Moskova (SVO/DME/VKO)", "slug": "moskova", "country": "Rusya", "region": "Doğu Avrupa", "iata": "SVO", "alt_iata": "VKO", "has_airport": True, "has_train": False, "is_international": True},
+    {"name": "Paris (CDG/ORY)", "en_name": "Paris", "slug": "paris", "country": "Fransa", "region": "Avrupa", "iata": "CDG", "alt_iata": "ORY", "train_station": "Paris Gare du Nord (Eurostar/TGV)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Londra (LHR/STN)", "en_name": "London Londra", "slug": "londra", "country": "İngiltere", "region": "Avrupa", "iata": "LHR", "alt_iata": "STN", "train_station": "London St Pancras Int (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Roma (FCO)", "en_name": "Rome Roma", "slug": "roma", "country": "İtalya", "region": "Avrupa", "iata": "FCO", "alt_iata": "CIA", "train_station": "Roma Termini (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Milano (MXP)", "en_name": "Milan Milano", "slug": "milano", "country": "İtalya", "region": "Avrupa", "iata": "MXP", "alt_iata": "LIN", "train_station": "Milano Centrale (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Venedik (VCE)", "en_name": "Venice Venedik Venezia", "slug": "venedik", "country": "İtalya", "region": "Avrupa", "iata": "VCE", "train_station": "Venezia Santa Lucia (Frecciarossa)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Berlin (BER)", "en_name": "Berlin", "slug": "berlin", "country": "Almanya", "region": "Avrupa", "iata": "BER", "train_station": "Berlin Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Amsterdam (AMS)", "en_name": "Amsterdam", "slug": "amsterdam", "country": "Hollanda", "region": "Avrupa", "iata": "AMS", "train_station": "Amsterdam Centraal (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Brüksel (BRU)", "en_name": "Brussels Bruksel Bruxelles", "slug": "bruksel", "country": "Belçika", "region": "Avrupa", "iata": "BRU", "alt_iata": "CRL", "train_station": "Bruxelles-Midi (Eurostar)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Viyana (VIE)", "en_name": "Vienna Viyana Wien", "slug": "viyana", "country": "Avusturya", "region": "Avrupa", "iata": "VIE", "train_station": "Wien Hbf (ÖBB Railjet)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Prag (PRG)", "en_name": "Prague Prag Praha", "slug": "prag", "country": "Çekya", "region": "Avrupa", "iata": "PRG", "train_station": "Praha hlavní nádraží", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Budapeşte (BUD)", "en_name": "Budapest Budapeste", "slug": "budapeste", "country": "Macaristan", "region": "Avrupa", "iata": "BUD", "train_station": "Budapest Keleti", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Barselona (BCN)", "en_name": "Barcelona Barselona", "slug": "barselona", "country": "İspanya", "region": "Avrupa", "iata": "BCN", "train_station": "Barcelona Sants (AVE)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Madrid (MAD)", "en_name": "Madrid", "slug": "madrid", "country": "İspanya", "region": "Avrupa", "iata": "MAD", "train_station": "Madrid Puerta de Atocha (AVE)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Frankfurt (FRA)", "en_name": "Frankfurt", "slug": "frankfurt", "country": "Almanya", "region": "Avrupa", "iata": "FRA", "train_station": "Frankfurt (Main) Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Münih (MUC)", "en_name": "Munich Munih Munchen", "slug": "munih", "country": "Almanya", "region": "Avrupa", "iata": "MUC", "train_station": "München Hbf (ICE)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Zürih (ZRH)", "en_name": "Zurich Zurih", "slug": "zurih", "country": "İsviçre", "region": "Avrupa", "iata": "ZRH", "train_station": "Zürich HB (SBB)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Cenevre (GVA)", "en_name": "Geneva Cenevre Geneve", "slug": "cenevre", "country": "İsviçre", "region": "Avrupa", "iata": "GVA", "train_station": "Genève Cornavin", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Basel (BSL)", "en_name": "Basel Mulhouse", "slug": "basel", "country": "İsviçre", "region": "Avrupa", "iata": "BSL", "train_station": "Basel SBB", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Düsseldorf (DUS)", "en_name": "Dusseldorf Duesseldorf", "slug": "dusseldorf", "country": "Almanya", "region": "Avrupa", "iata": "DUS", "train_station": "Düsseldorf Hbf", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Köln / Bonn (CGN)", "en_name": "Cologne Koln Koeln", "slug": "koln", "country": "Almanya", "region": "Avrupa", "iata": "CGN", "train_station": "Köln Hbf", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Stuttgart (STR)", "en_name": "Stuttgart", "slug": "stuttgart", "country": "Almanya", "region": "Avrupa", "iata": "STR", "train_station": "Stuttgart Hbf", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Hamburg (HAM)", "en_name": "Hamburg", "slug": "hamburg", "country": "Almanya", "region": "Avrupa", "iata": "HAM", "train_station": "Hamburg Hbf", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Nice (NCE)", "en_name": "Nice", "slug": "nice", "country": "Fransa", "region": "Avrupa", "iata": "NCE", "train_station": "Gare de Nice-Ville (TER Monaco)", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Monaco / Monte Carlo", "en_name": "Monaco Monte Carlo", "slug": "monaco", "country": "Monaco", "region": "Avrupa", "iata": "NCE", "train_station": "Gare de Monaco-Monte Carlo", "has_airport": True, "nearest_airport_iata": "NCE", "nearest_airport_name": "Nice Côte d'Azur (NCE)", "has_train": True, "is_international": True},
+    {"name": "Lefkoşa / Ercan (ECN)", "en_name": "Nicosia Ercan Lefkosa Girne Kibris", "slug": "lefkosa", "country": "Kuzey Kıbrıs", "region": "Akdeniz", "iata": "ECN", "has_airport": True, "has_train": False, "is_international": True},
+    {"name": "Moskova (SVO/DME/VKO)", "en_name": "Moscow Moskova", "slug": "moskova", "country": "Rusya", "region": "Doğu Avrupa", "iata": "SVO", "alt_iata": "VKO", "has_airport": True, "has_train": False, "is_international": True},
 
     # 🚌 Komşu Ülkeler (Uçak + Karayolu Otobüs Seferleri Aktif)
-    {"name": "Selanik (SKG)", "slug": "selanik", "country": "Yunanistan", "region": "Balkanlar", "iata": "SKG", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
-    {"name": "Atina (ATH)", "slug": "atina", "country": "Yunanistan", "region": "Balkanlar", "iata": "ATH", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
-    {"name": "Sofya (SOF)", "slug": "sofya", "country": "Bulgaristan", "region": "Balkanlar", "iata": "SOF", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
-    {"name": "Filibe / Plovdiv (PDV)", "slug": "filibe", "country": "Bulgaristan", "region": "Balkanlar", "iata": "PDV", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
-    {"name": "Varna (VAR)", "slug": "varna", "country": "Bulgaristan", "region": "Balkanlar", "iata": "VAR", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
-    {"name": "Batum (BUS)", "slug": "batum", "country": "Gürcistan", "region": "Kafkaslar", "iata": "BUS", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
-    {"name": "Tiflis (TBS)", "slug": "tiflis", "country": "Gürcistan", "region": "Kafkaslar", "iata": "TBS", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
-    {"name": "Bakü (GYD)", "slug": "baku", "country": "Azerbaycan", "region": "Kafkaslar", "iata": "GYD", "has_airport": True, "has_train": False, "is_international": True},
-    {"name": "Üsküp (SKP)", "slug": "uskup", "country": "Kuzey Makedonya", "region": "Balkanlar", "iata": "SKP", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Selanik (SKG)", "en_name": "Thessaloniki Selanik", "slug": "selanik", "country": "Yunanistan", "region": "Balkanlar", "iata": "SKG", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Atina (ATH)", "en_name": "Athens Atina", "slug": "atina", "country": "Yunanistan", "region": "Balkanlar", "iata": "ATH", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Sofya (SOF)", "en_name": "Sofia Sofya", "slug": "sofya", "country": "Bulgaristan", "region": "Balkanlar", "iata": "SOF", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Filibe / Plovdiv (PDV)", "en_name": "Plovdiv Filibe", "slug": "filibe", "country": "Bulgaristan", "region": "Balkanlar", "iata": "PDV", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Varna (VAR)", "en_name": "Varna", "slug": "varna", "country": "Bulgaristan", "region": "Balkanlar", "iata": "VAR", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Batum (BUS)", "en_name": "Batumi Batum", "slug": "batum", "country": "Gürcistan", "region": "Kafkaslar", "iata": "BUS", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Tiflis (TBS)", "en_name": "Tbilisi Tiflis", "slug": "tiflis", "country": "Gürcistan", "region": "Kafkaslar", "iata": "TBS", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Bakü (GYD)", "en_name": "Baku", "slug": "baku", "country": "Azerbaycan", "region": "Kafkaslar", "iata": "GYD", "has_airport": True, "has_train": False, "is_international": True},
+    {"name": "Üsküp (SKP)", "en_name": "Skopje Uskup", "slug": "uskup", "country": "Kuzey Makedonya", "region": "Balkanlar", "iata": "SKP", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
 
     # 🇦🇪 Orta Doğu & Körfez
     {"name": "Dubai (DXB)", "slug": "dubai", "country": "BAE", "region": "Orta Doğu", "iata": "DXB", "has_airport": True, "has_train": False, "is_international": True},
@@ -222,12 +229,28 @@ FERRY_PORTS = [
     {"name": "Rodos Adası (Rhodes)", "slug": "rodos-adasi", "port_code": "RHO", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.4340, "lng": 28.2170},
     {"name": "Marmaris Limanı (Muğla)", "slug": "marmaris", "port_code": "MRM", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 36.8520, "lng": 28.2740},
     {"name": "Kaş Limanı (Antalya)", "slug": "kas", "port_code": "KAS", "region": "Akdeniz", "is_ferry": True, "country": "Türkiye", "lat": 36.1990, "lng": 29.6380},
-    {"name": "Meis Adası (Kastellorizo)", "slug": "meis-adasi", "port_code": "KZS", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.1480, "lng": 29.5930}
+    {"name": "Meis Adası (Kastellorizo)", "slug": "meis-adasi", "port_code": "KZS", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.1480, "lng": 29.5930},
+    {"name": "Simi Adası (Symi)", "slug": "simi-adasi", "port_code": "SYM", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.6150, "lng": 27.8360},
+    {"name": "Çanakkale İskelesi (Gestaş)", "slug": "canakkale-iskele", "port_code": "CNK", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.1510, "lng": 26.4020},
+    {"name": "Eceabat / Gelibolu İskelesi (Gestaş)", "slug": "eceabat", "port_code": "ECB", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.1840, "lng": 26.3570},
+    {"name": "Geyikli İskelesi (Çanakkale)", "slug": "geyikli", "port_code": "GYK", "region": "Kuzey Ege", "is_ferry": True, "country": "Türkiye", "lat": 39.7980, "lng": 26.1530},
+    {"name": "Bozcaada Limanı (Gestaş)", "slug": "bozcaada", "port_code": "BZC", "region": "Kuzey Ege", "is_ferry": True, "country": "Türkiye", "lat": 39.8360, "lng": 26.0710},
+    {"name": "Kabatepe İskelesi (Çanakkale)", "slug": "kabatepe", "port_code": "KBT", "region": "Kuzey Ege", "is_ferry": True, "country": "Türkiye", "lat": 40.2010, "lng": 26.2680},
+    {"name": "Gökçeada Kuzu Limanı (Gestaş)", "slug": "gokceada", "port_code": "GKC", "region": "Kuzey Ege", "is_ferry": True, "country": "Türkiye", "lat": 40.2310, "lng": 25.9500},
+    {"name": "Taşucu Limanı (Mersin - KKTC Feribot)", "slug": "tasucu", "port_code": "TSC", "region": "Akdeniz", "is_ferry": True, "country": "Türkiye", "lat": 36.3160, "lng": 33.8840},
+    {"name": "Girne Limanı (KKTC - Kıbrıs)", "slug": "girne", "port_code": "KYR", "region": "KKTC", "is_ferry": True, "country": "KKTC", "lat": 35.3410, "lng": 33.3200},
+    {"name": "Galataport Kruvaziyer Limanı (İstanbul)", "slug": "galataport", "port_code": "GLT", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 41.0260, "lng": 28.9830}
 ]
 
 from app.turkey_districts import TURKEY_DISTRICTS
 
 ALL_LOCATIONS = TURKEY_CITIES + INTERNATIONAL_CITIES + FERRY_PORTS + TURKEY_DISTRICTS
+
+def _norm_ascii(s: str) -> str:
+    if not s:
+        return ""
+    tr_map = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
+    return s.translate(tr_map).lower().strip()
 
 def find_city(city_name: str):
     return find_location(city_name)
@@ -237,6 +260,7 @@ def find_location(location_name: str):
         return None
     raw = location_name.strip()
     loc_clean = raw.lower()
+    loc_ascii = _norm_ascii(raw)
     
     # 0. İstanbul çoklu havalimanı ayrıştırması
     if "tüm havalimanları" in loc_clean or "tum havalimanlari" in loc_clean or ("ist" in loc_clean and "saw" in loc_clean):
@@ -264,27 +288,38 @@ def find_location(location_name: str):
                 c.get("port_code") == c_code):
                 return c
 
-    # 1. Tam eşleşme (name, slug veya iata)
+    # 1. Tam eşleşme (name, slug, en_name veya iata - Türkçe/ASCII normalize dahil)
     for c in ALL_LOCATIONS:
-        if (c.get("name", "").lower() == loc_clean or 
-            c.get("slug", "").lower() == loc_clean or 
+        c_name = c.get("name", "").lower()
+        c_slug = c.get("slug", "").lower()
+        c_en = c.get("en_name", "").lower()
+        if (c_name == loc_clean or 
+            _norm_ascii(c_name) == loc_ascii or
+            c_slug == loc_clean or 
+            c_slug == loc_ascii or
+            (c_en and (loc_clean in c_en.split() or loc_ascii in _norm_ascii(c_en).split())) or
             (c.get("iata") and c.get("iata", "").lower() == loc_clean)):
             return c
 
     # 2. Parantezleri temizleyip eşleştir (Örn: "Antalya (AYT)" -> "antalya")
     base_name = re.sub(r'\(.*?\)', '', loc_clean).strip()
+    base_ascii = _norm_ascii(base_name)
     if base_name:
         for c in ALL_LOCATIONS:
-            c_name = c.get("name", "").lower()
+            c_name = re.sub(r'\(.*?\)', '', c.get("name", "").lower()).strip()
             c_slug = c.get("slug", "").lower()
-            if base_name == c_name or base_name == c_slug:
+            if (base_name == c_name or base_name == c_slug or
+                base_ascii == _norm_ascii(c_name) or base_ascii == c_slug):
                 return c
             
-    # 3. Başlangıç veya alt dize eşleşmesi (çift yönlü esnek eşleşme)
+    # 3. Başlangıç veya alt dize eşleşmesi (çift yönlü esnek eşleşme + ASCII/İngilizce destekli)
     for c in ALL_LOCATIONS:
         c_name = c.get("name", "").lower()
+        c_ascii = _norm_ascii(c_name)
+        c_en = _norm_ascii(c.get("en_name", ""))
         if (loc_clean in c_name or c_name in loc_clean or
-            (base_name and (base_name in c_name or c_name in base_name))):
+            (len(loc_ascii) >= 3 and (loc_ascii in c_ascii or (c_en and loc_ascii in c_en))) or
+            (base_name and (base_name in c_name or c_name in base_name or (len(base_ascii) >= 3 and base_ascii in c_ascii)))):
             return c
             
     return None
@@ -390,6 +425,51 @@ _SPECIAL_DISTRICT_AIRPORT_SLUGS = {
     "luleburgaz": "istanbul-havalimani",
     "corlu": "tekirdag",
     "cerkezkoy": "istanbul-havalimani",
+    "safranbolu": "kastamonu",
+    "karabuk": "zonguldak",
+    "bartin": "zonguldak",
+    "pamukkale": "denizli",
+    "iskenderun": "hatay",
+    "antakya": "hatay",
+    "dortyol": "hatay",
+    "tarsus": "adana",
+    "mersin": "adana",
+    "cukurova": "adana",
+    "cizre": "sirnak",
+    "silopi": "sirnak",
+    "yuksekova": "hakkari",
+    "semdinli": "hakkari",
+    "dogubayazit": "agri",
+    "ercis": "van",
+    "siverek": "sanliurfa",
+    "viransehir": "sanliurfa",
+    "birecik": "sanliurfa",
+    "bozcaada": "canakkale",
+    "gokceada": "canakkale",
+    "assos": "balikesir",
+    "behramkale": "balikesir",
+    "girne": "lefkosa",
+    "magusa": "lefkosa",
+    "gazimagusa": "lefkosa",
+    "kapadokya": "nevsehir",
+    "urgup": "nevsehir",
+    "goreme": "nevsehir",
+    "avanos": "nevsehir",
+    "nigde": "kayseri",
+    "aksaray": "nevsehir",
+    "karaman": "konya",
+    "afyon": "kutahya",
+    "afyonkarahisar": "kutahya",
+    "usak": "kutahya",
+    "kutahya": "kutahya",
+    "bilecik": "eskisehir",
+    "gumushane": "trabzon",
+    "bayburt": "trabzon",
+    "ardahan": "kars",
+    "bitlis": "mus",
+    "tunceli": "elazig",
+    "kilis": "gaziantep",
+    "osmaniye": "adana",
 }
 
 
@@ -399,20 +479,26 @@ def resolve_nearest_airport_city(location_or_name):
     için en yakın aktif havalimanına sahip şehir nesnesini (city dict) ve (is_nearby: bool) bayrağını döndürür.
     Doğrudan havalimanı olan şehirlerde (city, False) döner.
     """
-    loc = location_or_name if isinstance(location_or_name, dict) else find_location(str(location_or_name or ""))
-    if not loc:
-        return None, False
+    input_str = ""
+    if isinstance(location_or_name, dict):
+        loc = location_or_name
+        input_str = loc.get("name") or loc.get("slug") or ""
+    else:
+        input_str = str(location_or_name or "").strip()
+        loc = find_location(input_str)
 
-    if loc.get("has_airport") and loc.get("iata"):
+    if loc and loc.get("has_airport") and loc.get("iata"):
         return loc, False
 
-    slug = (loc.get("slug") or "").lower().strip()
-    raw_slug = re.sub(r"[^a-z0-9-]+", "-", (loc.get("raw_name") or "").lower().strip()).strip("-")
+    # Doğrudan girilen metni aday slug olarak hazırla
+    raw_cand = re.sub(r"[^a-z0-9-]+", "-", input_str.lower().replace("ı", "i").replace("ğ", "g").replace("ü", "u").replace("ş", "s").replace("ö", "o").replace("ç", "c")).strip("-")
+    slug = (loc.get("slug") or "").lower().strip() if loc else ""
+    raw_slug = re.sub(r"[^a-z0-9-]+", "-", (loc.get("raw_name") or "").lower().strip()).strip("-") if loc else ""
 
-    for candidate_slug in (slug, raw_slug):
+    for candidate_slug in (raw_cand, slug, raw_slug):
         if candidate_slug and candidate_slug in _SPECIAL_DISTRICT_AIRPORT_SLUGS:
             target_slug = _SPECIAL_DISTRICT_AIRPORT_SLUGS[candidate_slug]
-            for c in TURKEY_CITIES:
+            for c in (TURKEY_CITIES + INTERNATIONAL_CITIES):
                 if c.get("slug") == target_slug and c.get("has_airport") and c.get("iata"):
                     return c, True
 
@@ -442,3 +528,195 @@ def resolve_nearest_airport_city(location_or_name):
             return hub_city, True
 
     return None, False
+
+
+# Obilet Gerçek Uçuş Sonuçları (/ucuslar/{orig_id}-{dest_id}/{YYYYMMDD}/{pax}/{cabin}/all) İçin Doğrulanmış Havalimanı ID Tablosu
+OBILET_AIRPORT_IDS = {
+    "IST_ALL": "250_0",
+    "IST": "349_5157",
+    "SAW": "350_67",
+    "ADB": "251_18",
+    "ESB": "222_4",
+    "GZP": "223_6",
+    "COV": "217_8298",
+    "ADF": "218_2",
+    "AJI": "220_3",
+    "MZH": "221_5136",
+    "EDO": "226_7",
+    "BGG": "228_5137",
+    "YEI": "232_8",
+    "CKZ": "233_9",
+    "DNZ": "236_10",
+    "DIY": "237_11",
+    "EZS": "239_12",
+    "ERC": "240_13",
+    "ERZ": "241_14",
+    "AOE": "242_15",
+    "YKO": "246_5138",
+    "AYT": "223_5",
+    "ADA": "217_8298",
+    "TZX": "277_33",
+    "KYA": "258_21",
+    "GZT": "243_16",
+    "SZF": "271_28",
+    "ASR": "254_20",
+    "BJV": "476_68",
+    "DLM": "508_69",
+    "VAN": "281_35",
+    "VAS": "274_31",
+    "KSY": "252_19",
+    "HTY": "247_5139",
+    "GNY": "279_34",
+    "MLX": "260_22",
+    "KZR": "259_5145",
+    "AFY": "14410_5522",
+    "KCO": "257_5141",
+    "AYDN": "3132_1543",
+    "RZV": "269_5163",
+    "OGU": "268_27",
+    "NAV": "266_26",
+    "KFS": "253_5140",
+    "NOP": "273_30",
+    "ISE": "248_17",
+    "ONQ": "283_5146",
+    "TJK": "276_5144",
+    "BAL": "288_36",
+    "MQM": "263_24",
+    "NKT": "289_5150",
+    "IGD": "292_5148",
+    "MSR": "265_25",
+    "USQ": "280_5156",
+    "TEQ": "506_32",
+    "SXZ": "272_29",
+    "JFK": "3441_1946",
+    "EWR": "3434_1938",
+    "LAX": "6587_363",
+    "MIA": "3332_1785",
+    "ORD": "3356_1834",
+    "SFO": "1885_136",
+    "IAD": "4077_2659",
+    "BOS": "3390_1882",
+    "YYZ": "2028_312",
+    "YUL": "2025_307",
+    "CDG": "2333_654",
+    "ORY": "2333_655",
+    "LHR": "2395_732",
+    "STN": "2395_733",
+    "FCO": "2572_935",
+    "CIA": "2572_934",
+    "MXP": "5355_3961",
+    "LIN": "5355_946",
+    "VCE": "2568_928",
+    "BER": "303_5162",
+    "AMS": "2836_1227",
+    "BRU": "1938_204",
+    "CRL": "4596_3194",
+    "VIE": "1912_170",
+    "PRG": "334_58",
+    "BUD": "305_47",
+    "BCN": "2296_613",
+    "MAD": "2289_605",
+    "FRA": "3576_2131",
+    "MUC": "2205_506",
+    "ZRH": "2054_344",
+    "GVA": "5342_3948",
+    "BSL": "6520_5152",
+    "DUS": "2211_514",
+    "CGN": "3578_2133",
+    "STR": "2202_503",
+    "HAM": "2209_511",
+    "NCE": "2337_659",
+    "SVO": "3029_1433",
+    "VKO": "3029_1434",
+    "SKG": "336_59",
+    "ATH": "298_39",
+    "SOF": "337_60",
+    "PDV": "8631_57",
+    "VAR": "343_65",
+    "BUS": "302_42",
+    "TBS": "341_63",
+    "GYD": "301_41",
+    "SKP": "1814_1105",
+    "DXB": "1836_70",
+    "DOH": "3004_5651",
+    "RUH": "3072_1479",
+    "JED": "6278_4892",
+    "HND": "2609_979",
+    "NRT": "2609_978",
+    "SIN": "3120_1530",
+    "BKK": "3237_1653",
+    "ICN": "2660_1040",
+    "DPS": "2498_856",
+}
+
+
+def resolve_obilet_airport_id(iata_code: str, fallback_query: str = "") -> str:
+    """IATA kodunu (örn: ZRH, SAW, IST, EDO) Obilet gerçek havalimanı ID'sine (örn: 2054_344) çevirir."""
+    code = (iata_code or "").upper().strip()
+    if code in OBILET_AIRPORT_IDS:
+        return OBILET_AIRPORT_IDS[code]
+    for q in [code, (fallback_query or "").split("(")[0].strip()]:
+        if not q:
+            continue
+        try:
+            import httpx
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "Referer": "https://www.obilet.com/ucak-bileti",
+                "Content-Type": "application/json",
+            }
+            with httpx.Client(headers=headers, timeout=3.5) as client:
+                r = client.post("https://www.obilet.com/json/ucak-duraklari", json={"query": q, "page": 1, "element": "origin"})
+                if r.status_code == 200:
+                    items = r.json().get("items") or []
+                    exact = next((x for x in items if x.get("refCode") == code), None)
+                    chosen = exact or (items[0] if items else None)
+                    if chosen and chosen.get("id"):
+                        OBILET_AIRPORT_IDS[code] = chosen["id"]
+                        return chosen["id"]
+        except Exception:
+            pass
+    return ""
+
+
+def build_obilet_flight_url(
+    from_code: str,
+    to_code: str,
+    departure_date: str,
+    return_date: str = None,
+    is_round: bool = False,
+    adults: int = 1,
+    children: int = 0,
+    infants: int = 0,
+    cabin_class: str = "economy",
+    orig_slug: str = "",
+    dest_slug: str = "",
+) -> str:
+    """
+    Obilet'in statik SEO sayfası (/ucak-bileti/zurih-istanbul) yerine doğrudan seçilen tarihin
+    canlı uçuş sonuçları ekranına (/ucuslar/2054_344-350_67/20261107/1a/economy/all) giden URL'i üretir.
+    """
+    orig_id = resolve_obilet_airport_id(from_code, orig_slug)
+    dest_id = resolve_obilet_airport_id(to_code, dest_slug)
+
+    dep_compact = (departure_date or "").replace("-", "").strip()
+    ret_compact = (return_date or "").replace("-", "").strip() if (is_round and return_date) else ""
+
+    pax_parts = [f"{max(1, int(adults or 1))}a"]
+    if int(children or 0) > 0:
+        pax_parts.append(f"{int(children)}c")
+    if int(infants or 0) > 0:
+        pax_parts.append(f"{int(infants)}b")
+    pax_seg = "_".join(pax_parts)
+
+    cabin_seg = "business" if str(cabin_class or "").lower() == "business" else "economy"
+
+    if orig_id and dest_id and len(dep_compact) == 8:
+        date_seg = f"{dep_compact}-{ret_compact}" if (is_round and len(ret_compact) == 8) else dep_compact
+        return f"https://www.obilet.com/ucuslar/{orig_id}-{dest_id}/{date_seg}/{pax_seg}/{cabin_seg}/all"
+
+    # Yedek URL
+    ob_orig = "istanbul" if orig_slug.startswith("istanbul") else (orig_slug or from_code.lower())
+    ob_dest = "istanbul" if dest_slug.startswith("istanbul") else (dest_slug or to_code.lower())
+    return f"https://www.obilet.com/ucak-bileti/{ob_orig}-{ob_dest}"
+

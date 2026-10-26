@@ -109,15 +109,27 @@ class BusService:
         "istanbul-havalimani": "349",
         "istanbul-anadolu": "350",
         "istanbul-sabiha-gokcen": "350",
-        "atasehir": "349",
-        "dudullu": "349",
+        "atasehir": "350",
+        "dudullu": "350",
         "esenler": "349",
         "alibeykoy": "349",
-        "kadikoy": "349",
-        "harem": "349",
-        "pendik": "349",
-        "kartal": "349",
-        "umraniye": "349",
+        "kadikoy": "350",
+        "bostanci": "350",
+        "harem": "350",
+        "pendik": "350",
+        "kartal": "350",
+        "maltepe": "350",
+        "umraniye": "350",
+        "uskudar": "350",
+        "samandira": "350",
+        "sultanbeyli": "350",
+        "sancaktepe": "350",
+        "tuzla": "350",
+        "cekmekoy": "350",
+        "beykoz": "350",
+        "kavacik": "350",
+        "goztepe": "350",
+        "kozyatagi": "350",
         "asti": "356",
         "yenimahalle": "356",
         "cankaya": "356",
@@ -213,12 +225,17 @@ class BusService:
         "atasehir": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "dudullu": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "kadikoy": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "bostanci": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "umraniye": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "uskudar": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "pendik": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "kartal": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "maltepe": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "harem": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "samandira": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "kavacik": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "goztepe": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
+        "kozyatagi": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "sultanbeyli": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "sancaktepe": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
         "tuzla": "523ae3fc-b96a-4b21-ad03-fe5bc6ce818a",
@@ -550,6 +567,11 @@ class BusService:
     def get_clean_slug(cls, name: str) -> str:
         if not name:
             return ""
+        low_raw = name.lower().replace("ı", "i").replace("İ", "i")
+        if "anadolu" in low_raw and ("istanbul" in low_raw or "harem" in low_raw or "dudullu" in low_raw or "bostanci" in low_raw):
+            return "istanbul-anadolu"
+        if "avrupa" in low_raw and ("istanbul" in low_raw or "esenler" in low_raw or "alibeykoy" in low_raw):
+            return "istanbul-avrupa"
         name = re.sub(r'\(.*?\)', '', name).strip()
         if "/" in name:
             name = name.split("/")[0].strip()
@@ -617,12 +639,14 @@ class BusService:
             "istanbul-avrupa": "istanbul",
             "atasehir": "istanbul",
             "dudullu": "istanbul",
+            "bostanci": "istanbul",
             "esenler": "istanbul",
             "alibeykoy": "istanbul",
             "kadikoy": "istanbul",
             "harem": "istanbul",
             "pendik": "istanbul",
             "kartal": "istanbul",
+            "maltepe": "istanbul",
             "umraniye": "istanbul",
             "asti": "ankara",
             "eryaman": "ankara",
@@ -811,7 +835,8 @@ class BusService:
                 if prov_slug == "istanbul":
                     anadolu_districts = {
                         "atasehir", "dudullu", "kadikoy", "umraniye", "uskudar", "pendik", "kartal",
-                        "maltepe", "harem", "sultanbeyli", "sancaktepe", "tuzla", "cekmekoy", "beykoz", "sile", "sabiha-gokcen"
+                        "maltepe", "harem", "sultanbeyli", "sancaktepe", "tuzla", "cekmekoy", "beykoz", "sile", "sabiha-gokcen",
+                        "bostanci", "samandira", "kavacik", "goztepe", "kozyatagi", "kucukyali", "suadiye"
                     }
                     if slug in anadolu_districts or c_slug in anadolu_districts:
                         uuid_val = cls.FLIXBUS_CITY_UUIDS["istanbul-anadolu"]

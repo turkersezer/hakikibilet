@@ -397,6 +397,22 @@ def fetch_live_flights_from_google(
                 if disk_payload and (now_ts - float(disk_payload.get("ts", 0)) < FLIGHT_CACHE_TTL_SECONDS):
                     disk_data = disk_payload.get("data") or []
                     if disk_data:
+                        from app.cities import build_obilet_flight_url
+                        for _it in disk_data:
+                            if "/ucak-bileti/" in str(_it.get("obilet_link") or ""):
+                                _it["obilet_link"] = build_obilet_flight_url(
+                                    from_code=_it.get("from_code") or "",
+                                    to_code=_it.get("to_code") or "",
+                                    departure_date=departure_date,
+                                    return_date=return_date,
+                                    is_round=is_round,
+                                    adults=adults,
+                                    children=children,
+                                    infants=infants,
+                                    cabin_class=seat_mode,
+                                    orig_slug=orig_slug,
+                                    dest_slug=dest_slug,
+                                )
                         with _FLIGHT_CACHE_LOCK:
                             _FLIGHT_CACHE[cache_key] = {"ts": float(disk_payload["ts"]), "data": copy.deepcopy(disk_data)}
                         return copy.deepcopy(disk_data)
@@ -512,25 +528,12 @@ def fetch_live_flights_from_google(
                 logger.debug(f"Multi-OTA map error: {ota_err}")
                 multi_ota_map = {}
 
-    if not all_raw_flights and not include_multi_ota:
-        try:
-            multi_ota_map = fetch_multi_ota_flight_map(
-                orig_codes,
-                dest_codes,
-                departure_date,
-                return_date if is_round else None,
-                seat_mode,
-                adults,
-                children,
-                infants,
-            ) or {}
-        except Exception:
-            multi_ota_map = {}
-
     sorted_raw = _parse_unique_flights(all_raw_flights) if all_raw_flights else []
     if not sorted_raw and multi_ota_map:
         sorted_raw = _build_fallback_sorted_raw_from_ota(multi_ota_map, departure_date)
     if not sorted_raw:
+        with _FLIGHT_CACHE_LOCK:
+            _FLIGHT_CACHE[cache_key] = {"ts": now_ts, "data": []}
         return []
     parsed_return_flights = _parse_unique_flights(all_raw_return_flights) if (is_round and all_raw_return_flights) else []
 
@@ -669,22 +672,21 @@ def fetch_live_flights_from_google(
             if enuygun_subid:
                 enuygun_flight_link += f"&subid={enuygun_subid}"
 
-            # Obilet Canlı Uçak Bileti Arama Linki (Şehir Slug + Rota, Tarih ve Tüm Yolcu Parametreli)
-            obilet_subid = getattr(settings, "AFFILIATE_OBILET_SUBID", "hakikibilet")
-            obilet_pax = f"yetiskin={adults}"
-            if children > 0:
-                obilet_pax += f"&cocuk={children}"
-            if infants > 0:
-                obilet_pax += f"&bebek={infants}"
-            ob_orig_slug = "istanbul" if orig_slug.startswith("istanbul") else orig_slug
-            ob_dest_slug = "istanbul" if dest_slug.startswith("istanbul") else dest_slug
-            if is_round and return_date:
-                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{ob_orig_slug}-{ob_dest_slug}?tarih={departure_date}&donus={return_date}&{obilet_pax}"
-            else:
-                obilet_flight_link = f"https://www.obilet.com/ucak-bileti/{ob_orig_slug}-{ob_dest_slug}?tarih={departure_date}&{obilet_pax}"
-            if obilet_subid:
-                obilet_flight_link += f"&subid={obilet_subid}"
-            obilet_flight_link += "&sorting=price&sort=price"
+            # Obilet Gerçek Tarihli Canlı Uçak Sefer Sonuçları Linki (/ucuslar/{orig_id}-{dest_id}/{YYYYMMDD}/{pax}/{cabin}/all)
+            from app.cities import build_obilet_flight_url
+            obilet_flight_link = build_obilet_flight_url(
+                from_code=from_code,
+                to_code=to_code,
+                departure_date=departure_date,
+                return_date=return_date,
+                is_round=is_round,
+                adults=adults,
+                children=children,
+                infants=infants,
+                cabin_class=seat_mode,
+                orig_slug=orig_slug,
+                dest_slug=dest_slug,
+            )
 
 
             # Havayolu kimliği ve resmi bilet seçim linkleri (Provider Registry üzerinden kural bazlı)
@@ -896,9 +898,13 @@ def fetch_live_flights_from_google(
                     )
                 )
 
+                clean_ret_orig = re.sub(r"\s*\([A-Z0-9/ -]+\)", "", dest_city_name).strip()
+                clean_ret_dest = re.sub(r"\s*\([A-Z0-9/ -]+\)", "", origin_city_name).strip()
+                ret_orig_lbl = "Adana - Mersin / Çukurova (COV)" if chosen_ret["from_code"] == "COV" else f"{clean_ret_orig} ({chosen_ret['from_code']})"
+                ret_dest_lbl = "Adana - Mersin / Çukurova (COV)" if chosen_ret["to_code"] == "COV" else f"{clean_ret_dest} ({chosen_ret['to_code']})"
                 return_leg_dict = {
-                    "origin": f"{dest_city_name} ({chosen_ret['from_code']})",
-                    "destination": f"{origin_city_name} ({chosen_ret['to_code']})",
+                    "origin": ret_orig_lbl,
+                    "destination": ret_dest_lbl,
                     "from_code": chosen_ret["from_code"],
                     "to_code": chosen_ret["to_code"],
                     "departure_time": chosen_ret["dep_time"],
@@ -911,14 +917,20 @@ def fetch_live_flights_from_google(
                     "is_direct": chosen_ret["is_direct"],
                 }
 
+            clean_orig_title = re.sub(r"\s*\([A-Z0-9/ -]+\)", "", origin_city_name).strip()
+            clean_dest_title = re.sub(r"\s*\([A-Z0-9/ -]+\)", "", dest_city_name).strip()
+            orig_display_lbl = "Adana - Mersin / Çukurova (COV)" if from_code == "COV" else f"{clean_orig_title} ({from_code})"
+            dest_display_lbl = "Adana - Mersin / Çukurova (COV)" if to_code == "COV" else f"{clean_dest_title} ({to_code})"
+
             results.append({
                 "id": f"live-fl-{idx+1}",
                 "transport_type": "flight",
                 "carrier": carrier_display,
+                "carrier_code": carrier_code,
                 "carrier_logo": "✈️",
                 "flight_number": flight_no,
-                "origin": f"{origin_city_name} ({from_code})",
-                "destination": f"{dest_city_name} ({to_code})",
+                "origin": orig_display_lbl,
+                "destination": dest_display_lbl,
                 "from_code": from_code,
                 "to_code": to_code,
                 "departure_time": dep_time,
