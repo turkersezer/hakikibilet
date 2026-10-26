@@ -2558,7 +2558,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261026_v22"></script>
+    <script src="/static/js/app_v3.js?v=20261026_v23"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">
@@ -2598,7 +2598,7 @@
     </div>
 
     <script>
-        function showIntegrationNotice(type) {
+        function showIntegrationNotice(type) { if (typeof window.trackHakikiEvent === 'function') { window.trackHakikiEvent({ event_type: 'feature_interest', feature_name: type }); }
             const modal = document.getElementById("integrationNoticeModal");
             const card = document.getElementById("integrationModalCard");
             const icon = document.getElementById("integrationModalIcon");

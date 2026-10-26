@@ -163,6 +163,23 @@ async def init_db():
         except Exception:
             pass
 
+        # 7. Analytics Events Table (Yönetici & Analitik Modülü)
+        try:
+            from app.services.analytics_service import AnalyticsService, BACKUP_SNAPSHOT_PATH
+            await AnalyticsService.ensure_tables(conn)
+            cur = await conn.execute("SELECT COUNT(*) FROM analytics_events")
+            ev_count = (await cur.fetchone())[0]
+            if ev_count == 0 and os.path.exists(BACKUP_SNAPSHOT_PATH):
+                try:
+                    with open(BACKUP_SNAPSHOT_PATH, "r", encoding="utf-8") as bf:
+                        snap = json.load(bf)
+                    await conn.commit()
+                    await AnalyticsService.import_full_backup_json(snap)
+                except Exception as restore_err:
+                    print(f"[Analytics Auto-Restore Uyarısı]: {restore_err}")
+        except Exception as e:
+            print(f"[Analytics Tablo Başlatma Uyarısı]: {e}")
+
         await conn.commit()
         
         # Temizle ve Doğrulanmış Radar & Resmi Duyurular ile Güncelle

@@ -85,8 +85,8 @@ templates = Jinja2Templates(directory=templates_dir)
 async def maintenance_middleware(request: Request, call_next):
     path = request.url.path
     
-    # Yasal uyum sayfaları, doğrudan lansman vitrini, erken kayıt API'si, bülten ayrılma, statik dosyalar, favicon ve robots her zaman herkese açık
-    legal_paths = ("/lansman", "/api/erken-kayit", "/bulten/ayril", "/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
+    # Yasal uyum sayfaları, doğrudan lansman vitrini, erken kayıt API'si, bülten ayrılma, yönetici paneli, analitik ping, statik dosyalar, favicon ve robots her zaman herkese açık
+    legal_paths = ("/lansman", "/yonetim", "/admin", "/api/erken-kayit", "/api/analytics/event", "/bulten/ayril", "/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
     if path.startswith("/static") or path in ("/favicon.ico", "/robots.txt") or path in legal_paths:
         response = await call_next(request)
         if path.startswith("/static/"):
@@ -329,7 +329,7 @@ async def get_extension_slots():
     }
 
 @app.post("/api/search")
-async def search_tickets(req: SearchRequest):
+async def search_tickets(req: SearchRequest, request: Request):
     """
     MODÜL 1: Bilet Arama ve Parametreli Deep Linkler (Tek Yön, Gidiş-Dönüş, Gezgin Modu)
     Skyscanner, Google Flights, Enuygun, TCDD, Obilet, Kamil Koç
@@ -338,6 +338,9 @@ async def search_tickets(req: SearchRequest):
     children = req.children if req.children is not None else 0
     infants = req.infants if req.infants is not None else 0
     total_pax = max(1, adults + children + infants)
+    client_ip = request.client.host if request.client else "unknown"
+    ua = request.headers.get("user-agent", "")
+    ref = request.headers.get("referer", "")
 
     try:
         result = await asyncio.to_thread(
@@ -362,9 +365,38 @@ async def search_tickets(req: SearchRequest):
             include_hotel=getattr(req, "include_hotel", False),
             hotel_nights=getattr(req, "hotel_nights", None)
         )
+        try:
+            from app.services.analytics_service import AnalyticsService
+            res_count = int(result.get("results_count") or len(result.get("tickets") or []))
+            asyncio.create_task(AnalyticsService.log_event(
+                event_type="search",
+                transport_type=req.transport_type or "flight",
+                origin=str(result.get("origin") or req.origin),
+                destination=str(result.get("destination") or req.destination),
+                results_count=res_count,
+                ip=client_ip,
+                user_agent=ua,
+                referrer=ref,
+            ))
+        except Exception:
+            pass
         return result
     except Exception as exc:
         print(f"[/api/search Hata Kalkanı Devrede]: {exc}")
+        try:
+            from app.services.analytics_service import AnalyticsService
+            asyncio.create_task(AnalyticsService.log_event(
+                event_type="search",
+                transport_type=req.transport_type or "flight",
+                origin=req.origin,
+                destination=req.destination,
+                results_count=0,
+                ip=client_ip,
+                user_agent=ua,
+                referrer=ref,
+            ))
+        except Exception:
+            pass
         links = SearchService.generate_deep_links(
             req.origin, req.destination, req.departure_date, req.return_date,
             total_pax, req.trip_type, cabin_class=req.cabin_class,
@@ -414,16 +446,34 @@ async def get_deals(
     return {"deals": deals, "count": len(deals)}
 
 @app.post("/api/cars/search")
-async def search_car_rentals(req: CarSearchRequest):
+async def search_car_rentals(req: CarSearchRequest, request: Request):
     """MODÜL 6: Araç Kiralama Çoklu Karşılaştırma Modülü (Yolcu360, Enuygun, Obilet, Avis, Garenta)"""
     from app.services.car_rental_service import CarRentalService
-    return CarRentalService.search_cars(
+    res = CarRentalService.search_cars(
         location=req.location,
         pickup_date=req.pickup_date,
         dropoff_date=req.dropoff_date,
         location_type=getattr(req, "location_type", "city"),
         currency=getattr(req, "currency", "TRY") or "TRY"
     )
+    try:
+        from app.services.analytics_service import AnalyticsService
+        client_ip = request.client.host if request.client else "unknown"
+        ua = request.headers.get("user-agent", "")
+        ref = request.headers.get("referer", "")
+        asyncio.create_task(AnalyticsService.log_event(
+            event_type="search",
+            transport_type="car",
+            origin=req.location,
+            destination=req.location,
+            results_count=len(res.get("cars") or res.get("providers") or [1]),
+            ip=client_ip,
+            user_agent=ua,
+            referrer=ref,
+        ))
+    except Exception:
+        pass
+    return res
 
 @app.post("/api/trackers")
 async def create_tracker(req: TrackRouteRequest):
@@ -774,5 +824,120 @@ async def sync_early_access_audience(request: Request):
         
     result = await NotificationService.sync_resend_audience_with_db()
     return result
+
+
+# ==================== YÖNETİCİ & ANALİTİK MODÜLÜ (/yonetim) ====================
+
+@app.get("/yonetim", response_class=HTMLResponse)
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_analytics_page(request: Request):
+    """Şifre Korumalı Yönetici & Analitik Paneli"""
+    cookie = request.cookies.get("hakiki_preview_access")
+    param = request.query_params.get("onizleme") or request.query_params.get("preview")
+    is_authenticated = (cookie == settings.MAINTENANCE_BYPASS_KEY) or (param == settings.MAINTENANCE_BYPASS_KEY)
+
+    response = templates.TemplateResponse(
+        request=request,
+        name="admin_analytics.html",
+        context={
+            "app_name": settings.APP_NAME,
+            "app_slogan": settings.APP_SLOGAN,
+            "app_domain": settings.APP_DOMAIN,
+            "is_authenticated": is_authenticated,
+        }
+    )
+    if param == settings.MAINTENANCE_BYPASS_KEY and cookie != settings.MAINTENANCE_BYPASS_KEY:
+        response.set_cookie(
+            key="hakiki_preview_access",
+            value=settings.MAINTENANCE_BYPASS_KEY,
+            max_age=30 * 24 * 3600,
+            httponly=True,
+            samesite="lax"
+        )
+    return response
+
+
+@app.post("/api/analytics/event")
+async def record_analytics_event(request: Request):
+    """Kullanıcı etkileşimlerini (sayfa görüntüleme, mail dönüşü, acente tıklaması, özellik talebi, uyarı) kaydeder"""
+    client_ip = request.client.host if request.client else "unknown"
+    if not _check_rate_limit(client_ip, "analytics_event", max_requests=90, window_sec=60):
+        return JSONResponse(content={"ok": False, "reason": "rate_limited"}, status_code=200)
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    allowed_types = {
+        "page_view", "email_return", "affiliate_click",
+        "feature_interest", "route_warning", "geo_resolve", "search"
+    }
+    ev_type = str(payload.get("event_type") or "page_view").strip()
+    if ev_type not in allowed_types:
+        return {"ok": False}
+
+    ua = request.headers.get("user-agent", "")
+    ref = str(payload.get("referrer") or request.headers.get("referer") or "")
+    lang = str(payload.get("lang") or "tr")[:5]
+
+    from app.services.analytics_service import AnalyticsService
+    asyncio.create_task(AnalyticsService.log_event(
+        event_type=ev_type,
+        transport_type=str(payload.get("transport_type") or "")[:30],
+        origin=str(payload.get("origin") or "")[:80],
+        destination=str(payload.get("destination") or "")[:80],
+        provider_name=str(payload.get("provider_name") or "")[:80],
+        ticket_price=float(payload.get("ticket_price") or 0.0),
+        currency=str(payload.get("currency") or "TRY")[:8],
+        feature_name=str(payload.get("feature_name") or "")[:80],
+        results_count=int(payload.get("results_count") if payload.get("results_count") is not None else -1),
+        warning_text=str(payload.get("warning_text") or "")[:200],
+        lang=lang,
+        referrer=ref,
+        utm_source=str(payload.get("utm_source") or "")[:60],
+        utm_campaign=str(payload.get("utm_campaign") or "")[:60],
+        ip=client_ip,
+        user_agent=ua,
+    ))
+    return {"ok": True}
+
+
+@app.get("/api/admin/analytics/summary")
+async def get_admin_analytics_summary(request: Request):
+    """Yönetici paneli için tüm analitik ve istatistik verilerini döner"""
+    _require_admin_access(request)
+    from app.services.analytics_service import AnalyticsService
+    return await AnalyticsService.get_dashboard_summary()
+
+
+@app.get("/api/admin/analytics/export-json")
+async def export_admin_analytics_backup(request: Request):
+    """Tüm analitik, abone ve alarm verilerini tek tıkla JSON yedek dosyası olarak indirir"""
+    _require_admin_access(request)
+    from app.services.analytics_service import AnalyticsService
+    backup_data = await AnalyticsService.export_full_backup_json()
+    content_bytes = json.dumps(backup_data, ensure_ascii=False, indent=2).encode("utf-8")
+    return Response(
+        content=content_bytes,
+        media_type="application/json",
+        headers={
+            "Content-Disposition": "attachment; filename=hakikibilet_analitik_yedek.json",
+            "Cache-Control": "no-cache"
+        }
+    )
+
+
+@app.post("/api/admin/analytics/import-json")
+async def import_admin_analytics_backup(request: Request):
+    """İndirilmiş JSON yedek dosyasını veritabanına kayıpsız geri yükler"""
+    _require_admin_access(request)
+    try:
+        payload = await request.json()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Geçersiz JSON dosyası: {e}")
+    from app.services.analytics_service import AnalyticsService
+    result = await AnalyticsService.import_full_backup_json(payload)
+    return result
+
 
 

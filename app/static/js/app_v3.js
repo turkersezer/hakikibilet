@@ -2033,7 +2033,7 @@ function showFieldWarningNotice(inputEl, message) {
         parent.appendChild(badge);
     }
     badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i><span>${message}</span>`;
-    badge.classList.remove("hidden");
+    badge.classList.remove("hidden"); if (typeof window.trackHakikiEvent === 'function') { window.trackHakikiEvent({ event_type: 'route_warning', transport_type: window.currentTransportSubTab || 'flight', origin: inputEl.value || '', warning_text: String(message || '').slice(0, 180) }); }
 }
 window.showFieldWarningNotice = showFieldWarningNotice;
 
@@ -2091,6 +2091,9 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
                 inputEl.value = item.target;
                 if (item.note) {
                     window._lastDistrictNotice = item.note;
+                }
+                if (typeof window.trackHakikiEvent === 'function' && raw !== item.target) {
+                    window.trackHakikiEvent({ event_type: 'geo_resolve', transport_type: currentMode, origin: raw, destination: item.target, warning_text: item.note || `${raw} ➔ ${item.target}` });
                 }
                 return;
             }
@@ -5921,3 +5924,127 @@ function updateTransportFieldLabels(subTab, lang) {
     }
 }
 window.updateTransportFieldLabels = updateTransportFieldLabels;
+
+// ==================== HAKİKİ BİLET ANALİTİK & İSTATİSTİK MOTORU ====================
+(function initHakikiAnalytics() {
+    function getActiveLang() {
+        try {
+            return localStorage.getItem("hakiki_lang") || "tr";
+        } catch (e) {
+            return "tr";
+        }
+    }
+
+    function trackHakikiEvent(payload) {
+        if (!payload || !payload.event_type) return;
+        const bodyObj = Object.assign({
+            lang: getActiveLang(),
+            referrer: document.referrer || ""
+        }, payload);
+        const bodyStr = JSON.stringify(bodyObj);
+        try {
+            if (navigator.sendBeacon) {
+                const blob = new Blob([bodyStr], { type: "application/json" });
+                navigator.sendBeacon("/api/analytics/event", blob);
+                return;
+            }
+        } catch (e) {}
+        try {
+            fetch("/api/analytics/event", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: bodyStr,
+                keepalive: true
+            }).catch(() => {});
+        } catch (e) {}
+    }
+    window.trackHakikiEvent = trackHakikiEvent;
+
+    function detectProviderFromLink(href, text) {
+        const h = (href || "").toLowerCase();
+        const t = (text || "").toLowerCase();
+        if (h.includes("trip.com") || t.includes("trip.com")) return "Trip.com";
+        if (h.includes("skyscanner") || t.includes("skyscanner")) return "Skyscanner";
+        if (h.includes("obilet") || t.includes("obilet")) return "Obilet";
+        if (h.includes("enuygun") || t.includes("enuygun")) return "Enuygun";
+        if (h.includes("kiwi.com") || t.includes("kiwi")) return "Kiwi.com";
+        if (h.includes("kayak") || h.includes("booking.com") || t.includes("booking") || t.includes("kayak")) return "Booking / Kayak";
+        if (h.includes("google.com/travel") || t.includes("google flights")) return "Google Flights";
+        if (h.includes("turkishairlines") || t.includes("türk hava yolları") || t.includes("thy")) return "Türk Hava Yolları";
+        if (h.includes("flypgs") || t.includes("pegasus")) return "Pegasus";
+        if (h.includes("ajet.com") || t.includes("ajet")) return "AJet";
+        if (h.includes("sunexpress") || t.includes("sunexpress")) return "SunExpress";
+        if (h.includes("tcdd") || t.includes("tcdd")) return "TCDD E-Bilet";
+        if (h.includes("kamilkoc") || h.includes("flixbus") || t.includes("kamil koç") || t.includes("flixbus")) return "Kamil Koç / FlixBus";
+        if (h.includes("pamukkale") || t.includes("pamukkale")) return "Pamukkale Turizm";
+        if (h.includes("metroturizm") || t.includes("metro turizm")) return "Metro Turizm";
+        if (h.includes("yolcu360") || t.includes("yolcu360")) return "Yolcu360";
+        if (h.includes("avis") || t.includes("avis")) return "Avis";
+        if (h.includes("garenta") || t.includes("garenta")) return "Garenta";
+        if (h.includes("feribotlines") || t.includes("feribotlines")) return "Feribotlines";
+        if (h.includes("ido.com") || t.includes("ido")) return "İDO";
+        if (h.includes("budo") || t.includes("budo")) return "BUDO";
+        if (h.includes("turyol") || t.includes("turyol")) return "Turyol";
+        return (text || "Resmi Acente").replace(/↗/g, "").trim().slice(0, 40) || "Resmi Acente";
+    }
+
+    function extractPriceFromCardOrLink(anchorEl) {
+        const text = (anchorEl.innerText || anchorEl.textContent || "").replace(/\./g, "").replace(",", ".");
+        const match = text.match(/(\d{3,6})\s*(?:₺|TL|EUR|€|\$)/i);
+        if (match) return parseFloat(match[1]) || 0;
+        const card = anchorEl.closest("[data-ticket-price], .bg-white, .rounded-2xl, .rounded-3xl");
+        if (card) {
+            const cardText = (card.innerText || "").replace(/\./g, "").replace(",", ".");
+            const m2 = cardText.match(/(\d{3,6})\s*(?:₺|TL)/i);
+            if (m2) return parseFloat(m2[1]) || 0;
+        }
+        return 0;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const utmSource = (params.get("utm_source") || params.get("ref") || "").toLowerCase();
+            const utmCampaign = (params.get("utm_campaign") || params.get("mail") || "").toLowerCase();
+
+            trackHakikiEvent({
+                event_type: "page_view",
+                utm_source: utmSource,
+                utm_campaign: utmCampaign
+            });
+
+            if (utmSource === "email" || utmSource === "mail" || utmSource === "bulten" || utmCampaign) {
+                trackHakikiEvent({
+                    event_type: "email_return",
+                    utm_source: utmSource || "email",
+                    utm_campaign: utmCampaign || "bulten_genel"
+                });
+            }
+        } catch (e) {}
+    });
+
+    // Acente / Havayolu / Otobüs / Tren / Feribot / Araç Kiralama dış bağlantı tıklama yakalayıcı
+    document.addEventListener("click", (ev) => {
+        const anchor = ev.target && ev.target.closest ? ev.target.closest("a[href]") : null;
+        if (!anchor) return;
+        const href = anchor.getAttribute("href") || "";
+        if (!href.startsWith("http://") && !href.startsWith("https://")) return;
+        if (href.includes(window.location.hostname) && !href.includes("utm_")) return;
+
+        const provider = detectProviderFromLink(href, anchor.innerText || anchor.textContent || "");
+        const price = extractPriceFromCardOrLink(anchor);
+        const oInp = document.getElementById("transOrigin");
+        const dInp = document.getElementById("transDest");
+        const lastReq = window.lastSearchReq || {};
+
+        trackHakikiEvent({
+            event_type: "affiliate_click",
+            provider_name: provider,
+            transport_type: lastReq.transport_type || window.currentTransportSubTab || "flight",
+            origin: lastReq.origin || (oInp ? oInp.value : "") || "",
+            destination: lastReq.destination || (dInp ? dInp.value : "") || "",
+            ticket_price: price
+        });
+    }, true);
+})();
+

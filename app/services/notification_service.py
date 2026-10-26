@@ -55,6 +55,9 @@ class NotificationService:
                     </div>
 
                     <a href="{link}" target="_blank" class="cta-button">Hemen Biletini Al →</a>
+                    <div style="text-align: center; margin-top: 12px;">
+                        <a href="https://hakikibilet.com/?utm_source=email&utm_campaign=fiyat_alarmi" target="_blank" style="color: #2563eb; font-size: 13px; font-weight: 700; text-decoration: underline;">Alternatif Seferleri Hakiki Bilet'te Karşılaştır →</a>
+                    </div>
                     <p style="font-size: 12px; color: #64748b; text-align: center; margin-top: 12px;">
                         *Fiyatlar anlık olarak değişiklik gösterebilir. Kontenjan dolmadan acele edin!
                     </p>
@@ -74,6 +77,11 @@ class NotificationService:
         Resend API veya Console simülatörü üzerinden e-posta gönderir
         """
         html_content = cls.render_email_html(route, price, regular_price, link, carrier, expires_at)
+        try:
+            from app.services.analytics_service import AnalyticsService
+            await AnalyticsService.log_event(event_type="email_sent", utm_campaign="fiyat_alarmi", provider_name=to_email, origin=route, ticket_price=price)
+        except Exception:
+            pass
         
         # Eğer RESEND_API_KEY tanımlıysa gerçek API çağrısı yap
         if settings.RESEND_API_KEY:
@@ -198,7 +206,7 @@ class NotificationService:
                     <p>
                         Lansman günümüzde kapılar açıldığı an ilk haberdar olan ayrıcalıklı kitle arasında olacaksınız.
                     </p>
-                    <a href="https://hakikibilet.com" class="button">Hakiki Bilet'i İnceleyin →</a>
+                    <a href="https://hakikibilet.com/?utm_source=email&utm_campaign=hosgeldin" class="button">Hakiki Bilet'i İnceleyin →</a>
                     <p style="font-size: 13px; color: #64748b; margin-top: 24px;">
                         <em>Sorularınız veya seyahat önerileriniz için bu e-postayı doğrudan yanıtlayabilirsiniz.</em>
                     </p>
@@ -213,7 +221,17 @@ class NotificationService:
         </body>
         </html>
         """
-        return await cls.send_custom_email(subscriber_email, subject, html)
+        res = await cls.send_custom_email(subscriber_email, subject, html)
+        try:
+            from app.services.analytics_service import AnalyticsService
+            await AnalyticsService.log_event(
+                event_type="email_sent",
+                utm_campaign="hosgeldin",
+                provider_name=subscriber_email,
+            )
+        except Exception:
+            pass
+        return res
 
     @classmethod
     async def send_admin_new_lead_alert(cls, subscriber_email: str, total_count: int, ip_address: Optional[str] = None) -> Dict[str, Any]:
@@ -273,7 +291,7 @@ class NotificationService:
                     <p>
                         Artık gizli komisyonlar, yapay fiyat artışları ve yanıltıcı rakamlar olmadan Türkiye'nin tüm havayolu ve otobüs seferlerini tek tıkla canlı karşılaştırabilirsiniz.
                     </p>
-                    <a href="https://hakikibilet.com" class="button">Hemen Hakiki Fiyatları Karşılaştırın →</a>
+                    <a href="https://hakikibilet.com/?utm_source=email&utm_campaign=lansman_duyuru" class="button">Hemen Hakiki Fiyatları Karşılaştırın →</a>
                     <p style="font-size: 13px; color: #64748b;">
                         İlk seyahatinizde hakiki fiyat avantajını keşfedin. Bizi tercih ettiğiniz için teşekkür ederiz!
                     </p>
@@ -287,7 +305,17 @@ class NotificationService:
         </body>
         </html>
         """
-        return await cls.send_custom_email(to_email, subject, html)
+        res = await cls.send_custom_email(to_email, subject, html)
+        try:
+            from app.services.analytics_service import AnalyticsService
+            await AnalyticsService.log_event(
+                event_type="email_sent",
+                utm_campaign="lansman_duyuru",
+                provider_name=to_email,
+            )
+        except Exception:
+            pass
+        return res
 
     @classmethod
     async def send_telegram(cls, chat_id: str, route: str, price: float, regular_price: float, link: str, carrier: str = "Havayolu / Tren") -> Dict[str, Any]:
