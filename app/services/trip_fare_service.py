@@ -378,8 +378,11 @@ def fetch_trip_live_offers(
 
     all_offers: Dict[str, Dict[str, Any]] = {}
     now_ts = time.time()
-    default_probe = "false" if os.getenv("RENDER") else "true"
-    allow_probe = os.getenv("ENABLE_TRIP_BROWSER_PROBE", default_probe).lower() in ("true", "1", "yes")
+    # Trip.com Resmi Flight OpenAPI yetkisi tanımlanana kadar yerel tarayıcı kazıması ve
+    # yanıltıcı/bayat önbellek fiyatları devre dışıdır (Sıfır Varsayım & Tüm Cihazlarda Tutarlılık).
+    allow_probe = os.getenv("ENABLE_TRIP_BROWSER_PROBE", "false").lower() in ("true", "1", "yes")
+    if not allow_probe:
+        return {}
     probed_city_once = False
 
     for orig_raw in orig_codes:

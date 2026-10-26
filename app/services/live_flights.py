@@ -970,6 +970,7 @@ def fetch_live_flights_from_google(
                 "winner_channel": winner_channel,
                 "winner_button_text": winner_button_tr,
                 "winner_button_text_en": winner_button_en,
+                "trip_link": trip_url,
                 "travelpayouts_link": trip_flight_link,
                 "hotel_link": dest_hotel_link,
                 "providers": providers_list

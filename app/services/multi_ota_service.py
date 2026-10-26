@@ -337,11 +337,50 @@ SKY_ENTITY_MAP = {
     "KYA": ("KYA", "128668546"),
     "SZF": ("SZF", "128669037"),
     "ASR": ("ASR", "128668257"),
+    "MLX": ("MLX", "128667482"),
+    "EDO": ("EDO", "128667067"),
+    "DNZ": ("DNZ", "128668104"),
+    "GZP": ("GZP", "128667560"),
+    "HTY": ("HTY", "128668268"),
+    "MQM": ("MQM", "128667498"),
+    "EZS": ("EZS", "128668449"),
+    "OGU": ("OGU", "129055290"),
+    "RZV": ("RZV", "205363195"),
+    "KSY": ("KSY", "128668536"),
+    "ERC": ("ERC", "128667831"),
+    "BAL": ("BAL", "128668273"),
+    "VAS": ("VAS", "128667439"),
+    "GNY": ("GNY", "128668314"),
+    "KCM": ("KCM", "128668516"),
+    "ADF": ("ADF", "128668224"),
+    "MSR": ("MSR", "128667505"),
+    "AJI": ("AJI", "128668230"),
+    "IGD": ("IGD", "128668382"),
+    "NKT": ("NKT", "129052468"),
+    "SXZ": ("SXZ", "128669034"),
+    "BGG": ("BGG", "129053151"),
+    "YKO": ("YKO", "129055436"),
+    "NAV": ("NAV", "128667518"),
+    "MZH": ("MZH", "128667512"),
+    "SIN": ("SIN", "128669019"),
+    "ISE": ("ISE", "128668396"),
+    "CKZ": ("CKZ", "128668089"),
+    "ECN": ("ECN", "95673645"),
+    "ZRH": ("ZRH", "95673344"),
     "LHR": ("LHR", "95565050"),
     "CDG": ("CDG", "95601358"),
     "AMS": ("AMS", "95601362"),
     "FRA": ("FRA", "95601389"),
     "BER": ("BER", "95601373"),
+    "MUC": ("MUC", "95601379"),
+    "DUS": ("DUS", "95601384"),
+    "VIE": ("VIE", "95673366"),
+    "FCO": ("FCO", "95601440"),
+    "MXP": ("MXP", "95601432"),
+    "BCN": ("BCN", "95565085"),
+    "MAD": ("MAD", "95565077"),
+    "ATH": ("ATH", "95673624"),
+    "GYD": ("GYD", "95673517"),
     "DXB": ("DXB", "95673418"),
 }
 
@@ -363,12 +402,23 @@ def _resolve_sky_entity(orig_code: str, api_key: str, api_host: str) -> Tuple[st
         r = requests.get(
             f"https://{api_host}/api/v1/flights/searchAirport?query={c_up}",
             headers={"x-rapidapi-key": api_key, "x-rapidapi-host": api_host},
-            timeout=2.0,
+            timeout=4.5,
         )
         if r.status_code == 200:
             arr = (r.json() or {}).get("data") or []
-            if arr and isinstance(arr[0], dict):
-                nav = arr[0].get("navigation") or {}
+            chosen = None
+            for item in arr:
+                if not isinstance(item, dict):
+                    continue
+                nav = item.get("navigation") or {}
+                rel = nav.get("relevantFlightParams") or {}
+                if str(rel.get("skyId") or "").upper() == c_up:
+                    chosen = item
+                    break
+            if not chosen and arr and isinstance(arr[0], dict):
+                chosen = arr[0]
+            if chosen:
+                nav = chosen.get("navigation") or {}
                 rel = nav.get("relevantFlightParams") or {}
                 s_id = rel.get("skyId") or c_up
                 e_id = str(rel.get("entityId") or nav.get("entityId") or "")
