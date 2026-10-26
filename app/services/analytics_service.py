@@ -20,7 +20,13 @@ ANALYTICS_BACKUP_FILE = os.path.join(
     "analytics_backup_snapshot.json",
 )
 BACKUP_SNAPSHOT_PATH = ANALYTICS_BACKUP_FILE
+ADMIN_PASSWORD_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    "data",
+    "admin_passcode.txt",
+)
 os.makedirs(os.path.dirname(ANALYTICS_BACKUP_FILE), exist_ok=True)
+_CACHED_ADMIN_PASSWORD: Optional[str] = None
 
 
 def _hash_visitor(ip: str, user_agent: str) -> str:
@@ -76,7 +82,92 @@ class AnalyticsService:
         """)
         await conn.execute("CREATE INDEX IF NOT EXISTS idx_analytics_event_type ON analytics_events(event_type);")
         await conn.execute("CREATE INDEX IF NOT EXISTS idx_analytics_created_at ON analytics_events(created_at);")
+        await conn.execute("""
+        CREATE TABLE IF NOT EXISTS admin_settings (
+            setting_key TEXT PRIMARY KEY,
+            setting_value TEXT NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
         await conn.commit()
+        global _CACHED_ADMIN_PASSWORD
+        if not _CACHED_ADMIN_PASSWORD:
+            try:
+                cur = await conn.execute("SELECT setting_value FROM admin_settings WHERE setting_key = 'admin_password' LIMIT 1")
+                row = await cur.fetchone()
+                if row and row[0]:
+                    _CACHED_ADMIN_PASSWORD = str(row[0]).strip()
+            except Exception:
+                pass
+
+    @classmethod
+    def get_custom_admin_password_sync(cls) -> str:
+        """Yalnızca yönetici panelinden özel olarak değiştirilmiş şifreyi döner (yoksa boş string)."""
+        global _CACHED_ADMIN_PASSWORD
+        if _CACHED_ADMIN_PASSWORD:
+            return _CACHED_ADMIN_PASSWORD
+        try:
+            if os.path.exists(ADMIN_PASSWORD_FILE):
+                with open(ADMIN_PASSWORD_FILE, "r", encoding="utf-8") as pf:
+                    val = pf.read().strip()
+                if val:
+                    _CACHED_ADMIN_PASSWORD = val
+                    return val
+        except Exception:
+            pass
+        try:
+            if os.path.exists(ANALYTICS_BACKUP_FILE):
+                with open(ANALYTICS_BACKUP_FILE, "r", encoding="utf-8") as bf:
+                    snap = json.load(bf)
+                val = str(snap.get("admin_password") or "").strip()
+                if val and val != "hakiki2026":
+                    _CACHED_ADMIN_PASSWORD = val
+                    return val
+        except Exception:
+            pass
+        return ""
+
+    @classmethod
+    def get_admin_password_sync(cls) -> str:
+        """Senkron olarak geçerli yönetici şifresini döner (Özel Şifre -> hakiki2026)."""
+        custom = cls.get_custom_admin_password_sync()
+        if custom:
+            return custom
+        return "hakiki2026"
+
+    @classmethod
+    async def update_admin_password(cls, new_password: str) -> Dict[str, Any]:
+        """Yönetici şifresini SQLite, yerel dosya ve JSON yedeğinde kalıcı olarak günceller."""
+        global _CACHED_ADMIN_PASSWORD
+        clean_new = str(new_password or "").strip()
+        if len(clean_new) < 4:
+            return {"success": False, "message": "Yeni şifre en az 4 karakter olmalıdır."}
+
+        _CACHED_ADMIN_PASSWORD = clean_new
+        try:
+            with open(ADMIN_PASSWORD_FILE, "w", encoding="utf-8") as pf:
+                pf.write(clean_new)
+        except Exception:
+            pass
+
+        async with aiosqlite.connect(settings.DB_PATH, timeout=10.0) as conn:
+            await cls.ensure_tables(conn)
+            await conn.execute(
+                """
+                INSERT INTO admin_settings (setting_key, setting_value, updated_at)
+                VALUES ('admin_password', ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_at = CURRENT_TIMESTAMP
+                """,
+                (clean_new,),
+            )
+            await conn.commit()
+
+        try:
+            await cls.export_full_backup_json()
+        except Exception:
+            pass
+
+        return {"success": True, "message": "Yönetici şifreniz başarıyla güncellendi."}
 
     @classmethod
     async def log_event(
@@ -508,6 +599,7 @@ class AnalyticsService:
         payload = {
             "exported_at": datetime.now().isoformat(),
             "app": settings.APP_DOMAIN,
+            "admin_password": cls.get_admin_password_sync(),
             "events_count": len(events),
             "subscribers_count": len(subscribers),
             "analytics_events": events,
@@ -525,6 +617,9 @@ class AnalyticsService:
         """Dışa aktarılmış JSON yedeğini veritabanına (mükerrer oluşturmadan) geri yükler."""
         events = payload.get("analytics_events") or []
         subscribers = payload.get("prelaunch_subscribers") or []
+        backup_pass = str(payload.get("admin_password") or "").strip()
+        if backup_pass and len(backup_pass) >= 4:
+            await cls.update_admin_password(backup_pass)
         inserted_events = 0
         inserted_subs = 0
 

@@ -34,9 +34,22 @@ def _is_valid_admin_key(val: str) -> bool:
         return False
     clean = str(val).strip()
     env_key = str(getattr(settings, "MAINTENANCE_BYPASS_KEY", "") or "").strip()
+    try:
+        from app.services.analytics_service import AnalyticsService
+        custom_key = AnalyticsService.get_custom_admin_password_sync()
+    except Exception:
+        custom_key = ""
+    if custom_key and custom_key not in ("hakiki2026", "hakikibilet2026"):
+        # Eğer yönetici panelinden özel bir şifre belirlendiyse onu (veya ortam değişkenini) kabul et
+        valid_lower = {custom_key.lower()}
+        if env_key:
+            valid_lower.add(env_key.lower())
+        return clean == custom_key or clean.lower() in valid_lower
     valid_lower = {"hakiki2026", "hakikibilet2026"}
     if env_key:
         valid_lower.add(env_key.lower())
+    if custom_key:
+        valid_lower.add(custom_key.lower())
     return clean == env_key or clean.lower() in valid_lower
 
 
@@ -106,14 +119,14 @@ async def maintenance_middleware(request: Request, call_next):
         
     # URL parametresiyle doğrudan yönetici girişi: ?onizleme=hakiki2026 veya ?preview=hakiki2026
     query_key = request.query_params.get("onizleme") or request.query_params.get("preview")
-    if query_key == settings.MAINTENANCE_BYPASS_KEY:
+    if _is_valid_admin_key(query_key):
         if path.startswith("/api"):
             return await call_next(request)
         clean_url = str(request.url.remove_query_params(["onizleme", "preview"]))
         response = RedirectResponse(url=clean_url)
         response.set_cookie(
             key="hakiki_preview_access",
-            value=settings.MAINTENANCE_BYPASS_KEY,
+            value=str(query_key).strip(),
             max_age=30 * 24 * 3600,
             httponly=True,
             samesite="lax"
@@ -133,7 +146,7 @@ async def maintenance_middleware(request: Request, call_next):
     # Bakım modu devredeyse ve tarayıcıda yönetici çerezi yoksa vitrin sayfasını sun
     if settings.MAINTENANCE_MODE:
         preview_cookie = request.cookies.get("hakiki_preview_access")
-        if preview_cookie != settings.MAINTENANCE_BYPASS_KEY:
+        if not _is_valid_admin_key(preview_cookie):
             if not path.startswith("/api"):
                 return templates.TemplateResponse(
                     request=request,
@@ -165,16 +178,21 @@ async def admin_unlock(request: Request):
         passcode = ""
         
     if _is_valid_admin_key(passcode):
-        response = JSONResponse(content={"success": True, "message": "Giriş başarılı."})
+        try:
+            from app.services.analytics_service import AnalyticsService
+            active_token = AnalyticsService.get_admin_password_sync()
+        except Exception:
+            active_token = str(passcode).strip() or "hakiki2026"
+        response = JSONResponse(content={"success": True, "message": "Giriş başarılı.", "token": active_token})
         response.set_cookie(
             key="hakiki_preview_access",
-            value="hakiki2026",
+            value=active_token,
             max_age=30 * 24 * 3600,
             httponly=True,
             samesite="lax"
         )
         return response
-    return JSONResponse(content={"success": False, "message": "Geçersiz şifre. (Lütfen hakiki2026 giriniz)"}, status_code=401)
+    return JSONResponse(content={"success": False, "message": "Geçersiz yönetici şifresi."}, status_code=401)
 
 @app.get("/admin/lock")
 async def admin_lock():
@@ -845,6 +863,8 @@ async def admin_analytics_page(request: Request):
     param = request.query_params.get("onizleme") or request.query_params.get("preview")
     is_authenticated = _is_valid_admin_key(cookie) or _is_valid_admin_key(param)
 
+    from app.services.analytics_service import AnalyticsService
+    active_admin_key = AnalyticsService.get_admin_password_sync()
     response = templates.TemplateResponse(
         request=request,
         name="admin_analytics.html",
@@ -853,12 +873,13 @@ async def admin_analytics_page(request: Request):
             "app_slogan": settings.APP_SLOGAN,
             "app_domain": settings.APP_DOMAIN,
             "is_authenticated": is_authenticated,
+            "active_admin_key": active_admin_key if is_authenticated else "",
         }
     )
     if _is_valid_admin_key(param) and not _is_valid_admin_key(cookie):
         response.set_cookie(
             key="hakiki_preview_access",
-            value="hakiki2026",
+            value=active_admin_key,
             max_age=30 * 24 * 3600,
             httponly=True,
             samesite="lax"
@@ -947,6 +968,55 @@ async def import_admin_analytics_backup(request: Request):
     from app.services.analytics_service import AnalyticsService
     result = await AnalyticsService.import_full_backup_json(payload)
     return result
+
+
+@app.post("/api/admin/change-password")
+async def change_admin_password(request: Request):
+    """Yönetici panelinden mevcut şifreyi doğrulayarak yeni yönetici şifresi belirler"""
+    _require_admin_access(request)
+    try:
+        data = await request.json()
+    except Exception:
+        data = {}
+    current_pass = str(data.get("current_password") or "").strip()
+    new_pass = str(data.get("new_password") or "").strip()
+    confirm_pass = str(data.get("confirm_password") or "").strip()
+
+    if not _is_valid_admin_key(current_pass):
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "Mevcut şifrenizi hatalı girdiniz."}
+        )
+    if len(new_pass) < 4:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "Yeni şifre en az 4 karakter olmalıdır."}
+        )
+    if new_pass != confirm_pass:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "Yeni şifre ile şifre tekrarı eşleşmiyor."}
+        )
+
+    from app.services.analytics_service import AnalyticsService
+    res = await AnalyticsService.update_admin_password(new_pass)
+    if not res.get("success"):
+        return JSONResponse(status_code=400, content=res)
+
+    response = JSONResponse(content={
+        "success": True,
+        "message": "Yönetici şifreniz başarıyla güncellendi ve yedeklendi!",
+        "new_token": new_pass,
+    })
+    response.set_cookie(
+        key="hakiki_preview_access",
+        value=new_pass,
+        max_age=30 * 24 * 3600,
+        httponly=True,
+        samesite="lax"
+    )
+    return response
+
 
 
 

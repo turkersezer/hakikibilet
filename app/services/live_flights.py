@@ -245,20 +245,30 @@ def _build_fallback_sorted_raw_from_ota(
     for key, channels in multi_ota_map.items():
         if not key or key.startswith("TIME:") or key.startswith("SHORT:") or not isinstance(channels, dict):
             continue
-        kiwi_off = channels.get("kiwi")
-        if not kiwi_off or not isinstance(kiwi_off, dict):
+        # Tüm aktif kanallardan (Skyscanner, Booking, Trip, Kiwi) en zengin meta veriyi ve en düşük doğrulanmış fiyatı seç
+        cand_offs = [
+            channels.get(ch)
+            for ch in ("skyscanner", "booking", "trip", "kiwi")
+            if isinstance(channels.get(ch), dict) and float(channels[ch].get("price") or 0) > 0
+        ]
+        if not cand_offs:
             continue
-        price = float(kiwi_off.get("price") or 0)
-        from_code = str(kiwi_off.get("from_code") or "").strip().upper()
-        to_code = str(kiwi_off.get("to_code") or "").strip().upper()
-        dep_time = str(kiwi_off.get("dep_time") or "").strip()
-        arr_time = str(kiwi_off.get("arr_time") or dep_time).strip()
-        carrier_code = str(kiwi_off.get("carrier_code") or "").strip().upper()
-        fn_code = str(kiwi_off.get("fn_code") or "").strip()
-        airline_name = str(kiwi_off.get("carrier_name") or carrier_code or "Havayolu").strip()
-        flight_no = str(kiwi_off.get("flight_no") or f"{carrier_code} {fn_code}").strip()
-        is_direct = bool(kiwi_off.get("is_direct", True))
-        via_code = str(kiwi_off.get("via_code") or to_code).strip().upper()
+        meta_off = next((o for o in cand_offs if o.get("from_code") and o.get("dep_time")), cand_offs[0])
+        min_ota_price = min(float(o["price"]) for o in cand_offs)
+        non_kiwi_prices = [float(o["price"]) for o in cand_offs if o.get("channel") != "kiwi"]
+        official_base_price = min(non_kiwi_prices) if non_kiwi_prices else None
+
+        price = min_ota_price
+        from_code = str(meta_off.get("from_code") or "").strip().upper()
+        to_code = str(meta_off.get("to_code") or "").strip().upper()
+        dep_time = str(meta_off.get("dep_time") or "").strip()
+        arr_time = str(meta_off.get("arr_time") or dep_time).strip()
+        carrier_code = str(meta_off.get("carrier_code") or "").strip().upper()
+        fn_code = str(meta_off.get("fn_code") or "").strip()
+        airline_name = str(meta_off.get("carrier_name") or carrier_code or "Havayolu").strip()
+        flight_no = str(meta_off.get("flight_no") or f"{carrier_code} {fn_code}").strip()
+        is_direct = bool(meta_off.get("is_direct", True))
+        via_code = str(meta_off.get("via_code") or to_code).strip().upper()
 
         if price <= 0 or not from_code or not to_code or not dep_time or ":" not in dep_time:
             continue
@@ -275,8 +285,8 @@ def _build_fallback_sorted_raw_from_ota(
         dep_dt = base_dt
         arr_dt = base_dt
         total_duration_mins = 75
-        dep_local = str(kiwi_off.get("dep_local") or "")
-        arr_local = str(kiwi_off.get("arr_local") or "")
+        dep_local = str(meta_off.get("dep_local") or "")
+        arr_local = str(meta_off.get("arr_local") or "")
         try:
             if len(dep_local) >= 19 and len(arr_local) >= 19:
                 dt1 = datetime.fromisoformat(dep_local[:19])
@@ -306,12 +316,14 @@ def _build_fallback_sorted_raw_from_ota(
             leg_last[6] = to_code
             legs.append(leg_last)
 
-        sig = (airline_name, from_code, to_code, dep_time, arr_time)
+        sig = (carrier_code or airline_name, from_code, to_code, dep_time)
         if sig not in unique_fallback or price < unique_fallback[sig]["price"]:
             unique_fallback[sig] = {
                 "f0": [],
                 "legs": legs,
                 "price": price,
+                "official_base_price": official_base_price,
+                "from_ota_fallback": True,
                 "booking_token": None,
                 "from_code": from_code,
                 "to_code": to_code,
@@ -777,11 +789,14 @@ def fetch_live_flights_from_google(
             else:
                 trip_url = trip_flight_link
 
+            # Eğer bulut IP kısıtlaması nedeniyle Google Flights yerine OTA yedek motorundan geldiyse,
+            # Kiwi'nin yüksek API fiyatını asla Google Flights (official) üstüne kopyalama!
+            official_verified_price = item.get("official_base_price") if item.get("from_ota_fallback") else price
             raw_providers = [
                 {
                     "name": official_name,
                     "url": official_link,
-                    "price": price,
+                    "price": official_verified_price,
                     "channel": "official",
                 },
                 {

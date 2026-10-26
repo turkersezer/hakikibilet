@@ -342,30 +342,8 @@ SKY_ENTITY_MAP = {
     "DNZ": ("DNZ", "128668104"),
     "GZP": ("GZP", "128667560"),
     "HTY": ("HTY", "128668268"),
-    "MQM": ("MQM", "128667498"),
-    "EZS": ("EZS", "128668449"),
-    "OGU": ("OGU", "129055290"),
+    "KSY": ("KSY", "128667576"),
     "RZV": ("RZV", "205363195"),
-    "KSY": ("KSY", "128668536"),
-    "ERC": ("ERC", "128667831"),
-    "BAL": ("BAL", "128668273"),
-    "VAS": ("VAS", "128667439"),
-    "GNY": ("GNY", "128668314"),
-    "KCM": ("KCM", "128668516"),
-    "ADF": ("ADF", "128668224"),
-    "MSR": ("MSR", "128667505"),
-    "AJI": ("AJI", "128668230"),
-    "IGD": ("IGD", "128668382"),
-    "NKT": ("NKT", "129052468"),
-    "SXZ": ("SXZ", "128669034"),
-    "BGG": ("BGG", "129053151"),
-    "YKO": ("YKO", "129055436"),
-    "NAV": ("NAV", "128667518"),
-    "MZH": ("MZH", "128667512"),
-    "SIN": ("SIN", "128669019"),
-    "ISE": ("ISE", "128668396"),
-    "CKZ": ("CKZ", "128668089"),
-    "ECN": ("ECN", "95673645"),
     "ZRH": ("ZRH", "95673344"),
     "LHR": ("LHR", "95565050"),
     "CDG": ("CDG", "95601358"),
@@ -561,12 +539,15 @@ def fetch_rapidapi_skyscanner_offers(
             f_key = normalize_flight_key(f"{carrier_code}{flight_num}")
 
             dep_dt_str = str(first_leg.get("departure") or "")
+            arr_dt_str = str(first_leg.get("arrival") or "")
             dep_time = dep_dt_str[11:16] if len(dep_dt_str) >= 16 else None
+            arr_time = arr_dt_str[11:16] if len(arr_dt_str) >= 16 else dep_time
 
             orig_disp = str((first_leg.get("origin") or {}).get("displayCode") or o_code).upper()
             dest_disp = str((first_leg.get("destination") or {}).get("displayCode") or d_code).upper()
             seg_orig = str((first_seg.get("origin") or {}).get("displayCode") or orig_disp).upper()
             seg_dest = str((first_seg.get("destination") or {}).get("displayCode") or dest_disp).upper()
+            carrier_disp_name = str(marketing_carrier.get("name") or carrier_code).strip()
 
             if return_date:
                 sky_item_url = (
@@ -585,6 +566,16 @@ def fetch_rapidapi_skyscanner_offers(
                 "url": sky_item_url,
                 "channel": "skyscanner",
                 "dep_time": dep_time,
+                "arr_time": arr_time,
+                "dep_local": dep_dt_str,
+                "arr_local": arr_dt_str,
+                "from_code": orig_disp,
+                "to_code": dest_disp,
+                "carrier_code": carrier_code,
+                "fn_code": flight_num,
+                "carrier_name": carrier_disp_name,
+                "flight_no": f"{carrier_code} {flight_num}".strip(),
+                "is_direct": (len(segs) == 1),
             }
 
             _merge_offer(offers_map, f_key, "skyscanner", offer_item)
@@ -698,7 +689,9 @@ def fetch_rapidapi_booking_offers(
 
             f_key = normalize_flight_key(f"{carrier_code}{flight_num}")
             dep_time_raw = str(first_seg.get("departureTime") or "")
+            arr_time_raw = str(first_seg.get("arrivalTime") or "")
             dep_time = dep_time_raw[11:16] if len(dep_time_raw) >= 16 else None
+            arr_time = arr_time_raw[11:16] if len(arr_time_raw) >= 16 else dep_time
 
             orig_actual = str((first_seg.get("departureAirport") or {}).get("code") or o_code).upper()
             dest_actual = str((first_seg.get("arrivalAirport") or {}).get("code") or d_code).upper()
@@ -715,6 +708,16 @@ def fetch_rapidapi_booking_offers(
                 "url": booking_offer_url,
                 "channel": "booking",
                 "dep_time": dep_time,
+                "arr_time": arr_time,
+                "dep_local": dep_time_raw,
+                "arr_local": arr_time_raw,
+                "from_code": orig_actual,
+                "to_code": dest_actual,
+                "carrier_code": carrier_code,
+                "fn_code": flight_num,
+                "carrier_name": carrier_code,
+                "flight_no": f"{carrier_code} {flight_num}".strip(),
+                "is_direct": (len(legs) == 1),
             }
 
             _merge_offer(offers_map, f_key, "booking", offer_item)

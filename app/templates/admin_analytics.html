@@ -119,13 +119,16 @@ async function handleAdminLogin(e) {
             <button onclick="loadDashboardData()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition cursor-pointer flex items-center gap-1.5">
                 <i class="fa-solid fa-arrows-rotate text-amber-400"></i> Yenile
             </button>
-            <a href="/api/admin/analytics/export-json?onizleme=hakiki2026" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold text-xs border border-amber-500/40 transition flex items-center gap-1.5">
+            <a id="exportJsonBtn" href="/api/admin/analytics/export-json?onizleme={{ active_admin_key or 'hakiki2026' }}" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold text-xs border border-amber-500/40 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-download"></i> JSON Yedek İndir
             </a>
             <label class="px-3 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 font-bold text-xs border border-sky-500/40 transition cursor-pointer flex items-center gap-1.5">
                 <i class="fa-solid fa-upload"></i> Yedek Yükle
                 <input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importBackupJson(event)">
             </label>
+            <button type="button" onclick="openChangePassModal()" class="px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-bold text-xs border border-purple-500/40 transition cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-key"></i> Şifre Değiştir
+            </button>
             <a href="/" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Ana Vitrin
             </a>
@@ -412,7 +415,7 @@ async function handleAdminLogin(e) {
                 <button onclick="syncResendCloud()" id="syncResendBtn" class="px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-bold text-xs border border-purple-500/40 transition cursor-pointer flex items-center gap-1.5">
                     <i class="fa-solid fa-cloud-arrow-up"></i> Resend Bulut Eşitle
                 </button>
-                <a href="/api/admin/erken-kayit-csv?onizleme=hakiki2026" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-xs border border-emerald-500/40 transition flex items-center gap-1.5">
+                <a id="exportCsvBtn" href="/api/admin/erken-kayit-csv?onizleme={{ active_admin_key or 'hakiki2026' }}" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-xs border border-emerald-500/40 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-file-csv"></i> Aboneleri İndir (CSV / Excel)
                 </a>
             </div>
@@ -531,6 +534,7 @@ async function handleAdminLogin(e) {
 </main>
 
 <script>
+window.ACTIVE_ADMIN_TOKEN = "{{ active_admin_key or 'hakiki2026' }}";
 let currentDashboardData = null;
 let selectedConvRate = 4; // Varsayılan %4 sektör ortalaması
 
@@ -581,7 +585,7 @@ const MODE_LABELS = {
 
 async function loadDashboardData() {
     try {
-        const res = await fetch('/api/admin/analytics/summary?onizleme=hakiki2026');
+        const res = await fetch('/api/admin/analytics/summary?onizleme=' + encodeURIComponent(window.ACTIVE_ADMIN_TOKEN));
         if (!res.ok) return;
         const data = await res.json();
         currentDashboardData = data;
@@ -847,7 +851,7 @@ async function importBackupJson(event) {
     try {
         const text = await file.text();
         const jsonPayload = JSON.parse(text);
-        const res = await fetch('/api/admin/analytics/import-json?onizleme=hakiki2026', {
+        const res = await fetch('/api/admin/analytics/import-json?onizleme=' + encodeURIComponent(window.ACTIVE_ADMIN_TOKEN), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(jsonPayload)
@@ -870,10 +874,89 @@ async function syncResendCloud() {
     const oldHtml = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eşitleniyor...';
     try {
-        await fetch('/api/admin/erken-kayit-senkronize?onizleme=hakiki2026', { method: 'POST' });
+        await fetch('/api/admin/erken-kayit-senkronize?onizleme=' + encodeURIComponent(window.ACTIVE_ADMIN_TOKEN), { method: 'POST' });
         await loadDashboardData();
     } catch (e) {}
     btn.innerHTML = oldHtml;
+}
+
+function openChangePassModal() {
+    document.getElementById('changePassModal').classList.remove('hidden');
+    document.getElementById('changePassModal').classList.add('flex');
+    document.getElementById('changePassStatus').classList.add('hidden');
+    document.getElementById('currPassInput').value = '';
+    document.getElementById('newPassInput').value = '';
+    document.getElementById('confPassInput').value = '';
+}
+
+function closeChangePassModal() {
+    document.getElementById('changePassModal').classList.add('hidden');
+    document.getElementById('changePassModal').classList.remove('flex');
+}
+
+function toggleModalPassVisibility(inputId, iconId) {
+    const inp = document.getElementById(inputId);
+    const ic = document.getElementById(iconId);
+    if (inp.type === 'password') {
+        inp.type = 'text';
+        ic.className = 'fa-solid fa-eye-slash';
+    } else {
+        inp.type = 'password';
+        ic.className = 'fa-solid fa-eye';
+    }
+}
+
+async function handleChangeAdminPassword(e) {
+    e.preventDefault();
+    const currPass = document.getElementById('currPassInput').value.trim();
+    const newPass = document.getElementById('newPassInput').value.trim();
+    const confPass = document.getElementById('confPassInput').value.trim();
+    const statusEl = document.getElementById('changePassStatus');
+    const btn = document.getElementById('savePassBtn');
+
+    statusEl.classList.add('hidden');
+    if (newPass !== confPass) {
+        statusEl.className = 'text-xs font-bold text-rose-300 bg-rose-950/70 border border-rose-800 rounded-xl px-3 py-2';
+        statusEl.textContent = 'Yeni şifre ile şifre tekrarı birbiriyle eşleşmiyor.';
+        statusEl.classList.remove('hidden');
+        return;
+    }
+
+    btn.disabled = true;
+    try {
+        const res = await fetch('/api/admin/change-password?onizleme=' + encodeURIComponent(window.ACTIVE_ADMIN_TOKEN), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                current_password: currPass,
+                new_password: newPass,
+                confirm_password: confPass
+            })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            window.ACTIVE_ADMIN_TOKEN = data.new_token || newPass;
+            const expBtn = document.getElementById('exportJsonBtn');
+            if (expBtn) expBtn.href = '/api/admin/analytics/export-json?onizleme=' + encodeURIComponent(window.ACTIVE_ADMIN_TOKEN);
+            const csvBtn = document.getElementById('exportCsvBtn');
+            if (csvBtn) csvBtn.href = '/api/admin/erken-kayit-csv?onizleme=' + encodeURIComponent(window.ACTIVE_ADMIN_TOKEN);
+
+            statusEl.className = 'text-xs font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-700 rounded-xl px-3 py-2';
+            statusEl.textContent = '✅ ' + (data.message || 'Şifreniz başarıyla güncellendi!');
+            statusEl.classList.remove('hidden');
+            setTimeout(() => closeChangePassModal(), 1400);
+        } else {
+            statusEl.className = 'text-xs font-bold text-rose-300 bg-rose-950/70 border border-rose-800 rounded-xl px-3 py-2';
+            statusEl.textContent = data.message || 'Şifre güncellenemedi.';
+            statusEl.classList.remove('hidden');
+        }
+    } catch (err) {
+        statusEl.className = 'text-xs font-bold text-rose-300 bg-rose-950/70 border border-rose-800 rounded-xl px-3 py-2';
+        statusEl.textContent = 'Bağlantı hatası oluştu.';
+        statusEl.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -881,6 +964,71 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(loadDashboardData, 15000);
 });
 </script>
+
+<!-- ==================== YÖNETİCİ ŞİFRE DEĞİŞTİRME MODALI ==================== -->
+<div id="changePassModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="glass-card w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl border border-purple-500/40 relative">
+        <button type="button" onclick="closeChangePassModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-300 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-black text-white">Yönetici Şifresini Değiştir</h3>
+                <p class="text-[11px] text-slate-400">Yeni şifreniz anında kaydedilir ve JSON yedeğine işlenir</p>
+            </div>
+        </div>
+
+        <form onsubmit="handleChangeAdminPassword(event)" class="space-y-3.5">
+            <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Mevcut Şifreniz</label>
+                <div class="relative">
+                    <input type="password" id="currPassInput" required placeholder="Mevcut şifrenizi girin..."
+                        class="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs focus:outline-none focus:border-purple-400">
+                    <button type="button" onclick="toggleModalPassVisibility('currPassInput', 'currEyeIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-purple-300 cursor-pointer">
+                        <i id="currEyeIcon" class="fa-solid fa-eye text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Yeni Şifre (En az 4 karakter)</label>
+                <div class="relative">
+                    <input type="password" id="newPassInput" required minlength="4" placeholder="Yeni şifrenizi belirleyin..."
+                        class="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs focus:outline-none focus:border-purple-400">
+                    <button type="button" onclick="toggleModalPassVisibility('newPassInput', 'newEyeIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-purple-300 cursor-pointer">
+                        <i id="newEyeIcon" class="fa-solid fa-eye text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Yeni Şifre (Tekrar)</label>
+                <div class="relative">
+                    <input type="password" id="confPassInput" required minlength="4" placeholder="Yeni şifrenizi tekrar girin..."
+                        class="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs focus:outline-none focus:border-purple-400">
+                    <button type="button" onclick="toggleModalPassVisibility('confPassInput', 'confEyeIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-purple-300 cursor-pointer">
+                        <i id="confEyeIcon" class="fa-solid fa-eye text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="changePassStatus" class="hidden"></div>
+
+            <div class="flex items-center gap-2 pt-2">
+                <button type="button" onclick="closeChangePassModal()" class="w-1/3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition cursor-pointer">
+                    İptal
+                </button>
+                <button type="submit" id="savePassBtn" class="w-2/3 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-black text-xs shadow-lg transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-check"></i> Yeni Şifreyi Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endif %}
 
 </body>
