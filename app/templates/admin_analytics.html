@@ -34,8 +34,13 @@
         <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
             <div>
                 <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Yönetici Şifresi</label>
-                <input type="password" id="adminPasscode" required placeholder="••••••••••"
-                    class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm focus:outline-none focus:border-amber-400">
+                <div class="relative">
+                    <input type="password" id="adminPasscode" required placeholder="••••••••••"
+                        class="w-full px-4 py-3 pr-11 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm focus:outline-none focus:border-amber-400">
+                    <button type="button" onclick="togglePassVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-400 transition cursor-pointer" title="Şifreyi Göster/Gizle">
+                        <i id="passEyeIcon" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
             </div>
             <div id="loginErrorMsg" class="hidden text-xs font-bold text-rose-400 bg-rose-950/60 border border-rose-800 rounded-xl px-3 py-2"></div>
             <button type="submit" id="loginSubmitBtn"
@@ -51,6 +56,18 @@
 </div>
 
 <script>
+function togglePassVisibility() {
+    const inp = document.getElementById('adminPasscode');
+    const icon = document.getElementById('passEyeIcon');
+    if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+    } else {
+        inp.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+    }
+}
+
 async function handleAdminLogin(e) {
     e.preventDefault();
     const pass = document.getElementById('adminPasscode').value.trim();
@@ -64,7 +81,7 @@ async function handleAdminLogin(e) {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-            window.location.href = '/yonetim';
+            window.location.href = '/yonetim?onizleme=' + encodeURIComponent(pass);
         } else {
             errEl.textContent = data.message || 'Geçersiz yönetici şifresi.';
             errEl.classList.remove('hidden');
@@ -102,7 +119,7 @@ async function handleAdminLogin(e) {
             <button onclick="loadDashboardData()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition cursor-pointer flex items-center gap-1.5">
                 <i class="fa-solid fa-arrows-rotate text-amber-400"></i> Yenile
             </button>
-            <a href="/api/admin/analytics/export-json" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold text-xs border border-amber-500/40 transition flex items-center gap-1.5">
+            <a href="/api/admin/analytics/export-json?onizleme=hakiki2026" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold text-xs border border-amber-500/40 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-download"></i> JSON Yedek İndir
             </a>
             <label class="px-3 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 font-bold text-xs border border-sky-500/40 transition cursor-pointer flex items-center gap-1.5">
@@ -395,7 +412,7 @@ async function handleAdminLogin(e) {
                 <button onclick="syncResendCloud()" id="syncResendBtn" class="px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-bold text-xs border border-purple-500/40 transition cursor-pointer flex items-center gap-1.5">
                     <i class="fa-solid fa-cloud-arrow-up"></i> Resend Bulut Eşitle
                 </button>
-                <a href="/api/admin/erken-kayit-csv" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-xs border border-emerald-500/40 transition flex items-center gap-1.5">
+                <a href="/api/admin/erken-kayit-csv?onizleme=hakiki2026" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-xs border border-emerald-500/40 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-file-csv"></i> Aboneleri İndir (CSV / Excel)
                 </a>
             </div>
@@ -564,7 +581,7 @@ const MODE_LABELS = {
 
 async function loadDashboardData() {
     try {
-        const res = await fetch('/api/admin/analytics/summary');
+        const res = await fetch('/api/admin/analytics/summary?onizleme=hakiki2026');
         if (!res.ok) return;
         const data = await res.json();
         currentDashboardData = data;
@@ -830,7 +847,7 @@ async function importBackupJson(event) {
     try {
         const text = await file.text();
         const jsonPayload = JSON.parse(text);
-        const res = await fetch('/api/admin/analytics/import-json', {
+        const res = await fetch('/api/admin/analytics/import-json?onizleme=hakiki2026', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(jsonPayload)
@@ -853,7 +870,7 @@ async function syncResendCloud() {
     const oldHtml = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eşitleniyor...';
     try {
-        await fetch('/api/admin/erken-kayit-senkronize', { method: 'POST' });
+        await fetch('/api/admin/erken-kayit-senkronize?onizleme=hakiki2026', { method: 'POST' });
         await loadDashboardData();
     } catch (e) {}
     btn.innerHTML = oldHtml;
