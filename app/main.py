@@ -97,7 +97,7 @@ async def maintenance_middleware(request: Request, call_next):
     path = request.url.path
     
     # Yasal uyum sayfaları, doğrudan lansman vitrini, erken kayıt API'si, bülten ayrılma, yönetici paneli, analitik ping, statik dosyalar, favicon ve robots her zaman herkese açık
-    legal_paths = ("/lansman", "/yonetim", "/admin", "/api/erken-kayit", "/api/analytics/event", "/bulten/ayril", "/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
+    legal_paths = ("/lansman", "/yonetim", "/yonetici", "/yönetici", "/admin", "/api/erken-kayit", "/api/analytics/event", "/bulten/ayril", "/yasal-uyari", "/kullanim-kosullari", "/kvkk", "/cerez-politikasi", "/etkinlik-kurallari", "/iletisim", "/hukuk", "/legal")
     if path.startswith("/static") or path in ("/favicon.ico", "/robots.txt") or path in legal_paths:
         response = await call_next(request)
         if path.startswith("/static/"):
@@ -836,6 +836,8 @@ async def sync_early_access_audience(request: Request):
 # ==================== YÖNETİCİ & ANALİTİK MODÜLÜ (/yonetim) ====================
 
 @app.get("/yonetim", response_class=HTMLResponse)
+@app.get("/yonetici", response_class=HTMLResponse)
+@app.get("/yönetici", response_class=HTMLResponse)
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_analytics_page(request: Request):
     """Şifre Korumalı Yönetici & Analitik Paneli"""
