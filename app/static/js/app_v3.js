@@ -454,6 +454,15 @@ function setFerryVehicleType(vType, autoSearch = true) {
     if (carBtn) carBtn.className = currentFerryVehicleType === 'car' ? activeCls : inactiveCls;
     if (motoBtn) motoBtn.className = currentFerryVehicleType === 'motorcycle' ? activeCls : inactiveCls;
 
+    const barPassBtn = document.getElementById("ferryBarVeh-passenger");
+    const barCarBtn = document.getElementById("ferryBarVeh-car");
+    const barMotoBtn = document.getElementById("ferryBarVeh-motorcycle");
+    const barActiveCls = "px-2.5 py-1 rounded-lg text-[11px] font-black bg-sky-900 text-white transition cursor-pointer";
+    const barInactiveCls = "px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition cursor-pointer";
+    if (barPassBtn) barPassBtn.className = currentFerryVehicleType === 'passenger' ? barActiveCls : barInactiveCls;
+    if (barCarBtn) barCarBtn.className = currentFerryVehicleType === 'car' ? barActiveCls : barInactiveCls;
+    if (barMotoBtn) barMotoBtn.className = currentFerryVehicleType === 'motorcycle' ? barActiveCls : barInactiveCls;
+
     updatePaxSummaryDisplay();
 
     if (autoSearch && currentTransportSubTab === 'ferry') {
@@ -4258,6 +4267,59 @@ function getBrandLogoHtml(name, fallbackEmoji = '🎫', sizeClass = 'w-4 h-4') {
 }
 window.getBrandLogoHtml = getBrandLogoHtml;
 
+function buildFlightFerryCrossSellHtml(toCity, toCode, searchReq) {
+    const citySlug = toAsciiSlug(toCity || '');
+    const codeUp = String(toCode || '').trim().toUpperCase();
+    const rawDate = (searchReq && searchReq.departure_date) ? String(searchReq.departure_date) : new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+    const depCompact = rawDate.replace(/-/g, '');
+    const depParts = rawDate.split('-');
+    const depDash = depParts.length === 3 ? `${depParts[2]}-${depParts[1]}-${depParts[0]}` : rawDate;
+    const depDot = depParts.length === 3 ? `${depParts[2]}.${depParts[1]}.${depParts[0]}` : rawDate;
+    const pax = Math.max(1, Number((searchReq && searchReq.passengers) || 1));
+
+    let ferryUrl = '';
+    let ferryLabel = '';
+
+    if (codeUp === 'ADB' || citySlug.includes('izmir') || citySlug.includes('cesme')) {
+        ferryUrl = `https://feribotlines.com/search?from=1668881435&to=1668881536&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
+        ferryLabel = '⛴️ Çeşme ➔ Sakız Adası Feribot (Feribotlines) ↗';
+    } else if (codeUp === 'BJV' || citySlug.includes('bodrum') || citySlug.includes('milas')) {
+        ferryUrl = `https://feribotlines.com/search?from=1668882010&to=1669034913&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
+        ferryLabel = '⛴️ Bodrum ➔ Kos Adası Katamaran (Feribotlines) ↗';
+    } else if (codeUp === 'DLM' || citySlug.includes('dalaman') || citySlug.includes('fethiye') || citySlug.includes('marmaris') || citySlug.includes('mugla')) {
+        ferryUrl = `https://feribotlines.com/search?from=1668882143&to=1668882286&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
+        ferryLabel = '⛴️ Fethiye/Marmaris ➔ Rodos Feribot (Feribotlines) ↗';
+    } else if (codeUp === 'EDO' || citySlug.includes('edremit') || citySlug.includes('balikesir') || citySlug.includes('ayvalik')) {
+        ferryUrl = `https://feribotlines.com/search?from=1668881186&to=1668881312&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
+        ferryLabel = '⛴️ Ayvalık ➔ Midilli Adası Feribot (Feribotlines) ↗';
+    } else if (codeUp === 'AYT' || codeUp === 'GZP' || citySlug.includes('antalya') || citySlug.includes('kas') || citySlug.includes('alanya')) {
+        ferryUrl = `https://feribotlines.com/search?from=1668882401&to=1668882487&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
+        ferryLabel = '⛴️ Kaş ➔ Meis Adası Feribot (Feribotlines) ↗';
+    } else if (codeUp === 'IST' || codeUp === 'SAW' || citySlug.includes('istanbul')) {
+        ferryUrl = `https://www.obilet.com/feribot-seferleri/250_24-232_0/${depCompact}/${pax}a/0_none`;
+        ferryLabel = '⛴️ Yenikapı ➔ Bursa / Yalova Feribot (İDO & Obilet) ↗';
+    } else if (codeUp === 'CKZ' || citySlug.includes('canakkale')) {
+        ferryUrl = 'https://www.gdu.com.tr/sefer-saatleri';
+        ferryLabel = '⛴️ Geyikli ➔ Bozcaada Feribot (GESTAŞ) ↗';
+    } else if (codeUp === 'COV' || codeUp === 'ADA' || citySlug.includes('adana') || citySlug.includes('mersin') || citySlug.includes('cukurova')) {
+        ferryUrl = `https://www.bilet.com/feribot/arama?theme=new&adapter=cyprus&nereden=tasucu&nereye=girne&gidis=${depDot}&yetiskin=${pax}`;
+        ferryLabel = '⛴️ Taşucu ➔ Girne (KKTC) Feribot (Bilet.com) ↗';
+    } else if (codeUp === 'YEI' || citySlug.includes('bursa')) {
+        ferryUrl = `https://www.obilet.com/feribot-seferleri/232_0-250_24/${depCompact}/${pax}a/0_none`;
+        ferryLabel = '⛴️ Bursa ➔ Yenikapı Feribot (İDO & Obilet) ↗';
+    }
+
+    if (!ferryUrl || !ferryLabel) return '';
+    return `
+        <a href="${ferryUrl}"
+           target="_blank" rel="noopener noreferrer"
+           class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-950 border border-sky-300 font-bold text-[11px] inline-flex items-center gap-1.5 transition shadow-2xs">
+            <span>${escapeHtml(ferryLabel)}</span>
+        </a>
+    `;
+}
+window.buildFlightFerryCrossSellHtml = buildFlightFerryCrossSellHtml;
+
 function generateTicketCardsHtml(tickets, searchReq) {
     const isRoundTrip = (searchReq.trip_type === 'round_trip');
     const isEn = window.currentAppLang === 'en';
@@ -4844,6 +4906,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                            class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-extrabold text-[11px] inline-flex items-center gap-1.5 transition shadow-2xs hover:scale-102">
                             <span>🚕 ${escapeHtml(toCity)} Havalimanı ➔ Otel VIP Transfer (Bilet.com) ↗</span>
                         </a>
+                        ${buildFlightFerryCrossSellHtml(toCity, toCode, searchReq)}
                         <a href="https://yolcu360.com/tr/arac-kiralama/?pickup_location=${encodeURIComponent(toAsciiSlug(toCity))}-havalimani&utm_source=hakikibilet&subid=hakikibilet"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold text-[11px] inline-flex items-center gap-1.5 transition">

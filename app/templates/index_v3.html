@@ -724,6 +724,21 @@
 
                     <span class="text-slate-300 hidden md:inline">|</span>
 
+                    <!-- Yaya / Otomobil / Motosiklet Hızlı Geçiş Seçici -->
+                    <div id="ferryTopVehicleBar" class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+                        <button type="button" onclick="setFerryVehicleType('passenger')" id="ferryBarVeh-passenger" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-sky-900 text-white transition cursor-pointer">
+                            🚶 Yaya
+                        </button>
+                        <button type="button" onclick="setFerryVehicleType('car')" id="ferryBarVeh-car" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition cursor-pointer">
+                            🚗 Otomobil
+                        </button>
+                        <button type="button" onclick="setFerryVehicleType('motorcycle')" id="ferryBarVeh-motorcycle" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:text-sky-900 transition cursor-pointer">
+                            🏍️ Motosiklet
+                        </button>
+                    </div>
+
+                    <span class="text-slate-300 hidden md:inline">|</span>
+
                     <!-- Hızlı Popüler Hatlar (Sade & Tek Satır) -->
                     <div class="flex flex-wrap items-center gap-1.5">
                         <span class="text-[11px] font-black text-slate-400 mr-0.5 hidden sm:inline-flex items-center gap-1">
@@ -734,6 +749,9 @@
                         </button>
                         <button type="button" data-ferry-pill="domestic" onclick="quickFillFerry('Yenikapı', 'Yalova', 'domestic', true)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
                             🚗 Yenikapı ➔ Yalova
+                        </button>
+                        <button type="button" data-ferry-pill="domestic" onclick="quickFillFerry('Geyikli', 'Bozcaada', 'domestic', true)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
+                            🚗 Geyikli ➔ Bozcaada
                         </button>
                         <button type="button" data-ferry-pill="greek_islands" onclick="quickFillFerry('Çeşme', 'Sakız Adası', 'greek_islands')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-sky-900 hover:text-white border border-slate-200 text-slate-800 font-bold text-[11px] transition cursor-pointer">
                             🇬🇷 Çeşme ➔ Sakız
@@ -2577,7 +2595,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261027_v24"></script>
+    <script src="/static/js/app_v3.js?v=20261027_v27"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">

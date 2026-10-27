@@ -275,18 +275,40 @@ class FerryService:
         # 2. AKDENİZ & KIBRIS (KKTC) SEFERLERİ (ÇİPLİ KİMLİKLE VİZESİZ)
         # ==========================================
         {
-            "route_key": "tasucu-girne",
+            "route_key": "tasucu-girne-fast",
             "category": "domestic",
             "origin": "Taşucu Limanı (Silifke / Mersin)",
             "dest": "Girne Turizm Limanı (KKTC - Kıbrıs)",
             "operator": "Akgünler Denizcilik",
-            "vessel": "Hızlı Deniz Otobüsü & Arabalı Ro-Ro Feribotu",
+            "vessel": "Hızlı Deniz Otobüsü (Yalnızca Yaya)",
             "duration": "2 sa 15 dk",
-            "schedules": [("11:30", "Gündüz Deniz Otobüsü"), ("23:30", "Gece Arabalı Feribot")],
+            "schedules": [("11:30", "Gündüz Hızlı Deniz Otobüsü"), ("14:00", "Öğleden Sonra Deniz Otobüsü")],
+            "vehicle_allowed": False,
+            "driver_included_in_vehicle": False,
+            "ped_base_try": 1850.0,
+            "is_island": True,
+            "requires_visa": False,
+            "requires_chip_id": True,
+            "obilet_slug": None,
+            "feribotlines_slug": None,
+            "biletcom_path": "kibris-feribot/girne",
+            "official_url": "https://www.akgunlerdenizcilik.com/",
+            "from_code": "TSC",
+            "to_code": "KYR",
+        },
+        {
+            "route_key": "tasucu-girne-car",
+            "category": "domestic",
+            "origin": "Taşucu Limanı (Silifke / Mersin)",
+            "dest": "Girne Turizm Limanı (KKTC - Kıbrıs)",
+            "operator": "Akgünler Denizcilik",
+            "vessel": "Arabalı Gece Feribotu (Ro-Ro)",
+            "duration": "6 sa 00 dk",
+            "schedules": [("23:30", "Gece Arabalı Ro-Ro Gemisi")],
             "vehicle_allowed": True,
             "driver_included_in_vehicle": False,
             "requires_green_card_for_vehicle": True,
-            "ped_base_try": 1850.0,
+            "ped_base_try": 1650.0,
             "car_base_try": 6900.0,
             "moto_base_try": 3200.0,
             "is_island": True,
@@ -325,7 +347,7 @@ class FerryService:
             "obilet_slug": "cesme-sakiz",
             "feribotlines_slug": "sakiz-adasi-feribot-bileti",
             "biletcom_path": "yunan-adalari/cesme-sakiz-adasi",
-            "official_url": "https://www.erturk.com.tr/tr/",
+            "official_url": "https://www.erturk.com.tr/cesme-sakiz-feribot-bileti",
             "ferryhopper_ports": ("CES", "CHI"),
             "from_code": "CSM",
             "to_code": "JKH",
@@ -858,20 +880,22 @@ class FerryService:
         "yenikapi-bandirma": ("ido", "yenikapi", "bandirma"),
         "yenikapi-avsa": ("ido", "yenikapi", "avsa-adasi"),
         "tasucu-girne": ("cyprus", "tasucu", "girne"),
+        "tasucu-girne-fast": ("cyprus", "tasucu", "girne"),
+        "tasucu-girne-car": ("cyprus", "tasucu", "girne"),
         "cesme-sakiz-car": ("erturk", "cesme", "sakiz-adasi"),
         "cesme-sakiz-fast": ("erturk", "cesme", "sakiz-adasi"),
     }
 
     # Feribotlines Gerçek Tarihli & Araçlı Arama Liman ID Haritası (/search?from={orig}&to={dest}&departure_date=DD-MM-YYYY&adult={pax}&vehicle_type={0|2|3})
     _FERIBOTLINES_ROUTE_IDS: Dict[str, Tuple[str, str]] = {
-        "cesme-sakiz-car": ("4", "5"),
-        "cesme-sakiz-fast": ("4", "5"),
-        "bodrum-kos": ("1", "6"),
-        "ayvalik-midilli": ("3", "10"),
-        "kusadasi-samos": ("2", "11"),
-        "fethiye-rodos": ("14", "7"),
-        "marmaris-rodos": ("15", "7"),
-        "kas-meis": ("18", "9"),
+        "cesme-sakiz-car": ("1668881435", "1668881536"),
+        "cesme-sakiz-fast": ("1668881435", "1668881536"),
+        "bodrum-kos": ("1668882010", "1669034913"),
+        "ayvalik-midilli": ("1668881186", "1668881312"),
+        "kusadasi-samos": ("1668881710", "1668881816"),
+        "fethiye-rodos": ("1668882143", "1668882286"),
+        "marmaris-rodos": ("1668882228", "1668882286"),
+        "kas-meis": ("1668882401", "1668882487"),
     }
 
     @classmethod
@@ -980,7 +1004,15 @@ class FerryService:
 
         # 4. Resmi Taşıyıcı Linki
         raw_official = route.get("official_url") or "https://www.ido.com.tr/sefer-saatleri"
-        official_url = raw_official
+        official_route_pages = {
+            "cesme-sakiz-car": "https://www.erturk.com.tr/cesme-sakiz-feribot-bileti",
+            "cesme-sakiz-fast": "https://www.turyolonline.com/cesme-sakiz-feribot-bileti",
+            "bodrum-kos": "https://www.turyolonline.com/bodrum-kos-feribot-bileti",
+            "ayvalik-midilli": "https://www.turyolonline.com/ayvalik-midilli-feribot-bileti",
+            "fethiye-rodos": "https://www.turyolonline.com/fethiye-rodos-feribot-bileti",
+            "kas-meis": "https://www.meisferrylines.com/tr/kas-meis-feribot-seferleri",
+        }
+        official_url = official_route_pages.get(r_key, raw_official)
 
         # 5. Ferryhopper Global Ada Ağı Gerçek Tarihli Arama Sonuçları Linki (/en/booking/results?itinerary=CES,CHI&dates=YYYYMMDD)
         fh_ports = route.get("ferryhopper_ports")
@@ -1006,17 +1038,25 @@ class FerryService:
         orig_clean = (
             origin_name.lower()
             .replace("limanı", "")
+            .replace("limani", "")
             .replace("iskelesi", "")
+            .replace("iskele", "")
             .replace("ulusoy", "")
             .replace("merkez", "")
+            .replace("adası", "")
+            .replace("adasi", "")
             .strip()
         )
         dest_clean = (
             dest_name.lower()
             .replace("limanı", "")
+            .replace("limani", "")
             .replace("iskelesi", "")
+            .replace("iskele", "")
             .replace("ulusoy", "")
             .replace("merkez", "")
+            .replace("adası", "")
+            .replace("adasi", "")
             .strip()
         )
 
@@ -1037,20 +1077,28 @@ class FerryService:
         # Özel Akıllı Eşleşme 1: Kıbrıs / Girne / Taşucu / Mersin araması
         if any(k in orig_clean or k in dest_clean for k in ["girne", "kıbrıs", "kibris", "kktc", "taşucu", "tasucu", "mersin"]):
             for r in cls.POPULAR_FERRY_ROUTES:
-                if r.get("route_key") == "tasucu-girne":
+                if str(r.get("route_key", "")).startswith("tasucu-girne"):
                     matched.append(dict(r))
             if matched:
                 return matched
 
-        # Özel Akıllı Eşleşme 2: Yenikapı -> Bursa/Güzelyalı/Mudanya arandıysa
+        # Özel Akıllı Eşleşme 2: Yenikapı -> Bursa/Güzelyalı/Mudanya arandıysa (İDO + BUDO Karşılaştırmalı)
         if ("yenikapı" in orig_clean or "yenikapi" in orig_clean) and any(k in dest_clean for k in ["bursa", "güzelyalı", "guzelyali", "mudanya"]):
             for r in cls.POPULAR_FERRY_ROUTES:
                 if r.get("route_key") == "yenikapi-bursa":
                     route_copy = dict(r)
+                    route_copy["smart_sort_rank"] = 1
                     route_copy["route_notice"] = (
                         "💡 İDO Yenikapı seferleri Mudanya ilçe sınırındaki Güzelyalı/Mudanya İskelesi'ne yanaşmaktadır."
                     )
                     matched.append(route_copy)
+                elif r.get("route_key") == "eminonu-mudanya":
+                    budo_copy = dict(r)
+                    budo_copy["smart_sort_rank"] = 2
+                    budo_copy["route_notice"] = (
+                        "💡 Alternatif İskele: İstanbul Avrupa yakasında Eminönü/Sirkeci İskelesi'nden kalkan BUDO (Bursa Deniz Otobüsleri) seferleri de karşılaştırma için listelenmiştir."
+                    )
+                    matched.append(budo_copy)
             return matched
 
         # Özel Akıllı Eşleşme 2B: Eminönü/Sirkeci -> Bursa/Mudanya arandıysa
@@ -1080,13 +1128,16 @@ class FerryService:
 
         # Özel Akıllı Eşleşme 5: Genel Yunan Adaları araması
         island_keywords = ["yunan", "adalar", "chios", "sakız", "sakiz", "kos", "midilli", "lesvos", "samos", "sisam", "rodos", "rhodes", "meis", "simi", "symi"]
+        stop_tokens = {"adası", "adasi", "ada", "liman", "limanı", "iskele", "iskelesi"}
         if any(w in dest_clean for w in island_keywords):
+            orig_tokens = [w for w in orig_clean.split() if len(w) >= 3 and w not in stop_tokens]
+            dest_tokens = [w for w in dest_clean.split() if len(w) >= 3 and w not in stop_tokens]
             for r in cls.POPULAR_FERRY_ROUTES:
                 if r.get("category") == "greek_islands":
                     r_orig = r["origin"].lower()
                     r_dest = r["dest"].lower()
-                    orig_ok = not orig_clean or any(w in r_orig for w in orig_clean.split() if len(w) >= 3)
-                    dest_ok = any(w in r_dest for w in dest_clean.split() if len(w) >= 3)
+                    orig_ok = not orig_tokens or any(w in r_orig for w in orig_tokens)
+                    dest_ok = bool(dest_tokens) and any(w in r_dest for w in dest_tokens)
                     if orig_ok and dest_ok:
                         matched.append(dict(r))
             if matched:
@@ -1094,7 +1145,7 @@ class FerryService:
             for r in cls.POPULAR_FERRY_ROUTES:
                 if r.get("category") == "greek_islands":
                     r_dest = r["dest"].lower()
-                    if any(w in r_dest for w in dest_clean.split() if len(w) >= 3):
+                    if dest_tokens and any(w in r_dest for w in dest_tokens):
                         rc = dict(r)
                         rc["route_notice"] = f"💡 {r['dest']} seferleri doğrudan {r['origin']} üzerinden düzenlenmektedir."
                         matched.append(rc)
@@ -1278,8 +1329,9 @@ class FerryService:
             )
 
             live_scheds = market_data.get("obilet_schedules") or []
-            is_pier_specific_yalova = route.get("id") in ("yenikapi-yalova", "pendik-yalova")
-            use_route_scheds = is_cruise or (is_vehicle_requested and is_veh_allowed) or is_pier_specific_yalova
+            is_pier_specific_yalova = route.get("route_key") in ("yenikapi-yalova", "pendik-yalova")
+            is_dedicated_car_vessel = route.get("route_key") in ("cesme-sakiz-car", "tasucu-girne-car")
+            use_route_scheds = is_cruise or (is_vehicle_requested and is_veh_allowed) or is_pier_specific_yalova or is_dedicated_car_vessel
             if live_scheds and not use_route_scheds:
                 active_schedule_items = []
                 for ls in live_scheds[:3]:
@@ -1290,7 +1342,7 @@ class FerryService:
                     ))
             else:
                 default_scheds = route.get("schedules") or [("09:00", "Sabah Seferi"), ("16:00", "Öğleden Sonra Seferi")]
-                base_ped = route.get("ped_base_try") if is_pier_specific_yalova else (market_data.get("obilet_min_try") or route.get("ped_base_try"))
+                base_ped = route.get("ped_base_try") if is_pier_specific_yalova else (market_data.get("obilet_min_try") or market_data.get("feribotlines_min_try") or route.get("ped_base_try"))
                 active_schedule_items = [
                     (t_str, operator, base_ped)
                     for (t_str, _lbl) in default_scheds[:3]
@@ -1432,9 +1484,11 @@ class FerryService:
                 # SENARYO B: İÇ HAT, KKTC & YUNAN ADALARI FERİBOT SEFERLERİ (YAYA VS ARAÇLI)
                 # ==========================================================
                 else:
-                    unit_ob_try = route.get("ped_base_try") if is_pier_specific_yalova else (sched_ob_try or market_data.get("obilet_min_try") or route.get("ped_base_try"))
-                    unit_fl_try = market_data.get("feribotlines_min_try")
-                    unit_bl_try = route.get("ped_base_try") if is_pier_specific_yalova else (market_data.get("biletcom_min_try") or route.get("ped_base_try"))
+                    ob_min_route = market_data.get("obilet_min_try")
+                    is_premium_sched = bool(sched_ob_try and ob_min_route and sched_ob_try > ob_min_route * 1.05)
+                    unit_ob_try = route.get("ped_base_try") if is_pier_specific_yalova else (sched_ob_try or ob_min_route or route.get("ped_base_try"))
+                    unit_fl_try = None if is_premium_sched else market_data.get("feribotlines_min_try")
+                    unit_bl_try = route.get("ped_base_try") if is_pier_specific_yalova else (None if is_premium_sched else (market_data.get("biletcom_min_try") or route.get("ped_base_try")))
 
                     if is_vehicle_requested and is_veh_allowed:
                         # 1. Araç Taşıma Ücretini (veh_try) Hesapla
@@ -1475,7 +1529,7 @@ class FerryService:
                         ob_price = None
                         bl_price = _try_to_target(veh_total_try) if deep_links.get("biletcom") else None
                         fh_price = _try_to_target(veh_total_try) if deep_links.get("ferryhopper") else None
-                        fl_price = _try_to_target(veh_total_try) if (deep_links.get("feribotlines") and not bl_price) else None
+                        fl_price = _try_to_target(veh_total_try) if deep_links.get("feribotlines") else None
                         off_price = _try_to_target(veh_total_try)
                     else:
                         # YAYA YOLCU HESABI (Birim Yaya Fiyatı × Yolcu Sayısı × Gidiş/Dönüş Çarpanı)
@@ -1635,7 +1689,8 @@ class FerryService:
                     notices_list.insert(0, visa_urgent_warning)
                 combined_notice = " • ".join(notices_list) if notices_list else None
 
-                display_carrier = f"{sched_op} ({route['vessel']})" if sched_op and sched_op != operator else f"{operator} ({route['vessel']})"
+                raw_op = (sched_op or operator).replace("IDO", "İDO").replace("İdo ", "İDO ")
+                display_carrier = raw_op
 
                 results.append({
                     "id": f"ferry-{i+1}-{s_idx+1}",

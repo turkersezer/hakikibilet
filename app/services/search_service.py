@@ -1790,8 +1790,16 @@ class SearchService:
         Uçuş (veya diğer ulaşım) aramalarında üst barda 'Bu Haftanın En Ucuz Otobüs Bileti',
         'En Ucuz Tren (YHT) Bileti' ve 'En Ucuz Uçak Bileti' rozetlerini paralel canlı sorgularla üretir.
         """
+        island_markers = (
+            "girne", "kıbrıs", "kibris", "kktc", "bozcaada", "gökçeada", "gokceada",
+            "avşa", "avsa", "adası", "adasi", "chios", "sakız", "sakiz", "kos",
+            "midilli", "lesvos", "samos", "sisam", "rodos", "rhodes", "meis", "simi", "symi",
+            "cruise", "galataport",
+        )
+        is_island_trip = any(m in f"{origin_name} {dest_name}".lower() for m in island_markers)
+
         def _fetch_bus_badge() -> Optional[Dict[str, Any]]:
-            if current_mode == "bus" or not links.get("bus", {}).get("available"):
+            if current_mode == "bus" or is_island_trip or not links.get("bus", {}).get("available"):
                 return None
             try:
                 from app.services.bus_service import BusService
@@ -1823,7 +1831,7 @@ class SearchService:
             return None
 
         def _fetch_train_badge() -> Optional[Dict[str, Any]]:
-            if current_mode == "train":
+            if current_mode == "train" or is_island_trip:
                 return None
             try:
                 from app.services.train_service import TrainService
