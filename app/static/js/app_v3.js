@@ -3418,7 +3418,7 @@ function renderTransportResults(data, searchReq) {
     // ==================== KOMPAKT 7 GÜNLÜK FİYAT ŞERİDİ + "HAKİKİ İPUCU" ====================
     const flexInsights = data.flexible_insights;
     const altBadges = data.alternative_badges || [];
-    if (flexInsights && Array.isArray(flexInsights.days) && flexInsights.days.length > 0) {
+    if (searchReq.transport_type !== 'car' && flexInsights && Array.isArray(flexInsights.days) && flexInsights.days.length > 0) {
         const tip = flexInsights.hakiki_tip;
         const fmtNum = (n) => Number(n).toLocaleString(isEn ? 'en-US' : 'tr-TR');
 
@@ -3590,14 +3590,19 @@ function renderTransportResults(data, searchReq) {
 
 
 
-    // A-0. ŞOFÖRLÜ HAVALİMANI & VIP TRANSFER MODU (Bilet.com Transfer Entegrasyonu)
+    // A-0. ŞOFÖRLÜ HAVALİMANI & VIP TRANSFER MODU (Bilet.com Transfer, Welcome Pickups & Resmi HAVAİST/HAVAŞ/MUTTAŞ Entegrasyonu)
     if (searchReq.transport_type === 'car' && window.currentCarSubMode === 'transfer') {
         const trMeta = (data.destination_cross_sell && data.destination_cross_sell.transfer) || 
                        (data.deep_links && data.deep_links.transfer) || {};
-        const biletcomUrl = trMeta.biletcom_url || `https://www.bilet.com/transfer?kalkis=${encodeURIComponent((searchReq.origin || '').toLowerCase().replace(/\s+/g, '-'))}&ref=hakikibilet`;
-        const kiwiTaxiUrl = trMeta.kiwitaxi_url || `https://kiwitaxi.com/?pap=585474&from=${encodeURIComponent(searchReq.origin || '')}`;
-        const getTransferUrl = trMeta.gettransfer_url || `https://gettransfer.com/tr?utm_source=hakikibilet&to=${encodeURIComponent(searchReq.destination || '')}`;
-        const shuttleName = trMeta.shuttle_name || 'Havaş / Havalimanı Otobüsü';
+        const biletcomUrl = trMeta.biletcom_url || 'https://www.bilet.com/transfer/istanbul-havalimani';
+        const welcomePickupsUrl = trMeta.welcomepickups_url || 'https://www.welcomepickups.com/istanbul/airport-transfer/';
+        const shuttleUrl = trMeta.shuttle_url || 'https://www.havas.net/otobus-hizmetleri';
+        const shuttleName = trMeta.shuttle_name || 'HAVAİST / HAVAŞ Resmi Havalimanı Otobüsü';
+        const shuttleRoutes = trMeta.shuttle_routes || 'Havalimanı ➔ Şehir Merkezi & Otogar Ekspres Hatları';
+        const railInfo = trMeta.rail_info || '🚇 Havalimanı Raylı Sistem & Ekspres Otobüs Bağlantısı';
+        const liveVitoPrice = trMeta.live_vito_try ? `${Number(trMeta.live_vito_try).toLocaleString('tr-TR')} ₺` : null;
+        const liveMinivanPrice = trMeta.live_minivan_try ? `${Number(trMeta.live_minivan_try).toLocaleString('tr-TR')} ₺` : null;
+        const liveShuttlePrice = trMeta.live_shuttle_try ? `${Number(trMeta.live_shuttle_try).toLocaleString('tr-TR')} ₺` : null;
 
         html += `
             <div class="bg-gradient-to-br from-amber-500/10 via-amber-100/40 to-slate-900/5 border-2 border-amber-300 rounded-3xl p-5 sm:p-6 mb-6 shadow-sm">
@@ -3607,12 +3612,15 @@ function renderTransportResults(data, searchReq) {
                             🚕
                         </div>
                         <div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <h3 class="text-base sm:text-lg font-black text-slate-900">
-                                    ${escapeHtml(searchReq.origin)} ➔ ${escapeHtml(searchReq.destination)} Şoförlü VIP Transfer
+                                    ${escapeHtml(searchReq.origin)} ➔ ${escapeHtml(searchReq.destination)} Havalimanı & VIP Transfer
                                 </h3>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950">
-                                    Bilet.com Resmi Partner
+                                    Bilet.com & Resmi Shuttle
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-900 border border-emerald-300">
+                                    🟢 Canlı Taban Fiyatlar
                                 </span>
                             </div>
                             <div class="text-xs font-semibold text-slate-600 mt-1 flex flex-wrap items-center gap-2">
@@ -3620,9 +3628,9 @@ function renderTransportResults(data, searchReq) {
                                 <span>•</span>
                                 <span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> Sabit Fiyat Garantisi</span>
                                 <span>•</span>
-                                <span class="text-sky-700 font-bold"><i class="fa-solid fa-id-badge"></i> Kapıda İsimle Karşılama</span>
+                                <span class="text-sky-700 font-bold"><i class="fa-solid fa-id-badge"></i> Terminal Çıkışı İsimle Karşılama</span>
                                 <span>•</span>
-                                <span class="text-slate-600 font-semibold"><i class="fa-solid fa-clock-rotate-left"></i> Ücretsiz İptal</span>
+                                <span class="text-slate-600 font-semibold"><i class="fa-solid fa-clock-rotate-left"></i> Rötar Takibi & Ücretsiz İptal</span>
                             </div>
                         </div>
                     </div>
@@ -3633,84 +3641,102 @@ function renderTransportResults(data, searchReq) {
                     </div>
                 </div>
 
-                <!-- 3 Popüler VIP Transfer Aracı Seçeneği -->
+                <!-- 3 Doğrulanmış VIP & Paylaşımlı Transfer Seçeneği -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-                    <!-- 1. VIP Minivan (Mercedes Vito) -->
-                    <div class="bg-white rounded-2xl p-4 border border-amber-200 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
+                    <!-- 1. Executive VIP Vito Minivan -->
+                    <div class="bg-white rounded-2xl p-4 border-2 border-amber-300 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-2">
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-100 text-amber-900 uppercase">En Çok Tercih Edilen</span>
-                                <span class="text-xs font-bold text-slate-500">1-6 Kişilik</span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-100 text-amber-900 uppercase">🏆 En Çok Tercih Edilen</span>
+                                <span class="text-xs font-bold text-slate-500">1-6 Kişilik • Özel Araç</span>
                             </div>
                             <div class="font-black text-slate-900 text-base">Mercedes-Benz Vito VIP</div>
-                            <div class="text-xs text-slate-500 mt-1">Lüks Deri Koltuk, Buzdolabı, Ücretsiz WiFi & Özel Şoför</div>
+                            <div class="text-xs text-slate-500 mt-1">Lüks Deri Koltuk, Geniş Bagaj (5 Bavul), WiFi, İkram & Özel Şoförle Kapıdan Kapıya</div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-emerald-600">Bilet.com Güvencesiyle</span>
-                            <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition shadow-2xs inline-flex items-center gap-1">
-                                <span>Teklif Al ↗</span>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                            <div>
+                                <div class="text-[10px] font-bold text-emerald-700 uppercase">Bilet.com Canlı Taban</div>
+                                <div class="text-base font-black text-slate-950">${liveVitoPrice ? `${liveVitoPrice} <span class="text-[10px] font-semibold text-slate-500">/ araç</span>` : 'Canlı Fiyatı Gör'}</div>
+                            </div>
+                            <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition shadow-2xs inline-flex items-center gap-1">
+                                <span>Bilet.com'da Seç ↗</span>
                             </a>
                         </div>
                     </div>
 
-                    <!-- 2. Sedan VIP & Business -->
+                    <!-- 2. Standart Özel Minivan / Aile Transferi -->
                     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-2">
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-sky-100 text-sky-900 uppercase">Konfor Sedan</span>
-                                <span class="text-xs font-bold text-slate-500">1-3 Kişilik</span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-sky-100 text-sky-900 uppercase">Ekonomik Özel</span>
+                                <span class="text-xs font-bold text-slate-500">1-6 Kişilik • Aile</span>
                             </div>
-                            <div class="font-black text-slate-900 text-base">VIP Sedan / Executive</div>
-                            <div class="text-xs text-slate-500 mt-1">Geniş Bagaj, Klimalı & Sessiz Sürüş, Kapıdan Kapıya Ulaşım</div>
+                            <div class="font-black text-slate-900 text-base">Özel Minivan & Sedan Transfer</div>
+                            <div class="text-xs text-slate-500 mt-1">Beklemesiz Direkt Sürüş, Sabit Ücret, Otel veya Ev Kapısına Teslim</div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-emerald-600">Sabit Fiyat</span>
-                            <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-2xs inline-flex items-center gap-1">
-                                <span>Teklif Al ↗</span>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                            <div>
+                                <div class="text-[10px] font-bold text-emerald-700 uppercase">Bilet.com Canlı Taban</div>
+                                <div class="text-base font-black text-slate-950">${liveMinivanPrice ? `${liveMinivanPrice} <span class="text-[10px] font-semibold text-slate-500">/ araç</span>` : 'Canlı Fiyatı Gör'}</div>
+                            </div>
+                            <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-2xs inline-flex items-center gap-1">
+                                <span>Bilet.com'da Seç ↗</span>
                             </a>
                         </div>
                     </div>
 
-                    <!-- 3. Grup Minibüs (Sprinter) -->
+                    <!-- 3. Paylaşımlı Premium Shuttle & Global Karşılama -->
                     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-2">
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-purple-100 text-purple-900 uppercase">Grup & Aile</span>
-                                <span class="text-xs font-bold text-slate-500">7-16 Kişilik</span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-900 uppercase">Bütçe Dostu & Global</span>
+                                <span class="text-xs font-bold text-slate-500">Shuttle & Karşılama</span>
                             </div>
-                            <div class="font-black text-slate-900 text-base">VIP Minibüs / Sprinter</div>
-                            <div class="text-xs text-slate-500 mt-1">Geniş Aileler, Kongre & Turizm Heyetleri, Ekstra Bagaj Alanı</div>
+                            <div class="font-black text-slate-900 text-base">Premium Shuttle & Welcome Pickups</div>
+                            <div class="text-xs text-slate-500 mt-1">Paylaşımlı Ekonomik Havalimanı Shuttle veya İngilizce Bilen Sürücüyle Karşılama</div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-emerald-600">Grup İndirimi</span>
-                            <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-2xs inline-flex items-center gap-1">
-                                <span>Teklif Al ↗</span>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                            <div>
+                                <div class="text-[10px] font-bold text-emerald-700 uppercase">Premium Shuttle Taban</div>
+                                <div class="text-base font-black text-slate-950">${liveShuttlePrice ? `${liveShuttlePrice}` : 'Canlı Tarife'}</div>
+                            </div>
+                            <a href="${welcomePickupsUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-indigo-900 hover:bg-indigo-800 text-white font-bold text-xs transition shadow-2xs inline-flex items-center gap-1">
+                                <span>Welcome Pickups ↗</span>
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Alternatif & Shuttle Kılavuzu Şeridi -->
-                <div class="mt-4 pt-3 border-t border-amber-200/60 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div class="flex items-center gap-2 text-slate-600 font-semibold">
-                        <i class="fa-solid fa-bus text-amber-600"></i>
-                        <span>Alternatif Toplu Shuttle: <strong>${escapeHtml(shuttleName)}</strong></span>
+                <!-- Resmi Havalimanı Otobüsü (HAVAİST / HAVABUS / HAVAŞ / MUTTAŞ) & Raylı Sistem Kılavuzu -->
+                <div class="mt-4 p-4 rounded-2xl bg-slate-900 text-white border border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-400 text-slate-950 uppercase">Resmi Toplu Ulaşım Rehberi</span>
+                            <span class="text-xs sm:text-sm font-black text-amber-300">🚌 ${escapeHtml(shuttleName)}</span>
+                        </div>
+                        <div class="text-xs text-slate-300 font-medium">
+                            <strong>Güzergahlar:</strong> ${escapeHtml(shuttleRoutes)}
+                        </div>
+                        <div class="text-xs text-sky-300 font-bold">
+                            ${escapeHtml(railInfo)}
+                        </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <a href="${kiwiTaxiUrl}" target="_blank" rel="noopener noreferrer" class="text-slate-600 hover:text-slate-900 font-bold underline">
-                            KiwiTaxi Karşılaştır ↗
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        <a href="${shuttleUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition inline-flex items-center gap-1.5 shadow-xs">
+                            <i class="fa-solid fa-bus"></i>
+                            <span>Resmi Sefer Saatleri ↗</span>
                         </a>
-                        <a href="${getTransferUrl}" target="_blank" rel="noopener noreferrer" class="text-slate-600 hover:text-slate-900 font-bold underline">
-                            GetTransfer Karşılaştır ↗
+                        <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-bold text-xs transition inline-flex items-center gap-1.5">
+                            <span>Bilet.com Transfer ↗</span>
+                        </a>
+                        <a href="${welcomePickupsUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-bold text-xs transition inline-flex items-center gap-1.5">
+                            <span>Welcome Pickups ↗</span>
                         </a>
                     </div>
                 </div>
             </div>
         `;
-    }
-
-    // A. SEFER VEYA KİRALIK ARAÇ KARTLARI (Sadece Kiralık Araç Modunda Gösterilir)
-    if (searchReq.transport_type === 'car' && window.currentCarSubMode !== 'transfer' && data.car_rental && Array.isArray(data.car_rental.vehicles) && data.car_rental.vehicles.length > 0) {
+    } else if (searchReq.transport_type === 'car' && data.car_rental && Array.isArray(data.car_rental.vehicles) && data.car_rental.vehicles.length > 0) {
         const cr = data.car_rental;
         const cSym = data.currency || cr.currency || '₺';
 
@@ -3824,34 +3850,53 @@ function renderTransportResults(data, searchReq) {
 
                             <!-- Sağlayıcı Fiyat Karşılaştırma Şeridi -->
                             <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-2">
-                                <span class="text-[10px] font-black uppercase text-slate-400">Şeffaf Sağlayıcı Fiyatları:</span>
-                                ${(v.providers || []).map(p => `
+                                <span class="text-[10px] font-black uppercase text-slate-400">Canlı Kiralama Kanalları:</span>
+                                ${(v.providers || []).map(p => {
+                                    const pHasPrice = p.daily_price !== null && p.daily_price !== undefined && Number(p.daily_price) > 0;
+                                    return `
                                     <a href="${p.url}" target="_blank" rel="noopener noreferrer"
-                                       class="px-2.5 py-1 rounded-xl text-xs font-bold border ${p.is_cheapest ? 'bg-amber-50 border-amber-400 text-amber-950 font-black shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'} transition inline-flex items-center gap-1.5">
+                                       class="px-2.5 py-1 rounded-xl text-xs font-bold border ${p.is_cheapest && pHasPrice ? 'bg-amber-50 border-amber-400 text-amber-950 font-black shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'} transition inline-flex items-center gap-1.5">
                                         ${getBrandLogoHtml(p.name, '🚗', 'w-4 h-4')}
-                                        <span>${escapeHtml(p.name)}</span>
-                                        <span class="font-black">${Number(p.daily_price).toLocaleString('tr-TR')} ${cSym}/gün</span>
-                                        ${p.is_cheapest ? '<span class="text-[9px] px-1 py-0.2 rounded bg-amber-200 text-amber-900 font-black">🏆 EN UCUZ</span>' : ''}
+                                        <span>${escapeHtml(p.name)}:</span>
+                                        ${pHasPrice
+                                            ? `<span class="font-black text-emerald-800">${Number(p.daily_price).toLocaleString('tr-TR')} ${cSym}/gün</span>`
+                                            : `<span class="text-[11px] font-semibold text-slate-500">${escapeHtml(p.price_status_text || 'Canlı Filo & Fiyatı Gör')}</span>`
+                                        }
+                                        ${p.is_cheapest && pHasPrice ? '<span class="text-[9px] px-1 py-0.2 rounded bg-amber-200 text-amber-900 font-black">🏆 EN UCUZ CANLI</span>' : ''}
                                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-60"></i>
                                     </a>
-                                `).join('')}
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
 
                         <!-- Sağ / Günlük & Toplam Fiyat ve Doğrudan Rezervasyon Butonu -->
                         <div class="lg:w-64 flex flex-col justify-between items-end border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6">
                             <div class="text-right w-full">
-                                <div class="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center justify-end gap-1">
-                                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
-                                    <span>Doğrulanmış Günlük Taban</span>
-                                </div>
-                                <div class="text-3xl font-black text-slate-950 mt-1">
-                                    ${Number(v.daily_price).toLocaleString('tr-TR')} <span class="text-lg font-bold">${cSym}</span>
-                                    <span class="text-xs font-medium text-slate-400">/ gün</span>
-                                </div>
-                                <div class="text-xs font-black text-emerald-700 mt-1">
-                                    Toplam: ${Number(v.total_price).toLocaleString('tr-TR')} ${cSym} (${cr.days_count} Gün)
-                                </div>
+                                ${v.daily_price && Number(v.daily_price) > 0 ? `
+                                    <div class="text-[10px] font-black uppercase tracking-wider text-emerald-700 flex items-center justify-end gap-1">
+                                        <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                                        <span>${escapeHtml(v.price_status_text || 'Doğrulanmış Canlı Taban')}</span>
+                                    </div>
+                                    <div class="text-3xl font-black text-slate-950 mt-1">
+                                        ${Number(v.daily_price).toLocaleString('tr-TR')} <span class="text-lg font-bold">${cSym}</span>
+                                        <span class="text-xs font-medium text-slate-400">/ gün</span>
+                                    </div>
+                                    <div class="text-xs font-black text-emerald-700 mt-1">
+                                        Toplam: ${Number(v.total_price).toLocaleString('tr-TR')} ${cSym} (${cr.days_count} Gün)
+                                    </div>
+                                ` : `
+                                    <div class="text-[10px] font-black uppercase tracking-wider text-amber-700 flex items-center justify-end gap-1">
+                                        <i class="fa-solid fa-shield-halved text-amber-500"></i>
+                                        <span>Sıfır Varsayım • Canlı Filo</span>
+                                    </div>
+                                    <div class="text-lg font-black text-slate-900 mt-1">
+                                        Anlık Müsaitlik & Fiyat
+                                    </div>
+                                    <div class="text-[11px] font-semibold text-slate-500 mt-0.5">
+                                        ${cr.days_count} Günlük Kiralama Teklifleri
+                                    </div>
+                                `}
                             </div>
 
                             <div class="w-full mt-4">
@@ -4319,6 +4364,60 @@ function buildFlightFerryCrossSellHtml(toCity, toCode, searchReq) {
     `;
 }
 window.buildFlightFerryCrossSellHtml = buildFlightFerryCrossSellHtml;
+
+function buildFlightTransferCrossSellUrl(toCity, toCode) {
+    const code = (toCode || '').toUpperCase();
+    const slug = toAsciiSlug(toCity || '');
+    const biletMap = {
+        'IST': 'istanbul-havalimani',
+        'SAW': 'sabiha-gokcen-havalimani',
+        'AYT': 'antalya-havalimani',
+        'GZP': 'antalya-havalimani',
+        'BJV': 'bodrum-milas-havalimani',
+        'DLM': 'mugla-dalaman-havalimani',
+        'TZX': 'trabzon-havalimani',
+        'COV': 'adana-sakirpasa-havalimani',
+        'ADA': 'adana-sakirpasa-havalimani',
+        'ASR': 'kayseri-erkilet-havalimani',
+        'GZT': 'gaziantep-havalimani'
+    };
+    if (biletMap[code]) return `https://www.bilet.com/transfer/${biletMap[code]}`;
+    if (slug.includes('antalya') || slug.includes('alanya')) return 'https://www.bilet.com/transfer/antalya-havalimani';
+    if (slug.includes('bodrum')) return 'https://www.bilet.com/transfer/bodrum-milas-havalimani';
+    if (slug.includes('dalaman') || slug.includes('fethiye') || slug.includes('marmaris')) return 'https://www.bilet.com/transfer/mugla-dalaman-havalimani';
+    if (slug.includes('trabzon')) return 'https://www.bilet.com/transfer/trabzon-havalimani';
+    if (slug.includes('adana') || slug.includes('mersin')) return 'https://www.bilet.com/transfer/adana-sakirpasa-havalimani';
+    if (slug.includes('kayseri')) return 'https://www.bilet.com/transfer/kayseri-erkilet-havalimani';
+    if (slug.includes('gaziantep')) return 'https://www.bilet.com/transfer/gaziantep-havalimani';
+    return 'https://www.bilet.com/transfer/istanbul-havalimani';
+}
+
+function buildFlightCarCrossSellUrl(toCity, toCode) {
+    const code = (toCode || '').toUpperCase();
+    const slug = toAsciiSlug(toCity || '');
+    const yolcuMap = {
+        'IST': 'turkiye/istanbul/istanbul-havalimani',
+        'SAW': 'turkiye/istanbul/sabiha-gokcen-havalimani',
+        'AYT': 'turkiye/antalya/antalya-havalimani',
+        'ADB': 'turkiye/izmir/izmir-adnan-menderes-havalimani',
+        'ESB': 'turkiye/ankara/ankara-esenboga-havalimani',
+        'DLM': 'turkiye/mugla/dalaman-havalimani',
+        'BJV': 'turkiye/mugla/bodrum-milas-havalimani',
+        'TZX': 'turkiye/trabzon/trabzon-havalimani',
+        'COV': 'turkiye/mersin/cukurova-havalimani',
+        'ADA': 'turkiye/adana/adana-havalimani',
+        'ASR': 'turkiye/kayseri/kayseri-erkilet-havalimani',
+        'GZT': 'turkiye/gaziantep/gaziantep-havalimani'
+    };
+    if (yolcuMap[code]) return `https://yolcu360.com/arac-kiralama/${yolcuMap[code]}`;
+    if (slug.includes('antalya')) return 'https://yolcu360.com/arac-kiralama/turkiye/antalya/antalya-havalimani';
+    if (slug.includes('izmir')) return 'https://yolcu360.com/arac-kiralama/turkiye/izmir/izmir-adnan-menderes-havalimani';
+    if (slug.includes('ankara')) return 'https://yolcu360.com/arac-kiralama/turkiye/ankara/ankara-esenboga-havalimani';
+    if (slug.includes('bodrum')) return 'https://yolcu360.com/arac-kiralama/turkiye/mugla/bodrum-milas-havalimani';
+    if (slug.includes('dalaman')) return 'https://yolcu360.com/arac-kiralama/turkiye/mugla/dalaman-havalimani';
+    if (slug.includes('trabzon')) return 'https://yolcu360.com/arac-kiralama/turkiye/trabzon/trabzon-havalimani';
+    return 'https://yolcu360.com/arac-kiralama/turkiye/istanbul/istanbul-havalimani';
+}
 
 function generateTicketCardsHtml(tickets, searchReq) {
     const isRoundTrip = (searchReq.trip_type === 'round_trip');
@@ -4901,13 +5000,13 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <span class="text-[10.5px] font-black text-slate-500 flex items-center gap-1">
                             <i class="fa-solid fa-sparkles text-amber-500"></i> ${escapeHtml(toCity)} Varışında:
                         </span>
-                        <a href="https://www.bilet.com/transfer?kalkis=${encodeURIComponent(toAsciiSlug(toCity))}&utm_source=hakikibilet&ref=hakikibilet"
+                        <a href="${buildFlightTransferCrossSellUrl(toCity, toCode)}"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-extrabold text-[11px] inline-flex items-center gap-1.5 transition shadow-2xs hover:scale-102">
                             <span>🚕 ${escapeHtml(toCity)} Havalimanı ➔ Otel VIP Transfer (Bilet.com) ↗</span>
                         </a>
                         ${buildFlightFerryCrossSellHtml(toCity, toCode, searchReq)}
-                        <a href="https://yolcu360.com/tr/arac-kiralama/?pickup_location=${encodeURIComponent(toAsciiSlug(toCity))}-havalimani&utm_source=hakikibilet&subid=hakikibilet"
+                        <a href="${buildFlightCarCrossSellUrl(toCity, toCode)}"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold text-[11px] inline-flex items-center gap-1.5 transition">
                             <span>🚗 Havalimanı Teslim Araç (Yolcu360) ↗</span>

@@ -1018,10 +1018,10 @@ class SearchService:
         origin_name = origin["name"] if origin else origin_city
         dest_name = dest["name"] if dest else dest_city
 
-        # 1.1 Aynı Kalkış ve Varış Noktası Erken Koruması
+        # 1.1 Aynı Kalkış ve Varış Noktası Erken Koruması (Kiralık Araç & Havalimanı Transferi hariç)
         orig_slug = origin["slug"] if origin else origin_city.lower().replace(" ", "-")
         dest_slug = dest["slug"] if dest else dest_city.lower().replace(" ", "-")
-        if orig_slug == dest_slug or origin_city.strip().lower() == dest_city.strip().lower():
+        if transport_type != "car" and (orig_slug == dest_slug or origin_city.strip().lower() == dest_city.strip().lower()):
             currency_norm = (currency or "TRY").upper()
             curr_sym = CurrencyService.get_symbol(currency_norm)
             links = cls.generate_deep_links(
@@ -1432,8 +1432,8 @@ class SearchService:
         if transport_type in ("car", "all"):
             try:
                 from app.services.car_rental_service import CarRentalService
-                car_loc = origin_name if transport_type == "car" else dest_name
-                car_dropoff = dest_name if transport_type == "car" and dest_name != origin_name else None
+                car_loc = (origin_city or origin_name) if transport_type == "car" else (dest_city or dest_name)
+                car_dropoff = (dest_city or dest_name) if transport_type == "car" and (dest_city or dest_name) != car_loc else None
                 car_rental_info = CarRentalService.search_cars(
                     location=car_loc,
                     pickup_date=departure_date,
@@ -1474,13 +1474,14 @@ class SearchService:
 
         # Adım 2.3: Uçuş / Sefer Altı "Gittiğiniz Yerde Bunlar Var!" (Otel + Araç + Etkinlik/Gezi Tavsiyesi)
         destination_cross_sell = cls.build_destination_cross_sell(
-            origin_name=origin_name,
-            dest_name=dest_name,
+            origin_name=(origin_city or origin_name) if transport_type == "car" else origin_name,
+            dest_name=(dest_city or dest_name) if transport_type == "car" else dest_name,
             departure_date=departure_date,
             return_date=return_date,
             passengers=total_pax,
             currency=currency,
-            curr_symbol=curr_symbol
+            curr_symbol=curr_symbol,
+            transport_type=transport_type
         )
 
         is_intl_search = bool((origin and origin.get("is_international")) or (dest and dest.get("is_international")))
@@ -1999,7 +2000,8 @@ class SearchService:
         return_date: Optional[str],
         passengers: int,
         currency: str,
-        curr_symbol: str
+        curr_symbol: str,
+        transport_type: str = "flight"
     ) -> Dict[str, Any]:
         """
         Uçuş/Sefer sonuçlarının hemen altında:
@@ -2098,11 +2100,12 @@ class SearchService:
             f"&group_adults={max(1, passengers)}&no_rooms=1&aid={booking_aid}"
         )
 
-        # Akıllı Transfer Linki (Bilet.com Transfer)
+        # Akıllı Transfer Linki (Bilet.com Transfer & Resmi Shuttle)
         from app.services.transfer_service import TransferService
         transfer_meta = TransferService.generate_transfer_links(
             dest_city_or_code=dest_name,
             travel_date=departure_date,
+            pickup_location=origin_name if transport_type == "car" else "",
             passengers=passengers
         )
 
