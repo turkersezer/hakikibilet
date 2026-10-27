@@ -943,15 +943,16 @@ class FerryService:
                 ret_dd_mm_yyyy = return_date
 
         # CRUISE TURLARI İÇİN DOĞRULANMIŞ (HTTP 200) DERİN LİNKLER (Setur 404 Kalkanı)
+        from app.services.revenue_service import RevenueService
         if route.get("is_cruise"):
             setur_base = route.get("setur_url") or "https://www.setur.com.tr/gemi-turlari"
             jolly_base = route.get("jolly_url") or "https://www.jollytur.com/gemi-turlari"
             cd_base = route.get("cruisedirect_url") or "https://www.cruisedirect.com/destination/mediterranean-cruises"
             off_base = route.get("official_url") or "https://celestyal.com/tr/"
             return {
-                "setur_cruise": setur_base,
-                "jolly_cruise": jolly_base,
-                "cruisedirect": cd_base,
+                "setur_cruise": RevenueService.enrich_deep_link("setur_cruise", setur_base, "cruise"),
+                "jolly_cruise": RevenueService.enrich_deep_link("jolly_cruise", jolly_base, "cruise"),
+                "cruisedirect": RevenueService.enrich_deep_link("cruisedirect", cd_base, "cruise"),
                 "official": off_base,
                 "obilet": None,
                 "feribotlines": None,
@@ -1026,11 +1027,11 @@ class FerryService:
             ferryhopper_url = None
 
         return {
-            "obilet": obilet_url,
-            "feribotlines": feribotlines_url,
-            "biletcom": biletcom_url,
+            "obilet": RevenueService.enrich_deep_link("obilet", obilet_url, "ferry") if obilet_url else None,
+            "feribotlines": RevenueService.enrich_deep_link("feribotlines", feribotlines_url, "ferry") if feribotlines_url else None,
+            "biletcom": RevenueService.enrich_deep_link("biletcom", biletcom_url, "ferry") if biletcom_url else None,
             "official": official_url,
-            "ferryhopper": ferryhopper_url,
+            "ferryhopper": RevenueService.enrich_deep_link("ferryhopper", ferryhopper_url, "ferry") if ferryhopper_url else None,
         }
 
     @classmethod

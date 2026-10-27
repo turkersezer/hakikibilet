@@ -310,15 +310,28 @@ class TransferService:
         })
 
         # 1. Bilet.com Transfer Doğrudan Havalimanı Sayfası (HTTP 200 - Ana sayfaya düşmez)
+        from app.services.revenue_service import RevenueService
         bilet_slug = target_info.get("bilet_slug", "istanbul-havalimani")
-        biletcom_transfer_url = f"https://www.bilet.com/transfer/{bilet_slug}"
+        biletcom_transfer_url = RevenueService.enrich_deep_link(
+            "biletcom",
+            f"https://www.bilet.com/transfer/{bilet_slug}",
+            "airport_transfer",
+        )
 
         # 2. Welcome Pickups Doğrudan Havalimanı Karşılama Sayfası (HTTP 200)
         welcome_slug = target_info.get("welcome_slug", "istanbul")
-        welcomepickups_url = f"https://www.welcomepickups.com/{welcome_slug}/airport-transfer/"
+        welcomepickups_url = RevenueService.enrich_deep_link(
+            "welcomepickups",
+            f"https://www.welcomepickups.com/{welcome_slug}/airport-transfer/",
+            "airport_transfer",
+        )
 
         # 3. Resmi Havalimanı Shuttle (HAVAİST / HAVABUS / HAVAŞ / MUTTAŞ) Sefer Saatleri Sayfası (HTTP 200)
-        shuttle_url = target_info.get("shuttle_url", "https://www.havas.net/otobus-hizmetleri")
+        shuttle_url = RevenueService.enrich_deep_link(
+            "official",
+            target_info.get("shuttle_url", "https://www.havas.net/otobus-hizmetleri"),
+            "airport_transfer",
+        )
 
         # 4. Canlı Bilet.com Transfer Fiyatlarını Çek (15 dk L1 önbellek)
         live_prices = cls._fetch_live_biletcom_transfer_prices()

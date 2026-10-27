@@ -442,17 +442,23 @@ class CarRentalService:
         # 6. Avis: Doğrudan ilgili şehir kiralama sayfası (avis.com.tr/arac-kiralama/{sehir})
         avis_url = f"https://www.avis.com.tr/arac-kiralama/{city_slug}"
 
+        from app.services.revenue_service import RevenueService
+        y360_eco = f"{yolcu360_base}&c=economy" if "?" in yolcu360_base else yolcu360_base
+        y360_mid = f"{yolcu360_base}&c=mid" if "?" in yolcu360_base else yolcu360_base
+        y360_suv = f"{yolcu360_base}&c=suv" if "?" in yolcu360_base else yolcu360_base
+        y360_lux = f"{yolcu360_base}&c=luxury" if "?" in yolcu360_base else yolcu360_base
+
         return {
-            "yolcu360": yolcu360_base,
-            "yolcu360_economy": f"{yolcu360_base}&c=economy" if "?" in yolcu360_base else yolcu360_base,
-            "yolcu360_mid": f"{yolcu360_base}&c=mid" if "?" in yolcu360_base else yolcu360_base,
-            "yolcu360_suv": f"{yolcu360_base}&c=suv" if "?" in yolcu360_base else yolcu360_base,
-            "yolcu360_luxury": f"{yolcu360_base}&c=luxury" if "?" in yolcu360_base else yolcu360_base,
-            "enuygun": enuygun_car_url,
-            "obilet": obilet_car_url,
-            "rentalcars": rentalcars_url,
-            "garenta": garenta_url,
-            "avis": avis_url,
+            "yolcu360": RevenueService.enrich_deep_link("yolcu360", yolcu360_base, "car_rental"),
+            "yolcu360_economy": RevenueService.enrich_deep_link("yolcu360", y360_eco, "car_rental"),
+            "yolcu360_mid": RevenueService.enrich_deep_link("yolcu360", y360_mid, "car_rental"),
+            "yolcu360_suv": RevenueService.enrich_deep_link("yolcu360", y360_suv, "car_rental"),
+            "yolcu360_luxury": RevenueService.enrich_deep_link("yolcu360", y360_lux, "car_rental"),
+            "enuygun": RevenueService.enrich_deep_link("enuygun", enuygun_car_url, "car_rental"),
+            "obilet": RevenueService.enrich_deep_link("obilet", obilet_car_url, "car_rental"),
+            "rentalcars": RevenueService.enrich_deep_link("rentalcars", rentalcars_url, "car_rental"),
+            "garenta": RevenueService.enrich_deep_link("garenta", garenta_url, "car_rental"),
+            "avis": RevenueService.enrich_deep_link("avis", avis_url, "car_rental"),
             "location_label": meta.get("label") or f"{location_name} Havalimanı / Şehir Ofisleri",
         }
 

@@ -30,10 +30,13 @@ class Settings:
     # Scheduler Interval (Saat cinsinden varsayılan kontrol periyodu)
     PRICE_CHECK_INTERVAL_HOURS: int = 2
 
-    # Affiliate / Gelir Ortaklığı Kodları (GelirOrtakları & Travelpayouts & Obilet)
+    # Affiliate / Gelir Ortaklığı Kodları (GelirOrtakları & Travelpayouts & Obilet & Bilet.com & Yolcu360)
     AFFILIATE_ENUYGUN_SUBID: str = os.getenv("AFFILIATE_ENUYGUN_SUBID", "hakikibilet")
     AFFILIATE_OBILET_SUBID: str = os.getenv("AFFILIATE_OBILET_SUBID", "hakikibilet")
     AFFILIATE_YOLCU360_SUBID: str = os.getenv("AFFILIATE_YOLCU360_SUBID", "hakikibilet")
+    AFFILIATE_BILETCOM_SUBID: str = os.getenv("AFFILIATE_BILETCOM_SUBID", "hakikibilet")
+    AFFILIATE_GARENTA_SUBID: str = os.getenv("AFFILIATE_GARENTA_SUBID", "hakikibilet")
+    AFFILIATE_AVIS_SUBID: str = os.getenv("AFFILIATE_AVIS_SUBID", "hakikibilet")
     AFFILIATE_TRAVELPAYOUTS_MARKER: str = os.getenv("AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
     AFFILIATE_FERRY_SUBID: str = os.getenv("AFFILIATE_FERRY_SUBID", "hakikibilet")
     AFFILIATE_BOOKING_AID: str = os.getenv("AFFILIATE_BOOKING_AID", "585474")
@@ -42,6 +45,13 @@ class Settings:
     AFFILIATE_TRIP_SID: str = os.getenv("AFFILIATE_TRIP_SID", "333747492")
     AFFILIATE_AWIN_PUBLISHER_ID: str = os.getenv("AFFILIATE_AWIN_PUBLISHER_ID", "3132253")
     AFFILIATE_FLIXBUS_AWIN_MID: str = os.getenv("AFFILIATE_FLIXBUS_AWIN_MID", "")
+
+    # Çift Kademeli (Dual-Mode) Şemsiye Ağ Sarmalayıcıları (GelirOrtakları / Admitad / Travelpayouts)
+    # İleride şemsiye ağ yönlendirme linki kullanılmak istendiğinde sadece bu ortam değişkenleri doldurulur.
+    AFFILIATE_WRAPPER_YOLCU360: str = os.getenv("AFFILIATE_WRAPPER_YOLCU360", "")
+    AFFILIATE_WRAPPER_ENUYGUN: str = os.getenv("AFFILIATE_WRAPPER_ENUYGUN", "")
+    AFFILIATE_WRAPPER_OBILET: str = os.getenv("AFFILIATE_WRAPPER_OBILET", "")
+    AFFILIATE_WRAPPER_BILETCOM: str = os.getenv("AFFILIATE_WRAPPER_BILETCOM", "")
 
     # Merkezi Gelir Modeli ve Komisyon Oranları Tablosu
     # İleride yeni ortaklıklar onaylandığında veya komisyon oranları değiştiğinde
@@ -154,6 +164,56 @@ class Settings:
             "hotel_rate": float(os.getenv("COMM_BOOKING_HOTEL_RATE", "4.0")),
             "fixed_try": 0.0,
             "tie_breaker_rank": int(os.getenv("COMM_BOOKING_RANK", "80")),
+        },
+        "yolcu360": {
+            "name": "Yolcu360",
+            "active_affiliate": os.getenv("COMM_YOLCU360_ACTIVE", "true").lower() in ("true", "1", "yes"),
+            "model": "percentage",
+            "domestic_rate": float(os.getenv("COMM_YOLCU360_RATE", "6.0")),
+            "international_rate": float(os.getenv("COMM_YOLCU360_RATE", "6.0")),
+            "car_rate": float(os.getenv("COMM_YOLCU360_RATE", "6.0")),
+            "fixed_try": 0.0,
+            "tie_breaker_rank": int(os.getenv("COMM_YOLCU360_RANK", "96")),
+        },
+        "rentalcars": {
+            "name": "Rentalcars (Booking.com)",
+            "active_affiliate": os.getenv("COMM_RENTALCARS_ACTIVE", "true").lower() in ("true", "1", "yes"),
+            "model": "percentage",
+            "domestic_rate": float(os.getenv("COMM_RENTALCARS_RATE", "5.5")),
+            "international_rate": float(os.getenv("COMM_RENTALCARS_RATE", "5.5")),
+            "car_rate": float(os.getenv("COMM_RENTALCARS_RATE", "5.5")),
+            "fixed_try": 0.0,
+            "tie_breaker_rank": int(os.getenv("COMM_RENTALCARS_RANK", "86")),
+        },
+        "welcomepickups": {
+            "name": "Welcome Pickups",
+            "active_affiliate": os.getenv("COMM_WELCOMEPICKUPS_ACTIVE", "true").lower() in ("true", "1", "yes"),
+            "model": "percentage",
+            "domestic_rate": float(os.getenv("COMM_WELCOMEPICKUPS_RATE", "8.0")),
+            "international_rate": float(os.getenv("COMM_WELCOMEPICKUPS_RATE", "8.0")),
+            "transfer_rate": float(os.getenv("COMM_WELCOMEPICKUPS_RATE", "8.0")),
+            "fixed_try": 0.0,
+            "tie_breaker_rank": int(os.getenv("COMM_WELCOMEPICKUPS_RANK", "89")),
+        },
+        "garenta": {
+            "name": "Garenta",
+            "active_affiliate": os.getenv("COMM_GARENTA_ACTIVE", "true").lower() in ("true", "1", "yes"),
+            "model": "percentage",
+            "domestic_rate": float(os.getenv("COMM_GARENTA_RATE", "4.0")),
+            "international_rate": float(os.getenv("COMM_GARENTA_RATE", "4.0")),
+            "car_rate": float(os.getenv("COMM_GARENTA_RATE", "4.0")),
+            "fixed_try": 0.0,
+            "tie_breaker_rank": int(os.getenv("COMM_GARENTA_RANK", "78")),
+        },
+        "avis": {
+            "name": "Avis Türkiye",
+            "active_affiliate": os.getenv("COMM_AVIS_ACTIVE", "true").lower() in ("true", "1", "yes"),
+            "model": "percentage",
+            "domestic_rate": float(os.getenv("COMM_AVIS_RATE", "4.0")),
+            "international_rate": float(os.getenv("COMM_AVIS_RATE", "4.0")),
+            "car_rate": float(os.getenv("COMM_AVIS_RATE", "4.0")),
+            "fixed_try": 0.0,
+            "tie_breaker_rank": int(os.getenv("COMM_AVIS_RANK", "76")),
         },
         "bubilet": {
             "name": "Bubilet",

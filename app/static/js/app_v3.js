@@ -4341,16 +4341,16 @@ function buildFlightFerryCrossSellHtml(toCity, toCode, searchReq) {
         ferryUrl = `https://feribotlines.com/search?from=1668882401&to=1668882487&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
         ferryLabel = '⛴️ Kaş ➔ Meis Adası Feribot (Feribotlines) ↗';
     } else if (codeUp === 'IST' || codeUp === 'SAW' || citySlug.includes('istanbul')) {
-        ferryUrl = `https://www.obilet.com/feribot-seferleri/250_24-232_0/${depCompact}/${pax}a/0_none`;
+        ferryUrl = `https://www.obilet.com/feribot-seferleri/250_24-232_0/${depCompact}/${pax}a/0_none?utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&subid=hakikibilet`;
         ferryLabel = '⛴️ Yenikapı ➔ Bursa / Yalova Feribot (İDO & Obilet) ↗';
     } else if (codeUp === 'CKZ' || citySlug.includes('canakkale')) {
         ferryUrl = 'https://www.gdu.com.tr/sefer-saatleri';
         ferryLabel = '⛴️ Geyikli ➔ Bozcaada Feribot (GESTAŞ) ↗';
     } else if (codeUp === 'COV' || codeUp === 'ADA' || citySlug.includes('adana') || citySlug.includes('mersin') || citySlug.includes('cukurova')) {
-        ferryUrl = `https://www.bilet.com/feribot/arama?theme=new&adapter=cyprus&nereden=tasucu&nereye=girne&gidis=${depDot}&yetiskin=${pax}`;
+        ferryUrl = `https://www.bilet.com/feribot/arama?theme=new&adapter=cyprus&nereden=tasucu&nereye=girne&gidis=${depDot}&yetiskin=${pax}&utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&ref=hakikibilet`;
         ferryLabel = '⛴️ Taşucu ➔ Girne (KKTC) Feribot (Bilet.com) ↗';
     } else if (codeUp === 'YEI' || citySlug.includes('bursa')) {
-        ferryUrl = `https://www.obilet.com/feribot-seferleri/232_0-250_24/${depCompact}/${pax}a/0_none`;
+        ferryUrl = `https://www.obilet.com/feribot-seferleri/232_0-250_24/${depCompact}/${pax}a/0_none?utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&subid=hakikibilet`;
         ferryLabel = '⛴️ Bursa ➔ Yenikapı Feribot (İDO & Obilet) ↗';
     }
 
@@ -4381,20 +4381,22 @@ function buildFlightTransferCrossSellUrl(toCity, toCode) {
         'ASR': 'kayseri-erkilet-havalimani',
         'GZT': 'gaziantep-havalimani'
     };
-    if (biletMap[code]) return `https://www.bilet.com/transfer/${biletMap[code]}`;
-    if (slug.includes('antalya') || slug.includes('alanya')) return 'https://www.bilet.com/transfer/antalya-havalimani';
-    if (slug.includes('bodrum')) return 'https://www.bilet.com/transfer/bodrum-milas-havalimani';
-    if (slug.includes('dalaman') || slug.includes('fethiye') || slug.includes('marmaris')) return 'https://www.bilet.com/transfer/mugla-dalaman-havalimani';
-    if (slug.includes('trabzon')) return 'https://www.bilet.com/transfer/trabzon-havalimani';
-    if (slug.includes('adana') || slug.includes('mersin')) return 'https://www.bilet.com/transfer/adana-sakirpasa-havalimani';
-    if (slug.includes('kayseri')) return 'https://www.bilet.com/transfer/kayseri-erkilet-havalimani';
-    if (slug.includes('gaziantep')) return 'https://www.bilet.com/transfer/gaziantep-havalimani';
-    return 'https://www.bilet.com/transfer/istanbul-havalimani';
+    const q = '?utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&ref=hakikibilet';
+    if (biletMap[code]) return `https://www.bilet.com/transfer/${biletMap[code]}${q}`;
+    if (slug.includes('antalya') || slug.includes('alanya')) return `https://www.bilet.com/transfer/antalya-havalimani${q}`;
+    if (slug.includes('bodrum')) return `https://www.bilet.com/transfer/bodrum-milas-havalimani${q}`;
+    if (slug.includes('dalaman') || slug.includes('fethiye') || slug.includes('marmaris')) return `https://www.bilet.com/transfer/mugla-dalaman-havalimani${q}`;
+    if (slug.includes('trabzon')) return `https://www.bilet.com/transfer/trabzon-havalimani${q}`;
+    if (slug.includes('adana') || slug.includes('mersin')) return `https://www.bilet.com/transfer/adana-sakirpasa-havalimani${q}`;
+    if (slug.includes('kayseri')) return `https://www.bilet.com/transfer/kayseri-erkilet-havalimani${q}`;
+    if (slug.includes('gaziantep')) return `https://www.bilet.com/transfer/gaziantep-havalimani${q}`;
+    return `https://www.bilet.com/transfer/istanbul-havalimani${q}`;
 }
 
 function buildFlightCarCrossSellUrl(toCity, toCode) {
     const code = (toCode || '').toUpperCase();
     const slug = toAsciiSlug(toCity || '');
+    const q = '?utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&subid=hakikibilet';
     const yolcuMap = {
         'IST': 'turkiye/istanbul/istanbul-havalimani',
         'SAW': 'turkiye/istanbul/sabiha-gokcen-havalimani',
@@ -4409,14 +4411,14 @@ function buildFlightCarCrossSellUrl(toCity, toCode) {
         'ASR': 'turkiye/kayseri/kayseri-erkilet-havalimani',
         'GZT': 'turkiye/gaziantep/gaziantep-havalimani'
     };
-    if (yolcuMap[code]) return `https://yolcu360.com/arac-kiralama/${yolcuMap[code]}`;
-    if (slug.includes('antalya')) return 'https://yolcu360.com/arac-kiralama/turkiye/antalya/antalya-havalimani';
-    if (slug.includes('izmir')) return 'https://yolcu360.com/arac-kiralama/turkiye/izmir/izmir-adnan-menderes-havalimani';
-    if (slug.includes('ankara')) return 'https://yolcu360.com/arac-kiralama/turkiye/ankara/ankara-esenboga-havalimani';
-    if (slug.includes('bodrum')) return 'https://yolcu360.com/arac-kiralama/turkiye/mugla/bodrum-milas-havalimani';
-    if (slug.includes('dalaman')) return 'https://yolcu360.com/arac-kiralama/turkiye/mugla/dalaman-havalimani';
-    if (slug.includes('trabzon')) return 'https://yolcu360.com/arac-kiralama/turkiye/trabzon/trabzon-havalimani';
-    return 'https://yolcu360.com/arac-kiralama/turkiye/istanbul/istanbul-havalimani';
+    if (yolcuMap[code]) return `https://yolcu360.com/arac-kiralama/${yolcuMap[code]}${q}`;
+    if (slug.includes('antalya')) return `https://yolcu360.com/arac-kiralama/turkiye/antalya/antalya-havalimani${q}`;
+    if (slug.includes('izmir')) return `https://yolcu360.com/arac-kiralama/turkiye/izmir/izmir-adnan-menderes-havalimani${q}`;
+    if (slug.includes('ankara')) return `https://yolcu360.com/arac-kiralama/turkiye/ankara/ankara-esenboga-havalimani${q}`;
+    if (slug.includes('bodrum')) return `https://yolcu360.com/arac-kiralama/turkiye/mugla/bodrum-milas-havalimani${q}`;
+    if (slug.includes('dalaman')) return `https://yolcu360.com/arac-kiralama/turkiye/mugla/dalaman-havalimani${q}`;
+    if (slug.includes('trabzon')) return `https://yolcu360.com/arac-kiralama/turkiye/trabzon/trabzon-havalimani${q}`;
+    return `https://yolcu360.com/arac-kiralama/turkiye/istanbul/istanbul-havalimani${q}`;
 }
 
 function generateTicketCardsHtml(tickets, searchReq) {
