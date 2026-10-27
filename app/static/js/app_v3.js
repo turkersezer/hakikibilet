@@ -3339,8 +3339,13 @@ function renderTransportResults(data, searchReq) {
         scopeLabel = isIntlRoute ? (isEn ? '⛴️ Greek Islands & Cruise' : '⛴️ Yunan Adaları & Cruise') : (isEn ? '⛴️ Domestic Ferry' : '⛴️ Deniz & Feribot Seferleri');
         headerModeIcon = 'fa-ship';
     } else if (modeType === 'car') {
-        scopeLabel = isEn ? '🚗 Car Rental Comparison' : '🚗 Kiralık Araç Karşılaştırma';
-        headerModeIcon = 'fa-car-side';
+        if (window.currentCarSubMode === 'transfer') {
+            scopeLabel = isEn ? '🚕 VIP Airport & Hotel Transfer' : '🚕 VIP Transfer & Shuttle';
+            headerModeIcon = 'fa-taxi';
+        } else {
+            scopeLabel = isEn ? '🚗 Car Rental Comparison' : '🚗 Kiralık Araç Karşılaştırma';
+            headerModeIcon = 'fa-car-side';
+        }
     } else {
         scopeLabel = isIntlRoute
             ? (isEn ? '🌍 International Flight' : '🌍 Yurtdışı Uçuş')
@@ -3576,8 +3581,127 @@ function renderTransportResults(data, searchReq) {
 
 
 
-    // A. SEFER VEYA KİRALIK ARAÇ KARTLARI
-    if (searchReq.transport_type === 'car' && data.car_rental && Array.isArray(data.car_rental.vehicles) && data.car_rental.vehicles.length > 0) {
+    // A-0. ŞOFÖRLÜ HAVALİMANI & VIP TRANSFER MODU (Bilet.com Transfer Entegrasyonu)
+    if (searchReq.transport_type === 'car' && window.currentCarSubMode === 'transfer') {
+        const trMeta = (data.destination_cross_sell && data.destination_cross_sell.transfer) || 
+                       (data.deep_links && data.deep_links.transfer) || {};
+        const biletcomUrl = trMeta.biletcom_url || `https://www.bilet.com/transfer?kalkis=${encodeURIComponent((searchReq.origin || '').toLowerCase().replace(/\s+/g, '-'))}&ref=hakikibilet`;
+        const kiwiTaxiUrl = trMeta.kiwitaxi_url || `https://kiwitaxi.com/?pap=585474&from=${encodeURIComponent(searchReq.origin || '')}`;
+        const getTransferUrl = trMeta.gettransfer_url || `https://gettransfer.com/tr?utm_source=hakikibilet&to=${encodeURIComponent(searchReq.destination || '')}`;
+        const shuttleName = trMeta.shuttle_name || 'Havaş / Havalimanı Otobüsü';
+
+        html += `
+            <div class="bg-gradient-to-br from-amber-500/10 via-amber-100/40 to-slate-900/5 border-2 border-amber-300 rounded-3xl p-5 sm:p-6 mb-6 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-amber-200/80">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-2xl font-black shadow-md">
+                            🚕
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-base sm:text-lg font-black text-slate-900">
+                                    ${escapeHtml(searchReq.origin)} ➔ ${escapeHtml(searchReq.destination)} Şoförlü VIP Transfer
+                                </h3>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950">
+                                    Bilet.com Resmi Partner
+                                </span>
+                            </div>
+                            <div class="text-xs font-semibold text-slate-600 mt-1 flex flex-wrap items-center gap-2">
+                                <span>📅 <strong>${escapeHtml(searchReq.departure_date)}</strong></span>
+                                <span>•</span>
+                                <span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> Sabit Fiyat Garantisi</span>
+                                <span>•</span>
+                                <span class="text-sky-700 font-bold"><i class="fa-solid fa-id-badge"></i> Kapıda İsimle Karşılama</span>
+                                <span>•</span>
+                                <span class="text-slate-600 font-semibold"><i class="fa-solid fa-clock-rotate-left"></i> Ücretsiz İptal</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="switchCarSubMode('rental');" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs transition cursor-pointer shadow-2xs">
+                            🚗 Kiralık Araçlara Geç
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3 Popüler VIP Transfer Aracı Seçeneği -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+                    <!-- 1. VIP Minivan (Mercedes Vito) -->
+                    <div class="bg-white rounded-2xl p-4 border border-amber-200 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-100 text-amber-900 uppercase">En Çok Tercih Edilen</span>
+                                <span class="text-xs font-bold text-slate-500">1-6 Kişilik</span>
+                            </div>
+                            <div class="font-black text-slate-900 text-base">Mercedes-Benz Vito VIP</div>
+                            <div class="text-xs text-slate-500 mt-1">Lüks Deri Koltuk, Buzdolabı, Ücretsiz WiFi & Özel Şoför</div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[11px] font-bold text-emerald-600">Bilet.com Güvencesiyle</span>
+                            <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition shadow-2xs inline-flex items-center gap-1">
+                                <span>Teklif Al ↗</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 2. Sedan VIP & Business -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-sky-100 text-sky-900 uppercase">Konfor Sedan</span>
+                                <span class="text-xs font-bold text-slate-500">1-3 Kişilik</span>
+                            </div>
+                            <div class="font-black text-slate-900 text-base">VIP Sedan / Executive</div>
+                            <div class="text-xs text-slate-500 mt-1">Geniş Bagaj, Klimalı & Sessiz Sürüş, Kapıdan Kapıya Ulaşım</div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[11px] font-bold text-emerald-600">Sabit Fiyat</span>
+                            <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-2xs inline-flex items-center gap-1">
+                                <span>Teklif Al ↗</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 3. Grup Minibüs (Sprinter) -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-purple-100 text-purple-900 uppercase">Grup & Aile</span>
+                                <span class="text-xs font-bold text-slate-500">7-16 Kişilik</span>
+                            </div>
+                            <div class="font-black text-slate-900 text-base">VIP Minibüs / Sprinter</div>
+                            <div class="text-xs text-slate-500 mt-1">Geniş Aileler, Kongre & Turizm Heyetleri, Ekstra Bagaj Alanı</div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[11px] font-bold text-emerald-600">Grup İndirimi</span>
+                            <a href="${biletcomUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-2xs inline-flex items-center gap-1">
+                                <span>Teklif Al ↗</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alternatif & Shuttle Kılavuzu Şeridi -->
+                <div class="mt-4 pt-3 border-t border-amber-200/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2 text-slate-600 font-semibold">
+                        <i class="fa-solid fa-bus text-amber-600"></i>
+                        <span>Alternatif Toplu Shuttle: <strong>${escapeHtml(shuttleName)}</strong></span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <a href="${kiwiTaxiUrl}" target="_blank" rel="noopener noreferrer" class="text-slate-600 hover:text-slate-900 font-bold underline">
+                            KiwiTaxi Karşılaştır ↗
+                        </a>
+                        <a href="${getTransferUrl}" target="_blank" rel="noopener noreferrer" class="text-slate-600 hover:text-slate-900 font-bold underline">
+                            GetTransfer Karşılaştır ↗
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // A. SEFER VEYA KİRALIK ARAÇ KARTLARI (Sadece Kiralık Araç Modunda Gösterilir)
+    if (searchReq.transport_type === 'car' && window.currentCarSubMode !== 'transfer' && data.car_rental && Array.isArray(data.car_rental.vehicles) && data.car_rental.vehicles.length > 0) {
         const cr = data.car_rental;
         const cSym = data.currency || cr.currency || '₺';
 
@@ -4708,6 +4832,30 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}<span>Obilet Teklifleri ↗</span></a>` : ''}
                     </div>
                 ` : ''}
+
+                <!-- Akıllı Çapraz Satış Rozeti (Cross-Sell Hook): Varış Şehri Otel & Havalimanı Transferi -->
+                <div class="mt-2.5 pt-2 border-t border-dashed border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-[10.5px] font-black text-slate-500 flex items-center gap-1">
+                            <i class="fa-solid fa-sparkles text-amber-500"></i> ${escapeHtml(toCity)} Varışında:
+                        </span>
+                        <a href="https://www.bilet.com/transfer?kalkis=${encodeURIComponent(toAsciiSlug(toCity))}&utm_source=hakikibilet&ref=hakikibilet"
+                           target="_blank" rel="noopener noreferrer"
+                           class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-extrabold text-[11px] inline-flex items-center gap-1.5 transition shadow-2xs hover:scale-102">
+                            <span>🚕 ${escapeHtml(toCity)} Havalimanı ➔ Otel VIP Transfer (Bilet.com) ↗</span>
+                        </a>
+                        <a href="https://yolcu360.com/tr/arac-kiralama/?pickup_location=${encodeURIComponent(toAsciiSlug(toCity))}-havalimani&utm_source=hakikibilet&subid=hakikibilet"
+                           target="_blank" rel="noopener noreferrer"
+                           class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold text-[11px] inline-flex items-center gap-1.5 transition">
+                            <span>🚗 Havalimanı Teslim Araç (Yolcu360) ↗</span>
+                        </a>
+                    </div>
+                    <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(toCity)}&aid=585474"
+                       target="_blank" rel="noopener noreferrer"
+                       class="text-[11px] font-bold text-sky-700 hover:text-sky-900 inline-flex items-center gap-1">
+                        <span>🏨 ${escapeHtml(toCity)} Otelleri (Booking) ↗</span>
+                    </a>
+                </div>
             </div>
         `;
     }
@@ -5876,16 +6024,26 @@ function updateTransportFieldLabels(subTab, lang) {
     if (paxFerryVehSec) paxFerryVehSec.classList.toggle("hidden", subTab !== 'ferry');
 
     if (subTab === 'car') {
-        if (paxTitle) paxTitle.textContent = isEn ? "Driver & Pax" : "Yolcu Sayısı";
-        if (originLabel) originLabel.innerHTML = isEn ? '🚗 Pick-up Location (Airport / City)' : '🚗 Alış Noktası (Havalimanı / Şehir)';
-        if (destLabel) destLabel.innerHTML = (typeof currentCarDifferentDropoff !== 'undefined' && currentCarDifferentDropoff)
-            ? (isEn ? '📍 Different Return Location' : '📍 Farklı İade Noktası') 
-            : (isEn ? '📍 Return Location (Same Place)' : '📍 İade Noktası (Aynı Yer)');
-        if (subHintBadge) subHintBadge.innerHTML = isEn 
-            ? '🚗 Compare Airport Car Rentals: Enuygun, Yolcu360, Avis & Garenta' 
-            : '🚗 Enuygun, Yolcu360, Avis & Garenta Havalimanı Araç Kiralama Karşılaştırması';
-        if (searchBtn) searchBtn.textContent = isEn ? "Find Rental Cars →" : "Kiralık Araçları Bul →";
-        if (typeof setFlightTripType === 'function') setFlightTripType('round');
+        if (window.currentCarSubMode === 'transfer') {
+            if (paxTitle) paxTitle.textContent = isEn ? "Passengers" : "Yolcu Sayısı";
+            if (originLabel) originLabel.innerHTML = isEn ? '🚕 Pickup (Airport / Hotel)' : '🚕 Kalkış Noktası (Havalimanı / Otel)';
+            if (destLabel) destLabel.innerHTML = isEn ? '🎯 Drop-off (Hotel / District / Address)' : '🎯 Varış Noktası (Otel / İlçe / Adres)';
+            if (subHintBadge) subHintBadge.innerHTML = isEn
+                ? '🚕 Bilet.com VIP Transfer • Fixed Price • Meet & Greet • Free Cancellation'
+                : '🚕 Bilet.com VIP Transfer • Sabit Fiyat • Kapıda Karşılama • Ücretsiz İptal';
+            if (searchBtn) searchBtn.textContent = isEn ? "Find VIP Transfer →" : "VIP Transfer Bul →";
+        } else {
+            if (paxTitle) paxTitle.textContent = isEn ? "Driver & Pax" : "Yolcu Sayısı";
+            if (originLabel) originLabel.innerHTML = isEn ? '🚗 Pick-up Location (Airport / City)' : '🚗 Alış Noktası (Havalimanı / Şehir)';
+            if (destLabel) destLabel.innerHTML = (typeof currentCarDifferentDropoff !== 'undefined' && currentCarDifferentDropoff)
+                ? (isEn ? '📍 Different Return Location' : '📍 Farklı İade Noktası') 
+                : (isEn ? '📍 Return Location (Same Place)' : '📍 İade Noktası (Aynı Yer)');
+            if (subHintBadge) subHintBadge.innerHTML = isEn 
+                ? '🚗 Compare Airport Car Rentals: Enuygun, Yolcu360, Avis & Garenta' 
+                : '🚗 Enuygun, Yolcu360, Avis & Garenta Havalimanı Araç Kiralama Karşılaştırması';
+            if (searchBtn) searchBtn.textContent = isEn ? "Find Rental Cars →" : "Kiralık Araçları Bul →";
+            if (typeof setFlightTripType === 'function') setFlightTripType('round');
+        }
     } else if (subTab === 'bus') {
         if (paxTitle) paxTitle.textContent = isEn ? "Passengers" : "Yolcu Sayısı";
         if (originLabel) originLabel.innerHTML = isEn ? '🚌 Departure City / Terminal' : '🚌 Kalkış Şehri / Otogarı';
@@ -6048,3 +6206,76 @@ window.updateTransportFieldLabels = updateTransportFieldLabels;
     }, true);
 })();
 
+
+
+// ==================== AKILLI ARAÇ & HAVALİMANI TRANSFERİ MODU (Bilet.com & Yolcu360) ====================
+window.currentCarSubMode = 'rental'; // 'rental' | 'transfer'
+
+function toAsciiSlug(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/İ/g, 'i').replace(/I/g, 'i').replace(/ı/g, 'i')
+        .replace(/Ğ/g, 'g').replace(/ğ/g, 'g')
+        .replace(/Ü/g, 'u').replace(/ü/g, 'u')
+        .replace(/Ş/g, 's').replace(/ş/g, 's')
+        .replace(/Ö/g, 'o').replace(/ö/g, 'o')
+        .replace(/Ç/g, 'c').replace(/ç/g, 'c')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+window.toAsciiSlug = toAsciiSlug;
+
+function switchCarSubMode(mode) {
+    window.currentCarSubMode = mode;
+    const btnRental = document.getElementById('subModeCarRental');
+    const btnTransfer = document.getElementById('subModeCarTransfer');
+    const transferHint = document.getElementById('transferSubHint');
+    const filterRow = document.getElementById('carRentalFilterRow');
+    const destInput = document.getElementById('transDest');
+
+    if (mode === 'transfer') {
+        if (btnRental) btnRental.className = "px-3 py-1 rounded-lg text-xs font-bold text-slate-700 hover:text-slate-950 transition flex items-center gap-1.5 cursor-pointer";
+        if (btnTransfer) btnTransfer.className = "px-3 py-1 rounded-lg text-xs font-black bg-amber-500 text-slate-950 shadow-xs transition flex items-center gap-1.5 cursor-pointer";
+        if (transferHint) transferHint.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i><span>Bilet.com VIP Transfer • Sabit Fiyat • Kapıda Karşılama • Ücretsiz İptal</span>';
+        if (filterRow) filterRow.classList.add('hidden');
+        if (destInput) destInput.disabled = false;
+    } else {
+        if (btnRental) btnRental.className = "px-3 py-1 rounded-lg text-xs font-black bg-slate-900 text-white transition flex items-center gap-1.5 cursor-pointer";
+        if (btnTransfer) btnTransfer.className = "px-3 py-1 rounded-lg text-xs font-bold text-slate-700 hover:text-slate-950 transition flex items-center gap-1.5 cursor-pointer";
+        if (transferHint) transferHint.innerHTML = '<i class="fa-solid fa-shield-halved text-emerald-600"></i><span>Yolcu360, Obilet, Enuygun & Rentalcars Karşılaştırması</span>';
+        if (filterRow) filterRow.classList.remove('hidden');
+    }
+
+    if (typeof updateTransportFieldLabels === 'function') {
+        updateTransportFieldLabels('car', window.currentAppLang || 'tr');
+    }
+
+    // Eğer ekranda zaten açık bir Araç/Transfer sonucu varsa beklemeden anında görünümü değiştir
+    if (window.lastTransportData && window.lastSearchReq && window.lastSearchReq.transport_type === 'car') {
+        renderTransportResults(window.lastTransportData, window.lastSearchReq);
+    }
+}
+
+function quickOpenTransferPlanner() {
+    if (window.switchMainPillar) {
+        window.switchMainPillar('travel');
+    }
+    window.currentCarSubMode = 'transfer';
+    if (window.switchUnifiedTab) {
+        window.switchUnifiedTab('car');
+    }
+    switchCarSubMode('transfer');
+    const inputOrig = document.getElementById('transOrigin');
+    if (inputOrig && !inputOrig.value) {
+        inputOrig.value = 'İstanbul Havalimanı (IST)';
+    }
+    const inputDest = document.getElementById('transDest');
+    if (inputDest && (!inputDest.value || inputDest.value === inputOrig.value)) {
+        inputDest.value = 'Kadıköy, İstanbul';
+    }
+    window.scrollTo({ top: 280, behavior: 'smooth' });
+}
+
+window.switchCarSubMode = switchCarSubMode;
+window.quickOpenTransferPlanner = quickOpenTransferPlanner;

@@ -529,6 +529,9 @@
                             <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('smartroute')" class="bento-pill">
                                 <span>🚀 Kapıdan Kapıya Planla</span>
                             </button>
+                            <button type="button" onclick="event.stopPropagation(); quickOpenTransferPlanner()" class="bento-pill">
+                                <span>🚕 Havalimanı Transfer</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -631,7 +634,7 @@
                         <span data-i18n="tabFerry">⛴️ Feribot</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('car')" id="tabBtn-car" class="tab-btn">
-                        <span>🚗 Araç Kiralama</span>
+                        <span>🚗 Araç & Transfer</span>
                     </button>
                 </div>
             </div>
@@ -919,7 +922,23 @@
 
             <!-- 2E. Araç Kiralama Seçenekleri & Popüler Havalimanları Satırı -->
             <div id="carOptionsBar" class="hidden flex-wrap items-center justify-between gap-3 mb-4 text-xs font-bold text-slate-600 bg-amber-50/70 p-3 rounded-2xl border border-amber-200">
-                <div class="flex flex-wrap items-center gap-4">
+                <!-- Araç Kiralama vs Şoförlü Havalimanı Transferi Alt Mod Seçimi -->
+                <div class="w-full flex flex-wrap items-center justify-between pb-2.5 mb-2.5 border-b border-amber-200/80 gap-2">
+                    <div class="inline-flex items-center bg-white p-1 rounded-xl border border-amber-300 shadow-2xs">
+                        <button type="button" onclick="switchCarSubMode('rental')" id="subModeCarRental" class="px-3 py-1 rounded-lg text-xs font-black bg-slate-900 text-white transition flex items-center gap-1.5 cursor-pointer">
+                            <span>🚗 Kiralık Araç</span>
+                        </button>
+                        <button type="button" onclick="switchCarSubMode('transfer')" id="subModeCarTransfer" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-700 hover:text-slate-950 transition flex items-center gap-1.5 cursor-pointer">
+                            <span>🚕 Şoförlü Havalimanı / VIP Transfer</span>
+                            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-amber-500 text-slate-950">Bilet.com</span>
+                        </button>
+                    </div>
+                    <div id="transferSubHint" class="flex items-center gap-1 text-[11px] font-bold text-amber-900">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                        <span>Sabit Fiyat • Kapıda Karşılama • Ücretsiz İptal</span>
+                    </div>
+                </div>
+                <div id="carRentalFilterRow" class="flex flex-wrap items-center gap-4">
                     <!-- Araç Segment Filtresi -->
                     <div class="inline-flex items-center bg-white p-0.5 rounded-xl border border-amber-200 shadow-2xs">
                         <button type="button" onclick="setCarCategoryFilter('all')" id="carCat-all" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-slate-900 text-white transition">
@@ -1206,7 +1225,7 @@
                             <i class="fa-solid fa-shield-halved text-emerald-600"></i>
                             <span data-i18n="bookingGuarantee">Resmi partner ve taşıyıcı güvenli bağlantısıyla doğrudan, şeffaf rezervasyon.</span>
                         </div>
-                        <button type="submit" class="search-btn w-full sm:w-auto">
+                        <button type="submit" id="transportSearchBtn" class="search-btn w-full sm:w-auto">
                             <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             <span id="searchSubmitBtnText" data-i18n="searchBtnFlight">Uçuşları Bul →</span>
                         </button>
@@ -2558,7 +2577,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261026_v23"></script>
+    <script src="/static/js/app_v3.js?v=20261027_v24"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">

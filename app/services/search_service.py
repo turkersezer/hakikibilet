@@ -318,11 +318,20 @@ class SearchService:
                 "turyol": f"https://www.turyolonline.com/?date={departure_date}&utm_source=hakikibilet" if ferry_avail else None,
             }
 
+        # 5. Akıllı Havalimanı & Şehir İçi Transfer Derin Linkleri (Bilet.com, KiwiTaxi, GetTransfer)
+        from app.services.transfer_service import TransferService
+        transfer_data = TransferService.generate_transfer_links(
+            dest_city_or_code=dest_city_name,
+            travel_date=departure_date,
+            passengers=adults
+        )
+
         return {
             "flight": flight_links,
             "train": train_links,
             "bus": bus_links,
-            "ferry": ferry_links
+            "ferry": ferry_links,
+            "transfer": transfer_data
         }
 
     @classmethod
@@ -2081,6 +2090,14 @@ class SearchService:
             f"&group_adults={max(1, passengers)}&no_rooms=1&aid={booking_aid}"
         )
 
+        # Akıllı Transfer Linki (Bilet.com Transfer)
+        from app.services.transfer_service import TransferService
+        transfer_meta = TransferService.generate_transfer_links(
+            dest_city_or_code=dest_name,
+            travel_date=departure_date,
+            passengers=passengers
+        )
+
         return {
             "city": dest_clean,
             "origin": origin_name.split("(")[0].strip(),
@@ -2089,7 +2106,8 @@ class SearchService:
             "has_live_event": len(matched_events) > 0,
             "matched_event": matched_events[0] if matched_events else None,
             "highlights": highlight_data,
-            "hotel_deep_link": hotel_deep_link
+            "hotel_deep_link": hotel_deep_link,
+            "transfer": transfer_meta,
         }
 
 
