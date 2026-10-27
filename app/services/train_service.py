@@ -975,6 +975,38 @@ class TrainService:
         return f"https://tp.media/r?marker={tp_marker}&p=4523&u={encoded}"
 
     @classmethod
+    def get_trip_train_deep_link(cls, origin_slug: str, dest_slug: str, departure_date: str) -> str:
+        """Trip.com Trains (Avrupa & Birleşik Krallık Hızlı Tren) biletleme ekranına resmi AllianceID ile yönlendirir."""
+        from app.config import settings
+        trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
+        trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
+        en_city_map = {
+            "londra": "London",
+            "paris": "Paris",
+            "roma": "Rome",
+            "milano": "Milan",
+            "amsterdam": "Amsterdam",
+            "berlin": "Berlin",
+            "munih": "Munich",
+            "barselona": "Barcelona",
+            "madrid": "Madrid",
+            "zurih": "Zurich",
+            "viyana": "Vienna",
+            "prag": "Prague",
+            "sofya": "Sofia",
+            "bukres": "Bucharest",
+        }
+        dep_c = en_city_map.get(origin_slug, origin_slug.title())
+        arr_c = en_city_map.get(dest_slug, dest_slug.title())
+        return (
+            f"https://uk.trip.com/trains/list?"
+            f"depCity={urllib.parse.quote(dep_c)}"
+            f"&arrCity={urllib.parse.quote(arr_c)}"
+            f"&depDate={departure_date}"
+            f"&Allianceid={trip_aid}&SID={trip_sid}"
+        )
+
+    @classmethod
     def get_omio_deep_link(cls, origin_slug: str, dest_slug: str, departure_date: str) -> str:
         """Omio Avrupa hızlı tren ve çok modlu biletleme ekranına Travelpayouts Marker ile yönlendirir."""
         from app.config import settings
@@ -1042,19 +1074,23 @@ class TrainService:
 
             if is_trainline:
                 booking_url = cls.get_trainline_deep_link(orig_clean, dest_clean, departure_date)
+                trip_train_url = cls.get_trip_train_deep_link(orig_clean, dest_clean, departure_date)
                 omio_url = cls.get_omio_deep_link(orig_clean, dest_clean, departure_date)
                 provider_name = "Trainline Resmi Bilet Ekranı"
-                price_status = "Trainline Doğrulanmış Taban Fiyat"
+                price_status = "Trainline & Trip.com Doğrulanmış Taban Fiyat"
                 providers_list = [
                     {"name": "Trainline Resmi Ekran", "url": booking_url, "price": conv_p, "is_best": True},
+                    {"name": "Trip.com Trains (Resmi Partner)", "url": trip_train_url, "price": conv_p, "is_best": False},
                     {"name": "Omio Hızlı Tren Karşılaştırması", "url": omio_url, "price": conv_p, "is_best": False}
                 ]
             else:
                 booking_url = "https://ebilet.tcddtasimacilik.gov.tr/"
+                trip_train_url = cls.get_trip_train_deep_link(orig_clean, dest_clean, departure_date)
                 provider_name = "TCDD Uluslararası E-Bilet"
                 price_status = "TCDD / BDZ Doğrulanmış Tarife"
                 providers_list = [
-                    {"name": "TCDD Uluslararası E-Bilet", "url": booking_url, "price": conv_p, "is_best": True}
+                    {"name": "TCDD Uluslararası E-Bilet", "url": booking_url, "price": conv_p, "is_best": True},
+                    {"name": "Trip.com Trains (Avrupa Raylı Sistem)", "url": trip_train_url, "price": conv_p, "is_best": False}
                 ]
 
             return_leg = None
@@ -1106,6 +1142,7 @@ class TrainService:
                 "agent_link": booking_url,
                 "direct_link": booking_url,
                 "booking_link": booking_url,
+                "trip_train_link": trip_train_url,
                 "is_round": is_round,
                 "return_leg": return_leg,
                 "discounts": {

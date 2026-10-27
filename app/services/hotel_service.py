@@ -195,6 +195,8 @@ class HotelService:
 
                     aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
                     agoda_cid = getattr(settings, "AFFILIATE_AGODA_CID", "1924128")
+                    trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
+                    trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
                     country_code = (h.get("countrycode") or "gr").lower()
                     hotel_name = name or ""
                     hotel_city = h.get("city") or ""
@@ -208,24 +210,32 @@ class HotelService:
                         f"&group_adults={guests}&no_rooms=1"
                         f"&aid={aid}"
                     )
-                    # 2. Doğrudan Agoda Canlı Oda ve Fiyat Ekranı (Türkiye içi ve dışı yasal, engelsiz)
+                    # 2. Doğrudan Trip.com Otel Arama & Rezervasyon Ekranı (Global & Türkiye Engelsiz)
+                    direct_trip = (
+                        f"https://www.trip.com/hotels/list?"
+                        f"keyword={urllib.parse.quote(hotel_name + ' ' + hotel_city)}"
+                        f"&checkin={cin}&checkout={cout}"
+                        f"&crn=1&adult={guests}"
+                        f"&Allianceid={trip_aid}&SID={trip_sid}"
+                    )
+                    # 3. Doğrudan Agoda Canlı Oda ve Fiyat Ekranı (Türkiye içi ve dışı yasal, engelsiz)
                     direct_agoda = (
                         f"https://www.agoda.com/tr-tr/search?"
                         f"text={urllib.parse.quote(hotel_name + ' ' + hotel_city)}"
                         f"&checkIn={cin}&checkOut={cout}&rooms=1&adults={guests}"
                         f"&cid={agoda_cid}"
                     )
-                    # 3. Doğrudan Google Hotels Karşılaştırma Ekranı
+                    # 4. Doğrudan Google Hotels Karşılaştırma Ekranı
                     direct_google = (
                         f"https://www.google.com/travel/hotels?"
                         f"q={urllib.parse.quote(hotel_name + ' ' + hotel_city)}"
                     )
 
                     # Türkiye içindeki otellerde Booking.com Türk IP'lerine mahkeme kararıyla kapalı olduğundan,
-                    # yerli otellerde birincil link Agoda / Google Hotels atanır. Yurt dışında ise doğrudan Booking.com otel sayfası verilir.
+                    # yerli otellerde birincil link Trip.com / Agoda atanır. Yurt dışında ise doğrudan Booking.com / Trip.com verilir.
                     if is_domestic:
-                        primary_url = direct_agoda
-                        primary_provider = "Agoda"
+                        primary_url = direct_trip
+                        primary_provider = "Trip.com"
                     else:
                         primary_url = direct_booking
                         primary_provider = "Booking.com"
@@ -250,6 +260,7 @@ class HotelService:
                         "url": primary_url,
                         "direct_url": primary_url,
                         "direct_booking_url": direct_booking,
+                        "trip_url": direct_trip,
                         "agoda_url": direct_agoda,
                         "google_url": direct_google,
                         "provider": primary_provider,
@@ -366,7 +377,8 @@ class HotelService:
             f"&cid={settings.AFFILIATE_AGODA_CID}"
         )
 
-        # 4. Enuygun Otel Linki (SADECE YURT İÇİ TÜRKİYE İÇİN AKTİF, YURT DIŞINDA 404 ÖNLEMEK İÇİN NONE)
+        # 4. Enuygun, Obilet Otel & Etstur Linkleri (SADECE YURT İÇİ TÜRKİYE İÇİN AKTİF, YURT DIŞINDA 404 ÖNLEMEK İÇİN NONE)
+        from app.services.revenue_service import RevenueService
         if not is_international:
             try:
                 cin_dt = datetime.strptime(cin, "%Y-%m-%d")
@@ -376,16 +388,31 @@ class HotelService:
             except Exception:
                 enuygun_cin, enuygun_cout = cin, cout
 
-            enuygun_url = (
+            enuygun_url = RevenueService.enrich_url(
                 f"https://www.enuygun.com/otel/arama/{city_slug}/?"
-                f"giris={enuygun_cin}&cikis={enuygun_cout}&yetiskin={guests}"
+                f"giris={enuygun_cin}&cikis={enuygun_cout}&yetiskin={guests}",
+                provider="enuygun",
+                vertical="hotel"
+            )
+            obilet_hotel_url = RevenueService.enrich_url(
+                f"https://www.obilet.com/otel/{city_slug}-otelleri",
+                provider="obilet",
+                vertical="hotel"
+            )
+            ets_slug = "-".join(w.capitalize() for w in city_slug.split("-") if w)
+            etstur_url = RevenueService.enrich_url(
+                f"https://www.etstur.com/{ets_slug}-Otelleri",
+                provider="etstur",
+                vertical="hotel"
             )
             primary_city_url = trip_hotel_url
             primary_provider = "Trip.com"
         else:
             enuygun_url = None
-            primary_city_url = booking_url
-            primary_provider = "Booking.com"
+            obilet_hotel_url = None
+            etstur_url = None
+            primary_city_url = trip_hotel_url
+            primary_provider = "Trip.com"
 
         # 1. CANLI BOOKING.COM VERİSİ SORGULA
         live_hotels = []
@@ -413,42 +440,42 @@ class HotelService:
                 dest_type=dest_type
             )
 
-        # Fiyat profili (Yedek piyasa göstergesi)
-        profile = cls.CITY_HOTEL_PROFILES.get(city_slug, {"min_try": 1200, "max_try": 3000, "label": f"{city_clean} Merkez"})
-        min_rate = CurrencyService.convert(profile["min_try"], "TRY", currency)
-        max_rate = CurrencyService.convert(profile["max_try"], "TRY", currency)
+        profile = cls.CITY_HOTEL_PROFILES.get(city_slug, {"min_try": 0, "max_try": 0, "label": f"{city_clean} Merkez"})
+        has_live = len(live_hotels) > 0
+        min_rate = min((h["nightly_price"] for h in live_hotels if h.get("nightly_price")), default=0.0) if has_live else None
+        max_rate = max((h["nightly_price"] for h in live_hotels if h.get("nightly_price")), default=0.0) if has_live else None
 
-        # Kategori kartları (Canlı veya güvenilir metasearch)
+        # Kategori kartları (Sıfır Varsayım: Canlı veya doğrudan parametrik derin link)
         categories = [
             {
-                "title": "🌟 Bütçe Dostu & Ada / Şehir Butik Otelleri",
+                "title": "🌟 Bütçe Dostu & Şehir Butik Otelleri",
                 "badge": "Canlı Müsaitlik",
                 "badge_color": "emerald",
-                "desc": f"{city_clean} merkezinde gezginlerin en çok tercih ettiği ekonomik butik oteller.",
-                "est_nightly": round(min_rate, 2),
-                "est_total": round(min_rate * nights, 2),
-                "action_text": f"{primary_provider}'da Odaları Gör ↗",
-                "link": primary_city_url
+                "desc": f"{city_clean} merkezinde gezginlerin en çok tercih ettiği ekonomik ve butik oteller.",
+                "est_nightly": round(min_rate, 2) if min_rate else None,
+                "est_total": round(min_rate * nights, 2) if min_rate else None,
+                "action_text": "Trip.com'da Odaları Gör ↗",
+                "link": trip_hotel_url
             },
             {
                 "title": "🏨 Merkez & Sahil / 4 Yıldız Konfor",
                 "badge": "Popüler Seçim",
                 "badge_color": "blue",
                 "desc": "Turistik noktalara, limana ve merkeze yürüme mesafesinde konforlu oteller.",
-                "est_nightly": round((min_rate + max_rate) / 2, 2),
-                "est_total": round(((min_rate + max_rate) / 2) * nights, 2),
-                "action_text": f"{primary_provider}'da İncele ↗",
-                "link": primary_city_url
+                "est_nightly": round((min_rate + max_rate) / 2, 2) if (min_rate and max_rate) else None,
+                "est_total": round(((min_rate + max_rate) / 2) * nights, 2) if (min_rate and max_rate) else None,
+                "action_text": "Booking.com'da İncele ↗",
+                "link": booking_url
             },
             {
                 "title": "💎 Taş Konak & Premium Resort Seçenekleri",
                 "badge": "Üst Düzey Puan",
                 "badge_color": "purple",
                 "desc": "Tarihi taş mimarili oteller, deniz manzaralı süitler ve spa otelleri.",
-                "est_nightly": round(max_rate * 1.3, 2),
-                "est_total": round(max_rate * 1.3 * nights, 2),
-                "action_text": f"{primary_provider}'da İncele ↗",
-                "link": primary_city_url
+                "est_nightly": round(max_rate, 2) if max_rate else None,
+                "est_total": round(max_rate * nights, 2) if max_rate else None,
+                "action_text": f"{'Enuygun Otel' if enuygun_url else 'Agoda'}'da İncele ↗",
+                "link": enuygun_url or agoda_url
             }
         ]
 
@@ -462,16 +489,18 @@ class HotelService:
             "currency": curr_sym,
             "currency_code": currency,
             "is_international": is_international,
-            "avg_nightly_min": round(min_rate, 2),
-            "avg_nightly_max": round(max_rate, 2),
-            "total_stay_min": round(min_rate * nights, 2),
-            "total_stay_max": round(max_rate * nights, 2),
-            "is_live": len(live_hotels) > 0,
+            "avg_nightly_min": round(min_rate, 2) if min_rate else None,
+            "avg_nightly_max": round(max_rate, 2) if max_rate else None,
+            "total_stay_min": round(min_rate * nights, 2) if min_rate else None,
+            "total_stay_max": round(max_rate * nights, 2) if max_rate else None,
+            "is_live": has_live,
             "live_hotels": live_hotels,
             "booking_url": booking_url,
             "primary_city_url": primary_city_url,
             "primary_provider": primary_provider,
             "enuygun_url": enuygun_url,
+            "obilet_hotel_url": obilet_hotel_url,
+            "etstur_url": etstur_url,
             "agoda_url": agoda_url,
             "trip_hotel_url": trip_hotel_url,
             "deep_links": {
@@ -479,6 +508,8 @@ class HotelService:
                 "booking": booking_url,
                 "agoda": agoda_url,
                 "enuygun": enuygun_url,
+                "obilet": obilet_hotel_url,
+                "etstur": etstur_url,
                 "primary": primary_city_url
             },
             "categories": categories,

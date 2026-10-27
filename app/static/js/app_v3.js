@@ -4561,7 +4561,20 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             </a>
                         </div>
                     </div>
-                    ${hasReturn ? `<div class="mt-2 pt-2 border-t border-slate-100 text-[11px] font-bold text-indigo-800 flex items-center justify-between"><span>🔄 Dönüş: ${retLeg.departure_time} ${escapeHtml(retLeg.origin)} ➔ ${retLeg.arrival_time} ${escapeHtml(retLeg.destination)}</span><span>${retLeg.flight_number || 'YHT'}</span></div>` : ''}
+                    ${hasReturn ? `<div class="mt-2 pt-2 border-t border-slate-100 text-[11px] font-bold text-indigo-800 flex items-center justify-between"><span>🔄 ${isEn ? 'Return' : 'Dönüş'}: ${retLeg.departure_time} ${escapeHtml(retLeg.origin)} ➔ ${retLeg.arrival_time} ${escapeHtml(retLeg.destination)}</span><span>${retLeg.flight_number || 'YHT'}</span></div>` : ''}
+                    ${isIntlTrain && Array.isArray(ticket.providers) && ticket.providers.length > 1 ? `
+                        <div class="mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-[11px]">
+                            <span class="text-[10.5px] font-black text-slate-500 mr-0.5 select-none">
+                                ${isEn ? 'Official Rail Partners:' : 'Uluslararası Tren Acenteleri:'}
+                            </span>
+                            ${ticket.providers.map(p => `
+                                <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg ${String(p.name).toLowerCase().includes('trip') ? 'bg-blue-50 border-blue-200 text-blue-950 font-black hover:bg-blue-100' : (p.is_best ? 'bg-indigo-50 border-indigo-200 text-indigo-950 font-black hover:bg-indigo-100' : 'bg-slate-50 border-slate-200 text-slate-700 font-bold hover:bg-slate-100')} border transition inline-flex items-center gap-1.5">
+                                    ${getBrandLogoHtml(p.name, '🚆', 'w-3.5 h-3.5')}
+                                    <span>${escapeHtml(p.name)} ↗</span>
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                     ${drawerHtml}
                 </div>
             `;
@@ -5000,25 +5013,32 @@ function generateTicketCardsHtml(tickets, searchReq) {
                 <div class="mt-2.5 pt-2 border-t border-dashed border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="text-[10.5px] font-black text-slate-500 flex items-center gap-1">
-                            <i class="fa-solid fa-sparkles text-amber-500"></i> ${escapeHtml(toCity)} Varışında:
+                            <i class="fa-solid fa-sparkles text-amber-500"></i> ${isEn ? `On Arrival in ${escapeHtml(toCity)}:` : `${escapeHtml(toCity)} Varışında:`}
                         </span>
                         <a href="${buildFlightTransferCrossSellUrl(toCity, toCode)}"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-extrabold text-[11px] inline-flex items-center gap-1.5 transition shadow-2xs hover:scale-102">
-                            <span>🚕 ${escapeHtml(toCity)} Havalimanı ➔ Otel VIP Transfer (Bilet.com) ↗</span>
+                            <span>🚕 ${isEn ? `${escapeHtml(toCity)} Airport VIP Transfer (Bilet.com) ↗` : `${escapeHtml(toCity)} Havalimanı ➔ Otel VIP Transfer (Bilet.com) ↗`}</span>
                         </a>
                         ${buildFlightFerryCrossSellHtml(toCity, toCode, searchReq)}
                         <a href="${buildFlightCarCrossSellUrl(toCity, toCode)}"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold text-[11px] inline-flex items-center gap-1.5 transition">
-                            <span>🚗 Havalimanı Teslim Araç (Yolcu360) ↗</span>
+                            <span>🚗 ${isEn ? 'Airport Car Rental (Yolcu360) ↗' : 'Havalimanı Teslim Araç (Yolcu360) ↗'}</span>
                         </a>
                     </div>
-                    <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(toCity)}&aid=585474"
-                       target="_blank" rel="noopener noreferrer"
-                       class="text-[11px] font-bold text-sky-700 hover:text-sky-900 inline-flex items-center gap-1">
-                        <span>🏨 ${escapeHtml(toCity)} Otelleri (Booking) ↗</span>
-                    </a>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <a href="https://www.trip.com/hotels/list?keyword=${encodeURIComponent(toCity)}${searchReq && searchReq.departure_date ? `&checkin=${encodeURIComponent(searchReq.departure_date)}` : ''}&crn=1&adult=${(searchReq && searchReq.passengers) || 1}&Allianceid=11051531&SID=333747492"
+                           target="_blank" rel="noopener noreferrer"
+                           class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-extrabold text-[11px] inline-flex items-center gap-1 transition">
+                            <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Trip.com) ↗' : 'Otelleri (Trip.com) ↗'}</span>
+                        </a>
+                        <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(toCity)}&aid=585474"
+                           target="_blank" rel="noopener noreferrer"
+                           class="text-[11px] font-bold text-sky-700 hover:text-sky-900 inline-flex items-center gap-1">
+                            <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Booking) ↗' : 'Otelleri (Booking) ↗'}</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         `;
@@ -5282,6 +5302,8 @@ async function executeHotelSearch(e) {
 
 // OTEL ARAMA SONUÇLARI: MULTI-MODAL ULAŞIM BANDI + KOMBİNE SEPET + CANLI OTELLER
 function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
+    window.lastHotelSearchArgs = { hotelInfo, city, cin, cout, guests, data };
+    const isEn = (window.currentAppLang === 'en');
     const resultsArea = document.getElementById("hotelResultsArea");
     const safeCity = escapeHtml(city);
     const safeCityJs = String(city || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
@@ -5290,10 +5312,14 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     if (!hotelInfo) {
         resultsArea.innerHTML = `
             <div class="bg-white p-10 rounded-3xl border border-slate-200 text-center shadow-xs">
-                <div class="font-black text-lg text-slate-800">${safeCity} için resmi arama linki hazırlandı.</div>
-                <div class="mt-4">
+                <div class="font-black text-lg text-slate-800">${isEn ? `Official hotel search links prepared for ${safeCity}.` : `${safeCity} için resmi arama linki hazırlandı.`}</div>
+                <div class="mt-4 flex flex-wrap justify-center gap-3">
+                    <a href="https://www.trip.com/hotels/list?keyword=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&crn=1&adult=${encodeURIComponent(guests)}&Allianceid=11051531&SID=333747492" target="_blank" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
+                        <span>${isEn ? 'Open Live Rooms on Trip.com' : "Trip.com'da Canlı Odaları Aç"}</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
                     <a href="https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&aid=585474" target="_blank" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
-                        <span>Booking.com'da Canlı Odaları Aç</span>
+                        <span>${isEn ? 'Open Live Rooms on Booking.com' : "Booking.com'da Canlı Odaları Aç"}</span>
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                 </div>
@@ -5303,8 +5329,12 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     }
 
     const isIntl = hotelInfo.is_international;
-    const bookingUrl = hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&aid=585474`;
+    const tripHotelUrl = hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || `https://${isEn || isIntl ? 'www.trip.com' : 'tr.trip.com'}/hotels/list?keyword=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&Allianceid=11051531&SID=333747492`;
+    const bookingUrl = hotelInfo.booking_url || `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&sb=1&aid=585474`;
     const enuygunUrl = isIntl ? null : hotelInfo.enuygun_url;
+    const obiletHotelUrl = isIntl ? null : (hotelInfo.obilet_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.obilet));
+    const etsturUrl = isIntl ? null : (hotelInfo.etstur_url || (hotelInfo.deep_links && hotelInfo.deep_links.etstur));
+    const agodaUrl = hotelInfo.agoda_url || `https://www.agoda.com/tr-tr/search?city=${encodeURIComponent(city)}&checkIn=${cin}&checkOut=${cout}&rooms=1&adults=${guests}&cid=1924128`;
     const liveHotels = hotelInfo.live_hotels || [];
     const topHotel = liveHotels.length > 0 ? liveHotels[0] : null;
 
@@ -5356,14 +5386,14 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                 <div>
                     <div class="flex items-center gap-2 mb-1">
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950">
-                            🧭 Şehre Ulaşım Alternatifleri
+                            🧭 ${isEn ? 'Transport Options to City' : 'Şehre Ulaşım Alternatifleri'}
                         </span>
-                        <span class="text-xs text-slate-400 font-bold">${safeCity} Seyahatiniz İçin Ulaşım Seçenekleri</span>
+                        <span class="text-xs text-slate-400 font-bold">${isEn ? `Transit Alternatives for Your ${safeCity} Stay` : `${safeCity} Seyahatiniz İçin Ulaşım Seçenekleri`}</span>
                     </div>
-                    <h4 class="text-base sm:text-lg font-black text-white">${safeCity} Şehrine Nasıl Gidilir? (Doğrulanmış Taban Fiyatlar)</h4>
+                    <h4 class="text-base sm:text-lg font-black text-white">${isEn ? `How to Get to ${safeCity}? (Verified Base Fares)` : `${safeCity} Şehrine Nasıl Gidilir? (Doğrulanmış Taban Fiyatlar)`}</h4>
                 </div>
                 <button onclick="prefillTransportAndSwitch('${safeOrigJs}', '${safeCityJs}', '${escapeHtml(cin)}', '${escapeHtml(cout)}')" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-amber-300 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0">
-                    <span>Tüm Sefer Saatlerini Listele ▾</span>
+                    <span>${isEn ? 'List All Schedules ▾' : 'Tüm Sefer Saatlerini Listele ▾'}</span>
                 </button>
             </div>
 
@@ -5374,23 +5404,23 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-amber-400/80 transition flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between text-xs mb-1.5">
-                                <span class="font-black text-amber-400 flex items-center gap-1.5">✈️ Uçuş</span>
-                                <span class="text-[10px] text-slate-400">${lowestFlight.duration || 'Direkt'}</span>
+                                <span class="font-black text-amber-400 flex items-center gap-1.5">✈️ ${isEn ? 'Flight' : 'Uçuş'}</span>
+                                <span class="text-[10px] text-slate-400">${lowestFlight.duration || (isEn ? 'Direct' : 'Direkt')}</span>
                             </div>
                             <div class="font-bold text-xs text-white line-clamp-1">${lowestFlight.carrier}</div>
-                            <div class="text-lg font-black text-amber-300 mt-2">${lowestFlight.price ? lowestFlight.price + ' ' + (lowestFlight.currency || '₺') : 'Canlı Fiyat'}</div>
+                            <div class="text-lg font-black text-amber-300 mt-2">${lowestFlight.price ? lowestFlight.price + ' ' + (lowestFlight.currency || '₺') : (isEn ? 'Live Fare' : 'Canlı Fiyat')}</div>
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-white/10">
                             <a href="${lowestFlight.direct_link || '#'}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 text-center bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                <span>Doğrudan Al ↗</span>
+                                <span>${isEn ? 'Book Direct ↗' : 'Doğrudan Al ↗'}</span>
                             </a>
                         </div>
                     </div>
                 ` : `
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/5 text-slate-500 flex flex-col justify-between">
-                        <div class="text-xs font-black text-slate-400 flex items-center gap-1.5">✈️ Uçak</div>
-                        <div class="text-[11px] text-slate-500 my-2">Havalimanı veya direkt hat bulunmuyor.</div>
-                        <div class="text-[10px] text-slate-600">Kara/Deniz tercih edin</div>
+                        <div class="text-xs font-black text-slate-400 flex items-center gap-1.5">✈️ ${isEn ? 'Flight' : 'Uçak'}</div>
+                        <div class="text-[11px] text-slate-500 my-2">${isEn ? 'No direct airport route.' : 'Havalimanı veya direkt hat bulunmuyor.'}</div>
+                        <div class="text-[10px] text-slate-600">${isEn ? 'Prefer land/sea' : 'Kara/Deniz tercih edin'}</div>
                     </div>
                 `}
 
@@ -5399,23 +5429,23 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/80 transition flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between text-xs mb-1.5">
-                                <span class="font-black text-purple-300 flex items-center gap-1.5">🚆 YHT Hızlı Tren</span>
+                                <span class="font-black text-purple-300 flex items-center gap-1.5">🚆 ${isEn ? 'High-Speed Train' : 'YHT Hızlı Tren'}</span>
                                 <span class="text-[10px] text-slate-400">${lowestTrain.duration || 'YHT'}</span>
                             </div>
-                            <div class="font-bold text-xs text-white line-clamp-1">TCDD Taşımacılık</div>
-                            <div class="text-lg font-black text-purple-200 mt-2">${lowestTrain.price ? lowestTrain.price + ' ' + (lowestTrain.currency || '₺') : '430 ₺'}</div>
+                            <div class="font-bold text-xs text-white line-clamp-1">${lowestTrain.carrier || 'TCDD Taşımacılık'}</div>
+                            <div class="text-lg font-black text-purple-200 mt-2">${lowestTrain.price ? lowestTrain.price + ' ' + (lowestTrain.currency || '₺') : (isEn ? 'Live Fare' : 'Canlı Fiyat')}</div>
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-white/10">
                             <a href="${lowestTrain.direct_link || (deepLinks.train && deepLinks.train.tcdd) || 'https://ebilet.tcddtasimacilik.gov.tr/'}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 text-center bg-purple-600 hover:bg-purple-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                <span>Doğrudan Al ↗</span>
+                                <span>${isEn ? 'Book Direct ↗' : 'Doğrudan Al ↗'}</span>
                             </a>
                         </div>
                     </div>
                 ` : `
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/5 text-slate-500 flex flex-col justify-between">
-                        <div class="text-xs font-black text-slate-400 flex items-center gap-1.5">🚆 Tren (YHT)</div>
-                        <div class="text-[11px] text-slate-500 my-2">${isIntl ? 'Uluslararası demiryolu' : 'Bu hatta tren hattı bulunmamaktadır.'}</div>
-                        <div class="text-[10px] text-slate-600">Otobüs/Uçak mevcut</div>
+                        <div class="text-xs font-black text-slate-400 flex items-center gap-1.5">🚆 ${isEn ? 'Train (YHT)' : 'Tren (YHT)'}</div>
+                        <div class="text-[11px] text-slate-500 my-2">${isEn ? 'No direct rail connection on this route.' : (isIntl ? 'Uluslararası demiryolu' : 'Bu hatta tren hattı bulunmamaktadır.')}</div>
+                        <div class="text-[10px] text-slate-600">${isEn ? 'Flight/Bus available' : 'Otobüs/Uçak mevcut'}</div>
                     </div>
                 `}
 
@@ -5424,23 +5454,23 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-400/80 transition flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between text-xs mb-1.5">
-                                <span class="font-black text-emerald-400 flex items-center gap-1.5">🚌 Otobüs</span>
-                                <span class="text-[10px] text-slate-400">${lowestBus.duration || 'Ekspres'}</span>
+                                <span class="font-black text-emerald-400 flex items-center gap-1.5">🚌 ${isEn ? 'Bus' : 'Otobüs'}</span>
+                                <span class="text-[10px] text-slate-400">${lowestBus.duration || (isEn ? 'Express' : 'Ekspres')}</span>
                             </div>
                             <div class="font-bold text-xs text-white line-clamp-1">${lowestBus.carrier || 'Kamil Koç / Obilet'}</div>
-                            <div class="text-lg font-black text-emerald-300 mt-2">${lowestBus.price ? lowestBus.price + ' ' + (lowestBus.currency || '₺') : 'Canlı Fiyat'}</div>
+                            <div class="text-lg font-black text-emerald-300 mt-2">${lowestBus.price ? lowestBus.price + ' ' + (lowestBus.currency || '₺') : (isEn ? 'Live Fare' : 'Canlı Fiyat')}</div>
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-white/10">
                             <a href="${lowestBus.direct_link || (deepLinks.bus && deepLinks.bus.obilet) || '#'}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                <span>Doğrudan Al ↗</span>
+                                <span>${isEn ? 'Book Direct ↗' : 'Doğrudan Al ↗'}</span>
                             </a>
                         </div>
                     </div>
                 ` : `
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/5 text-slate-500 flex flex-col justify-between">
-                        <div class="text-xs font-black text-slate-400 flex items-center gap-1.5">🚌 Otobüs</div>
-                        <div class="text-[11px] text-slate-500 my-2">Doğrudan karayolu hattı yok.</div>
-                        <div class="text-[10px] text-slate-600">Uçak tercih edin</div>
+                        <div class="text-xs font-black text-slate-400 flex items-center gap-1.5">🚌 ${isEn ? 'Bus' : 'Otobüs'}</div>
+                        <div class="text-[11px] text-slate-500 my-2">${isEn ? 'No direct intercity bus route.' : 'Doğrudan karayolu hattı yok.'}</div>
+                        <div class="text-[10px] text-slate-600">${isEn ? 'Prefer flight' : 'Uçak tercih edin'}</div>
                     </div>
                 `}
 
@@ -5449,23 +5479,23 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-400/80 transition flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between text-xs mb-1.5">
-                                <span class="font-black text-cyan-300 flex items-center gap-1.5">⛴️ Feribot</span>
-                                <span class="text-[10px] text-slate-400">${lowestFerry.duration || 'Hızlı'}</span>
+                                <span class="font-black text-cyan-300 flex items-center gap-1.5">⛴️ ${isEn ? 'Ferry' : 'Feribot'}</span>
+                                <span class="text-[10px] text-slate-400">${lowestFerry.duration || (isEn ? 'Fast' : 'Hızlı')}</span>
                             </div>
                             <div class="font-bold text-xs text-white line-clamp-1">${lowestFerry.carrier || 'Ertürk / Feribotlines'}</div>
-                            <div class="text-lg font-black text-cyan-200 mt-2">${lowestFerry.price ? lowestFerry.price + ' ' + (lowestFerry.currency || '₺') : '35 €'}</div>
+                            <div class="text-lg font-black text-cyan-200 mt-2">${lowestFerry.price ? lowestFerry.price + ' ' + (lowestFerry.currency || '₺') : (isEn ? 'Live Fare' : 'Canlı Fiyat')}</div>
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-white/10">
                             <a href="${lowestFerry.direct_link || (deepLinks.ferry && deepLinks.ferry.erturk) || '#'}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 text-center bg-cyan-600 hover:bg-cyan-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                <span>Doğrudan Al ↗</span>
+                                <span>${isEn ? 'Book Direct ↗' : 'Doğrudan Al ↗'}</span>
                             </a>
                         </div>
                     </div>
                 ` : `
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/5 text-slate-500 flex flex-col justify-between">
-                        <div class="text-xs font-black text-slate-400 flex items-center gap-1.5">⛴️ Feribot</div>
-                        <div class="text-[11px] text-slate-500 my-2">Deniz kıyısı veya ada hattı değil.</div>
-                        <div class="text-[10px] text-slate-600">Uçak/Tren tercih edin</div>
+                        <div class="text-xs font-black text-slate-400 flex items-center gap-1.5">⛴️ ${isEn ? 'Ferry' : 'Feribot'}</div>
+                        <div class="text-[11px] text-slate-500 my-2">${isEn ? 'Not a coastal or island route.' : 'Deniz kıyısı veya ada hattı değil.'}</div>
+                        <div class="text-[10px] text-slate-600">${isEn ? 'Prefer flight/train' : 'Uçak/Tren tercih edin'}</div>
                     </div>
                 `}
             </div>
@@ -5566,29 +5596,41 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                 <div>
                     <div class="flex items-center gap-2 mb-1">
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900">
-                            🏨 Resmi Partner Karşılaştırma Ağı
+                            🏨 ${isEn ? 'Official Partner Comparison Network' : 'Resmi Partner Karşılaştırma Ağı'}
                         </span>
-                        <span class="text-xs text-slate-400 font-bold">Sıfır Komisyon & Aracısız Fiyatlar</span>
+                        <span class="text-xs text-slate-400 font-bold">${isEn ? 'Zero Markup & Direct Partner Rates' : 'Sıfır Komisyon & Aracısız Fiyatlar'}</span>
                     </div>
-                    <h3 class="font-black text-xl text-slate-900">${hotelInfo.destination} Otel & Konaklama Seçenekleri</h3>
-                    <div class="text-xs text-slate-500 mt-1 font-medium">${cin} — ${cout} (${hotelInfo.nights} Gece) • ${guests} Misafir • Canlı Karşılaştırma Ağı</div>
+                    <h3 class="font-black text-xl text-slate-900">${escapeHtml(hotelInfo.destination)} ${isEn ? 'Hotels & Accommodation Options' : 'Otel & Konaklama Seçenekleri'}</h3>
+                    <div class="text-xs text-slate-500 mt-1 font-medium">${cin} — ${cout} (${hotelInfo.nights} ${isEn ? 'Nights' : 'Gece'}) • ${guests} ${isEn ? 'Guests • Live Comparison Network' : 'Misafir • Canlı Karşılaştırma Ağı'}</div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <a href="${hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || `https://tr.trip.com/hotels/list?keyword=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&Allianceid=11051531&SID=333747492`}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-hotel"></i>
-                        <span>Trip.com Otelleri ↗</span>
+                    <a href="${tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        ${getBrandLogoHtml('Trip.com', '🏨', 'w-4 h-4')}
+                        <span>${isEn ? 'Trip.com Hotels ↗' : 'Trip.com Otelleri ↗'}</span>
                     </a>
                     <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-bed"></i>
+                        ${getBrandLogoHtml('Booking.com', '🏨', 'w-4 h-4')}
                         <span>Booking.com ↗</span>
                     </a>
                     ${enuygunUrl ? `
                     <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-building"></i>
+                        ${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}
                         <span>Enuygun Otel ↗</span>
                     </a>
                     ` : ''}
-                    <a href="${hotelInfo.agoda_url || '#'}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                    ${obiletHotelUrl ? `
+                    <a href="${obiletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        ${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}
+                        <span>Obilet Otel ↗</span>
+                    </a>
+                    ` : ''}
+                    ${etsturUrl ? `
+                    <a href="${etsturUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-sky-700 hover:bg-sky-800 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-umbrella-beach"></i>
+                        <span>Etstur ↗</span>
+                    </a>
+                    ` : ''}
+                    <a href="${agodaUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                         <i class="fa-solid fa-suitcase"></i>
                         <span>Agoda ↗</span>
                     </a>
@@ -5622,16 +5664,23 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                             </div>
                             <div class="p-5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
                                 <div>
-                                    <div class="text-[10px] text-slate-400 font-black uppercase">Gecelik Fiyat</div>
-                                    <div class="font-black text-lg text-[#0F172A]">${h.price_formatted || (h.price ? `${h.price} ₺` : 'Canlı Fiyat')}</div>
+                                    <div class="text-[10px] text-slate-400 font-black uppercase">${isEn ? 'Nightly Rate' : 'Gecelik Fiyat'}</div>
+                                    <div class="font-black text-lg text-[#0F172A]">${h.price_formatted || (h.price ? `${h.price} ₺` : (isEn ? 'Live Rate' : 'Canlı Fiyat'))}</div>
                                     ${h.total_price_formatted ? `
-                                        <div class="text-[10px] text-slate-500 font-medium">${hotelInfo.nights} Gece: ${h.total_price_formatted}</div>
+                                        <div class="text-[10px] text-slate-500 font-medium">${hotelInfo.nights} ${isEn ? 'Nights' : 'Gece'}: ${h.total_price_formatted}</div>
                                     ` : ''}
                                 </div>
-                                <a href="${h.booking_url || h.direct_booking_url || h.url || bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 text-xs font-black rounded-xl shadow-xs transition flex items-center gap-1.5">
-                                    <span>Odayı Seç</span>
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                                </a>
+                                <div class="flex items-center gap-1.5">
+                                    ${h.trip_url ? `
+                                        <a href="${h.trip_url}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-xs transition flex items-center gap-1">
+                                            <span>Trip.com ↗</span>
+                                        </a>
+                                    ` : ''}
+                                    <a href="${h.booking_url || h.direct_booking_url || h.url || bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 text-xs font-black rounded-xl shadow-xs transition flex items-center gap-1.5">
+                                        <span>${isEn ? 'Select Room' : 'Odayı Seç'}</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     `).join('')}
@@ -5642,32 +5691,33 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     <div class="text-center max-w-xl mx-auto mb-6">
                         <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 mb-2">
                             <i class="fa-solid fa-shield-check text-amber-600"></i>
-                            <span>Sıfır Varsayım: Doğrulanmış Canlı Müsaitlik</span>
+                            <span>${isEn ? 'Zero-Assumption Policy: Verified Live Availability' : 'Sıfır Varsayım: Doğrulanmış Canlı Müsaitlik'}</span>
                         </div>
-                        <h4 class="text-lg font-black text-slate-900">${safeCity} için En Avantajlı Odaları Karşılaştırın</h4>
+                        <h4 class="text-lg font-black text-slate-900">${isEn ? `Compare the Best Rooms in ${safeCity}` : `${safeCity} için En Avantajlı Odaları Karşılaştırın`}</h4>
                         <p class="text-xs text-slate-500 mt-1">
-                            ${cin} — ${cout} tarihleri ve ${escapeHtml(guests)} misafir için resmi partnerlerimizin doğrudan canlı oda arama sayfaları hazırlandı.
+                            ${isEn ? `Direct live room search pages across our official partners are pre-filled for ${cin} — ${cout} (${escapeHtml(guests)} guests).` : `${cin} — ${cout} tarihleri ve ${escapeHtml(guests)} misafir için resmi partnerlerimizin doğrudan canlı oda arama sayfaları hazırlandı.`}
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <!-- Partner 1: Trip.com -->
-                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 hover:shadow-md transition flex flex-col justify-between">
+                        <div class="p-5 rounded-2xl bg-white border-2 border-blue-200 hover:border-blue-600 hover:shadow-md transition flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs font-black text-blue-600 uppercase tracking-wide flex items-center gap-1.5">
-                                        🏨 Trip.com Hotels
+                                        ${getBrandLogoHtml('Trip.com', '🏨', 'w-4 h-4')}
+                                        <span>Trip.com Hotels</span>
                                     </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800">Resmi Partner</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800">${isEn ? 'Official Partner' : 'Resmi Partner'}</span>
                                 </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} Otelleri & Tatil Köyleri</div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'Hotels & Resorts' : 'Otelleri & Tatil Köyleri'}</div>
                                 <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    Geniş otel ağı, Türkçe arayüz ve ücretsiz iptal seçenekleri.
+                                    ${isEn ? '1.4M+ global properties, verified guest reviews, and free cancellation rates.' : 'Geniş küresel otel ağı, Türkiye içi engelsiz erişim ve ücretsiz iptal seçenekleri.'}
                                 </div>
                             </div>
                             <div class="mt-4 pt-3 border-t border-slate-100">
-                                <a href="${hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || `https://tr.trip.com/hotels/list?keyword=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&Allianceid=11051531&SID=333747492`}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>Trip.com'da Fiyatları Gör ↗</span>
+                                <a href="${tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>${isEn ? 'View Live Rates on Trip.com ↗' : "Trip.com'da Fiyatları Gör ↗"}</span>
                                 </a>
                             </div>
                         </div>
@@ -5677,18 +5727,19 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                             <div>
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs font-black text-[#003580] uppercase tracking-wide flex items-center gap-1.5">
-                                        🏨 Booking.com
+                                        ${getBrandLogoHtml('Booking.com', '🏨', 'w-4 h-4')}
+                                        <span>Booking.com</span>
                                     </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">Küresel Ağ</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${isEn ? 'Global Network' : 'Küresel Ağ'}</span>
                                 </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} Tesisleri & Daireler</div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'Stays & Apartments' : 'Tesisleri & Daireler'}</div>
                                 <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    Dünya çapında 28 milyon tesis, gerçek gezgin yorumları ve harita filtreleme.
+                                    ${isEn ? '28M+ worldwide listings, verified traveler scores, and interactive map filters.' : 'Dünya çapında 28 milyon tesis, gerçek gezgin yorumları ve harita filtreleme.'}
                                 </div>
                             </div>
                             <div class="mt-4 pt-3 border-t border-slate-100">
                                 <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>Booking.com'da Canlı Odaları Aç ↗</span>
+                                    <span>${isEn ? 'Open Live Rooms on Booking.com ↗' : "Booking.com'da Canlı Odaları Aç ↗"}</span>
                                 </a>
                             </div>
                         </div>
@@ -5699,18 +5750,19 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                             <div>
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs font-black text-emerald-700 uppercase tracking-wide flex items-center gap-1.5">
-                                        🏨 Enuygun Otel
+                                        ${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}
+                                        <span>Enuygun Otel</span>
                                     </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800">Yurt İçi Karşılaştırma</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800">${isEn ? 'Domestic Metasearch' : 'Yurt İçi Karşılaştırma'}</span>
                                 </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} Butik & Şehir Otelleri</div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'Boutique & City Hotels' : 'Butik & Şehir Otelleri'}</div>
                                 <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    Türkiye geneli butik oteller, pansiyonlar ve taksit imkanları.
+                                    ${isEn ? 'Compare local boutique hotels, pensions, and installment options across Turkey.' : 'Türkiye geneli butik oteller, pansiyonlar ve taksit imkanları.'}
                                 </div>
                             </div>
                             <div class="mt-4 pt-3 border-t border-slate-100">
                                 <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>Enuygun'da Odaları Listele ↗</span>
+                                    <span>${isEn ? 'List Rooms on Enuygun ↗' : "Enuygun'da Odaları Listele ↗"}</span>
                                 </a>
                             </div>
                         </div>
@@ -5721,16 +5773,16 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                     <span class="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
                                         🏨 Agoda
                                     </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">Özel Teklifler</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${isEn ? 'Special Deals' : 'Özel Teklifler'}</span>
                                 </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} Tatil Evleri & Oteller</div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'Vacation Homes & Hotels' : 'Tatil Evleri & Oteller'}</div>
                                 <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    Son dakika oda indirimleri ve tatil villaları.
+                                    ${isEn ? 'Last-minute room discounts and holiday villas.' : 'Son dakika oda indirimleri ve tatil villaları.'}
                                 </div>
                             </div>
                             <div class="mt-4 pt-3 border-t border-slate-100">
-                                <a href="${hotelInfo.agoda_url || '#'}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>Agoda'da Odaları Aç ↗</span>
+                                <a href="${agodaUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>${isEn ? 'Open Rooms on Agoda ↗' : "Agoda'da Odaları Aç ↗"}</span>
                                 </a>
                             </div>
                         </div>
@@ -5744,6 +5796,28 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
 
     resultsArea.innerHTML = html;
 }
+
+function quickSearchHotelCity(cityName) {
+    const hc = document.getElementById("hotelCity");
+    const hCin = document.getElementById("hotelCheckin");
+    const hCout = document.getElementById("hotelCheckout");
+    if (hc) hc.value = cityName;
+    const now = new Date();
+    if (hCin && !hCin.value) {
+        const d1 = new Date(now);
+        d1.setDate(d1.getDate() + 7);
+        hCin.value = d1.toISOString().split('T')[0];
+    }
+    if (hCout && !hCout.value) {
+        const d2 = new Date(now);
+        d2.setDate(d2.getDate() + 10);
+        hCout.value = d2.toISOString().split('T')[0];
+    }
+    if (typeof executeHotelSearch === 'function') {
+        executeHotelSearch();
+    }
+}
+window.quickSearchHotelCity = quickSearchHotelCity;
 
 // 6. ETKİNLİKLER (HD GÖRSELLER, EDİTÖRYAL RUH & RESMİ BİLETLER)
 function filterEvents(category) {

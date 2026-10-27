@@ -61,6 +61,16 @@ class RevenueService:
             return raw_url
 
     @classmethod
+    def enrich_url(
+        cls,
+        raw_url: str,
+        provider: str = "",
+        vertical: str = "travel",
+    ) -> str:
+        """enrich_deep_link için kolay çağrım takma adı (alias)."""
+        return cls.enrich_deep_link(provider_key=provider, raw_url=raw_url, vertical=vertical)
+
+    @classmethod
     def enrich_deep_link(
         cls,
         provider_key: str,

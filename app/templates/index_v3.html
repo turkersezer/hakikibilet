@@ -327,7 +327,7 @@
                     <div class="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs space-y-2">
                         <div class="text-[10px] font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
                             <i class="fa-solid fa-scale-balanced text-amber-500"></i>
-                            <span>Hukuki & Yasal Bildirimler</span>
+                            <span data-i18n="legalHeader">Hukuki & Yasal Bildirimler</span>
                         </div>
                         <nav class="grid grid-cols-1 gap-1 text-[10.5px] font-bold text-slate-600">
                             <a href="/yasal-uyari" target="_blank" class="hover:text-amber-600 transition flex items-center justify-between py-0.5">
@@ -414,123 +414,111 @@
                 </div>
 
                 <!-- KART 2: KONAKLAMA -->
-                <div class="bento-showcase-card group cursor-pointer" onclick="showIntegrationNotice('stay')">
+                <div class="bento-showcase-card group cursor-pointer" onclick="openFromBento('stay', 'hotel')">
                     <!-- Üst: Resmin Tamamı Görünür (Kırpma Yok, Üzerinde Yazı Yok) -->
                     <div class="bento-img-box relative">
                         <img src="/static/img/v3/card_stay.jpg" alt="Konaklama" loading="eager">
-                        <span class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-900/85 text-amber-300 border border-amber-400/40 backdrop-blur-xs shadow-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-lock text-[9px]"></i>
-                            <span>Entegrasyon Sürecinde</span>
-                        </span>
                     </div>
                     <!-- Alt: Düzenli Başlık, Açıklama ve Tek Satır Butonlar -->
                     <div class="bento-info-box">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-0.5">
-                                <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900">
+                                <span data-i18n="bentoStayBadge" class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900">
                                     🏨 KONAKLAMA
                                 </span>
-                                <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded flex items-center gap-1">
-                                    <span>Faz 2 • Çok Yakında</span>
+                                <span data-i18n="bentoCompareRoomsLink" class="text-[10.5px] font-bold text-slate-500 group-hover:text-slate-900 transition">
+                                    Oda Karşılaştır →
                                 </span>
                             </div>
-                            <h2 class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
+                            <h2 data-i18n="bentoStayTitle" class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
                                 Otel, Kiralık Ev & Butik Pansiyon
                             </h2>
-                            <p class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
-                                Booking.com & Trip.com canlı oda rezervasyon entegrasyonu tamamlanmaktadır.
+                            <p data-i18n="bentoStayDesc" class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
+                                Booking.com, Trip.com ve tesislerdeki net oda fiyatlarını karşılaştırın.
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-100">
-                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('stay')" class="bento-pill">
-                                <span>🏨 Otel & Tatil</span>
+                            <button type="button" onclick="event.stopPropagation(); openFromBento('stay', 'hotel')" class="bento-pill">
+                                <span data-i18n="pillHotel">🏨 Otel & Tatil</span>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('stay')" class="bento-pill">
-                                <span>🏡 Kiralık Ev & Villa</span>
+                            <button type="button" onclick="event.stopPropagation(); openFromBento('stay', 'airbnb')" class="bento-pill">
+                                <span data-i18n="pillAirbnb">🏡 Kiralık Ev & Villa</span>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('stay')" class="bento-pill">
-                                <span>🌿 Pansiyon & Butik</span>
+                            <button type="button" onclick="event.stopPropagation(); openFromBento('stay', 'pension')" class="bento-pill">
+                                <span data-i18n="pillPension">🌿 Pansiyon & Butik</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- KART 3: ETKİNLİK & DENEYİM -->
-                <div class="bento-showcase-card group cursor-pointer" onclick="showIntegrationNotice('events')">
+                <div class="bento-showcase-card group cursor-pointer" onclick="openFromBento('events', 'all')">
                     <!-- Üst: Resmin Tamamı Görünür (Kırpma Yok, Üzerinde Yazı Yok) -->
                     <div class="bento-img-box relative">
                         <img src="/static/img/v3/card_events.jpg?v=20261023_full" alt="Etkinlik ve Deneyim" loading="eager">
-                        <span class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-900/85 text-amber-300 border border-amber-400/40 backdrop-blur-xs shadow-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-lock text-[9px]"></i>
-                            <span>Entegrasyon Sürecinde</span>
-                        </span>
                     </div>
                     <!-- Alt: Düzenli Başlık, Açıklama ve Tek Satır Butonlar -->
                     <div class="bento-info-box">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-0.5">
-                                <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-rose-100 text-rose-900">
+                                <span data-i18n="bentoEventsBadge" class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-rose-100 text-rose-900">
                                     🎟️ ETKİNLİK & DENEYİM
                                 </span>
-                                <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded flex items-center gap-1">
-                                    <span>Faz 2 • Çok Yakında</span>
+                                <span data-i18n="bentoExploreCalendarLink" class="text-[10.5px] font-bold text-slate-500 group-hover:text-slate-900 transition">
+                                    Takvimi Keşfet →
                                 </span>
                             </div>
-                            <h2 class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
+                            <h2 data-i18n="bentoEventsTitle" class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
                                 Spor, Kültür-Sanat & Konser Takvimi
                             </h2>
-                            <p class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
-                                Passo, Biletix & Bubilet resmi etkinlik entegrasyonu hazırlık aşamasındadır.
+                            <p data-i18n="bentoEventsDesc" class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
+                                Motorsporları, futbol, sinema, tiyatro ve festivaller için ulaşım + bilet planlayın.
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-100">
-                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('events')" class="bento-pill">
-                                <span>⚽ Spor</span>
+                            <button type="button" onclick="event.stopPropagation(); openFromBento('events', 'sport')" class="bento-pill">
+                                <span data-i18n="pillSport">⚽ Spor</span>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('events')" class="bento-pill">
-                                <span>🎭 Kültür & Sanat</span>
+                            <button type="button" onclick="event.stopPropagation(); openFromBento('events', 'culture')" class="bento-pill">
+                                <span data-i18n="pillCulture">🎭 Kültür & Sanat</span>
                             </button>
-                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('events')" class="bento-pill">
-                                <span>🎵 Konser & Festival</span>
+                            <button type="button" onclick="event.stopPropagation(); openFromBento('events', 'music')" class="bento-pill">
+                                <span data-i18n="pillMusic">🎵 Konser & Festival</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- KART 4: AKILLI ROTA -->
-                <div class="bento-showcase-card group cursor-pointer" onclick="showIntegrationNotice('smartroute')">
+                <div class="bento-showcase-card group cursor-pointer" onclick="openFromBento('smartroute')">
                     <!-- Üst: Resmin Tamamı Görünür (Kırpma Yok, Üzerinde Yazı Yok) -->
                     <div class="bento-img-box relative">
                         <img src="/static/img/v3/card_smart_route.jpg" alt="Akıllı Rota" loading="eager">
-                        <span class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-900/85 text-amber-300 border border-amber-400/40 backdrop-blur-xs shadow-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-lock text-[9px]"></i>
-                            <span>Entegrasyon Sürecinde</span>
-                        </span>
                     </div>
                     <!-- Alt: Düzenli Başlık, Açıklama ve Tek Satır Butonlar -->
                     <div class="bento-info-box">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-0.5">
-                                <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-sky-100 text-sky-900">
+                                <span data-i18n="bentoSmartRouteBadge" class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-sky-100 text-sky-900">
                                     🧭 AKILLI ROTA
                                 </span>
-                                <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded flex items-center gap-1">
-                                    <span>Faz 2 • Çok Yakında</span>
+                                <span data-i18n="bentoPlanInStepsLink" class="text-[10.5px] font-bold text-slate-500 group-hover:text-slate-900 transition">
+                                    4 Adımda Planla →
                                 </span>
                             </div>
-                            <h2 class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
+                            <h2 data-i18n="bentoSmartRouteTitle" class="text-[15px] font-black text-slate-950 tracking-tight leading-snug">
                                 Kapıdan Kapıya Seyahat Sihirbazı
                             </h2>
-                            <p class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
-                                Hızlı tren, otobüs ve transferleri birleştiren multimodal rota motoru hazırlanıyor.
+                            <p data-i18n="bentoSmartRouteDesc" class="text-[11px] text-slate-500 font-medium mt-0.5 mb-1.5 leading-tight">
+                                Evden terminale, inişten otele ve etkinliğe kadar kişisel rota oluşturun.
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-100">
-                            <button type="button" onclick="event.stopPropagation(); showIntegrationNotice('smartroute')" class="bento-pill">
-                                <span>🚀 Kapıdan Kapıya Planla</span>
+                            <button type="button" onclick="event.stopPropagation(); openFromBento('smartroute')" class="bento-pill">
+                                <span data-i18n="pillSmartRoutePlan">🚀 Kapıdan Kapıya Planla</span>
                             </button>
                             <button type="button" onclick="event.stopPropagation(); quickOpenTransferPlanner()" class="bento-pill">
-                                <span>🚕 Havalimanı Transfer</span>
+                                <span data-i18n="pillAirportTransfer">🚕 Havalimanı Transfer</span>
                             </button>
                         </div>
                     </div>
@@ -556,17 +544,17 @@
                             <div>
                                 <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-900 text-[9.5px] font-black uppercase tracking-wider mb-1.5">
                                     <i class="fa-solid fa-bullhorn text-amber-600"></i>
-                                    <span>Sponsorlu Vitrin</span>
+                                    <span data-i18n="adSlotLabel">Sponsorlu Vitrin</span>
                                 </div>
                                 <div class="font-black text-xs text-slate-900 leading-snug" data-i18n="adSlotBadge">
                                     Sponsorlu İş Birliği & Kampanya Alanı
                                 </div>
-                                <p class="text-[10.5px] text-slate-600 font-medium mt-1 leading-snug">
+                                <p class="text-[10.5px] text-slate-600 font-medium mt-1 leading-snug" data-i18n="adSlotDesc">
                                     Havayolu, otel, banka mil kampanyaları ve kurumsal reklam iş birlikleri için ayrılmış vitrin alanı.
                                 </p>
                             </div>
                             <a href="mailto:info@hakikibilet.com?subject=Reklam%20ve%20Sponsorluk" class="mt-2 pt-2 border-t border-amber-200/70 text-[10px] font-black text-amber-800 hover:text-amber-950 flex items-center justify-between">
-                                <span>Kurumsal İletişim</span>
+                                <span data-i18n="adSlotCta">Kurumsal İletişim</span>
                                 <span>→</span>
                             </a>
                         </div>
@@ -575,7 +563,7 @@
                     <div class="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs space-y-2">
                         <div class="text-[10px] font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
                             <i class="fa-solid fa-shield-check text-emerald-600"></i>
-                            <span>Canlı Karşılaştırma Ağı</span>
+                            <span data-i18n="liveComparisonNetworkTitle">Canlı Karşılaştırma Ağı</span>
                         </div>
                         <div class="flex flex-wrap gap-1 text-[9.5px] leading-tight font-bold">
                             <span class="px-2 py-0.5 rounded-md bg-slate-50 border border-slate-200 text-slate-700">✈️ THY</span>
@@ -618,14 +606,14 @@
                     <button type="button" onclick="openFromBento('travel', 'flight')" id="pillarBtn-travel" class="pillar-btn active !py-2 !px-3.5 !rounded-xl">
                         <span data-i18n="pillarTravel" class="font-black text-xs flex items-center gap-1.5">✈️ Seyahat & Ulaşım</span>
                     </button>
-                    <button type="button" onclick="showIntegrationNotice('stay')" id="pillarBtn-stay" class="pillar-btn !py-2 !px-3.5 !rounded-xl opacity-80 hover:opacity-100">
-                        <span class="font-black text-xs flex items-center gap-1.5">🏨 Konaklama <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">🔒 Yakında</span></span>
+                    <button type="button" onclick="openFromBento('stay', 'hotel')" id="pillarBtn-stay" class="pillar-btn !py-2 !px-3.5 !rounded-xl">
+                        <span data-i18n="pillarStay" class="font-black text-xs flex items-center gap-1.5">🏨 Konaklama</span>
                     </button>
-                    <button type="button" onclick="showIntegrationNotice('events')" id="pillarBtn-events" class="pillar-btn !py-2 !px-3.5 !rounded-xl opacity-80 hover:opacity-100">
-                        <span class="font-black text-xs flex items-center gap-1.5">🎟️ Etkinlik <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">🔒 Yakında</span></span>
+                    <button type="button" onclick="openFromBento('events', 'all')" id="pillarBtn-events" class="pillar-btn !py-2 !px-3.5 !rounded-xl">
+                        <span data-i18n="pillarEvents" class="font-black text-xs flex items-center gap-1.5">🎟️ Etkinlik & Deneyim</span>
                     </button>
-                    <button type="button" onclick="showIntegrationNotice('smartroute')" id="pillarBtn-smartroute" class="pillar-btn !py-2 !px-3.5 !rounded-xl opacity-80 hover:opacity-100">
-                        <span class="font-black text-xs flex items-center gap-1.5">🧭 Akıllı Rota <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">🔒 Yakında</span></span>
+                    <button type="button" onclick="openFromBento('smartroute')" id="pillarBtn-smartroute" class="pillar-btn !py-2 !px-3.5 !rounded-xl">
+                        <span data-i18n="pillarSmartRoute" class="font-black text-xs flex items-center gap-1.5">🧭 Akıllı Rota</span>
                     </button>
                 </div>
             </div>
@@ -1325,12 +1313,25 @@
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-3 border-t border-slate-100">
                         <div class="text-xs text-slate-500 flex items-center gap-2 font-medium">
                             <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                            <span id="hotelGuaranteeText" data-i18n="hotelGuarantee">Booking.com & Enuygun canlı verisi üzerinden anlık oda fiyatları listelenir.</span>
+                            <span id="hotelGuaranteeText" data-i18n="hotelGuarantee">Trip.com, Booking.com & Enuygun canlı verisi üzerinden anlık oda fiyatları listelenir.</span>
                         </div>
                         <button type="submit" class="search-btn w-full sm:w-auto">
                             <i class="fa-solid fa-bed text-xs"></i>
                             <span id="hotelSubmitBtnText" data-i18n="searchBtnHotel">Otelleri ve Fiyatları Bul →</span>
                         </button>
+                    </div>
+
+                    <!-- Popüler Konaklama Destinasyonları (Tek Tıkla Hızlı Arama) -->
+                    <div class="mt-3 pt-2.5 border-t border-dashed border-slate-200 flex flex-wrap items-center gap-1.5 text-xs">
+                        <span class="text-[11px] font-black text-slate-500 mr-1" data-i18n="popularHotelsLabel">🔥 Popüler Destinasyonlar:</span>
+                        <button type="button" onclick="quickSearchHotelCity('Antalya')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 font-bold text-[11px] transition cursor-pointer">🏖️ Antalya</button>
+                        <button type="button" onclick="quickSearchHotelCity('İstanbul')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 font-bold text-[11px] transition cursor-pointer">🕌 İstanbul</button>
+                        <button type="button" onclick="quickSearchHotelCity('Bodrum')" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 font-bold text-[11px] transition cursor-pointer">🌊 Bodrum</button>
+                        <button type="button" onclick="quickSearchHotelCity('Nevşehir')" class="px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-950 border border-orange-200 font-bold text-[11px] transition cursor-pointer">🎈 Kapadokya</button>
+                        <button type="button" onclick="quickSearchHotelCity('İzmir')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold text-[11px] transition cursor-pointer">🌿 İzmir & Çeşme</button>
+                        <button type="button" onclick="quickSearchHotelCity('Paris')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold text-[11px] transition cursor-pointer">🗼 Paris</button>
+                        <button type="button" onclick="quickSearchHotelCity('Roma')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold text-[11px] transition cursor-pointer">🏛️ Roma</button>
+                        <button type="button" onclick="quickSearchHotelCity('Londra')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-bold text-[11px] transition cursor-pointer">🇬🇧 Londra</button>
                     </div>
                 </form>
             </div>
@@ -1722,6 +1723,16 @@
             if (hotelFormWrapper) hotelFormWrapper.classList.toggle("hidden", pillar !== 'stay');
             if (eventsPillarWrapper) eventsPillarWrapper.classList.toggle("hidden", pillar !== 'events');
             if (smartRoutePillarWrapper) smartRoutePillarWrapper.classList.toggle("hidden", pillar !== 'smartroute');
+            const transResultsArea = document.getElementById("transportResultsArea");
+            const hotelResultsArea = document.getElementById("hotelResultsArea");
+            if (transResultsArea) {
+                if (pillar !== 'travel' || !transResultsArea.innerHTML.trim()) transResultsArea.classList.add("hidden");
+                else transResultsArea.classList.remove("hidden");
+            }
+            if (hotelResultsArea) {
+                if (pillar !== 'stay' || !hotelResultsArea.innerHTML.trim()) hotelResultsArea.classList.add("hidden");
+                else hotelResultsArea.classList.remove("hidden");
+            }
 
             if (pillar === 'travel') {
                 const activeMode = window.currentTransportSubTab || 'flight';
@@ -1814,7 +1825,7 @@
                 setTimeout(() => {
                     const hc = document.getElementById("hotelCity");
                     const tDest = document.getElementById("transDest");
-                    const tDep = document.getElementById("transDeptDate");
+                    const tDep = document.getElementById("transDepDate") || document.getElementById("transDeptDate");
                     const tRet = document.getElementById("transRetDate");
                     const hCin = document.getElementById("hotelCheckin");
                     const hCout = document.getElementById("hotelCheckout");
@@ -1822,16 +1833,22 @@
                     if (hc && (!hc.value || hc.value.trim() === "") && tDest && tDest.value) {
                         hc.value = tDest.value.trim();
                     }
-                    if (hCin && (!hCin.value || hCin.value.trim() === "") && tDep && tDep.value) {
-                        hCin.value = tDep.value;
+                    if (hCin && (!hCin.value || hCin.value.trim() === "")) {
+                        if (tDep && tDep.value) {
+                            hCin.value = tDep.value;
+                        } else {
+                            const d1 = new Date();
+                            d1.setDate(d1.getDate() + 7);
+                            hCin.value = d1.toISOString().split('T')[0];
+                        }
                     }
                     if (hCout && (!hCout.value || hCout.value.trim() === "")) {
-                        if (tRet && tRet.value) {
+                        if (tRet && tRet.value && !tRet.disabled) {
                             hCout.value = tRet.value;
                         } else if (hCin && hCin.value) {
                             try {
                                 const d = new Date(hCin.value);
-                                d.setDate(d.getDate() + 2);
+                                d.setDate(d.getDate() + 3);
                                 hCout.value = d.toISOString().split('T')[0];
                             } catch (_) {}
                         }
@@ -2365,11 +2382,32 @@
                 bentoSmartRouteTitle: "Kapıdan Kapıya Seyahat Sihirbazı",
                 bentoSmartRouteDesc: "Evden terminale, inişten otele ve etkinliğe kadar kişisel rota oluşturun.",
                 pillSmartRoutePlan: "🚀 Kapıdan Kapıya Planla",
+                pillAirportTransfer: "🚕 Havalimanı Transfer",
+
+                legalHeader: "Hukuki & Yasal Bildirimler",
+                footerTursab: "TÜRSAB Metasearch Bildirimi",
+                footerTerms: "Kullanım Koşulları",
+                footerPrivacy: "KVKK & Gizlilik",
+                footerCookies: "Çerez Politikası",
+                footerEventTerms: "Etkinlik Şartları",
+                footerContact: "İletişim & Künye",
+                footerDisclaimer: `<i class="fa-solid fa-circle-info text-amber-500 mr-1"></i><strong>Şeffaf Metasearch:</strong> Doğrudan bilet satışı ve tahsilat yapılmaz; işlemler resmi sağlayıcıda gerçekleşir.`,
 
                 backToBentoBtn: "Ana Vitrin",
                 backToBentoHint: "Vitrine geri dönmek için tıklayabilirsiniz",
+                adSlotLabel: "Sponsorlu Vitrin",
                 adSlotBadge: "Sponsorlu İş Birliği & Kampanya Alanı",
+                adSlotDesc: "Havayolu, otel, banka mil kampanyaları ve kurumsal reklam iş birlikleri için ayrılmış vitrin alanı.",
+                adSlotCta: "Kurumsal İletişim",
+                liveComparisonNetworkTitle: "Canlı Karşılaştırma Ağı",
                 popularRoutesLabel: "Popüler:",
+                popularHotelsLabel: "🔥 Popüler Destinasyonlar:",
+                hotelWhere: "Nereye Gidiyorsunuz?",
+                hotelCityPh: "Şehir, Ada veya Bölge (Örn: Antalya, İstanbul, Paris, Roma)",
+                checkinDate: "Giriş Tarihi",
+                checkoutDate: "Çıkış Tarihi",
+                guestsAndRooms: "Misafir & Oda",
+                hotelGuarantee: "Trip.com, Booking.com & Enuygun canlı verisi üzerinden anlık oda fiyatları listelenir.",
                 pillarTravel: "✈️ Seyahat & Ulaşım",
                 pillarStay: "🏨 Konaklama",
                 pillarEvents: "🎟️ Etkinlik & Deneyim",
@@ -2407,7 +2445,7 @@
                 searchBtnBus: "Find Bus Routes →",
                 searchBtnTrain: "Find Trains →",
                 searchBtnFerry: "Find Ferry & Cruise →",
-                searchBtnHotel: "Find Hotels →",
+                searchBtnHotel: "Find Hotels & Rates →",
                 providersTitle: "Popular Compared Booking Channels & Carrier Networks",
                 providersSub: "Live queries across IATA accredited ticket portals and official carrier networks",
                 iataPortalBadge: "IATA Portal",
@@ -2454,11 +2492,32 @@
                 bentoSmartRouteTitle: "Door-to-Door Travel Wizard",
                 bentoSmartRouteDesc: "Create your seamless personalized route from home to transit, hotel & events.",
                 pillSmartRoutePlan: "🚀 Plan Door-to-Door",
+                pillAirportTransfer: "🚕 Airport Transfer",
+
+                legalHeader: "Legal & Compliance Notices",
+                footerTursab: "TÜRSAB Metasearch Notice",
+                footerTerms: "Terms of Use",
+                footerPrivacy: "Privacy & KVKK Policy",
+                footerCookies: "Cookie Policy",
+                footerEventTerms: "Event Guidelines",
+                footerContact: "Contact & Imprint",
+                footerDisclaimer: `<i class="fa-solid fa-circle-info text-amber-500 mr-1"></i><strong>Transparent Metasearch:</strong> No direct ticket sales or markups; bookings occur on official operator portals.`,
 
                 backToBentoBtn: "Main Showcase",
                 backToBentoHint: "Click to return to the showcase screen",
+                adSlotLabel: "Sponsored Showcase",
                 adSlotBadge: "Sponsored Partnerships & Campaign Space",
+                adSlotDesc: "Dedicated showcase space for airlines, hotels, bank mile campaigns, and corporate partnerships.",
+                adSlotCta: "Corporate Inquiries",
+                liveComparisonNetworkTitle: "Live Comparison Network",
                 popularRoutesLabel: "Popular:",
+                popularHotelsLabel: "🔥 Popular Destinations:",
+                hotelWhere: "Where Are You Going?",
+                hotelCityPh: "City, Island or Region (e.g. Antalya, Istanbul, Paris, Rome)",
+                checkinDate: "Check-in Date",
+                checkoutDate: "Check-out Date",
+                guestsAndRooms: "Guests & Rooms",
+                hotelGuarantee: "Live room rates compared across Trip.com, Booking.com & official hotel partners.",
                 pillarTravel: "✈️ Travel & Transport",
                 pillarStay: "🏨 Accommodation",
                 pillarEvents: "🎟️ Events & Experiences",
@@ -2468,6 +2527,8 @@
         function setAppLanguage(lang) {
             lang = (lang === 'en') ? 'en' : 'tr';
             window.currentAppLang = lang;
+
+            document.documentElement.lang = lang;
             try { localStorage.setItem("hakiki_lang", lang); } catch (e) {}
 
             // 1. Dil butonlarının görsel durumu
@@ -2592,6 +2653,13 @@
                 const fullData = window.lastTransportData || { tickets: window.lastTransportResults };
                 window.renderTransportResults(fullData, window.lastSearchReq);
             }
+            if (window.lastHotelSearchArgs && typeof window.renderHotelResults === 'function') {
+                const a = window.lastHotelSearchArgs;
+                const resultsArea = document.getElementById("hotelResultsArea");
+                if (resultsArea && !resultsArea.classList.contains("hidden")) {
+                    window.renderHotelResults(a.hotelInfo, a.city, a.cin, a.cout, a.guests, a.data);
+                }
+            }
         }
         window.setAppLanguage = setAppLanguage;
 
@@ -2607,7 +2675,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261027_v29"></script>
+    <script src="/static/js/app_v3.js?v=20261027_v30"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">
