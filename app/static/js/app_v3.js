@@ -3594,7 +3594,7 @@ function renderTransportResults(data, searchReq) {
     if (searchReq.transport_type === 'car' && window.currentCarSubMode === 'transfer') {
         const trMeta = (data.destination_cross_sell && data.destination_cross_sell.transfer) || 
                        (data.deep_links && data.deep_links.transfer) || {};
-        const biletcomUrl = trMeta.biletcom_url || 'https://www.bilet.com/transfer/istanbul-havalimani';
+        const biletcomUrl = trMeta.biletcom_url || buildFlightTransferCrossSellUrl(searchReq.destination || searchReq.origin || 'İstanbul', '', searchReq);
         const welcomePickupsUrl = trMeta.welcomepickups_url || 'https://www.welcomepickups.com/istanbul/airport-transfer/';
         const shuttleUrl = trMeta.shuttle_url || 'https://www.havas.net/otobus-hizmetleri';
         const shuttleName = trMeta.shuttle_name || 'HAVAİST / HAVAŞ Resmi Havalimanı Otobüsü';
@@ -4365,60 +4365,359 @@ function buildFlightFerryCrossSellHtml(toCity, toCode, searchReq) {
 }
 window.buildFlightFerryCrossSellHtml = buildFlightFerryCrossSellHtml;
 
-function buildFlightTransferCrossSellUrl(toCity, toCode) {
-    const code = (toCode || '').toUpperCase();
-    const slug = toAsciiSlug(toCity || '');
-    const biletMap = {
-        'IST': 'istanbul-havalimani',
-        'SAW': 'sabiha-gokcen-havalimani',
-        'AYT': 'antalya-havalimani',
-        'GZP': 'antalya-havalimani',
-        'BJV': 'bodrum-milas-havalimani',
-        'DLM': 'mugla-dalaman-havalimani',
-        'TZX': 'trabzon-havalimani',
-        'COV': 'adana-sakirpasa-havalimani',
-        'ADA': 'adana-sakirpasa-havalimani',
-        'ASR': 'kayseri-erkilet-havalimani',
-        'GZT': 'gaziantep-havalimani'
-    };
-    const q = '?utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&ref=hakikibilet';
-    if (biletMap[code]) return `https://www.bilet.com/transfer/${biletMap[code]}${q}`;
-    if (slug.includes('antalya') || slug.includes('alanya')) return `https://www.bilet.com/transfer/antalya-havalimani${q}`;
-    if (slug.includes('bodrum')) return `https://www.bilet.com/transfer/bodrum-milas-havalimani${q}`;
-    if (slug.includes('dalaman') || slug.includes('fethiye') || slug.includes('marmaris')) return `https://www.bilet.com/transfer/mugla-dalaman-havalimani${q}`;
-    if (slug.includes('trabzon')) return `https://www.bilet.com/transfer/trabzon-havalimani${q}`;
-    if (slug.includes('adana') || slug.includes('mersin')) return `https://www.bilet.com/transfer/adana-sakirpasa-havalimani${q}`;
-    if (slug.includes('kayseri')) return `https://www.bilet.com/transfer/kayseri-erkilet-havalimani${q}`;
-    if (slug.includes('gaziantep')) return `https://www.bilet.com/transfer/gaziantep-havalimani${q}`;
-    return `https://www.bilet.com/transfer/istanbul-havalimani${q}`;
+const TRIP_CITY_ID_MAP_JS = {
+    'istanbul': { id: 532, name: 'İstanbul' },
+    'ankara': { id: 1218, name: 'Ankara' },
+    'izmir': { id: 1216, name: 'İzmir' },
+    'antalya': { id: 1217, name: 'Antalya' },
+    'bodrum': { id: 1761, name: 'Bodrum' },
+    'fethiye': { id: 3773, name: 'Fethiye' },
+    'marmaris': { id: 3775, name: 'Marmaris' },
+    'dalaman': { id: 1749, name: 'Dalaman' },
+    'cesme': { id: 3772, name: 'Çeşme' },
+    'alacati': { id: 243200, name: 'Alaçatı' },
+    'kusadasi': { id: 40519, name: 'Kuşadası' },
+    'didim': { id: 40486, name: 'Didim' },
+    'ayvalik': { id: 40475, name: 'Ayvalık' },
+    'alanya': { id: 40464, name: 'Alanya' },
+    'kemer': { id: 40513, name: 'Kemer' },
+    'belek': { id: 1217, name: 'Belek Antalya' },
+    'side': { id: 1217, name: 'Side Antalya' },
+    'kas': { id: 40510, name: 'Kaş' },
+    'trabzon': { id: 1760, name: 'Trabzon' },
+    'rize': { id: 40521, name: 'Rize' },
+    'samsun': { id: 1758, name: 'Samsun' },
+    'ordu': { id: 20002, name: 'Ordu' },
+    'giresun': { id: 53013, name: 'Giresun' },
+    'sinop': { id: 20797, name: 'Sinop' },
+    'artvin': { id: 61168, name: 'Artvin' },
+    'kars': { id: 7238, name: 'Kars' },
+    'erzurum': { id: 1754, name: 'Erzurum' },
+    'van': { id: 1750, name: 'Van' },
+    'agri': { id: 4263, name: 'Ağrı' },
+    'igdir': { id: 53021, name: 'Iğdır' },
+    'erzincan': { id: 5280, name: 'Erzincan' },
+    'malatya': { id: 1752, name: 'Malatya' },
+    'elazig': { id: 6723, name: 'Elazığ' },
+    'gaziantep': { id: 1753, name: 'Gaziantep' },
+    'sanliurfa': { id: 40537, name: 'Şanlıurfa' },
+    'mardin': { id: 5317, name: 'Mardin' },
+    'diyarbakir': { id: 1755, name: 'Diyarbakır' },
+    'adana': { id: 1748, name: 'Adana' },
+    'mersin': { id: 9942, name: 'Mersin' },
+    'hatay': { id: 97804, name: 'Hatay' },
+    'kahramanmaras': { id: 20795, name: 'Kahramanmaraş' },
+    'kayseri': { id: 1756, name: 'Kayseri' },
+    'nevsehir': { id: 7732, name: 'Nevşehir' },
+    'kapadokya': { id: 7732, name: 'Kapadokya' },
+    'urgup': { id: 9169, name: 'Ürgüp' },
+    'goreme': { id: 9660, name: 'Göreme' },
+    'konya': { id: 1757, name: 'Konya' },
+    'eskisehir': { id: 9585, name: 'Eskişehir' },
+    'bursa': { id: 4898, name: 'Bursa' },
+    'sapanca': { id: 40533, name: 'Sapanca' },
+    'canakkale': { id: 7636, name: 'Çanakkale' },
+    'bozcaada': { id: 40483, name: 'Bozcaada' },
+    'balikesir': { id: 4999, name: 'Balıkesir' },
+    'edremit': { id: 684699, name: 'Edremit' },
+    'denizli': { id: 1762, name: 'Denizli' },
+    'pamukkale': { id: 3776, name: 'Pamukkale' },
+    'mugla': { id: 97783, name: 'Muğla' },
+    'isparta': { id: 53024, name: 'Isparta' },
+    'sivas': { id: 20798, name: 'Sivas' },
+    'tokat': { id: 53126, name: 'Tokat' },
+    'amasya': { id: 52938, name: 'Amasya' },
+    'corum': { id: 52918, name: 'Çorum' },
+    'kastamonu': { id: 40511, name: 'Kastamonu' },
+    'safranbolu': { id: 7726, name: 'Safranbolu' },
+    'zonguldak': { id: 53144, name: 'Zonguldak' },
+    'bolu': { id: 705625, name: 'Bolu' },
+    'edirne': { id: 40471, name: 'Edirne' },
+    'tekirdag': { id: 53125, name: 'Tekirdağ' },
+    'kocaeli': { id: 40315, name: 'Kocaeli' },
+    'sakarya': { id: 40315, name: 'Sakarya' },
+    'yalova': { id: 62336, name: 'Yalova' },
+    'afyonkarahisar': { id: 6660, name: 'Afyonkarahisar' },
+    'kutahya': { id: 20531, name: 'Kütahya' },
+    'batman': { id: 4512, name: 'Batman' },
+    'siirt': { id: 77925, name: 'Siirt' },
+    'sirnak': { id: 230419, name: 'Şırnak' },
+    'hakkari': { id: 53015, name: 'Hakkari' },
+    'bingol': { id: 233014, name: 'Bingöl' },
+    'tunceli': { id: 53128, name: 'Tunceli' },
+    'adiyaman': { id: 6625, name: 'Adıyaman' },
+    'girne': { id: 40314, name: 'Girne' },
+    'lefkosa': { id: 4191, name: 'Lefkoşa' },
+    'gazimagusa': { id: 84382, name: 'Gazimağusa' },
+    'paris': { id: 192, name: 'Paris', intl: true },
+    'londra': { id: 338, name: 'Londra', intl: true },
+    'roma': { id: 343, name: 'Roma', intl: true },
+    'milano': { id: 361, name: 'Milano', intl: true },
+    'venedik': { id: 688, name: 'Venedik', intl: true },
+    'barselona': { id: 40795, name: 'Barselona', intl: true },
+    'madrid': { id: 357, name: 'Madrid', intl: true },
+    'amsterdam': { id: 176, name: 'Amsterdam', intl: true },
+    'berlin': { id: 193, name: 'Berlin', intl: true },
+    'munih': { id: 363, name: 'Münih', intl: true },
+    'frankfurt': { id: 250, name: 'Frankfurt', intl: true },
+    'viyana': { id: 651, name: 'Viyana', intl: true },
+    'prag': { id: 1288, name: 'Prag', intl: true },
+    'budapeste': { id: 637, name: 'Budapeşte', intl: true },
+    'atina': { id: 710, name: 'Atina', intl: true },
+    'selanik': { id: 4327178, name: 'Selanik', intl: true },
+    'sofya': { id: 4326612, name: 'Sofya', intl: true },
+    'bukres': { id: 674, name: 'Bükreş', intl: true },
+    'belgrad': { id: 10257, name: 'Belgrad', intl: true },
+    'saraybosna': { id: 10260, name: 'Saraybosna', intl: true },
+    'uskup': { id: 4326599, name: 'Üsküp', intl: true },
+    'tiran': { id: 36649, name: 'Tiran', intl: true },
+    'tiflis': { id: 7612, name: 'Tiflis', intl: true },
+    'batum': { id: 4912, name: 'Batum', intl: true },
+    'baku': { id: 650, name: 'Bakü', intl: true },
+    'dubai': { id: 220, name: 'Dubai', intl: true },
+    'abu-dabi': { id: 766, name: 'Abu Dabi', intl: true },
+    'doha': { id: 1401, name: 'Doha', intl: true },
+    'kahire': { id: 332, name: 'Kahire', intl: true },
+    'tokyo': { id: 228, name: 'Tokyo', intl: true },
+    'seul': { id: 274, name: 'Seul', intl: true },
+    'bangkok': { id: 359, name: 'Bangkok', intl: true },
+    'new-york': { id: 633, name: 'New York', intl: true }
+};
+
+const ENUYGUN_HOTEL_SLUG_MAP_JS = {
+    'istanbul': 'istanbul-1639',
+    'ankara': 'ankara-386',
+    'izmir': 'izmir-1665',
+    'antalya': 'antalya-481',
+    'bodrum': 'bodrum-745',
+    'fethiye': 'fethiye-6341134',
+    'marmaris': 'marmaris-4302',
+    'dalaman': 'dalaman-1031',
+    'cesme': 'cesme-4275',
+    'alacati': 'alacati-6054832',
+    'kusadasi': 'kusadasi-4227',
+    'didim': 'didim-6069857',
+    'ayvalik': 'ayvalik-4498',
+    'alanya': 'alanya-4671',
+    'kemer': 'kemer-8281',
+    'belek': 'belek-6034717',
+    'side': 'antalya-481',
+    'kas': 'kas-6047444',
+    'trabzon': 'trabzon-3597',
+    'rize': 'rize-4473',
+    'samsun': 'samsun-3278',
+    'ordu': 'ordu-4654',
+    'giresun': 'giresun-4555',
+    'sinop': 'sinop-6063189',
+    'artvin': 'artvin-6323606',
+    'kars': 'kars-1931',
+    'erzurum': 'erzurum-1161',
+    'van': 'van-3677',
+    'agri': 'agri-6063167',
+    'igdir': 'igdir-6202684',
+    'erzincan': 'erzincan-1156',
+    'malatya': 'malatya-2354',
+    'elazig': 'elazig-1188',
+    'gaziantep': 'gaziantep-1420',
+    'sanliurfa': 'sanliurfa-3133',
+    'mardin': 'mardin-4512',
+    'diyarbakir': 'diyarbakir-1016',
+    'adana': 'adana-288',
+    'mersin': 'mersin-province-553248635458625001',
+    'hatay': 'hatay-6246842',
+    'kahramanmaras': 'kahramanmaras-6063186',
+    'kayseri': 'kayseri-430',
+    'nevsehir': 'nevsehir-4605',
+    'kapadokya': 'nevsehir-4605',
+    'urgup': 'urgup-4423',
+    'goreme': 'goreme-6224480',
+    'konya': 'konya-8367',
+    'eskisehir': 'eskisehir-7119',
+    'bursa': 'bursa-6431',
+    'sapanca': 'sapanca-6049293',
+    'canakkale': 'canakkale-857',
+    'bozcaada': 'bozcaada-6125621',
+    'balikesir': 'balikesir-553248635924013473',
+    'edremit': 'edremit-6063182',
+    'denizli': 'denizli-1043',
+    'pamukkale': 'pamukkale-6063014',
+    'mugla': 'mugla-4556',
+    'isparta': 'isparta-4450',
+    'sivas': 'sivas-3680',
+    'tokat': 'tokat-4483',
+    'amasya': 'amasya-4449',
+    'corum': 'corum-4554',
+    'kastamonu': 'kastamonu-4578',
+    'safranbolu': 'safranbolu-4482',
+    'zonguldak': 'zonguldak-4416',
+    'bolu': 'bolu-4644',
+    'edirne': 'edirne-5280',
+    'tekirdag': 'tekirdag-5282',
+    'kocaeli': 'kocaeli-553248635924013345',
+    'sakarya': 'sakarya-6242347',
+    'yalova': 'yalova-4946',
+    'afyonkarahisar': 'afyonkarahisar-6056',
+    'kutahya': 'kutahya-4458',
+    'batman': 'batman-493',
+    'siirt': 'siirt-3339',
+    'sirnak': 'sirnak-6323236',
+    'hakkari': 'hakkari-4617',
+    'mus': 'mus-2428',
+    'bingol': 'bingol-4616',
+    'tunceli': 'tunceli-6323547',
+    'adiyaman': 'adiyaman-4615'
+};
+
+function isInternationalCityOrRoute(toCity, toCode) {
+    if (window.lastTransportData && window.lastTransportData.travel_context && typeof window.lastTransportData.travel_context.is_international === 'boolean') {
+        return window.lastTransportData.travel_context.is_international;
+    }
+    const slug = toAsciiSlug(String(toCity || '').split('(')[0].trim());
+    const meta = TRIP_CITY_ID_MAP_JS[slug];
+    if (meta && meta.intl) return true;
+    const intlCodes = ['CDG','ORY','LHR','LGW','STN','FCO','MXP','VCE','BCN','MAD','AMS','BER','MUC','FRA','VIE','PRG','BUD','ATH','SKG','SOF','OTP','BEG','SJJ','SKP','TIA','TBS','BUS','GYD','DXB','AUH','DOH','CAI','HND','NRT','ICN','BKK','JFK'];
+    if (toCode && intlCodes.includes(String(toCode).toUpperCase())) return true;
+    return false;
 }
 
-function buildFlightCarCrossSellUrl(toCity, toCode) {
+function buildFlightTripHotelCrossSellUrl(toCity, searchReq) {
+    const cleanCity = String(toCity || '').split('(')[0].trim();
+    const slug = toAsciiSlug(cleanCity);
+    const cin = (searchReq && searchReq.departure_date) ? String(searchReq.departure_date) : new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    const cout = (searchReq && searchReq.return_date) ? String(searchReq.return_date) : getNextDaysDate(cin, 2);
+    const pax = Math.max(1, Number((searchReq && searchReq.passengers) || 1));
+    const isIntl = isInternationalCityOrRoute(toCity, '');
+    const domain = (window.currentAppLang === 'en' || isIntl) ? 'www.trip.com' : 'tr.trip.com';
+    const locale = (window.currentAppLang === 'en' || isIntl) ? 'en-US' : 'tr-TR';
+    const meta = TRIP_CITY_ID_MAP_JS[slug];
+    if (meta && meta.id) {
+        const cid = meta.id;
+        const cname = encodeURIComponent(meta.name || cleanCity);
+        const qCity = encodeURIComponent(cleanCity);
+        return `https://${domain}/hotels/list?flexType=1&cityId=${cid}&cityName=${cname}&destName=${cname}&searchWord=${qCity}&searchType=CT&optionId=${cid}&searchValue=19%7C${cid}*19*${cid}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&crn=1&adult=${pax}&curr=TRY&locale=${locale}&Allianceid=11051531&SID=333747492`;
+    }
+    return `https://${domain}/hotels/list?flexType=1&searchWord=${encodeURIComponent(cleanCity)}&keyword=${encodeURIComponent(cleanCity)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&crn=1&adult=${pax}&curr=TRY&locale=${locale}&Allianceid=11051531&SID=333747492`;
+}
+
+function buildFlightEnuygunHotelCrossSellUrl(toCity, searchReq) {
+    const cleanCity = String(toCity || '').split('(')[0].trim();
+    const slug = toAsciiSlug(cleanCity);
+    const enSlug = ENUYGUN_HOTEL_SLUG_MAP_JS[slug] || slug;
+    const cinRaw = (searchReq && searchReq.departure_date) ? String(searchReq.departure_date) : new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    const coutRaw = (searchReq && searchReq.return_date) ? String(searchReq.return_date) : getNextDaysDate(cinRaw, 2);
+    const toDot = (d) => {
+        const p = String(d).split('-');
+        return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : d;
+    };
+    const pax = Math.max(1, Number((searchReq && searchReq.passengers) || 2));
+    return `https://www.enuygun.com/otel/bolge/${enSlug}/?checkInDate=${toDot(cinRaw)}&checkOutDate=${toDot(coutRaw)}&rooms=${pax}&utm_source=hakikibilet&utm_medium=affiliate`;
+}
+
+function buildFlightTransferCrossSellUrl(toCity, toCode, searchReq) {
+    if (window.lastTransportData && window.lastTransportData.destination_cross_sell && window.lastTransportData.destination_cross_sell.transfer && window.lastTransportData.destination_cross_sell.transfer.biletcom_url) {
+        return window.lastTransportData.destination_cross_sell.transfer.biletcom_url;
+    }
     const code = (toCode || '').toUpperCase();
     const slug = toAsciiSlug(toCity || '');
-    const q = '?utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&subid=hakikibilet';
-    const yolcuMap = {
-        'IST': 'turkiye/istanbul/istanbul-havalimani',
-        'SAW': 'turkiye/istanbul/sabiha-gokcen-havalimani',
-        'AYT': 'turkiye/antalya/antalya-havalimani',
-        'ADB': 'turkiye/izmir/izmir-adnan-menderes-havalimani',
-        'ESB': 'turkiye/ankara/ankara-esenboga-havalimani',
-        'DLM': 'turkiye/mugla/dalaman-havalimani',
-        'BJV': 'turkiye/mugla/bodrum-milas-havalimani',
-        'TZX': 'turkiye/trabzon/trabzon-havalimani',
-        'COV': 'turkiye/mersin/cukurova-havalimani',
-        'ADA': 'turkiye/adana/adana-havalimani',
-        'ASR': 'turkiye/kayseri/kayseri-erkilet-havalimani',
-        'GZT': 'turkiye/gaziantep/gaziantep-havalimani'
+    const rawDate = (searchReq && searchReq.departure_date) ? String(searchReq.departure_date) : new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    const dp = rawDate.split('-');
+    const dotDate = dp.length === 3 ? `${dp[2]}.${dp[1]}.${dp[0]}` : '10.11.2026';
+    const pax = Math.max(1, Number((searchReq && searchReq.passengers) || 1));
+
+    const trMap = {
+        'IST': { alis: 'İstanbul Havalimanı', alis_id: 'ChIJqZW8Cvb_n0ARBuUkyCzgDDg', alis_ilce: 'Arnavutköy', alis_sehir: 'İstanbul', birakis: 'Taksim Meydanı', birakis_id: 'ChIJY71WBmW3yhQRw7YgjLJYoIw', birakis_ilce: 'Beyoğlu', birakis_sehir: 'İstanbul' },
+        'SAW': { alis: 'Sabiha Gökçen Havalimanı (SAW)', alis_id: 'ChIJU6Ek9MvbyhQRdNqYgE3K76w', alis_ilce: 'Pendik', alis_sehir: 'İstanbul', birakis: 'Kadıköy', birakis_id: 'ChIJnah7sZDHyhQR4n56Q6BO0tI', birakis_ilce: 'Kadıköy', birakis_sehir: 'İstanbul' },
+        'AYT': { alis: 'Antalya Havalimanı (AYT)', alis_id: 'ChIJnXxhjXeEwxQR-uhI2_zcfME', alis_ilce: 'Muratpaşa', alis_sehir: 'Antalya', birakis: 'Belek', birakis_id: 'ChIJWQCqO3B7wxQRdmlDcOgzsfE', birakis_ilce: 'Serik', birakis_sehir: 'Antalya' },
+        'GZP': { alis: 'Antalya Havalimanı (AYT)', alis_id: 'ChIJnXxhjXeEwxQR-uhI2_zcfME', alis_ilce: 'Muratpaşa', alis_sehir: 'Antalya', birakis: 'Alanya', birakis_id: 'ChIJWQCqO3B7wxQRdmlDcOgzsfE', birakis_ilce: 'Alanya', birakis_sehir: 'Antalya' },
+        'ADB': { alis: 'İzmir Adnan Menderes Havalimanı', alis_id: 'ChIJNzAtBD7guxQRSGSP1dn9i6A', alis_ilce: 'Gaziemir', alis_sehir: 'İzmir', birakis: 'Alsancak', birakis_id: 'ChIJxX41fEPYuxQR1PsNQEtoiGg', birakis_ilce: 'Konak', birakis_sehir: 'İzmir' },
+        'ESB': { alis: 'Ankara Esenboğa Havalimanı (ESB)', alis_id: 'ChIJqYLJ0NoPgkAR1nZct7rSPvE', alis_ilce: 'Çubuk', alis_sehir: 'Ankara', birakis: 'Kızılay', birakis_id: 'ChIJC5O51v9O0xQRrAvs7r6cp28', birakis_ilce: 'Çankaya', birakis_sehir: 'Ankara' },
+        'BJV': { alis: 'Milas-Bodrum Havalimanı (BJV)', alis_id: 'ChIJHdQmLhf2vhQR0mNL2LRpO5g', alis_ilce: 'Milas', alis_sehir: 'Muğla', birakis: 'Bodrum Merkez', birakis_id: 'ChIJDaw2zxptvhQRnX1lV0K2M5A', birakis_ilce: 'Bodrum', birakis_sehir: 'Muğla' },
+        'DLM': { alis: 'Dalaman Havalimanı (DLM)', alis_id: 'ChIJb0WDj11xwBQR2uT6br5G8so', alis_ilce: 'Dalaman', alis_sehir: 'Muğla', birakis: 'Fethiye', birakis_id: 'ChIJO7G2DZtDwBQR13BPJAQHFYc', birakis_ilce: 'Fethiye', birakis_sehir: 'Muğla' },
+        'TZX': { alis: 'Trabzon Uluslararası Havalimanı (TZX)', alis_id: 'ChIJ-wgbJ507ZEAROb7a7vWS8n0', alis_ilce: 'Ortahisar', alis_sehir: 'Trabzon', birakis: 'Trabzon Meydan Parkı', birakis_id: 'ChIJwxPUZ0Q8ZEARSLp3wprj2OA', birakis_ilce: 'Ortahisar', birakis_sehir: 'Trabzon' },
+        'KSY': { alis: 'Kars Harakani Havalimanı (KSY)', alis_id: 'ChIJQVQXpYuIaUAR5mVYvpmrVnc', alis_ilce: 'Kars Merkez', alis_sehir: 'Kars', birakis: 'Kars Merkez', birakis_id: 'ChIJZyJzzdmOaUARFtKE6RdRbQQ', birakis_ilce: 'Merkez', birakis_sehir: 'Kars' }
     };
-    if (yolcuMap[code]) return `https://yolcu360.com/arac-kiralama/${yolcuMap[code]}${q}`;
-    if (slug.includes('antalya')) return `https://yolcu360.com/arac-kiralama/turkiye/antalya/antalya-havalimani${q}`;
-    if (slug.includes('izmir')) return `https://yolcu360.com/arac-kiralama/turkiye/izmir/izmir-adnan-menderes-havalimani${q}`;
-    if (slug.includes('ankara')) return `https://yolcu360.com/arac-kiralama/turkiye/ankara/ankara-esenboga-havalimani${q}`;
-    if (slug.includes('bodrum')) return `https://yolcu360.com/arac-kiralama/turkiye/mugla/bodrum-milas-havalimani${q}`;
-    if (slug.includes('dalaman')) return `https://yolcu360.com/arac-kiralama/turkiye/mugla/dalaman-havalimani${q}`;
-    if (slug.includes('trabzon')) return `https://yolcu360.com/arac-kiralama/turkiye/trabzon/trabzon-havalimani${q}`;
-    return `https://yolcu360.com/arac-kiralama/turkiye/istanbul/istanbul-havalimani${q}`;
+
+    let t = trMap[code];
+    if (!t) {
+        if (slug.includes('antalya') || slug.includes('alanya')) t = trMap['AYT'];
+        else if (slug.includes('izmir')) t = trMap['ADB'];
+        else if (slug.includes('ankara')) t = trMap['ESB'];
+        else if (slug.includes('bodrum')) t = trMap['BJV'];
+        else if (slug.includes('dalaman') || slug.includes('fethiye') || slug.includes('marmaris')) t = trMap['DLM'];
+        else if (slug.includes('trabzon')) t = trMap['TZX'];
+        else if (slug.includes('kars')) t = trMap['KSY'];
+        else t = trMap['IST'];
+    }
+
+    const params = new URLSearchParams({
+        alis: t.alis,
+        alis_id: t.alis_id,
+        alis_havalimani_id: 'true',
+        alis_ilce: t.alis_ilce,
+        alis_sehir: t.alis_sehir,
+        birakis: t.birakis,
+        birakis_id: t.birakis_id,
+        birakis_havalimani_id: 'false',
+        birakis_ilce: t.birakis_ilce,
+        birakis_sehir: t.birakis_sehir,
+        alisTarihi: dotDate,
+        alisSaati: '10:00',
+        yetiskin: String(pax),
+        utm_source: 'hakikibilet',
+        utm_medium: 'affiliate',
+        ref: 'hakikibilet'
+    });
+    return `https://www.bilet.com/transfer/ara?${params.toString()}`;
+}
+
+function buildFlightCarCrossSellUrl(toCity, toCode, searchReq) {
+    const code = (toCode || '').toUpperCase();
+    const slug = toAsciiSlug(toCity || '');
+    const pDate = (searchReq && searchReq.departure_date) ? String(searchReq.departure_date) : new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    const dDate = (searchReq && searchReq.return_date) ? String(searchReq.return_date) : getNextDaysDate(pDate, 3);
+
+    const yolcuPidMap = {
+        'IST': { pid: 'ChIJqZW8Cvb_n0ARBuUkyCzgDDg', pp: '41.259656501755316,28.74417437428462' },
+        'SAW': { pid: 'ChIJU6Ek9MvbyhQRdNqYgE3K76w', pp: '40.8944747,29.3130928' },
+        'AYT': { pid: 'ChIJnXxhjXeEwxQR-uhI2_zcfME', pp: '36.9086961,30.7981855' },
+        'ADB': { pid: 'ChIJNzAtBD7guxQRSGSP1dn9i6A', pp: '38.2919973,27.1489398' },
+        'ESB': { pid: 'ChIJqYLJ0NoPgkAR1nZct7rSPvE', pp: '40.1149458,32.9926733' },
+        'BJV': { pid: 'ChIJHdQmLhf2vhQR0mNL2LRpO5g', pp: '37.2335821,27.7058084' },
+        'DLM': { pid: 'ChIJb0WDj11xwBQR2uT6br5G8so', pp: '36.7113798,28.78728' },
+        'TZX': { pid: 'ChIJ-wgbJ507ZEAROb7a7vWS8n0', pp: '40.9950872,39.7800025' },
+        'RZV': { pid: 'ChIJLxyl8HAZZkARoE48LOXMvQM', pp: '41.1744776,40.8450979' },
+        'COV': { pid: 'ChIJg21zJkCPKBURF3JZ9qjdVP4', pp: '37.0004,35.315' },
+        'ADA': { pid: 'ChIJg21zJkCPKBURF3JZ9qjdVP4', pp: '37.0004,35.315' },
+        'GZT': { pid: 'ChIJw6b9OTLdMRURgP6Ulla1wlA', pp: '36.9435888,37.4763761' },
+        'ASR': { pid: 'ChIJZ9VIum14KhUR6SjJyMp2QcI', pp: '38.7719688,34.5245521' },
+        'NAV': { pid: 'ChIJZ9VIum14KhUR6SjJyMp2QcI', pp: '38.7719688,34.5245521' },
+        'KSY': { pid: 'ChIJQVQXpYuIaUAR5mVYvpmrVnc', pp: '40.5660549,43.1104947' },
+        'ERZ': { pid: 'ChIJ250HDxhYbkARxsX8FLma4tk', pp: '39.9614729,41.1792577' },
+        'VAN': { pid: 'ChIJlyCSUTV3EkARqgXDsZtp7tE', pp: '38.468872,43.3375796' },
+        'DIY': { pid: 'ChIJlxxcC-IhdUARgPQTlDRY5Xk', pp: '37.8939,40.201' },
+        'SZF': { pid: 'ChIJvavQAmgLiEAReCwMRRr2reA', pp: '41.2576087,36.5552426' },
+        'EDO': { pid: 'ChIJiRhp2aC3sBQRqaZCSaIQ_Vs', pp: '39.5508806,27.0101524' }
+    };
+
+    let m = yolcuPidMap[code];
+    if (!m) {
+        if (slug.includes('antalya')) m = yolcuPidMap['AYT'];
+        else if (slug.includes('izmir')) m = yolcuPidMap['ADB'];
+        else if (slug.includes('ankara')) m = yolcuPidMap['ESB'];
+        else if (slug.includes('bodrum')) m = yolcuPidMap['BJV'];
+        else if (slug.includes('dalaman') || slug.includes('fethiye') || slug.includes('marmaris')) m = yolcuPidMap['DLM'];
+        else if (slug.includes('trabzon')) m = yolcuPidMap['TZX'];
+        else if (slug.includes('kars')) m = yolcuPidMap['KSY'];
+        else if (slug.includes('erzurum')) m = yolcuPidMap['ERZ'];
+        else if (slug.includes('van')) m = yolcuPidMap['VAN'];
+        else if (slug.includes('diyarbakir')) m = yolcuPidMap['DIY'];
+        else if (slug.includes('adana') || slug.includes('mersin')) m = yolcuPidMap['COV'];
+        else if (slug.includes('gaziantep')) m = yolcuPidMap['GZT'];
+        else if (slug.includes('kayseri') || slug.includes('kapadokya')) m = yolcuPidMap['ASR'];
+        else m = yolcuPidMap['IST'];
+    }
+
+    return `https://yolcu360.com/arac-kiralama/search?p_d=${encodeURIComponent(pDate)}&d_d=${encodeURIComponent(dDate)}&p_t=10:00&d_t=10:00&a=30-65&sb=lowest_price_first&p_p=${m.pp}&pid=${m.pid}&utm_source=hakikibilet&utm_medium=affiliate&subid=hakikibilet`;
 }
 
 function generateTicketCardsHtml(tickets, searchReq) {
@@ -5015,29 +5314,42 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <span class="text-[10.5px] font-black text-slate-500 flex items-center gap-1">
                             <i class="fa-solid fa-sparkles text-amber-500"></i> ${isEn ? `On Arrival in ${escapeHtml(toCity)}:` : `${escapeHtml(toCity)} Varışında:`}
                         </span>
-                        <a href="${buildFlightTransferCrossSellUrl(toCity, toCode)}"
+                        <a href="${buildFlightTransferCrossSellUrl(toCity, toCode, searchReq)}"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-extrabold text-[11px] inline-flex items-center gap-1.5 transition shadow-2xs hover:scale-102">
                             <span>🚕 ${isEn ? `${escapeHtml(toCity)} Airport VIP Transfer (Bilet.com) ↗` : `${escapeHtml(toCity)} Havalimanı ➔ Otel VIP Transfer (Bilet.com) ↗`}</span>
                         </a>
                         ${buildFlightFerryCrossSellHtml(toCity, toCode, searchReq)}
-                        <a href="${buildFlightCarCrossSellUrl(toCity, toCode)}"
+                        <a href="${buildFlightCarCrossSellUrl(toCity, toCode, searchReq)}"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold text-[11px] inline-flex items-center gap-1.5 transition">
                             <span>🚗 ${isEn ? 'Airport Car Rental (Yolcu360) ↗' : 'Havalimanı Teslim Araç (Yolcu360) ↗'}</span>
                         </a>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <a href="https://www.trip.com/hotels/list?keyword=${encodeURIComponent(toCity)}${searchReq && searchReq.departure_date ? `&checkin=${encodeURIComponent(searchReq.departure_date)}` : ''}&crn=1&adult=${(searchReq && searchReq.passengers) || 1}&Allianceid=11051531&SID=333747492"
+                        <a href="${buildFlightTripHotelCrossSellUrl(toCity, searchReq)}"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-extrabold text-[11px] inline-flex items-center gap-1 transition">
                             <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Trip.com) ↗' : 'Otelleri (Trip.com) ↗'}</span>
                         </a>
-                        <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(toCity)}&aid=585474"
-                           target="_blank" rel="noopener noreferrer"
-                           class="text-[11px] font-bold text-sky-700 hover:text-sky-900 inline-flex items-center gap-1">
-                            <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Booking) ↗' : 'Otelleri (Booking) ↗'}</span>
-                        </a>
+                        ${isInternationalCityOrRoute(toCity, toCode) ? `
+                            <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(toCity)}&aid=585474"
+                               target="_blank" rel="noopener noreferrer"
+                               class="text-[11px] font-bold text-sky-700 hover:text-sky-900 inline-flex items-center gap-1">
+                                <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Booking) ↗' : 'Otelleri (Booking) ↗'}</span>
+                            </a>
+                        ` : `
+                            <a href="https://www.obilet.com/otel/${toAsciiSlug(String(toCity || '').split('(')[0].trim())}-otelleri?utm_source=hakikibilet&utm_medium=affiliate"
+                               target="_blank" rel="noopener noreferrer"
+                               class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold text-[11px] inline-flex items-center gap-1 transition">
+                                <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Obilet) ↗' : 'Otelleri (Obilet) ↗'}</span>
+                            </a>
+                            <a href="${buildFlightEnuygunHotelCrossSellUrl(toCity, searchReq)}"
+                               target="_blank" rel="noopener noreferrer"
+                               class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1">
+                                <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Enuygun) ↗' : 'Otelleri (Enuygun) ↗'}</span>
+                            </a>
+                        `}
                     </div>
                 </div>
             </div>
@@ -5310,31 +5622,47 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     const activeOrigName = (data && data.origin) || (window.HakikiTravelContext && window.HakikiTravelContext.origin_name) || 'İstanbul';
     const safeOrigJs = String(activeOrigName).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     if (!hotelInfo) {
+        const fbIsIntl = isInternationalCityOrRoute(city, '', null);
+        const fbTripUrl = buildFlightTripHotelCrossSellUrl(city, { departure_date: cin, return_date: cout, passengers: guests });
+        const fbEnuygunUrl = buildFlightEnuygunHotelCrossSellUrl(city, { departure_date: cin, return_date: cout, passengers: guests });
+        const fbObiletUrl = `https://www.obilet.com/otel/${toAsciiSlug(city)}-otelleri?utm_source=hakikibilet&utm_medium=affiliate&subid=hakikibilet`;
         resultsArea.innerHTML = `
             <div class="bg-white p-10 rounded-3xl border border-slate-200 text-center shadow-xs">
-                <div class="font-black text-lg text-slate-800">${isEn ? `Official hotel search links prepared for ${safeCity}.` : `${safeCity} için resmi arama linki hazırlandı.`}</div>
+                <div class="font-black text-lg text-slate-800">${isEn ? `Official hotel search links prepared for ${safeCity}.` : `${safeCity} için resmi arama linkleri hazırlandı.`}</div>
                 <div class="mt-4 flex flex-wrap justify-center gap-3">
-                    <a href="https://www.trip.com/hotels/list?keyword=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&crn=1&adult=${encodeURIComponent(guests)}&Allianceid=11051531&SID=333747492" target="_blank" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
+                    <a href="${fbTripUrl}" target="_blank" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
                         <span>${isEn ? 'Open Live Rooms on Trip.com' : "Trip.com'da Canlı Odaları Aç"}</span>
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
-                    <a href="https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&aid=585474" target="_blank" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
+                    ${fbIsIntl ? `
+                    <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&aid=585474" target="_blank" class="px-6 py-3 bg-[#003580] text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
                         <span>${isEn ? 'Open Live Rooms on Booking.com' : "Booking.com'da Canlı Odaları Aç"}</span>
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
+                    ` : `
+                    <a href="${fbEnuygunUrl}" target="_blank" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
+                        <span>Enuygun Otel'de Aç</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                    <a href="${fbObiletUrl}" target="_blank" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
+                        <span>Obilet Otel'de Aç</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                    `}
                 </div>
             </div>
         `;
         return;
     }
 
-    const isIntl = hotelInfo.is_international;
-    const tripHotelUrl = hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || `https://${isEn || isIntl ? 'www.trip.com' : 'tr.trip.com'}/hotels/list?keyword=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&Allianceid=11051531&SID=333747492`;
-    const bookingUrl = hotelInfo.booking_url || `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&sb=1&aid=585474`;
-    const enuygunUrl = isIntl ? null : hotelInfo.enuygun_url;
-    const obiletHotelUrl = isIntl ? null : (hotelInfo.obilet_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.obilet));
+    const isIntl = Boolean(hotelInfo.is_international);
+    const tripHotelUrl = hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || buildFlightTripHotelCrossSellUrl(city, { departure_date: cin, return_date: cout, passengers: guests });
+    const bookingUrl = isIntl ? (hotelInfo.booking_url || `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&sb=1&aid=585474`) : null;
+    const enuygunUrl = isIntl ? null : (hotelInfo.enuygun_url || buildFlightEnuygunHotelCrossSellUrl(city, { departure_date: cin, return_date: cout, passengers: guests }));
+    const obiletHotelUrl = isIntl ? null : (hotelInfo.obilet_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.obilet) || `https://www.obilet.com/otel/${toAsciiSlug(city)}-otelleri`);
+    const biletHotelUrl = isIntl ? null : (hotelInfo.bilet_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.bilet));
     const etsturUrl = isIntl ? null : (hotelInfo.etstur_url || (hotelInfo.deep_links && hotelInfo.deep_links.etstur));
-    const agodaUrl = hotelInfo.agoda_url || `https://www.agoda.com/tr-tr/search?city=${encodeURIComponent(city)}&checkIn=${cin}&checkOut=${cout}&rooms=1&adults=${guests}&cid=1924128`;
+    const agodaUrl = isIntl ? (hotelInfo.agoda_url || `https://www.agoda.com/tr-tr/search?city=${encodeURIComponent(city)}&checkIn=${cin}&checkOut=${cout}&rooms=1&adults=${guests}&cid=1924128`) : null;
     const liveHotels = hotelInfo.live_hotels || [];
     const topHotel = liveHotels.length > 0 ? liveHotels[0] : null;
 
@@ -5377,7 +5705,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     let hotelTotal = topHotel && topHotel.total_price ? Number(topHotel.total_price) : (hotelNightly * (hotelInfo.nights || 2));
     let combinedTotal = transportPrice + hotelTotal;
 
-    const bookingCityLink = hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=585474&label=hakikibilet_kombine`;
+    const bookingCityLink = isIntl ? (hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=585474&label=hakikibilet_kombine`) : tripHotelUrl;
 
     let html = `
         <!-- 🧭 MULTI-MODAL ULAŞIM ALTERNATİFLERİ BANDI (ÇİFT YÖNLÜ ÇAPRAZ SATIŞ) -->
@@ -5545,7 +5873,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                             <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-200">En Ekonomik • Sıfır Komisyon</span>
                         </div>
                         <p class="text-[11px] text-slate-600 leading-relaxed font-normal">
-                            Ulaşımı doğrudan resmi taşıyıcıdan (${bestTransport.price ? bestTransport.price + ' ₺' : 'resmi ekran'}), oteli ${hotelInfo.is_international ? "Booking.com'dan" : "Agoda / Enuygun'dan"} en dip fiyattan aracı komisyonu olmadan alın.
+                            Ulaşımı doğrudan resmi taşıyıcıdan (${bestTransport.price ? bestTransport.price + ' ₺' : 'resmi ekran'}), oteli ${hotelInfo.is_international ? "Booking.com'dan" : "Trip.com / Enuygun'dan"} en dip fiyattan aracı komisyonu olmadan alın.
                         </p>
                     </div>
                     <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
@@ -5579,8 +5907,8 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                             </a>
                         ` : `
-                            <a href="${hotelInfo.agoda_url || hotelInfo.enuygun_url || bookingCityLink}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                                <span>🏨 Tüm ${safeCity} Otellerini Listele (Agoda / Enuygun)</span>
+                            <a href="${tripHotelUrl || enuygunUrl || bookingCityLink}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                                <span>🏨 Tüm ${safeCity} Otellerini Listele (Trip.com)</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                             </a>
                         `}
@@ -5608,10 +5936,12 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         ${getBrandLogoHtml('Trip.com', '🏨', 'w-4 h-4')}
                         <span>${isEn ? 'Trip.com Hotels ↗' : 'Trip.com Otelleri ↗'}</span>
                     </a>
+                    ${bookingUrl ? `
                     <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Booking.com', '🏨', 'w-4 h-4')}
                         <span>Booking.com ↗</span>
                     </a>
+                    ` : ''}
                     ${enuygunUrl ? `
                     <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}
@@ -5624,16 +5954,24 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         <span>Obilet Otel ↗</span>
                     </a>
                     ` : ''}
+                    ${biletHotelUrl ? `
+                    <a href="${biletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        ${getBrandLogoHtml('Bilet.com', '🏨', 'w-4 h-4')}
+                        <span>Bilet.com Otel ↗</span>
+                    </a>
+                    ` : ''}
                     ${etsturUrl ? `
                     <a href="${etsturUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-sky-700 hover:bg-sky-800 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                         <i class="fa-solid fa-umbrella-beach"></i>
                         <span>Etstur ↗</span>
                     </a>
                     ` : ''}
+                    ${agodaUrl ? `
                     <a href="${agodaUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                         <i class="fa-solid fa-suitcase"></i>
                         <span>Agoda ↗</span>
                     </a>
+                    ` : ''}
                 </div>
             </div>
 
@@ -5722,7 +6060,8 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                             </div>
                         </div>
 
-                        <!-- Partner 2: Booking.com -->
+                        <!-- Partner 2: Yurt Dışında Booking.com / Yurt İçinde Obilet Otel -->
+                        ${bookingUrl ? `
                         <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-[#003580] hover:shadow-md transition flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between mb-2">
@@ -5743,6 +6082,28 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                 </a>
                             </div>
                         </div>
+                        ` : `
+                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-rose-500 hover:shadow-md transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-black text-rose-600 uppercase tracking-wide flex items-center gap-1.5">
+                                        ${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}
+                                        <span>Obilet Otel</span>
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-800">${isEn ? 'Turkish Partner' : 'Türkiye Resmi Ağı'}</span>
+                                </div>
+                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'City & Thermal Hotels' : 'Şehir & Butik Otelleri'}</div>
+                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                    ${isEn ? 'Direct Turkish hotel inventory with TRY pricing and local support.' : 'Türkiye içi tüm şehir otelleri, yerel tesisler ve engelsiz TL rezervasyon.'}
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100">
+                                <a href="${obiletHotelUrl || tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>${isEn ? 'Open Live Rooms on Obilet ↗' : "Obilet Otel'de Canlı Odaları Aç ↗"}</span>
+                                </a>
+                            </div>
+                        </div>
+                        `}
 
                         <!-- Partner 3: Enuygun Otel / Agoda -->
                         ${enuygunUrl ? `

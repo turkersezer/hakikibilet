@@ -39,12 +39,22 @@ class TransferService:
     _CACHE_LOCK = threading.Lock()
     _CACHE_TTL_SECONDS = 900  # 15 dk L1 önbellek
 
+    _TYPEAHEAD_CACHE: Dict[str, Dict[str, str]] = {}
+
     AIRPORT_TRANSFER_TARGETS: Dict[str, Dict[str, str]] = {
         "IST": {
             "name": "İstanbul Havalimanı (IST)",
             "bilet_slug": "istanbul-havalimani",
             "welcome_slug": "istanbul",
             "city": "İstanbul",
+            "alis": "İstanbul Havalimanı",
+            "alis_id": "ChIJqZW8Cvb_n0ARBuUkyCzgDDg",
+            "alis_ilce": "Arnavutköy",
+            "alis_sehir": "İstanbul",
+            "birakis": "Taksim Meydanı",
+            "birakis_id": "ChIJY71WBmW3yhQRw7YgjLJYoIw",
+            "birakis_ilce": "Beyoğlu",
+            "birakis_sehir": "İstanbul",
             "havas": "HAVAİST Resmi Havalimanı Otobüsü",
             "shuttle_url": "https://www.hava.ist/sefer-saatleri.php",
             "shuttle_routes": "Taksim, Kadıköy, Beşiktaş, Aksaray, Otogar, Bakırköy, Avcılar (7/24 Sefer)",
@@ -55,6 +65,14 @@ class TransferService:
             "bilet_slug": "sabiha-gokcen-havalimani",
             "welcome_slug": "istanbul",
             "city": "İstanbul",
+            "alis": "Sabiha Gökçen Havalimanı (SAW)",
+            "alis_id": "ChIJU6Ek9MvbyhQRdNqYgE3K76w",
+            "alis_ilce": "Pendik",
+            "alis_sehir": "İstanbul",
+            "birakis": "Kadıköy",
+            "birakis_id": "ChIJnah7sZDHyhQR4n56Q6BO0tI",
+            "birakis_ilce": "Kadıköy",
+            "birakis_sehir": "İstanbul",
             "havas": "HAVABUS (Taksim • Kadıköy • Yenisahra)",
             "shuttle_url": "https://www.havabus.com/",
             "shuttle_routes": "Kadıköy Rıhtım, Taksim Abdülhakhamit Cad., Yenisahra Metro (30 dk'da bir)",
@@ -65,6 +83,14 @@ class TransferService:
             "bilet_slug": "antalya-havalimani",
             "welcome_slug": "antalya",
             "city": "Antalya",
+            "alis": "Antalya Havalimanı (AYT)",
+            "alis_id": "ChIJnXxhjXeEwxQR-uhI2_zcfME",
+            "alis_ilce": "Muratpaşa",
+            "alis_sehir": "Antalya",
+            "birakis": "Belek",
+            "birakis_id": "ChIJWQCqO3B7wxQRdmlDcOgzsfE",
+            "birakis_ilce": "Serik",
+            "birakis_sehir": "Antalya",
             "havas": "HAVAŞ Antalya & 600/800 Belediye Ekspres",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "Lara, Konyaaltı, Otogar, Kemer, Belek, Side, Manavgat, Alanya",
@@ -75,6 +101,14 @@ class TransferService:
             "bilet_slug": "istanbul-havalimani",
             "welcome_slug": "izmir",
             "city": "İzmir",
+            "alis": "İzmir Adnan Menderes Havalimanı",
+            "alis_id": "ChIJNzAtBD7guxQRSGSP1dn9i6A",
+            "alis_ilce": "Gaziemir",
+            "alis_sehir": "İzmir",
+            "birakis": "Alsancak",
+            "birakis_id": "ChIJxX41fEPYuxQR1PsNQEtoiGg",
+            "birakis_ilce": "Konak",
+            "birakis_sehir": "İzmir",
             "havas": "HAVAŞ İzmir (Alsancak • Karşıyaka • Çeşme • Kuşadası)",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "Alsancak, Karşıyaka/Mavişehir, Çeşme, Alaçatı, Urla, Kuşadası, Söke",
@@ -85,6 +119,14 @@ class TransferService:
             "bilet_slug": "istanbul-havalimani",
             "welcome_slug": "ankara",
             "city": "Ankara",
+            "alis": "Ankara Esenboğa Havalimanı (ESB)",
+            "alis_id": "ChIJqYLJ0NoPgkAR1nZct7rSPvE",
+            "alis_ilce": "Çubuk",
+            "alis_sehir": "Ankara",
+            "birakis": "Kızılay",
+            "birakis_id": "ChIJC5O51v9O0xQRrAvs7r6cp28",
+            "birakis_ilce": "Çankaya",
+            "birakis_sehir": "Ankara",
             "havas": "HAVAŞ Ankara & EGO 442 (Kızılay • AŞTİ)",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "15 Temmuz Kızılay Milli İrade Meydanı, AŞTİ Otogar, Ankara YHT Gar",
@@ -95,6 +137,14 @@ class TransferService:
             "bilet_slug": "bodrum-milas-havalimani",
             "welcome_slug": "bodrum",
             "city": "Muğla (Bodrum)",
+            "alis": "Milas-Bodrum Havalimanı (BJV)",
+            "alis_id": "ChIJHdQmLhf2vhQR0mNL2LRpO5g",
+            "alis_ilce": "Milas",
+            "alis_sehir": "Muğla",
+            "birakis": "Bodrum Merkez",
+            "birakis_id": "ChIJDaw2zxptvhQRnX1lV0K2M5A",
+            "birakis_ilce": "Bodrum",
+            "birakis_sehir": "Muğla",
             "havas": "MUTTAŞ & HAVAŞ Bodrum",
             "shuttle_url": "https://ulasim.muttas.com.tr/",
             "shuttle_routes": "Bodrum Merkez Otogar, Torba, Güvercinlik, Milas, Didim",
@@ -105,6 +155,14 @@ class TransferService:
             "bilet_slug": "mugla-dalaman-havalimani",
             "welcome_slug": "dalaman",
             "city": "Muğla (Dalaman / Fethiye / Marmaris)",
+            "alis": "Dalaman Havalimanı (DLM)",
+            "alis_id": "ChIJb0WDj11xwBQR2uT6br5G8so",
+            "alis_ilce": "Dalaman",
+            "alis_sehir": "Muğla",
+            "birakis": "Fethiye",
+            "birakis_id": "ChIJO7G2DZtDwBQR13BPJAQHFYc",
+            "birakis_ilce": "Fethiye",
+            "birakis_sehir": "Muğla",
             "havas": "MUTTAŞ & HAVAŞ (Fethiye • Marmaris • Göcek • Datça)",
             "shuttle_url": "https://ulasim.muttas.com.tr/",
             "shuttle_routes": "Fethiye Otogar, Göcek, Marmaris Otogar, Gökova, Köyceğiz, Ortaca",
@@ -115,6 +173,14 @@ class TransferService:
             "bilet_slug": "trabzon-havalimani",
             "welcome_slug": "istanbul",
             "city": "Trabzon",
+            "alis": "Trabzon Uluslararası Havalimanı (TZX)",
+            "alis_id": "ChIJ-wgbJ507ZEAROb7a7vWS8n0",
+            "alis_ilce": "Ortahisar",
+            "alis_sehir": "Trabzon",
+            "birakis": "Trabzon Meydan Parkı",
+            "birakis_id": "ChIJwxPUZ0Q8ZEARSLp3wprj2OA",
+            "birakis_ilce": "Ortahisar",
+            "birakis_sehir": "Trabzon",
             "havas": "HAVAŞ Karadeniz (Trabzon • Rize • Hopa • Giresun)",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "Trabzon Meydan, Beşirli, Yomra, Ardeşen, Rize, Hopa, Tirebolu, Giresun",
@@ -125,6 +191,14 @@ class TransferService:
             "bilet_slug": "antalya-havalimani",
             "welcome_slug": "antalya",
             "city": "Alanya",
+            "alis": "Antalya Havalimanı (AYT)",
+            "alis_id": "ChIJnXxhjXeEwxQR-uhI2_zcfME",
+            "alis_ilce": "Muratpaşa",
+            "alis_sehir": "Antalya",
+            "birakis": "Alanya",
+            "birakis_id": "ChIJWQCqO3B7wxQRdmlDcOgzsfE",
+            "birakis_ilce": "Alanya",
+            "birakis_sehir": "Antalya",
             "havas": "HAVAŞ Alanya (Mahmutlar • Oba • Alanya Otogar)",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "Kargıcak, Mahmutlar, Kestel, Tosmur, Oba, Alanya Merkez Otogar",
@@ -135,6 +209,14 @@ class TransferService:
             "bilet_slug": "istanbul-havalimani",
             "welcome_slug": "izmir",
             "city": "Balıkesir (Edremit / Ayvalık)",
+            "alis": "Balıkesir Koca Seyit Havalimanı",
+            "alis_id": "ChIJiRhp2aC3sBQRqaZCSaIQ_Vs",
+            "alis_ilce": "Edremit",
+            "alis_sehir": "Balıkesir",
+            "birakis": "Ayvalık",
+            "birakis_id": "ChIJiRhp2aC3sBQRqaZCSaIQ_Vs",
+            "birakis_ilce": "Ayvalık",
+            "birakis_sehir": "Balıkesir",
             "havas": "BTT & Havalimanı Servisleri (Ayvalık • Akçay • Altınoluk)",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "Burhaniye, Gömeç, Ayvalık, Edremit, Akçay, Güre, Altınoluk, Küçükkuyu",
@@ -145,6 +227,14 @@ class TransferService:
             "bilet_slug": "adana-sakirpasa-havalimani",
             "welcome_slug": "antalya",
             "city": "Adana / Mersin",
+            "alis": "Çukurova Uluslararası Havalimanı",
+            "alis_id": "ChIJg21zJkCPKBURF3JZ9qjdVP4",
+            "alis_ilce": "Tarsus",
+            "alis_sehir": "Mersin",
+            "birakis": "Adana Merkez",
+            "birakis_id": "ChIJg21zJkCPKBURF3JZ9qjdVP4",
+            "birakis_ilce": "Seyhan",
+            "birakis_sehir": "Adana",
             "havas": "HAVAMAŞ (Adana Merkez • Mersin • Tarsus)",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "Adana Otogar / Optimum / Ziyapaşa, Tarsus, Mersin Forum / Mezitli / MEŞOT",
@@ -155,6 +245,14 @@ class TransferService:
             "bilet_slug": "kayseri-erkilet-havalimani",
             "welcome_slug": "istanbul",
             "city": "Kayseri / Kapadokya",
+            "alis": "Kayseri Erkilet Havalimanı",
+            "alis_id": "ChIJZ9VIum14KhUR6SjJyMp2QcI",
+            "alis_ilce": "Kocasinan",
+            "alis_sehir": "Kayseri",
+            "birakis": "Ürgüp",
+            "birakis_id": "ChIJZ9VIum14KhUR6SjJyMp2QcI",
+            "birakis_ilce": "Ürgüp",
+            "birakis_sehir": "Nevşehir",
             "havas": "HAVAŞ Kayseri & Kapadokya / Erciyes Shuttle",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "Kayseri Forum / Otogar, Erciyes Kayak Merkezi, Ürgüp, Göreme, Avanos",
@@ -165,12 +263,78 @@ class TransferService:
             "bilet_slug": "gaziantep-havalimani",
             "welcome_slug": "istanbul",
             "city": "Gaziantep",
+            "alis": "Gaziantep Havalimanı",
+            "alis_id": "ChIJw6b9OTLdMRURgP6Ulla1wlA",
+            "alis_ilce": "Oğuzeli",
+            "alis_sehir": "Gaziantep",
+            "birakis": "Şahinbey",
+            "birakis_id": "ChIJw6b9OTLdMRURgP6Ulla1wlA",
+            "birakis_ilce": "Şahinbey",
+            "birakis_sehir": "Gaziantep",
             "havas": "HAVAŞ Gaziantep & GAZİULAŞ B01",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": "Karataş, Üniversite, Sankopark, Gaziantep Otogar, Nizip",
             "rail_info": "🚌 HAVAŞ & Gaziulaş Havalimanı Ekspres Hattı",
         },
+        "KSY": {
+            "name": "Kars Harakani Havalimanı (KSY)",
+            "bilet_slug": "istanbul-havalimani",
+            "welcome_slug": "istanbul",
+            "city": "Kars",
+            "alis": "Kars Harakani Havalimanı (KSY)",
+            "alis_id": "ChIJQVQXpYuIaUAR5mVYvpmrVnc",
+            "alis_ilce": "Kars Merkez",
+            "alis_sehir": "Kars",
+            "birakis": "Kars Merkez",
+            "birakis_id": "ChIJZyJzzdmOaUARFtKE6RdRbQQ",
+            "birakis_ilce": "Merkez",
+            "birakis_sehir": "Kars",
+            "havas": "Kars Belediyesi Havalimanı Servisi",
+            "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
+            "shuttle_routes": "Kars Harakani Havalimanı ➔ Kars Şehir Merkezi & Sarıkamış",
+            "rail_info": "🚌 Uçak İniş Saatlerine Entegre Havalimanı Servisleri",
+        },
     }
+
+    @classmethod
+    def _resolve_bilet_typeahead(cls, query: str) -> Optional[Dict[str, str]]:
+        q_clean = (query or "").strip()
+        if not q_clean:
+            return None
+        if q_clean in cls._TYPEAHEAD_CACHE:
+            return cls._TYPEAHEAD_CACHE[q_clean]
+        try:
+            import json
+            url = f"https://www.bilet.com/transfer/typeahead?query={urllib.parse.quote(q_clean)}&airport=0"
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "Mozilla/5.0", "X-Requested-With": "XMLHttpRequest"},
+            )
+            raw = urllib.request.urlopen(req, timeout=2.0).read().decode("utf-8", "ignore")
+            data = json.loads(raw)
+            preds = data.get("data", {}).get("predictions", [])
+            if preds:
+                p = preds[0]
+                desc = p.get("description") or q_clean
+                parts = [x.strip() for x in desc.split(",")]
+                main_name = p.get("structured_formatting", {}).get("main_text") or parts[0]
+                city_part = parts[-2] if len(parts) >= 2 else q_clean
+                if "/" in city_part:
+                    ilce, sehir = [s.strip() for s in city_part.split("/", 1)]
+                else:
+                    ilce, sehir = city_part, city_part
+                res = {
+                    "name": main_name,
+                    "place_id": p.get("place_id") or "",
+                    "ilce": ilce,
+                    "sehir": sehir,
+                }
+                if res["place_id"]:
+                    cls._TYPEAHEAD_CACHE[q_clean] = res
+                    return res
+        except Exception:
+            pass
+        return None
 
     @classmethod
     def _fetch_live_biletcom_transfer_prices(cls) -> Dict[str, Optional[float]]:
@@ -271,6 +435,8 @@ class TransferService:
             iata = "GZT"
         elif "edremit" in low_input or "ayvalık" in low_input or "akçay" in low_input or "edo" in low_input:
             iata = "EDO"
+        elif "kars" in low_input or "ksy" in low_input or "sarıkamış" in low_input:
+            iata = "KSY"
         else:
             city_obj = find_city(clean_input)
             if city_obj and city_obj.get("iata"):
@@ -288,13 +454,13 @@ class TransferService:
         passengers: int = 1,
     ) -> Dict[str, Any]:
         """
-        Varış şehri veya havalimanı için Bilet.com Transfer, Welcome Pickups ve resmi HAVAİST/HAVAŞ/MUTTAŞ
-        sağlayıcılarına asla ana ekrana düşmeyen doğrulanmış derin linkler ve canlı taban fiyatlar üretir.
+        Varış şehri veya havalimanı için Bilet.com Transfer (/transfer/ara?... doğrudan araç ve fiyat listesi),
+        Welcome Pickups ve resmi HAVAİST/HAVAŞ/MUTTAŞ sağlayıcılarına asla boş forma düşmeyen derin linkler üretir.
         """
+        from datetime import datetime, timedelta
         iata, city_name = cls._resolve_airport_from_text(dest_city_or_code)
         if pickup_location:
             p_iata, p_city = cls._resolve_airport_from_text(pickup_location)
-            # Eğer kalkış noktasında açıkça havalimanı kodu varsa (örn: SAW, IST, AYT) veya dest'te havalimanı bulunamadıysa
             if p_iata and (not iata or "(" in pickup_location or "havaliman" in pickup_location.lower()):
                 iata, city_name = p_iata, p_city
 
@@ -303,18 +469,73 @@ class TransferService:
             "bilet_slug": "istanbul-havalimani",
             "welcome_slug": "istanbul",
             "city": city_name,
+            "alis": "İstanbul Havalimanı",
+            "alis_id": "ChIJqZW8Cvb_n0ARBuUkyCzgDDg",
+            "alis_ilce": "Arnavutköy",
+            "alis_sehir": "İstanbul",
+            "birakis": "Taksim Meydanı",
+            "birakis_id": "ChIJY71WBmW3yhQRw7YgjLJYoIw",
+            "birakis_ilce": "Beyoğlu",
+            "birakis_sehir": "İstanbul",
             "havas": "HAVAŞ & Resmi Havalimanı Otobüsleri",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
             "shuttle_routes": f"{city_name} Havalimanı ➔ Şehir Merkezi & Otogar",
             "rail_info": "🚌 Uçuş İniş Saatlerine Entegre Havalimanı Servisleri",
         })
 
-        # 1. Bilet.com Transfer Doğrudan Havalimanı Sayfası (HTTP 200 - Ana sayfaya düşmez)
+        # Tarih formatını DD.MM.YYYY olarak hazırla (Bilet.com /transfer/ara zorunluluğu)
+        try:
+            dt_obj = datetime.strptime(str(travel_date).strip(), "%Y-%m-%d")
+            if dt_obj.date() < datetime.now().date():
+                dt_obj = datetime.now() + timedelta(days=7)
+        except Exception:
+            dt_obj = datetime.now() + timedelta(days=7)
+        bilet_date_str = dt_obj.strftime("%d.%m.%Y")
+
+        alis_name = target_info.get("alis", "İstanbul Havalimanı")
+        alis_id = target_info.get("alis_id", "ChIJqZW8Cvb_n0ARBuUkyCzgDDg")
+        alis_ilce = target_info.get("alis_ilce", "Arnavutköy")
+        alis_sehir = target_info.get("alis_sehir", "İstanbul")
+
+        birakis_name = target_info.get("birakis", "Taksim Meydanı")
+        birakis_id = target_info.get("birakis_id", "ChIJY71WBmW3yhQRw7YgjLJYoIw")
+        birakis_ilce = target_info.get("birakis_ilce", "Beyoğlu")
+        birakis_sehir = target_info.get("birakis_sehir", "İstanbul")
+
+        # Eğer hedef havalimanı haritamızda yoksa dinamik Bilet.com typeahead ile gerçek Place ID çöz
+        if iata not in cls.AIRPORT_TRANSFER_TARGETS and city_name:
+            dyn_pick = cls._resolve_bilet_typeahead(f"{city_name} Havalimanı")
+            dyn_drop = cls._resolve_bilet_typeahead(f"{city_name} Merkez")
+            if dyn_pick and dyn_drop:
+                alis_name = dyn_pick["name"]
+                alis_id = dyn_pick["place_id"]
+                alis_ilce = dyn_pick["ilce"]
+                alis_sehir = dyn_pick["sehir"]
+                birakis_name = dyn_drop["name"]
+                birakis_id = dyn_drop["place_id"]
+                birakis_ilce = dyn_drop["ilce"]
+                birakis_sehir = dyn_drop["sehir"]
+
+        # 1. Bilet.com Transfer Seviye-3 Doğrudan Araç ve Fiyat Listesi (/transfer/ara?...)
         from app.services.revenue_service import RevenueService
-        bilet_slug = target_info.get("bilet_slug", "istanbul-havalimani")
+        ara_params = urllib.parse.urlencode({
+            "alis": alis_name,
+            "alis_id": alis_id,
+            "alis_havalimani_id": "true",
+            "alis_ilce": alis_ilce,
+            "alis_sehir": alis_sehir,
+            "birakis": birakis_name,
+            "birakis_id": birakis_id,
+            "birakis_havalimani_id": "false",
+            "birakis_ilce": birakis_ilce,
+            "birakis_sehir": birakis_sehir,
+            "alisTarihi": bilet_date_str,
+            "alisSaati": "10:00",
+            "yetiskin": str(max(1, int(passengers or 1))),
+        })
         biletcom_transfer_url = RevenueService.enrich_deep_link(
             "biletcom",
-            f"https://www.bilet.com/transfer/{bilet_slug}",
+            f"https://www.bilet.com/transfer/ara?{ara_params}",
             "airport_transfer",
         )
 

@@ -98,8 +98,8 @@ class CarRentalService:
         "DLM": {
             "city_slug": "mugla",
             "y360_path": "turkiye/mugla/dalaman-havalimani",
-            "y360_pid": "",
-            "y360_pp": "",
+            "y360_pid": "ChIJb0WDj11xwBQR2uT6br5G8so",
+            "y360_pp": "36.7113798,28.78728",
             "enuygun_slug": "havalimani/mugla-dalaman-havalimani",
             "obilet_path": "mugla/dalaman-havalimani",
             "garenta_path": "mugla",
@@ -108,28 +108,48 @@ class CarRentalService:
         "TZX": {
             "city_slug": "trabzon",
             "y360_path": "turkiye/trabzon/trabzon-havalimani",
-            "y360_pid": "",
-            "y360_pp": "",
+            "y360_pid": "ChIJ-wgbJ507ZEAROb7a7vWS8n0",
+            "y360_pp": "40.9950872,39.7800025",
             "enuygun_slug": "havalimani/trabzon-havalimani",
             "obilet_path": "trabzon/trabzon-havalimani",
             "garenta_path": "trabzon",
             "label": "Trabzon Havalimanı (TZX)",
         },
+        "RZV": {
+            "city_slug": "rize",
+            "y360_path": "turkiye/rize/rize-artvin-havalimani",
+            "y360_pid": "ChIJLxyl8HAZZkARoE48LOXMvQM",
+            "y360_pp": "41.1744776,40.8450979",
+            "enuygun_slug": "havalimani/rize-artvin-havalimani",
+            "obilet_path": "rize",
+            "garenta_path": "rize",
+            "label": "Rize-Artvin Havalimanı (RZV)",
+        },
         "COV": {
             "city_slug": "adana",
             "y360_path": "turkiye/adana",
-            "y360_pid": "",
-            "y360_pp": "",
+            "y360_pid": "ChIJg21zJkCPKBURF3JZ9qjdVP4",
+            "y360_pp": "37.0004,35.315",
             "enuygun_slug": "havalimani/adana-havalimani",
             "obilet_path": "adana/cukurova-havalimani",
             "garenta_path": "adana",
             "label": "Çukurova Uluslararası Havalimanı (COV)",
         },
+        "ADA": {
+            "city_slug": "adana",
+            "y360_path": "turkiye/adana",
+            "y360_pid": "ChIJg21zJkCPKBURF3JZ9qjdVP4",
+            "y360_pp": "37.0004,35.315",
+            "enuygun_slug": "havalimani/adana-havalimani",
+            "obilet_path": "adana/cukurova-havalimani",
+            "garenta_path": "adana",
+            "label": "Adana / Çukurova Havalimanı (COV)",
+        },
         "GZT": {
             "city_slug": "gaziantep",
             "y360_path": "turkiye/gaziantep/gaziantep-havalimani",
-            "y360_pid": "",
-            "y360_pp": "",
+            "y360_pid": "ChIJw6b9OTLdMRURgP6Ulla1wlA",
+            "y360_pp": "36.9435888,37.4763761",
             "enuygun_slug": "havalimani/gaziantep-havalimani",
             "obilet_path": "gaziantep/oguzeli-havalimani",
             "garenta_path": "gaziantep/gaziantep-havalimani",
@@ -138,18 +158,78 @@ class CarRentalService:
         "ASR": {
             "city_slug": "kayseri",
             "y360_path": "turkiye/kayseri/erkilet-havalimani",
-            "y360_pid": "",
-            "y360_pp": "",
+            "y360_pid": "ChIJZ9VIum14KhUR6SjJyMp2QcI",
+            "y360_pp": "38.7719688,34.5245521",
             "enuygun_slug": "havalimani/kayseri-erkilet-havalimani",
             "obilet_path": "kayseri",
             "garenta_path": "kayseri",
             "label": "Kayseri Erkilet Havalimanı (ASR)",
         },
+        "NAV": {
+            "city_slug": "nevsehir",
+            "y360_path": "turkiye/nevsehir/kapadokya-havalimani",
+            "y360_pid": "ChIJZ9VIum14KhUR6SjJyMp2QcI",
+            "y360_pp": "38.7719688,34.5245521",
+            "enuygun_slug": "havalimani/nevsehir-kapadokya-havalimani",
+            "obilet_path": "nevsehir",
+            "garenta_path": "nevsehir",
+            "label": "Nevşehir Kapadokya Havalimanı (NAV)",
+        },
+        "KSY": {
+            "city_slug": "kars",
+            "y360_path": "turkiye/kars/harakani-havalimani",
+            "y360_pid": "ChIJQVQXpYuIaUAR5mVYvpmrVnc",
+            "y360_pp": "40.5660549,43.1104947",
+            "enuygun_slug": "havalimani/kars-harakani-havalimani",
+            "obilet_path": "kars",
+            "garenta_path": "kars",
+            "label": "Kars Harakani Havalimanı (KSY)",
+        },
+        "ERZ": {
+            "city_slug": "erzurum",
+            "y360_path": "turkiye/erzurum/erzurum-havalimani",
+            "y360_pid": "ChIJ250HDxhYbkARxsX8FLma4tk",
+            "y360_pp": "39.9614729,41.1792577",
+            "enuygun_slug": "havalimani/erzurum-havalimani",
+            "obilet_path": "erzurum",
+            "garenta_path": "erzurum",
+            "label": "Erzurum Havalimanı (ERZ)",
+        },
+        "VAN": {
+            "city_slug": "van",
+            "y360_path": "turkiye/van/ferit-melen-havalimani",
+            "y360_pid": "ChIJlyCSUTV3EkARqgXDsZtp7tE",
+            "y360_pp": "38.468872,43.3375796",
+            "enuygun_slug": "havalimani/van-ferit-melen-havalimani",
+            "obilet_path": "van",
+            "garenta_path": "van",
+            "label": "Van Ferit Melen Havalimanı (VAN)",
+        },
+        "DIY": {
+            "city_slug": "diyarbakir",
+            "y360_path": "turkiye/diyarbakir/diyarbakir-havalimani",
+            "y360_pid": "ChIJlxxcC-IhdUARgPQTlDRY5Xk",
+            "y360_pp": "37.8939,40.201",
+            "enuygun_slug": "havalimani/diyarbakir-havalimani",
+            "obilet_path": "diyarbakir",
+            "garenta_path": "diyarbakir",
+            "label": "Diyarbakır Havalimanı (DIY)",
+        },
+        "SZF": {
+            "city_slug": "samsun",
+            "y360_path": "turkiye/samsun/carsamba-havalimani",
+            "y360_pid": "ChIJvavQAmgLiEAReCwMRRr2reA",
+            "y360_pp": "41.2576087,36.5552426",
+            "enuygun_slug": "havalimani/samsun-carsamba-havalimani",
+            "obilet_path": "samsun",
+            "garenta_path": "samsun",
+            "label": "Samsun Çarşamba Havalimanı (SZF)",
+        },
         "EDO": {
             "city_slug": "balikesir",
             "y360_path": "turkiye/balikesir/koca-seyit-havalimani",
-            "y360_pid": "",
-            "y360_pp": "",
+            "y360_pid": "ChIJiRhp2aC3sBQRqaZCSaIQ_Vs",
+            "y360_pp": "39.5508806,27.0101524",
             "enuygun_slug": "havalimani/balikesir-koca-seyit-havalimani",
             "obilet_path": "balikesir",
             "garenta_path": "balikesir",
@@ -300,8 +380,8 @@ class CarRentalService:
                     continue
 
                 if not result["y360_pid"]:
-                    pid_m = re.search(r"pid=([^&]+)", href)
-                    pp_m = re.search(r"p_p=([^&]+)", href)
+                    pid_m = re.search(r"pid=([^&\\]+)", href)
+                    pp_m = re.search(r"p_p=([^&\\]+)", href)
                     if pid_m and pp_m:
                         result["y360_pid"] = pid_m.group(1)
                         result["y360_pp"] = pp_m.group(1)
@@ -414,18 +494,44 @@ class CarRentalService:
 
         tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
 
-        # 1. Yolcu360: Eğer Google Place ID (pid + p_p) mevcutsa doğrudan tarihli & en ucuz sıralı /arac-kiralama/search ekranına iner!
-        if pid and pp:
-            yolcu360_base = (
-                f"https://yolcu360.com/arac-kiralama/search"
-                f"?p_d={pickup_date}&d_d={dropoff_date}&p_t=10:00&d_t=10:00"
-                f"&a=30-65&sb=lowest_price_first&p_p={pp}&pid={pid}"
-            )
-        else:
-            yolcu360_base = f"https://yolcu360.com/arac-kiralama/{meta['y360_path']}"
+        # 1. Yolcu360: Doğrudan tarihli & en ucuz sıralı /arac-kiralama/search ekranına iner!
+        clean_pid = (pid or "ChIJqZW8Cvb_n0ARBuUkyCzgDDg").split("\\")[0]
+        clean_pp = (pp or "41.259656501755316,28.74417437428462").split("\\")[0]
+        yolcu360_base = (
+            f"https://yolcu360.com/arac-kiralama/search"
+            f"?p_d={pickup_date}&d_d={dropoff_date}&p_t=10:00&d_t=10:00"
+            f"&a=30-65&sb=lowest_price_first&p_p={clean_pp}&pid={clean_pid}"
+        )
 
-        # 2. Enuygun Araç: Doğrudan havalimanı/şehir araç kiralama sayfası (HTTP 200)
-        enuygun_car_url = f"https://www.enuygun.com/arac-kiralama/{meta['enuygun_slug']}/"
+        # 2. Enuygun Araç: Doğrudan tarihli & lokasyonlu arama sonuç ekranı (HTTP 200)
+        enuygun_loc = str(meta.get("enuygun_slug") or city_slug).split("/")[-1]
+        enuygun_car_url = (
+            f"https://www.enuygun.com/arac-kiralama/arama/?"
+            f"pickUpDate={pickup_date}&pickUpTime=10%3A00&dropOffDate={dropoff_date}&dropOffTime=10%3A00"
+            f"&pickUpLocation={enuygun_loc}&dropOffLocation={enuygun_loc}"
+            f"&driverAge=30&currency=TRY&residenceCountry=tr"
+        )
+
+        # 2b. Bilet.com Araç: Doğrudan tarihli (DD.MM.YYYY) & Place ID'li canlı araç kiralama listesi
+        try:
+            p_dt = datetime.strptime(pickup_date, "%Y-%m-%d").strftime("%d.%m.%Y")
+            d_dt = datetime.strptime(dropoff_date, "%Y-%m-%d").strftime("%d.%m.%Y")
+        except Exception:
+            p_dt, d_dt = pickup_date, dropoff_date
+        loc_display = meta.get("label") or f"{location_name} Havalimanı"
+        bilet_car_params = urllib.parse.urlencode({
+            "alis": clean_pid,
+            "alis_name": loc_display,
+            "birakis": clean_pid,
+            "birakis_name": loc_display,
+            "alisTarihi": p_dt,
+            "birakisTarihi": d_dt,
+            "alisSaati": "10:00",
+            "birakisSaati": "10:00",
+            "soforYasi": "30",
+            "soforUyruk": "TR",
+        })
+        bilet_car_url = f"https://www.bilet.com/arac-kiralama/ara?{bilet_car_params}"
 
         # 3. Obilet Araç: Doğrudan havalimanı/şehir araç kiralama ekranı (/arac-kiralama/{sehir}/{havalimani})
         obilet_car_url = f"https://www.obilet.com/arac-kiralama/{meta['obilet_path']}"
@@ -455,6 +561,7 @@ class CarRentalService:
             "yolcu360_suv": RevenueService.enrich_deep_link("yolcu360", y360_suv, "car_rental"),
             "yolcu360_luxury": RevenueService.enrich_deep_link("yolcu360", y360_lux, "car_rental"),
             "enuygun": RevenueService.enrich_deep_link("enuygun", enuygun_car_url, "car_rental"),
+            "biletcom": RevenueService.enrich_deep_link("biletcom", bilet_car_url, "car_rental"),
             "obilet": RevenueService.enrich_deep_link("obilet", obilet_car_url, "car_rental"),
             "rentalcars": RevenueService.enrich_deep_link("rentalcars", rentalcars_url, "car_rental"),
             "garenta": RevenueService.enrich_deep_link("garenta", garenta_url, "car_rental"),
@@ -508,6 +615,16 @@ class CarRentalService:
                 "commission_rank": 95,
                 "badge": "Anlık Karşılaştırma" if en_daily else "Canlı Filo Sorgula",
                 "btn_class": "bg-sky-600 hover:bg-sky-700 text-white",
+            },
+            {
+                "id": "biletcom",
+                "name": "Bilet.com Araç",
+                "url": links.get("biletcom") or links["yolcu360"],
+                "daily_price": None,
+                "total_price": None,
+                "commission_rank": 92,
+                "badge": "Doğrudan Araç Listesi",
+                "btn_class": "bg-teal-600 hover:bg-teal-700 text-white",
             },
             {
                 "id": "obilet",

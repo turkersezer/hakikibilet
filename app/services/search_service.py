@@ -2092,13 +2092,26 @@ class SearchService:
         except Exception:
             cout_str = departure_date
 
-        booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
-        hotel_deep_link = (
-            f"https://www.booking.com/searchresults.html?"
-            f"ss={urllib.parse.quote(dest_clean)}"
-            f"&checkin={departure_date}&checkout={cout_str}"
-            f"&group_adults={max(1, passengers)}&no_rooms=1&aid={booking_aid}"
-        )
+        from app.cities import find_city
+        dest_loc = find_city(dest_clean)
+        is_intl_dest = bool(dest_loc and dest_loc.get("is_international", False))
+        if is_intl_dest:
+            booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+            hotel_deep_link = (
+                f"https://www.booking.com/searchresults.html?"
+                f"ss={urllib.parse.quote(dest_clean)}"
+                f"&checkin={departure_date}&checkout={cout_str}"
+                f"&group_adults={max(1, passengers)}&no_rooms=1&aid={booking_aid}"
+            )
+        else:
+            hotel_deep_link = HotelService.resolve_trip_hotel_url(
+                city_clean=dest_clean,
+                city_slug=dest_lower.replace("ı", "i").replace("ş", "s").replace("ç", "c").replace("ö", "o").replace("ü", "u").replace("ğ", "g"),
+                cin=departure_date,
+                cout=cout_str,
+                guests=max(1, passengers),
+                is_international=False,
+            )
 
         # Akıllı Transfer Linki (Bilet.com Transfer & Resmi Shuttle)
         from app.services.transfer_service import TransferService
