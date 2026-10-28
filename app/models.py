@@ -10,7 +10,7 @@ class SearchRequest(BaseModel):
     return_date: Optional[str] = None
     trip_type: str = "one_way"  # 'one_way' or 'round_trip'
     passengers: int = 1
-    adults: Optional[int] = 1
+    adults: Optional[int] = None
     children: Optional[int] = 0
     infants: Optional[int] = 0
     transport_type: str = "all"  # 'flight', 'train', 'bus', 'car', 'all'

@@ -5601,6 +5601,7 @@ async function executeHotelSearch(e) {
             departure_date: cin,
             return_date: cout,
             passengers: parseInt(guests) || 2,
+            adults: parseInt(guests) || 2,
             transport_type: "all", // Tüm ulaşım modlarını (uçak, tren, otobüs, feribot) aynı anda sorgula
             trip_type: "round_trip",
             include_hotel: true,
