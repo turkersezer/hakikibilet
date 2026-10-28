@@ -5632,6 +5632,7 @@ async function executeHotelSearch(e) {
 
 // OTEL ARAMA SONUÇLARI: MULTI-MODAL ULAŞIM BANDI + KOMBİNE SEPET + CANLI OTELLER
 function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
+    if (!window.lastHotelSearchArgs || window.lastHotelSearchArgs.city !== city) { window.currentHotelSortTab = 'fp_best'; window.currentHotelConceptFilter = 'all'; }
     window.lastHotelSearchArgs = { hotelInfo, city, cin, cout, guests, data };
     const isEn = (window.currentAppLang === 'en');
     const resultsArea = document.getElementById("hotelResultsArea");
@@ -5852,332 +5853,595 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
 
         <!-- 🎒 KOMBİNE SEYAHAT SEPETİ (Ulaşım + Otel) -->
         ${(bestTransport && topHotel) ? `
-        <div class="mb-8 bg-gradient-to-b from-white to-amber-50/20 border-2 border-amber-300/80 rounded-3xl p-6 shadow-lg relative overflow-hidden">
-            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 pb-5 border-b border-amber-100">
+        <div class="mb-6 bg-gradient-to-b from-white to-amber-50/25 border-2 border-amber-300/80 rounded-3xl p-5 sm:p-6 shadow-md relative overflow-hidden">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-4 border-b border-amber-100">
                 <div>
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-xs">
-                            🎒 Akıllı Kombine Paket
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-2xs">
+                            🎒 ${isEn ? 'Smart Combined Bundle' : 'Akıllı Kombine Paket'}
                         </span>
-                        <span class="text-xs text-slate-500 font-bold">${safeCity} Seyahati (${hotelInfo.nights || 2} Gece • ${escapeHtml(guests)} Kişi)</span>
+                        <span class="text-xs text-slate-500 font-bold">${safeCity} (${hotelInfo.nights || 2} ${isEn ? 'Nights' : 'Gece'} • ${escapeHtml(guests)} ${isEn ? 'Guests' : 'Kişi'})</span>
                     </div>
-                    <h3 class="text-xl font-black text-slate-900 leading-snug">Ulaşım + Otel Birlikte Planlayın</h3>
-                    <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-700 mt-2 font-medium">
-                        <span class="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <h3 class="text-lg sm:text-xl font-black text-slate-900 leading-snug">${isEn ? 'Transport + Top Value Hotel Bundle' : 'Ulaşım + F/P Şampiyonu Otel Birlikte'}</h3>
+                    <div class="flex flex-wrap items-center gap-2 text-xs text-slate-700 mt-2 font-medium">
+                        <span class="inline-flex items-center gap-1.5 bg-white px-3 py-1 rounded-xl border border-slate-200 shadow-2xs">
                             ${bestTransport.transport_type === 'flight' ? '✈️' : (bestTransport.transport_type === 'train' ? '🚆' : (bestTransport.transport_type === 'bus' ? '🚌' : '⛴️'))} 
-                            <strong>Ulaşım:</strong> ${bestTransport.carrier} (${bestTransport.price ? bestTransport.price + ' ₺' : 'Canlı Fiyat'})
+                            <strong>${isEn ? 'Transit:' : 'Ulaşım:'}</strong> ${escapeHtml(bestTransport.carrier)} (${bestTransport.price ? Number(bestTransport.price).toLocaleString('tr-TR') + ' ₺' : (isEn ? 'Live' : 'Canlı')})
                         </span>
                         <span class="text-slate-400 font-bold">+</span>
-                        <span class="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
-                            🏨 <strong>Otel:</strong> ${topHotel.name} (${topHotel.total_price_formatted || (hotelTotal.toLocaleString('tr-TR') + ' ₺')})
+                        <span class="inline-flex items-center gap-1.5 bg-white px-3 py-1 rounded-xl border border-emerald-200 shadow-2xs">
+                            🏨 <strong>${isEn ? 'Hotel:' : 'Otel:'}</strong> ${escapeHtml(topHotel.name)} (${topHotel.total_price_formatted || (hotelTotal.toLocaleString('tr-TR') + ' ₺')})
                         </span>
                     </div>
                 </div>
 
-                <div class="text-left lg:text-right">
-                    <div class="text-[10.5px] font-black uppercase tracking-wider text-slate-400">Tahmini Toplam Paket Tutarı</div>
-                    <div class="text-2xl sm:text-3xl font-black text-[#0F172A]">${combinedTotal ? combinedTotal.toLocaleString('tr-TR') + ' ₺' : 'Canlı Fiyat'}</div>
-                    <div class="text-[10px] text-emerald-600 font-bold mt-0.5 flex items-center lg:justify-end gap-1">
-                        <i class="fa-solid fa-shield-check"></i>
-                        <span>Sıfır Komisyon • Doğrudan Resmi Biletleme</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-                <div class="p-4 sm:p-5 rounded-2xl bg-white border border-amber-200 shadow-xs flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="font-black text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
-                                ⚡ 1. Seçenek: 2 Tıkla Doğrudan Al
-                            </span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-200">En Ekonomik • Sıfır Komisyon</span>
+                <div class="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between w-full lg:w-auto gap-3">
+                    <div class="text-left lg:text-right">
+                        <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">${isEn ? 'Estimated Total Bundle' : 'Tahmini Toplam Paket Tutarı'}</div>
+                        <div class="text-2xl sm:text-3xl font-black text-[#0F172A]">${combinedTotal ? combinedTotal.toLocaleString('tr-TR') + ' ₺' : (isEn ? 'Live Rate' : 'Canlı Fiyat')}</div>
+                        <div class="text-[10px] text-emerald-700 font-bold mt-0.5 flex items-center lg:justify-end gap-1">
+                            <i class="fa-solid fa-shield-check"></i>
+                            <span>${isEn ? 'Zero Markup • Direct Official Links' : 'Sıfır Komisyon • Doğrudan Otel & Taşıyıcı Sayfası'}</span>
                         </div>
-                        <p class="text-[11px] text-slate-600 leading-relaxed font-normal">
-                            Ulaşımı doğrudan resmi taşıyıcıdan (${bestTransport.price ? bestTransport.price + ' ₺' : 'resmi ekran'}), oteli ${hotelInfo.is_international ? "Booking.com'dan" : "Trip.com / Enuygun'dan"} en dip fiyattan aracı komisyonu olmadan alın.
-                        </p>
                     </div>
-                    <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
-                        <a href="${bestTransport.direct_link || '#'}" target="_blank" rel="noopener noreferrer" class="w-1/2 py-2.5 px-3 text-center bg-slate-900 hover:bg-black text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                            <span>${bestTransport.transport_type === 'flight' ? '✈️ Ulaşımı Al' : (bestTransport.transport_type === 'train' ? '🚆 Treni Al' : (bestTransport.transport_type === 'bus' ? '🚌 Otobüsü Al' : '⛴️ Feribotu Al'))}</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <a href="${bestTransport.direct_link || '#'}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-slate-900 hover:bg-black text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                            <span>${bestTransport.transport_type === 'flight' ? (isEn ? '✈️ Book Transit ↗' : '✈️ Ulaşımı Al ↗') : (isEn ? '🚆 Book Transit ↗' : '🚌 Ulaşımı Al ↗')}</span>
                         </a>
-                        <a href="${topHotel ? (topHotel.booking_url || topHotel.direct_url) : (hotelInfo.primary_city_url || bookingCityLink)}" target="_blank" rel="noopener noreferrer" class="w-1/2 py-2.5 px-3 text-center bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                            <span>🏨 Odayı Al</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                        <a href="${topHotel.url || topHotel.direct_url || tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                            <span>🏨 ${isEn ? 'Open Hotel Page ↗' : 'Otelin Sayfasına Git ↗'}</span>
                         </a>
-                    </div>
-                </div>
-
-                <div class="p-4 sm:p-5 rounded-2xl bg-white border border-blue-200 shadow-xs flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="font-black text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
-                                🏨 2. Seçenek: Tüm Otelleri Karşılaştır
-                            </span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-900 border border-blue-200">Canlı Otel Arama</span>
-                        </div>
-                        <p class="text-[11px] text-slate-600 leading-relaxed font-normal">
-                            ${safeCity} genelindeki tüm müsait otel, pansiyon ve butik konaklama seçeneklerini tarihleriniz ve ${escapeHtml(guests)} misafir için önceden doldurulmuş ekranda inceleyin.
-                        </p>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-slate-100">
-                        ${hotelInfo.is_international ? `
-                            <a href="${hotelInfo.booking_url || bookingCityLink}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                                <span>🏨 Tüm ${safeCity} Otellerini Listele (Booking.com)</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                            </a>
-                        ` : `
-                            <a href="${tripHotelUrl || enuygunUrl || bookingCityLink}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                                <span>🏨 Tüm ${safeCity} Otellerini Listele (Trip.com)</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                            </a>
-                        `}
                     </div>
                 </div>
             </div>
         </div>
         ` : ''}
 
-        <!-- Canlı Otel Seçenekleri Başlığı -->
-        <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm mb-6">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 mb-6">
+        <!-- 🏨 FAZ 1: AKILLI KONAKLAMA VİTRİNİ (4 AKILLI SEKME + BAĞLAMSAL KONSEPT HAPLARI + DOĞRUDAN OTEL DETAY KARTLARI) -->
+        <div class="bg-white p-5 sm:p-7 rounded-3xl border border-slate-200 shadow-sm mb-6">
+            <!-- Üst Başlık & Şehir Geneli Resmi Partner Çubuğu -->
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
                 <div>
-                    <div class="flex items-center gap-2 mb-1">
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900">
-                            🏨 ${isEn ? 'Official Partner Comparison Network' : 'Resmi Partner Karşılaştırma Ağı'}
+                            🏆 ${isEn ? 'Hakiki Value Curation & Direct Hotel Links' : 'Hakiki F/P Kürasyonu & Doğrudan Otel Sayfası'}
                         </span>
-                        <span class="text-xs text-slate-400 font-bold">${isEn ? 'Zero Markup & Direct Partner Rates' : 'Sıfır Komisyon & Aracısız Fiyatlar'}</span>
+                        <span class="text-xs text-slate-400 font-bold" id="hotelActiveCountBadge">(${liveHotels.length} ${isEn ? 'verified stays' : 'doğrulanmış tesis'})</span>
                     </div>
                     <h3 class="font-black text-xl text-slate-900">${escapeHtml(hotelInfo.destination)} ${isEn ? 'Hotels & Accommodation Options' : 'Otel & Konaklama Seçenekleri'}</h3>
-                    <div class="text-xs text-slate-500 mt-1 font-medium">${cin} — ${cout} (${hotelInfo.nights} ${isEn ? 'Nights' : 'Gece'}) • ${guests} ${isEn ? 'Guests • Live Comparison Network' : 'Misafir • Canlı Karşılaştırma Ağı'}</div>
+                    <div class="text-xs text-slate-500 mt-0.5 font-medium">${cin} — ${cout} (${hotelInfo.nights} ${isEn ? 'Nights' : 'Gece'}) • ${guests} ${isEn ? 'Guests • Pre-filled Direct Room Links' : 'Misafir • Tarih ve Kişi Sayısı Dolu Doğrudan Otel Sayfaları'}</div>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <a href="${tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        ${getBrandLogoHtml('Trip.com', '🏨', 'w-4 h-4')}
-                        <span>${isEn ? 'Trip.com Hotels ↗' : 'Trip.com Otelleri ↗'}</span>
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <a href="${tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                        ${getBrandLogoHtml('Trip.com', '🏨', 'w-3.5 h-3.5')}
+                        <span>${isEn ? 'All on Trip.com ↗' : 'Trip.com Tüm Liste ↗'}</span>
                     </a>
                     ${bookingUrl ? `
-                    <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        ${getBrandLogoHtml('Booking.com', '🏨', 'w-4 h-4')}
+                    <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-[#003580] hover:bg-[#00224f] text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                        ${getBrandLogoHtml('Booking.com', '🏨', 'w-3.5 h-3.5')}
                         <span>Booking.com ↗</span>
                     </a>
                     ` : ''}
                     ${enuygunUrl ? `
-                    <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        ${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}
-                        <span>${isEn ? 'Enuygun Hotels ↗' : 'Enuygun Otel ↗'}</span>
+                    <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                        ${getBrandLogoHtml('Enuygun', '💚', 'w-3.5 h-3.5')}
+                        <span>${isEn ? 'Enuygun Hotels ↗' : 'Enuygun Tüm Liste ↗'}</span>
                     </a>
                     ` : ''}
                     ${obiletHotelUrl ? `
-                    <a href="${obiletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        ${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}
-                        <span>${isEn ? 'Obilet Hotels ↗' : 'Obilet Otel ↗'}</span>
-                    </a>
-                    ` : ''}
-                    ${biletHotelUrl ? `
-                    <a href="${biletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        ${getBrandLogoHtml('Bilet.com', '🏨', 'w-4 h-4')}
-                        <span>${isEn ? 'Bilet.com Hotels ↗' : 'Bilet.com Otel ↗'}</span>
+                    <a href="${obiletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                        ${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}
+                        <span>Obilet Otel ↗</span>
                     </a>
                     ` : ''}
                     ${etsturUrl ? `
-                    <a href="${etsturUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-sky-700 hover:bg-sky-800 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-umbrella-beach"></i>
+                    <a href="${etsturUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-sky-700 hover:bg-sky-800 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-umbrella-beach text-[10px]"></i>
                         <span>Etstur ↗</span>
                     </a>
                     ` : ''}
+                    ${biletHotelUrl ? `
+                    <a href="${biletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                        ${getBrandLogoHtml('Bilet.com', '🏨', 'w-3.5 h-3.5')}
+                        <span>Bilet.com ↗</span>
+                    </a>
+                    ` : ''}
                     ${agodaUrl ? `
-                    <a href="${agodaUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-suitcase"></i>
+                    <a href="${agodaUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-suitcase text-[10px]"></i>
                         <span>Agoda ↗</span>
                     </a>
                     ` : ''}
                 </div>
             </div>
 
-            <!-- Canlı Otel Kartları Grid -->
-            ${liveHotels.length > 0 ? `
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    ${liveHotels.map(h => `
-                        <div class="border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 bg-white flex flex-col justify-between group">
-                            <div>
-                                <div class="relative overflow-hidden h-44">
-                                    <img src="${h.photo_url || h.photo || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80'}" alt="${h.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                    ${h.review_score ? `
-                                        <span class="absolute top-3 right-3 px-2.5 py-1 bg-blue-600/90 text-white font-black text-xs rounded-lg shadow-md backdrop-blur-xs">
-                                            ⭐ ${h.review_score} ${h.score_word ? '• ' + h.score_word : ''}
-                                        </span>
-                                    ` : ''}
-                                    <span class="absolute bottom-3 left-3 px-2.5 py-1 bg-slate-900/80 text-white font-bold text-[10px] rounded-lg shadow-sm backdrop-blur-xs">
-                                        ${h.provider || (hotelInfo.is_international ? 'Booking.com' : 'Trip.com')}
-                                    </span>
-                                </div>
-                                <div class="p-5">
-                                    <h4 class="font-black text-base text-slate-900 group-hover:text-[#0284C7] transition-colors leading-snug line-clamp-2">${h.name}</h4>
-                                    <div class="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-location-dot text-slate-400"></i>
-                                        <span class="line-clamp-1">${h.address || h.city || city}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                                <div>
-                                    <div class="text-[10px] text-slate-400 font-black uppercase">${isEn ? 'Nightly Rate' : 'Gecelik Fiyat'}</div>
-                                    <div class="font-black text-lg text-[#0F172A]">${h.price_formatted || (h.price ? `${h.price} ₺` : (isEn ? 'Live Rate' : 'Canlı Fiyat'))}</div>
-                                    ${h.total_price_formatted ? `
-                                        <div class="text-[10px] text-slate-500 font-medium">${hotelInfo.nights} ${isEn ? 'Nights' : 'Gece'}: ${h.total_price_formatted}</div>
-                                    ` : ''}
-                                </div>
-                                <div class="flex items-center gap-1.5">
-                                    ${h.trip_url ? `
-                                        <a href="${h.trip_url}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-xs transition flex items-center gap-1">
-                                            <span>Trip.com ↗</span>
-                                        </a>
-                                    ` : ''}
-                                    <a href="${h.booking_url || h.direct_booking_url || h.url || bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 text-xs font-black rounded-xl shadow-xs transition flex items-center gap-1.5">
-                                        <span>${isEn ? 'Select Room' : 'Odayı Seç'}</span>
-                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : `
-                <!-- SIFIR VARSAYIM ÇOKLU ACENTE OTEL VİTRİNİ -->
-                <div class="p-6 sm:p-8 bg-slate-50/80 rounded-3xl border border-slate-200">
-                    <div class="text-center max-w-xl mx-auto mb-6">
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 mb-2">
-                            <i class="fa-solid fa-shield-check text-amber-600"></i>
-                            <span>${isEn ? 'Zero-Assumption Policy: Verified Live Availability' : 'Sıfır Varsayım: Doğrulanmış Canlı Müsaitlik'}</span>
-                        </div>
-                        <h4 class="text-lg font-black text-slate-900">${isEn ? `Compare the Best Rooms in ${safeCity}` : `${safeCity} için En Avantajlı Odaları Karşılaştırın`}</h4>
-                        <p class="text-xs text-slate-500 mt-1">
-                            ${isEn ? `Direct live room search pages across our official partners are pre-filled for ${cin} — ${cout} (${escapeHtml(guests)} guests).` : `${cin} — ${cout} tarihleri ve ${escapeHtml(guests)} misafir için resmi partnerlerimizin doğrudan canlı oda arama sayfaları hazırlandı.`}
-                        </p>
-                    </div>
+            <!-- FAZ 1B: 2 SATIRLI AKILLI SIRALAMA & BAĞLAMSAL YAŞAM TARZI FİLTRE BARI -->
+            <div id="hotelSmartFilterBar" class="mb-5 space-y-2.5 bg-slate-50/90 border border-slate-200/80 rounded-2xl p-3 sm:p-3.5"></div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Partner 1: Trip.com -->
-                        <div class="p-5 rounded-2xl bg-white border-2 border-blue-200 hover:border-blue-600 hover:shadow-md transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-black text-blue-600 uppercase tracking-wide flex items-center gap-1.5">
-                                        ${getBrandLogoHtml('Trip.com', '🏨', 'w-4 h-4')}
-                                        <span>Trip.com Hotels</span>
-                                    </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800">${isEn ? 'Official Partner' : 'Resmi Partner'}</span>
-                                </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'Hotels & Resorts' : 'Otelleri & Tatil Köyleri'}</div>
-                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    ${isEn ? '1.4M+ global properties, verified guest reviews, and free cancellation rates.' : 'Geniş küresel otel ağı, Türkiye içi engelsiz erişim ve ücretsiz iptal seçenekleri.'}
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-slate-100">
-                                <a href="${tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>${isEn ? 'View Live Rates on Trip.com ↗' : "Trip.com'da Fiyatları Gör ↗"}</span>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Partner 2: Yurt Dışında Booking.com / Yurt İçinde Obilet Otel -->
-                        ${bookingUrl ? `
-                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-[#003580] hover:shadow-md transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-black text-[#003580] uppercase tracking-wide flex items-center gap-1.5">
-                                        ${getBrandLogoHtml('Booking.com', '🏨', 'w-4 h-4')}
-                                        <span>Booking.com</span>
-                                    </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${isEn ? 'Global Network' : 'Küresel Ağ'}</span>
-                                </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'Stays & Apartments' : 'Tesisleri & Daireler'}</div>
-                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    ${isEn ? '28M+ worldwide listings, verified traveler scores, and interactive map filters.' : 'Dünya çapında 28 milyon tesis, gerçek gezgin yorumları ve harita filtreleme.'}
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-slate-100">
-                                <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>${isEn ? 'Open Live Rooms on Booking.com ↗' : "Booking.com'da Canlı Odaları Aç ↗"}</span>
-                                </a>
-                            </div>
-                        </div>
-                        ` : `
-                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-rose-500 hover:shadow-md transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-black text-rose-600 uppercase tracking-wide flex items-center gap-1.5">
-                                        ${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}
-                                        <span>Obilet Otel</span>
-                                    </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-800">${isEn ? 'Turkish Partner' : 'Türkiye Resmi Ağı'}</span>
-                                </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'City & Thermal Hotels' : 'Şehir & Butik Otelleri'}</div>
-                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    ${isEn ? 'Direct Turkish hotel inventory with TRY pricing and local support.' : 'Türkiye içi tüm şehir otelleri, yerel tesisler ve engelsiz TL rezervasyon.'}
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-slate-100">
-                                <a href="${obiletHotelUrl || tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>${isEn ? 'Open Live Rooms on Obilet ↗' : "Obilet Otel'de Canlı Odaları Aç ↗"}</span>
-                                </a>
-                            </div>
-                        </div>
-                        `}
-
-                        <!-- Partner 3: Enuygun Otel / Agoda -->
-                        ${enuygunUrl ? `
-                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-black text-emerald-700 uppercase tracking-wide flex items-center gap-1.5">
-                                        ${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}
-                                        <span>Enuygun Otel</span>
-                                    </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800">${isEn ? 'Domestic Metasearch' : 'Yurt İçi Karşılaştırma'}</span>
-                                </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'Boutique & City Hotels' : 'Butik & Şehir Otelleri'}</div>
-                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    ${isEn ? 'Compare local boutique hotels, pensions, and installment options across Turkey.' : 'Türkiye geneli butik oteller, pansiyonlar ve taksit imkanları.'}
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-slate-100">
-                                <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>${isEn ? 'List Rooms on Enuygun ↗' : "Enuygun'da Odaları Listele ↗"}</span>
-                                </a>
-                            </div>
-                        </div>
-                        ` : `
-                        <div class="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-800 hover:shadow-md transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
-                                        🏨 Agoda
-                                    </span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${isEn ? 'Special Deals' : 'Özel Teklifler'}</span>
-                                </div>
-                                <div class="font-bold text-sm text-slate-900">${safeCity} ${isEn ? 'Vacation Homes & Hotels' : 'Tatil Evleri & Oteller'}</div>
-                                <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                    ${isEn ? 'Last-minute room discounts and holiday villas.' : 'Son dakika oda indirimleri ve tatil villaları.'}
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-slate-100">
-                                <a href="${agodaUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 text-center bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>${isEn ? 'Open Rooms on Agoda ↗' : "Agoda'da Odaları Aç ↗"}</span>
-                                </a>
-                            </div>
-                        </div>
-                        `}
-                    </div>
-                </div>
-            `}
+            <!-- FAZ 1A & 1C: CANLI OTEL KARTLARI ALANI -->
+            <div id="hotelLiveCardsContainer"></div>
         </div>
     `;
 
-
     resultsArea.innerHTML = html;
+    if (typeof window.currentHotelSortTab === 'undefined') window.currentHotelSortTab = 'fp_best';
+    if (typeof window.currentHotelConceptFilter === 'undefined') window.currentHotelConceptFilter = 'all';
+    renderFilteredHotelCards();
 }
+
+function setHotelSortTab(sortKey) {
+    window.currentHotelSortTab = (sortKey === 'luxury_resort' ? 'resort_luxury' : sortKey) || 'fp_best';
+    renderFilteredHotelCards();
+}
+window.setHotelSortTab = setHotelSortTab;
+
+function setHotelConceptFilter(conceptKey) {
+    if (window.currentHotelConceptFilter === conceptKey && conceptKey !== 'all') {
+        window.currentHotelConceptFilter = 'all';
+    } else {
+        window.currentHotelConceptFilter = conceptKey || 'all';
+    }
+    renderFilteredHotelCards();
+}
+window.setHotelConceptFilter = setHotelConceptFilter;
+
+function switchHotelCardPhoto(cardDomId, photoUrl, dotIdx) {
+    const imgEl = document.getElementById(`htlImg-${cardDomId}`);
+    if (imgEl && photoUrl) {
+        imgEl.src = photoUrl;
+    }
+    const dotsWrap = document.getElementById(`htlDots-${cardDomId}`);
+    if (dotsWrap) {
+        dotsWrap.querySelectorAll('button').forEach((b, idx) => {
+            b.className = idx === dotIdx
+                ? 'w-4 h-1.5 rounded-full bg-amber-400 transition-all cursor-pointer shadow-xs'
+                : 'w-1.5 h-1.5 rounded-full bg-white/70 hover:bg-white transition-all cursor-pointer';
+        });
+    }
+}
+window.switchHotelCardPhoto = switchHotelCardPhoto;
+
+function renderFilteredHotelCards() {
+    const args = window.lastHotelSearchArgs;
+    if (!args || !args.hotelInfo) return;
+    const { hotelInfo, city, cin, cout, guests } = args;
+    const isEn = (window.currentAppLang === 'en');
+    const isIntl = Boolean(hotelInfo.is_international);
+    const safeCity = escapeHtml(hotelInfo.destination || city);
+    const allHotels = Array.isArray(hotelInfo.live_hotels) ? hotelInfo.live_hotels.slice() : [];
+    const destCtx = hotelInfo.destination_context || {};
+    const activeSort = window.currentHotelSortTab || 'fp_best';
+    const activeConcept = window.currentHotelConceptFilter || 'all';
+    const activeStaySub = window.currentStaySubType || 'hotel';
+
+    const filterBarEl = document.getElementById("hotelSmartFilterBar");
+    const containerEl = document.getElementById("hotelLiveCardsContainer");
+    const countBadgeEl = document.getElementById("hotelActiveCountBadge");
+    if (!containerEl) return;
+
+    // Her konsept etiketinde kaç tesis olduğunu hesapla
+    const countByTag = (tagKey) => allHotels.filter(h => Array.isArray(h.tags) && h.tags.includes(tagKey)).length;
+
+    // 1. Satır: 4 Akıllı Sıralama Sekmesi
+    const sortTabs = [
+        { key: 'fp_best', label: isEn ? '🏆 Hakiki Picks (Best Value)' : '🏆 Hakiki Seçimler (F/P Şampiyonu)' },
+        { key: 'top_rated', label: isEn ? '⭐ Top Rated (8.5+)' : '⭐ Yüksek Puanlılar (8.5+)' },
+        { key: 'resort_luxury', label: isEn ? '👑 4 & 5★ Resort & Comfort' : '👑 4 & 5★ Resort & Konfor' },
+        { key: 'budget_clean', label: isEn ? '🏷️ Budget & Clean' : '🏷️ Bütçe Dostu & Temiz' }
+    ];
+
+    // 2. Satır: Bağlamsal Konsept & Yaşam Tarzı Hapları (Kullanıcıyı boğmayan akıllı dizi)
+    const conceptPills = [
+        { key: 'all', label: isEn ? '✨ All Stays' : '✨ Tümü', count: allHotels.length, always: true },
+        { key: 'all_inclusive', label: isEn ? '🍹 All-Inclusive' : '🍹 Her Şey Dahil', count: countByTag('all_inclusive'), always: true },
+        { key: 'breakfast', label: isEn ? '☕ Breakfast Included' : '☕ Kahvaltı Dahil', count: countByTag('breakfast'), always: true },
+        { key: 'half_board', label: isEn ? '🍽️ Half / Full Board' : '🍽️ Yarım / Tam Pansiyon', count: countByTag('half_board'), always: false },
+        { key: 'free_cancel', label: isEn ? '🛡️ Free Cancellation' : '🛡️ Ücretsiz İptal', count: countByTag('free_cancel'), always: true },
+        { key: 'pet_friendly', label: isEn ? '🐾 Pet-Friendly' : '🐾 Pati Dostu', count: countByTag('pet_friendly'), always: true },
+        { key: 'conservative', label: isEn ? '🕌 Conservative / Alcohol-Free' : '🕌 Muhafazakar / Alkolsüz', count: countByTag('conservative'), always: !isIntl },
+        { key: 'beachfront', label: isEn ? '🏖️ Beachfront & Pool' : '🏖️ Denize Sıfır & Plaj', count: countByTag('beachfront'), always: Boolean(destCtx.is_coastal) },
+        { key: 'family_aqua', label: isEn ? '👨‍👩‍👧‍👦 Family & Kids' : '👨‍👩‍👧‍👦 Aile & Çocuk Dostu', count: countByTag('family_aqua'), always: Boolean(destCtx.is_coastal) },
+        { key: 'ski', label: isEn ? '⛷️ Ski & Winter Hotel' : '⛷️ Kayak & Kış Oteli', count: countByTag('ski'), always: Boolean(destCtx.is_ski) },
+        { key: 'thermal', label: isEn ? '♨️ Thermal & Spa' : '♨️ Termal & Spa', count: countByTag('thermal'), always: Boolean(destCtx.is_thermal) },
+        { key: 'central', label: isEn ? '📍 Near Center' : '📍 Merkeze Yakın', count: countByTag('central'), always: Boolean(destCtx.is_metropolis || isIntl) }
+    ].filter(p => p.always || p.count > 0 || p.key === activeConcept);
+
+    if (filterBarEl) {
+        const stayTypeBanner = activeStaySub !== 'hotel' ? `
+            <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-200/80 text-xs">
+                <span class="font-black text-amber-900 bg-amber-100/90 border border-amber-300 px-2.5 py-1 rounded-lg inline-flex items-center gap-1.5">
+                    ${activeStaySub === 'pension' ? (isEn ? '🌿 Active Mode: Boutique Inns & Stone Mansions' : '🌿 Aktif Mod: Pansiyon, Taş Konak & Butik Oteller') : (isEn ? '🏡 Active Mode: Vacation Homes, Apartments & Villas' : '🏡 Aktif Mod: Kiralık Ev, Apart & Villa Seçenekleri')}
+                </span>
+                <button type="button" onclick="switchStaySubTab('hotel')" class="text-[11px] font-bold text-slate-600 hover:text-slate-900 underline cursor-pointer">
+                    ${isEn ? 'Show All Hotel Types' : 'Tüm Otel Tiplerine Dön'}
+                </button>
+            </div>
+        ` : '';
+
+        filterBarEl.innerHTML = `
+            ${stayTypeBanner}
+            <!-- 1. Satır: 4 Akıllı Sıralama Sekmesi -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[11px] font-black text-slate-500 mr-1 flex items-center gap-1">
+                        <i class="fa-solid fa-sliders text-amber-500"></i> ${isEn ? 'Smart Sort:' : 'Akıllı Sıralama:'}
+                    </span>
+                    ${sortTabs.map(t => `
+                        <button type="button" onclick="setHotelSortTab('${t.key}')"
+                                class="px-3 py-1.5 rounded-xl text-xs transition cursor-pointer ${activeSort === t.key
+                                    ? 'bg-slate-900 text-white font-black shadow-xs'
+                                    : 'bg-white hover:bg-slate-100 text-slate-700 font-bold border border-slate-200/90'}">
+                            ${t.label}
+                        </button>
+                    `).join('')}
+                </div>
+                ${activeConcept !== 'all' ? `
+                    <button type="button" onclick="setHotelConceptFilter('all')" class="text-[11px] font-black text-rose-600 hover:text-rose-800 cursor-pointer flex items-center gap-1">
+                        <i class="fa-solid fa-xmark"></i> ${isEn ? 'Clear Filter' : 'Filtreyi Temizle'}
+                    </button>
+                ` : ''}
+            </div>
+
+            <!-- 2. Satır: Bağlamsal Konsept & Yaşam Tarzı Hapları -->
+            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200/70">
+                <span class="text-[11px] font-black text-slate-500 mr-1 flex items-center gap-1">
+                    <i class="fa-solid fa-filter text-emerald-600"></i> ${isEn ? 'Concept & Lifestyle:' : 'Konsept & Özellik:'}
+                </span>
+                ${conceptPills.map(p => {
+                    const isSel = (activeConcept === p.key);
+                    const countStr = p.count > 0 ? ` <span class="text-[10px] ${isSel ? 'text-amber-300' : 'text-slate-400'}">(${p.count})</span>` : '';
+                    return `
+                        <button type="button" onclick="setHotelConceptFilter('${p.key}')"
+                                class="px-2.5 py-1 rounded-lg text-[11px] transition cursor-pointer inline-flex items-center gap-1 ${isSel
+                                    ? 'bg-emerald-800 text-white font-black shadow-2xs ring-2 ring-emerald-500/40'
+                                    : 'bg-white hover:bg-emerald-50 text-slate-700 font-bold border border-slate-200'}">
+                            <span>${p.label}${countStr}</span>
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    // 3. Filtreleme ve Sıralama Uygulaması
+    let filtered = allHotels.slice();
+
+    // Üst alt sekme (hotel | pension | airbnb) önceliklendirmesi / filtrelemesi
+    let staySubFallbackNotice = '';
+    if (activeStaySub === 'pension') {
+        const pMatches = filtered.filter(h => h.stay_sub_type === 'pension' || (h.stars && h.stars <= 4 && !(h.tags || []).includes('all_inclusive')));
+        if (pMatches.length > 0) {
+            pMatches.sort((a, b) => (a.stay_sub_type === 'pension' ? -1 : 1) - (b.stay_sub_type === 'pension' ? -1 : 1));
+            filtered = pMatches;
+        }
+    } else if (activeStaySub === 'airbnb') {
+        const aMatches = filtered.filter(h => h.stay_sub_type === 'airbnb');
+        if (aMatches.length > 0) {
+            filtered = aMatches;
+        } else {
+            staySubFallbackNotice = isEn
+                ? `Showing top flexible stays in ${safeCity} + direct links to Vacation Rentals & Villas below.`
+                : `${safeCity} için doğrudan Kiralık Ev, Apart & Villa partner ekranları aşağıda hazırlandı.`;
+        }
+    }
+
+    // Konsept / Yaşam Tarzı Hapı Filtresi
+    let zeroExactConceptMatch = false;
+    if (activeConcept !== 'all') {
+        const cMatches = filtered.filter(h => Array.isArray(h.tags) && h.tags.includes(activeConcept));
+        if (cMatches.length > 0) {
+            filtered = cMatches;
+        } else {
+            zeroExactConceptMatch = true;
+        }
+    }
+
+    // 4 Akıllı Sekme Sıralaması
+    if (activeSort === 'top_rated') {
+        filtered.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0) || (Number(b.fp_score) || 0) - (Number(a.fp_score) || 0));
+    } else if (activeSort === 'resort_luxury') {
+        const rMatches = filtered.filter(h => (h.stars && h.stars >= 4) || (h.tags || []).includes('all_inclusive') || (h.tags || []).includes('thermal'));
+        if (rMatches.length > 0) filtered = rMatches;
+        filtered.sort((a, b) => {
+            const aAi = (a.tags || []).includes('all_inclusive') ? 1 : 0;
+            const bAi = (b.tags || []).includes('all_inclusive') ? 1 : 0;
+            if (bAi !== aAi) return bAi - aAi;
+            return (Number(b.stars) || 0) - (Number(a.stars) || 0) || (Number(b.fp_score) || 0) - (Number(a.fp_score) || 0);
+        });
+    } else if (activeSort === 'budget_clean') {
+        const cleanMatches = filtered.filter(h => (Number(h.score) || 0) >= 7.8);
+        if (cleanMatches.length > 0) filtered = cleanMatches;
+        filtered.sort((a, b) => (Number(a.nightly_price) || 999999) - (Number(b.nightly_price) || 999999));
+    } else {
+        // Varsayılan: fp_best (Hakiki F/P Şampiyonu)
+        filtered.sort((a, b) => (Number(b.fp_score) || 0) - (Number(a.fp_score) || 0) || (Number(b.bayes_score) || 0) - (Number(a.bayes_score) || 0));
+    }
+
+    if (countBadgeEl) {
+        countBadgeEl.textContent = `(${ zeroExactConceptMatch ? 0 : filtered.length } ${isEn ? 'verified stays' : 'doğrulanmış tesis'})`;
+    }
+
+    // Seçili Konsept İçin Özel Partner Arama Linki Üretici (Sıfır Çıkmaz Sokak Kalkanı)
+    const conceptSearchKeywords = {
+        'all_inclusive': isEn ? 'All Inclusive Resort' : 'Her Şey Dahil Otel',
+        'breakfast': isEn ? 'Breakfast Included Hotel' : 'Oda Kahvaltı Otel',
+        'half_board': isEn ? 'Half Board Hotel' : 'Yarım Pansiyon Otel',
+        'free_cancel': isEn ? 'Free Cancellation Hotel' : 'Ücretsiz İptal Otel',
+        'pet_friendly': isEn ? 'Pet Friendly Hotel' : 'Evcil Hayvan Dostu Otel',
+        'conservative': isEn ? 'Halal Alcohol Free Resort' : 'Muhafazakar Alkolsüz İslami Otel',
+        'beachfront': isEn ? 'Beachfront Hotel' : 'Denize Sıfır Plaj Oteli',
+        'family_aqua': isEn ? 'Family Aquapark Resort' : 'Aile Çocuk Dostu Aquapark Otel',
+        'ski': isEn ? 'Ski Resort Hotel' : 'Kayak Oteli',
+        'thermal': isEn ? 'Thermal Spa Hotel' : 'Termal Spa Otel',
+        'central': isEn ? 'City Center Hotel' : 'Şehir Merkezi Otel'
+    };
+    const activeKw = conceptSearchKeywords[activeConcept] || (activeStaySub === 'pension' ? 'Butik Otel Pansiyon' : (activeStaySub === 'airbnb' ? 'Apart Villa Günlük Ev' : ''));
+    const qFilteredCity = encodeURIComponent(`${hotelInfo.destination || city} ${activeKw}`.trim());
+    const cid = hotelInfo.trip_city_id;
+    const tripDomain = (isEn || isIntl) ? 'www.trip.com' : 'tr.trip.com';
+    const tripLocale = (isEn || isIntl) ? 'en-US' : 'tr-TR';
+    const filteredTripUrl = cid
+        ? `https://${tripDomain}/hotels/list?flexType=1&cityId=${cid}&searchWord=${qFilteredCity}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&curr=TRY&locale=${tripLocale}&Allianceid=11051531&SID=333747492`
+        : `https://${tripDomain}/hotels/list?flexType=1&searchWord=${qFilteredCity}&keyword=${qFilteredCity}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&curr=TRY&locale=${tripLocale}&Allianceid=11051531&SID=333747492`;
+    const filteredEnuygunUrl = !isIntl ? (hotelInfo.enuygun_url || `https://www.enuygun.com/otel/`) : null;
+    const filteredEtsturUrl = !isIntl ? `https://www.etstur.com/Arama?q=${qFilteredCity}&utm_source=hakikibilet&utm_medium=affiliate` : null;
+    const filteredBookingUrl = isIntl ? `https://www.booking.com/searchresults.html?ss=${qFilteredCity}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=585474` : null;
+
+    let cardsHtml = '';
+
+    if (zeroExactConceptMatch || staySubFallbackNotice) {
+        const filterTitleObj = conceptPills.find(p => p.key === activeConcept);
+        const filterTitle = filterTitleObj ? filterTitleObj.label : activeKw;
+        cardsHtml += `
+            <div class="mb-5 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-emerald-50 border-2 border-amber-300 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-slate-950 mb-1">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>${isEn ? 'Direct Filtered Partner Search' : 'Doğrudan Filtreli Partner Ekranı'}</span>
+                    </div>
+                    <h4 class="font-black text-sm sm:text-base text-slate-900">
+                        ${zeroExactConceptMatch
+                            ? (isEn ? `Open all "${escapeHtml(filterTitle)}" properties in ${safeCity} directly:` : `${safeCity} bölgesindeki tüm "${escapeHtml(filterTitle)}" tesislerini doğrudan açın:`)
+                            : escapeHtml(staySubFallbackNotice)}
+                    </h4>
+                    <p class="text-xs text-slate-600 mt-0.5">
+                        ${isEn
+                            ? `Pre-filtered partner pages for ${cin} — ${cout} (${escapeHtml(guests)} guests). Below are the closest top-value alternatives in ${safeCity}.`
+                            : `${cin} — ${cout} tarihleri ve ${escapeHtml(guests)} misafir için filtreli partner sayfaları hazırlandı. Aşağıda ayrıca ${safeCity} için en yakın F/P alternatifleri listelenmektedir.`}
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <a href="${filteredTripUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5">
+                        <span>Trip.com (${escapeHtml(activeKw || safeCity)}) ↗</span>
+                    </a>
+                    ${filteredEnuygunUrl ? `
+                    <a href="${filteredEnuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5">
+                        <span>Enuygun Otel ↗</span>
+                    </a>
+                    ` : ''}
+                    ${filteredEtsturUrl ? `
+                    <a href="${filteredEtsturUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-sky-700 hover:bg-sky-800 text-white font-black text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5">
+                        <span>Etstur (${escapeHtml(activeKw || safeCity)}) ↗</span>
+                    </a>
+                    ` : ''}
+                    ${filteredBookingUrl ? `
+                    <a href="${filteredBookingUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5">
+                        <span>Booking.com ↗</span>
+                    </a>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    if (filtered.length > 0) {
+        cardsHtml += `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                ${filtered.map(h => {
+                    const cardId = escapeHtml(h.id || Math.random().toString(36).slice(2, 8));
+                    const photos = Array.isArray(h.photos) && h.photos.length > 0 ? h.photos : [h.photo_url || h.photo || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80'];
+                    const mainPhoto = photos[0];
+                    const starsCount = Math.max(3, Math.min(5, Number(h.stars) || 4));
+                    const starsStr = '★'.repeat(starsCount);
+                    const fpBadge = isEn ? (h.fp_badge_en || `🏆 Best Value • ${h.fp_score || 90}/100`) : (h.fp_badge_tr || `🏆 F/P Skoru • ${h.fp_score || 90}/100`);
+                    const conceptLabel = isEn ? (h.concept_en || 'Standard Room') : (h.concept_tr || 'Standart Oda');
+                    const rawPills = isEn ? (h.highlight_pills_en || []) : (h.highlight_pills_tr || []).map(p => p === 'Free Cancellation' ? 'Ücretsiz İptal' : (p === 'Breakfast Included' ? 'Oda Kahvaltı Dahil' : p));
+                    const pills = Array.from(new Set(rawPills));
+                    const advisorNote = isEn ? (h.advisor_note_en || '') : (h.advisor_note_tr || '');
+                    const hasBothPrices = Boolean(!isIntl && h.enuygun_price_formatted && h.trip_price_formatted);
+
+                    let tripDirect = h.trip_url || '';
+                    if (isEn && tripDirect) {
+                        tripDirect = tripDirect.replace('https://tr.trip.com/', 'https://www.trip.com/').replace('locale=tr-TR', 'locale=en-US');
+                    }
+
+                    return `
+                        <div class="border border-slate-200/90 hover:border-amber-400 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 bg-white flex flex-col justify-between group">
+                            <div>
+                                <!-- 1. HD Fotoğraf Galerisi & Hakiki F/P + Misafir Puanı Rozetleri -->
+                                <div class="relative overflow-hidden h-48 bg-slate-100">
+                                    <img id="htlImg-${cardId}" src="${escapeHtml(mainPhoto)}" alt="${escapeHtml(h.name)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/25 pointer-events-none"></div>
+
+                                    <!-- Sol Üst: Hakiki F/P Skoru Rozeti -->
+                                    <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-[10.5px] font-black shadow-md backdrop-blur-xs ${Number(h.fp_score) >= 91 ? 'bg-amber-400 text-slate-950' : 'bg-emerald-600/95 text-white'}">
+                                        ${escapeHtml(fpBadge)}
+                                    </span>
+
+                                    <!-- Sağ Üst: Gerçek Misafir Puanı & Yorum Sayısı -->
+                                    ${h.score ? `
+                                        <span class="absolute top-3 right-3 px-2.5 py-1 bg-blue-600/95 text-white font-black text-xs rounded-lg shadow-md backdrop-blur-xs flex items-center gap-1">
+                                            <span>⭐ ${h.score}</span>
+                                            <span class="text-[10px] font-bold opacity-90">(${h.review_count || 25})</span>
+                                        </span>
+                                    ` : ''}
+
+                                    <!-- Sol Alt: Yıldız & Konsept Rozeti -->
+                                    <div class="absolute bottom-2.5 left-3 right-3 flex items-center justify-between gap-2">
+                                        <span class="px-2.5 py-0.5 bg-slate-900/85 text-amber-300 font-black text-[10.5px] rounded-md shadow-xs backdrop-blur-xs truncate">
+                                            ${starsStr} • ${escapeHtml(conceptLabel)}
+                                        </span>
+                                        ${photos.length > 1 ? `
+                                            <div id="htlDots-${cardId}" class="flex items-center gap-1 bg-slate-950/60 px-2 py-1 rounded-full backdrop-blur-xs">
+                                                ${photos.slice(0, 5).map((pUrl, pIdx) => `
+                                                    <button type="button"
+                                                            onclick="event.stopPropagation(); switchHotelCardPhoto('${cardId}', '${escapeHtml(pUrl)}', ${pIdx})"
+                                                            class="${pIdx === 0 ? 'w-4 h-1.5 rounded-full bg-amber-400 transition-all cursor-pointer shadow-xs' : 'w-1.5 h-1.5 rounded-full bg-white/70 hover:bg-white transition-all cursor-pointer'}"
+                                                            title="${isEn ? 'Photo' : 'Fotoğraf'} ${pIdx + 1}"></button>
+                                                `).join('')}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+
+                                <!-- 2. Tesis Adı, İlçe/Konum & Merkeze Mesafe -->
+                                <div class="p-4 sm:p-5 pb-3">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <h4 class="font-black text-base text-slate-900 group-hover:text-[#0284C7] transition-colors leading-snug line-clamp-2" title="${escapeHtml(h.name)}">${escapeHtml(h.name)}</h4>
+                                    </div>
+                                    <div class="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-medium">
+                                        <span class="inline-flex items-center gap-1 text-slate-600 font-semibold">
+                                            <i class="fa-solid fa-location-dot text-amber-500"></i>
+                                            <span class="line-clamp-1">${escapeHtml(h.location_label || h.address || safeCity)}</span>
+                                        </span>
+                                        ${h.distance_center_km !== null && h.distance_center_km !== undefined ? `
+                                            <span class="text-[10.5px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-bold">
+                                                📍 ${isEn ? `${h.distance_center_km} km to center` : `Merkeze ${h.distance_center_km} km`}
+                                            </span>
+                                        ` : ''}
+                                    </div>
+
+                                    <!-- 3. Yeşil Dahiliyet & Olanak Hapları -->
+                                    ${pills.length > 0 ? `
+                                        <div class="flex flex-wrap items-center gap-1 mt-2.5">
+                                            ${pills.map(pl => `
+                                                <span class="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/90 text-emerald-900 font-bold text-[10.5px]">
+                                                    ✓ ${escapeHtml(pl)}
+                                                </span>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+
+                                    <!-- 4. Turizmci & CFO Hakiki Değer Analizi Notu -->
+                                    ${advisorNote ? `
+                                        <div class="mt-3 p-2.5 rounded-xl bg-amber-50/70 border border-amber-200/80 text-[11px] text-slate-700 leading-snug font-medium">
+                                            <span class="font-black text-amber-900">${isEn ? 'Hakiki Value Note:' : 'Hakiki Değer Analizi:'}</span>
+                                            <span> ${escapeHtml(advisorNote)}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+
+                            <!-- 5 & 6. Gecelik + Toplam Fiyat ve Doğrudan Otel Sayfasına İnen Acente Butonları -->
+                            <div class="p-4 sm:p-5 pt-3 border-t border-slate-100 bg-slate-50/60 space-y-2.5">
+                                <div class="flex items-end justify-between gap-2">
+                                    <div>
+                                        <div class="text-[10px] text-slate-400 font-black uppercase tracking-wider">${isEn ? 'Verified Nightly Rate' : 'Doğrulanmış Gecelik Fiyat'}</div>
+                                        <div class="flex items-baseline gap-1.5">
+                                            ${h.old_nightly_price ? `<span class="text-xs font-bold text-rose-500 line-through">${Number(h.old_nightly_price).toLocaleString('tr-TR')} ${h.currency || '₺'}</span>` : ''}
+                                            <span class="font-black text-xl text-[#0F172A]">${h.price_formatted || (h.price ? `${h.price} ₺` : (isEn ? 'Live Rate' : 'Canlı Fiyat'))}</span>
+                                        </div>
+                                        ${h.total_price_formatted ? `
+                                            <div class="text-[10.5px] text-emerald-800 font-bold">${hotelInfo.nights} ${isEn ? 'Nights Total:' : 'Gece Toplam:'} ${h.total_price_formatted}</div>
+                                        ` : ''}
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 text-[10px] font-black">
+                                            <i class="fa-solid fa-bolt text-[9px]"></i>
+                                            <span>${escapeHtml(h.provider || 'Trip.com')}</span>
+                                        </span>
+                                        ${hasBothPrices ? `
+                                            <div class="text-[10px] text-slate-500 font-bold mt-1">
+                                                💚 Enuygun: ${h.enuygun_price_formatted} • 🌐 Trip: ${h.trip_price_formatted}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+
+                                <!-- Doğrudan Otelin Kendi Sayfasına İnen Butonlar (Asla Boş Ana Sayfaya Düşmez) -->
+                                <div class="grid ${(!isIntl && h.enuygun_url && tripDirect) || (isIntl && tripDirect && h.booking_url) ? 'grid-cols-2' : 'grid-cols-1'} gap-2 pt-1">
+                                    ${!isIntl ? `
+                                        ${h.enuygun_url ? `
+                                            <a href="${h.enuygun_url}" target="_blank" rel="noopener noreferrer"
+                                               class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[11.5px] font-black rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-center">
+                                                <span>${isEn ? 'Select on Enuygun ↗' : "Enuygun'da Odayı Seç ↗"}</span>
+                                            </a>
+                                        ` : ''}
+                                        ${tripDirect ? `
+                                            <a href="${tripDirect}" target="_blank" rel="noopener noreferrer"
+                                               class="py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-[11.5px] font-black rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-center">
+                                                <span>${isEn ? 'Select on Trip.com ↗' : "Trip.com'da Odayı Seç ↗"}</span>
+                                            </a>
+                                        ` : ''}
+                                    ` : `
+                                        ${tripDirect ? `
+                                            <a href="${tripDirect}" target="_blank" rel="noopener noreferrer"
+                                               class="py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-[11.5px] font-black rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-center">
+                                                <span>${isEn ? 'Select on Trip.com ↗' : "Trip.com'da Odayı Seç ↗"}</span>
+                                            </a>
+                                        ` : ''}
+                                        ${h.booking_url ? `
+                                            <a href="${h.booking_url}" target="_blank" rel="noopener noreferrer"
+                                               class="py-2.5 px-3 bg-[#003580] hover:bg-[#00224f] text-white text-[11.5px] font-black rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-center">
+                                                <span>${isEn ? 'Booking.com Room ↗' : "Booking'de Odayı Seç ↗"}</span>
+                                            </a>
+                                        ` : ''}
+                                    `}
+                                </div>
+
+                                <!-- İkincil Doğrudan Otel Karşılaştırma Şeridi (Etstur / Agoda) -->
+                                <div class="flex items-center justify-between text-[10.5px] text-slate-500 pt-1 border-t border-slate-200/60">
+                                    <span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>${isEn ? 'Dates & guests pre-filled' : 'Tarih ve kişi sayısı dolu açılır'}</span>
+                                    ${!isIntl && h.etstur_url ? `
+                                        <a href="${h.etstur_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-sky-700 hover:text-sky-900">
+                                            Etstur'da İncele ↗
+                                        </a>
+                                    ` : (isIntl && h.agoda_url ? `
+                                        <a href="${h.agoda_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-slate-700 hover:text-slate-950">
+                                            Agoda'da İncele ↗
+                                        </a>
+                                    ` : '')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    } else {
+        // Canlı API'den otel listesi gelmediyse Sıfır Varsayım Partner Vitrini
+        cardsHtml += `
+            <div class="p-6 sm:p-8 bg-slate-50/80 rounded-3xl border border-slate-200 text-center">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 mb-2">
+                    <i class="fa-solid fa-shield-check text-amber-600"></i>
+                    <span>${isEn ? 'Zero-Assumption Policy: Verified Partner Availability' : 'Sıfır Varsayım: Doğrulanmış Canlı Partner Müsaitliği'}</span>
+                </div>
+                <h4 class="text-lg font-black text-slate-900">${isEn ? `Compare All Available Rooms in ${safeCity}` : `${safeCity} İçin Tüm Müsait Odaları Karşılaştırın`}</h4>
+                <p class="text-xs text-slate-500 mt-1 mb-4">
+                    ${isEn ? `Pre-filled live room search pages for ${cin} — ${cout} (${escapeHtml(guests)} guests).` : `${cin} — ${cout} tarihleri ve ${escapeHtml(guests)} misafir için resmi partner sayfaları hazırlandı.`}
+                </p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="${filteredTripUrl}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs">
+                        Trip.com ↗
+                    </a>
+                    ${!isIntl && filteredEnuygunUrl ? `
+                        <a href="${filteredEnuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs">
+                            Enuygun Otel ↗
+                        </a>
+                    ` : ''}
+                    ${isIntl && filteredBookingUrl ? `
+                        <a href="${filteredBookingUrl}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs">
+                            Booking.com ↗
+                        </a>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    containerEl.innerHTML = cardsHtml;
+}
+window.renderFilteredHotelCards = renderFilteredHotelCards;
 
 function quickSearchHotelCity(cityName) {
     const hc = document.getElementById("hotelCity");

@@ -1328,6 +1328,7 @@
                         <button type="button" onclick="quickSearchHotelCity('İstanbul')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 font-bold text-[11px] transition cursor-pointer">🕌 İstanbul</button>
                         <button type="button" onclick="quickSearchHotelCity('Bodrum')" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 font-bold text-[11px] transition cursor-pointer">🌊 Bodrum</button>
                         <button type="button" onclick="quickSearchHotelCity('Nevşehir')" class="px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-950 border border-orange-200 font-bold text-[11px] transition cursor-pointer">🎈 Kapadokya</button>
+                        <button type="button" onclick="quickSearchHotelCity('Kars')" class="px-2.5 py-1 rounded-lg bg-cyan-50 hover:bg-cyan-100 text-cyan-950 border border-cyan-200 font-bold text-[11px] transition cursor-pointer">❄️ Kars & Sarıkamış</button>
                         <button type="button" onclick="quickSearchHotelCity('İzmir')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold text-[11px] transition cursor-pointer">🌿 İzmir & Çeşme</button>
                         <button type="button" onclick="quickSearchHotelCity('Paris')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold text-[11px] transition cursor-pointer">🗼 Paris</button>
                         <button type="button" onclick="quickSearchHotelCity('Roma')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold text-[11px] transition cursor-pointer">🏛️ Roma</button>
@@ -2012,7 +2013,18 @@
                 if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>${isEn ? 'Trip.com, Booking.com, Obilet & Enuygun Live Room Comparison' : 'Trip.com, Booking.com, Enuygun & Obilet Canlı Oda Karşılaştırması'}</span>`;
             }
         }
-        window.switchStaySubTab = switchStaySubTab;
+        const _origSwitchStaySubTab = switchStaySubTab;
+        window.switchStaySubTab = function(stayType) {
+            _origSwitchStaySubTab(stayType);
+            if (window.lastHotelSearchArgs && typeof window.renderHotelResults === 'function') {
+                const resultsArea = document.getElementById("hotelResultsArea");
+                if (resultsArea && !resultsArea.classList.contains("hidden")) {
+                    const a = window.lastHotelSearchArgs;
+                    window.renderHotelResults(a.hotelInfo, a.city, a.cin, a.cout, a.guests, a.data);
+                }
+            }
+        };
+        switchStaySubTab = window.switchStaySubTab;
 
         // 3. ETKİNLİK TAKVİMİ ALT KIRILIMLARI (a. Spor Organizasyonları | b. Sinema/Tiyatro/Konser/Festival)
         function switchEventsSubTab(cat) {
@@ -2688,7 +2700,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261028_v33"></script>
+    <script src="/static/js/app_v3.js?v=20261028_v34"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">
