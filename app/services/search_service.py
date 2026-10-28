@@ -1079,19 +1079,22 @@ class SearchService:
         is_round = (trip_type == "round_trip" and return_date)
 
         # Alternatif ulaşım rozetlerini (Örn: Otobüs ararken Uçak + Tren fiyatlarını) ana aramayla EŞ ZAMANLI (paralel) başlat!
-        _alt_executor = ThreadPoolExecutor(max_workers=1)
-        _alt_badges_future = _alt_executor.submit(
-            cls.build_alternative_mode_badges,
-            origin_name=origin_name,
-            dest_name=dest_name,
-            departure_date=departure_date,
-            current_mode=transport_type,
-            passengers=total_pax,
-            currency=currency,
-            curr_symbol=curr_symbol,
-            links=links,
-            summary={},
-        )
+        _alt_executor = None
+        _alt_badges_future = None
+        if not include_hotel:
+            _alt_executor = ThreadPoolExecutor(max_workers=1)
+            _alt_badges_future = _alt_executor.submit(
+                cls.build_alternative_mode_badges,
+                origin_name=origin_name,
+                dest_name=dest_name,
+                departure_date=departure_date,
+                current_mode=transport_type,
+                passengers=total_pax,
+                currency=currency,
+                curr_symbol=curr_symbol,
+                links=links,
+                summary={},
+            )
 
         # Tarih formatlamaları
         try:
@@ -1129,7 +1132,8 @@ class SearchService:
                         cabin_class=cabin_class,
                         adults=adults,
                         children=children,
-                        infants=infants
+                        infants=infants,
+                        include_multi_ota=(not include_hotel),
                     )
                     if live_flights:
                         for lf in live_flights:
@@ -1429,7 +1433,7 @@ class SearchService:
         notices.insert(0, "🛡️ Güven ve Şeffaflık İlkesi: Uçuş seferleri ve fiyatlar Trip.com ve resmi sağlayıcılar üzerinden canlı sorgulanır. Hakiki Bilet kullanıcıdan ek hizmet bedeli veya komisyon almaz.")
 
         car_rental_info = None
-        if transport_type in ("car", "all"):
+        if transport_type == "car" or (transport_type == "all" and not include_hotel):
             try:
                 from app.services.car_rental_service import CarRentalService
                 car_loc = (origin_city or origin_name) if transport_type == "car" else (dest_city or dest_name)
@@ -1447,30 +1451,36 @@ class SearchService:
 
         # Adım 2.1: Pegasus Tarzı 7 Günlük Esnek Fiyat Şeridi & "Hakiki İpucu" Hesaplaması
         active_min_price = calc_min_price(results)
-        flexible_insights = cls.build_flexible_date_insights(
-            origin_name=origin_name,
-            dest_name=dest_name,
-            departure_date=departure_date,
-            selected_min_price=active_min_price,
-            transport_type=transport_type,
-            currency=currency,
-            curr_symbol=curr_symbol,
-            passengers=total_pax,
-            trip_type="round_trip" if is_round else "one_way",
-            cabin_class=cabin_class,
-            return_date=return_date,
-            adults=adults,
-            children=children,
-            infants=infants,
-        )
+        if include_hotel:
+            flexible_insights = {"days": [], "tip": None}
+        else:
+            flexible_insights = cls.build_flexible_date_insights(
+                origin_name=origin_name,
+                dest_name=dest_name,
+                departure_date=departure_date,
+                selected_min_price=active_min_price,
+                transport_type=transport_type,
+                currency=currency,
+                curr_symbol=curr_symbol,
+                passengers=total_pax,
+                trip_type="round_trip" if is_round else "one_way",
+                cabin_class=cabin_class,
+                return_date=return_date,
+                adults=adults,
+                children=children,
+                infants=infants,
+            )
 
         # Adım 2.2: Haftanın En Ucuz Otobüs / Tren / Alternatif Ulaşım Rozetleri (Paralel Görevden Al)
-        try:
-            alternative_badges = _alt_badges_future.result(timeout=8) or []
-        except Exception:
-            alternative_badges = []
-        finally:
-            _alt_executor.shutdown(wait=False)
+        alternative_badges = []
+        if _alt_badges_future is not None:
+            try:
+                alternative_badges = _alt_badges_future.result(timeout=8) or []
+            except Exception:
+                alternative_badges = []
+            finally:
+                if _alt_executor is not None:
+                    _alt_executor.shutdown(wait=False)
 
         # Adım 2.3: Uçuş / Sefer Altı "Gittiğiniz Yerde Bunlar Var!" (Otel + Araç + Etkinlik/Gezi Tavsiyesi)
         destination_cross_sell = cls.build_destination_cross_sell(

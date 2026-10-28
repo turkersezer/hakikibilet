@@ -3525,32 +3525,32 @@ function renderTransportResults(data, searchReq) {
         const isMultiAirportCity = currentTransportSubTab === 'flight' && ((hasSaw && hasIst) || 
             (searchReq.origin && searchReq.origin.toLowerCase().includes('istanbul')) ||
             (searchReq.destination && searchReq.destination.toLowerCase().includes('istanbul')));
-        const unitLabel = currentTransportSubTab === 'flight' ? 'uçuş' : 'sefer';
+        const unitLabel = currentTransportSubTab === 'flight' ? (isEn ? 'flights' : 'uçuş') : (isEn ? 'routes' : 'sefer');
 
         html += `
             <div class="bg-white border border-slate-200 rounded-2xl px-3.5 py-2.5 mb-3 shadow-2xs flex flex-col gap-2">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                     <div class="flex flex-wrap items-center gap-1.5">
                         <span class="text-[11px] font-black text-slate-600 mr-1">
-                            <i class="fa-solid fa-arrow-down-wide-short text-amber-500"></i> Sırala:
+                            <i class="fa-solid fa-arrow-down-wide-short text-amber-500"></i> ${isEn ? 'Sort:' : 'Sırala:'}
                         </span>
                         <button type="button" onclick="setFlightSort('cheapest')" id="fltSort-cheapest" class="flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-black bg-slate-900 text-white transition cursor-pointer">
-                            💰 En Ucuz
+                            ${isEn ? '💰 Cheapest' : '💰 En Ucuz'}
                         </button>
                         <button type="button" onclick="setFlightSort('fastest')" id="fltSort-fastest" class="flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
-                            ⚡ En Hızlı
+                            ${isEn ? '⚡ Fastest' : '⚡ En Hızlı'}
                         </button>
                         <button type="button" onclick="setFlightSort('earliest')" id="fltSort-earliest" class="flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
-                            🛫 En Erken
+                            ${isEn ? '🛫 Earliest' : '🛫 En Erken'}
                         </button>
                         <button type="button" onclick="setFlightSort('latest')" id="fltSort-latest" class="flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
-                            🛬 En Geç
+                            ${isEn ? '🛬 Latest' : '🛬 En Geç'}
                         </button>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-1">
                         <button type="button" onclick="setFlightTimeFilter('all')" id="fltTime-all" class="flt-time-btn px-2 py-1 rounded-lg text-[11px] font-black bg-amber-500 text-white transition cursor-pointer">
-                            Tümü
+                            ${isEn ? 'All' : 'Tümü'}
                         </button>
                         <button type="button" onclick="setFlightTimeFilter('night')" id="fltTime-night" class="flt-time-btn px-2 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
                             🌙 00-06
@@ -3572,15 +3572,15 @@ function renderTransportResults(data, searchReq) {
 
                 ${isMultiAirportCity ? `
                     <div class="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-slate-100">
-                        <span class="text-[11px] font-black text-slate-600 mr-1">Havalimanı:</span>
+                        <span class="text-[11px] font-black text-slate-600 mr-1">${isEn ? 'Airport:' : 'Havalimanı:'}</span>
                         <button type="button" onclick="setFlightAirportFilter('all')" id="fltPort-all" class="flt-port-btn px-2.5 py-0.5 rounded-lg text-[11px] font-black bg-slate-900 text-white transition cursor-pointer">
-                            Tümü (${tickets.length})
+                            ${isEn ? `All (${tickets.length})` : `Tümü (${tickets.length})`}
                         </button>
                         <button type="button" onclick="setFlightAirportFilter('SAW')" id="fltPort-SAW" class="flt-port-btn px-2.5 py-0.5 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
                             SAW (Sabiha Gökçen)
                         </button>
                         <button type="button" onclick="setFlightAirportFilter('IST')" id="fltPort-IST" class="flt-port-btn px-2.5 py-0.5 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
-                            IST (İstanbul Havalimanı)
+                            ${isEn ? 'IST (Istanbul Airport)' : 'IST (İstanbul Havalimanı)'}
                         </button>
                     </div>
                 ` : ''}
@@ -4322,36 +4322,37 @@ function buildFlightFerryCrossSellHtml(toCity, toCode, searchReq) {
     const depDot = depParts.length === 3 ? `${depParts[2]}.${depParts[1]}.${depParts[0]}` : rawDate;
     const pax = Math.max(1, Number((searchReq && searchReq.passengers) || 1));
 
+    const isEn = (window.currentAppLang === 'en');
     let ferryUrl = '';
     let ferryLabel = '';
 
     if (codeUp === 'ADB' || citySlug.includes('izmir') || citySlug.includes('cesme')) {
         ferryUrl = `https://feribotlines.com/search?from=1668881435&to=1668881536&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
-        ferryLabel = '⛴️ Çeşme ➔ Sakız Adası Feribot (Feribotlines) ↗';
+        ferryLabel = isEn ? '⛴️ Çeşme ➔ Chios Island Ferry (Feribotlines) ↗' : '⛴️ Çeşme ➔ Sakız Adası Feribot (Feribotlines) ↗';
     } else if (codeUp === 'BJV' || citySlug.includes('bodrum') || citySlug.includes('milas')) {
         ferryUrl = `https://feribotlines.com/search?from=1668882010&to=1669034913&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
-        ferryLabel = '⛴️ Bodrum ➔ Kos Adası Katamaran (Feribotlines) ↗';
+        ferryLabel = isEn ? '⛴️ Bodrum ➔ Kos Island Catamaran (Feribotlines) ↗' : '⛴️ Bodrum ➔ Kos Adası Katamaran (Feribotlines) ↗';
     } else if (codeUp === 'DLM' || citySlug.includes('dalaman') || citySlug.includes('fethiye') || citySlug.includes('marmaris') || citySlug.includes('mugla')) {
         ferryUrl = `https://feribotlines.com/search?from=1668882143&to=1668882286&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
-        ferryLabel = '⛴️ Fethiye/Marmaris ➔ Rodos Feribot (Feribotlines) ↗';
+        ferryLabel = isEn ? '⛴️ Fethiye/Marmaris ➔ Rhodes Ferry (Feribotlines) ↗' : '⛴️ Fethiye/Marmaris ➔ Rodos Feribot (Feribotlines) ↗';
     } else if (codeUp === 'EDO' || citySlug.includes('edremit') || citySlug.includes('balikesir') || citySlug.includes('ayvalik')) {
         ferryUrl = `https://feribotlines.com/search?from=1668881186&to=1668881312&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
-        ferryLabel = '⛴️ Ayvalık ➔ Midilli Adası Feribot (Feribotlines) ↗';
+        ferryLabel = isEn ? '⛴️ Ayvalık ➔ Lesvos Island Ferry (Feribotlines) ↗' : '⛴️ Ayvalık ➔ Midilli Adası Feribot (Feribotlines) ↗';
     } else if (codeUp === 'AYT' || codeUp === 'GZP' || citySlug.includes('antalya') || citySlug.includes('kas') || citySlug.includes('alanya')) {
         ferryUrl = `https://feribotlines.com/search?from=1668882401&to=1668882487&departure_date=${depDash}&adult=${pax}&child=0&baby=0&vehicle_type=0&vehicle_count=0`;
-        ferryLabel = '⛴️ Kaş ➔ Meis Adası Feribot (Feribotlines) ↗';
+        ferryLabel = isEn ? '⛴️ Kaş ➔ Kastellorizo Ferry (Feribotlines) ↗' : '⛴️ Kaş ➔ Meis Adası Feribot (Feribotlines) ↗';
     } else if (codeUp === 'IST' || codeUp === 'SAW' || citySlug.includes('istanbul')) {
         ferryUrl = `https://www.obilet.com/feribot-seferleri/250_24-232_0/${depCompact}/${pax}a/0_none?utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&subid=hakikibilet`;
-        ferryLabel = '⛴️ Yenikapı ➔ Bursa / Yalova Feribot (İDO & Obilet) ↗';
+        ferryLabel = isEn ? '⛴️ Yenikapı ➔ Bursa / Yalova Ferry (İDO & Obilet) ↗' : '⛴️ Yenikapı ➔ Bursa / Yalova Feribot (İDO & Obilet) ↗';
     } else if (codeUp === 'CKZ' || citySlug.includes('canakkale')) {
         ferryUrl = 'https://www.gdu.com.tr/sefer-saatleri';
-        ferryLabel = '⛴️ Geyikli ➔ Bozcaada Feribot (GESTAŞ) ↗';
+        ferryLabel = isEn ? '⛴️ Geyikli ➔ Bozcaada Ferry (GESTAŞ) ↗' : '⛴️ Geyikli ➔ Bozcaada Feribot (GESTAŞ) ↗';
     } else if (codeUp === 'COV' || codeUp === 'ADA' || citySlug.includes('adana') || citySlug.includes('mersin') || citySlug.includes('cukurova')) {
         ferryUrl = `https://www.bilet.com/feribot/arama?theme=new&adapter=cyprus&nereden=tasucu&nereye=girne&gidis=${depDot}&yetiskin=${pax}&utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&ref=hakikibilet`;
-        ferryLabel = '⛴️ Taşucu ➔ Girne (KKTC) Feribot (Bilet.com) ↗';
+        ferryLabel = isEn ? '⛴️ Taşucu ➔ Kyrenia (Cyprus) Ferry (Bilet.com) ↗' : '⛴️ Taşucu ➔ Girne (KKTC) Feribot (Bilet.com) ↗';
     } else if (codeUp === 'YEI' || citySlug.includes('bursa')) {
         ferryUrl = `https://www.obilet.com/feribot-seferleri/232_0-250_24/${depCompact}/${pax}a/0_none?utm_source=hakikibilet&utm_medium=affiliate&utm_campaign=flight_cross_sell&subid=hakikibilet`;
-        ferryLabel = '⛴️ Bursa ➔ Yenikapı Feribot (İDO & Obilet) ↗';
+        ferryLabel = isEn ? '⛴️ Bursa ➔ Yenikapı Ferry (İDO & Obilet) ↗' : '⛴️ Bursa ➔ Yenikapı Feribot (İDO & Obilet) ↗';
     }
 
     if (!ferryUrl || !ferryLabel) return '';
@@ -4971,7 +4972,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             <div class="flex flex-wrap items-center gap-1.5">
                                 ${isKamilOrFlix && ticket.kamilkoc_link ? `<a href="${ticket.kamilkoc_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-black inline-flex items-center gap-1.5">${getBrandLogoHtml('Kamil Koç', '🚌', 'w-4 h-4')}<span>Kamil Koç Resmi (${priceStr}) ↗</span></a>` : ''}
                                 ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}<span>Obilet (${!isKamilOrFlix && priceStr ? priceStr : 'Koltuk Seç'}) ↗</span></a>` : ''}
-                                ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}<span>Enuygun Teklifleri ↗</span></a>` : ''}
+                                ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}<span>${isEn ? 'Enuygun Deals ↗' : 'Enuygun Teklifleri ↗'}</span></a>` : ''}
                                 ${!isKamilOrFlix && ticket.carrier_official_link ? `<a href="${ticket.carrier_official_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml(ticket.carrier, '🚌', 'w-4 h-4')}<span>${escapeHtml(ticket.carrier)} Resmi Site ↗</span></a>` : ''}
                             </div>
                             <div class="flex flex-wrap items-center gap-1 text-[10.5px] text-slate-600">
@@ -5195,8 +5196,21 @@ function generateTicketCardsHtml(tickets, searchReq) {
 
         const carrierUpper = (ticket.carrier || '').toUpperCase();
         const bagLabel = (carrierUpper.includes('THY') || carrierUpper.includes('TÜRK') || carrierUpper.includes('AJET'))
-            ? '🧳 15 kg Bagaj + Kabin'
-            : '🎒 Kabin Çantası';
+            ? (isEn ? '🧳 15 kg Baggage + Cabin' : '🧳 15 kg Bagaj + Kabin')
+            : (isEn ? '🎒 Cabin Bag' : '🎒 Kabin Çantası');
+        let displayBadge = ticket.badge || '';
+        if (isEn && displayBadge) {
+            displayBadge = displayBadge
+                .replace('En Uygun Fiyat', 'Best Fare')
+                .replace('THY Konforu', 'Turkish Airlines')
+                .replace('Hızlı Sefer', 'Fast Flight')
+                .replace('Seferi', 'Flight')
+                .replace('Popüler', 'Popular');
+        }
+        let displayDuration = ticket.duration || (isEn ? '1h 15m' : '1 sa 15 dk');
+        if (isEn && displayDuration) {
+            displayDuration = displayDuration.replace(/\bsa\b/g, 'h').replace(/\bdk\b/g, 'm');
+        }
 
         let airlineIata = (ticket.carrier_code || '').trim().toUpperCase();
         if (!airlineIata && ticket.flight_number) {
@@ -5229,7 +5243,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
         const verifiedProviders = (ticket.providers || []).filter(p => p.price !== null && p.price !== undefined && Number(p.price) > 0);
         const hasTripPrice = verifiedProviders.some(p => p.channel === 'trip' || String(p.name || '').toLowerCase().includes('trip'));
         const hasBookingPrice = verifiedProviders.some(p => p.channel === 'booking' || String(p.name || '').toLowerCase().includes('booking') || String(p.name || '').toLowerCase().includes('kayak'));
-        const tripFallbackLink = ticket.trip_link || ticket.travelpayouts_link || '';
+        let tripFallbackLink = ticket.trip_link || ticket.travelpayouts_link || '';
+        if (isEn && tripFallbackLink) {
+            tripFallbackLink = tripFallbackLink.replace('https://tr.trip.com/', 'https://www.trip.com/').replace('locale=tr-TR', 'locale=en-US');
+        }
         const bookingFallbackLink = ticket.kayak_link || '';
         const hasDrawer = verifiedProviders.length > 0 || tripFallbackLink || bookingFallbackLink || ticket.enuygun_link || ticket.obilet_link;
 
@@ -5246,7 +5263,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             </div>
                             <div class="flex flex-wrap items-center gap-1 mt-0.5 text-[10px]">
                                 <span class="text-slate-500 font-bold">${bagLabel}</span>
-                                ${ticket.badge ? `<span class="px-1.5 py-0.2 rounded font-black bg-amber-100 text-amber-900 truncate max-w-[120px]">${escapeHtml(ticket.badge)}</span>` : ''}
+                                ${displayBadge ? `<span class="px-1.5 py-0.2 rounded font-black bg-amber-100 text-amber-900 truncate max-w-[120px]">${escapeHtml(displayBadge)}</span>` : ''}
                             </div>
                         </div>
                     </div>
@@ -5258,11 +5275,11 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             <div class="text-[11px] font-bold text-slate-600 mt-1 truncate max-w-[130px]"><span class="text-amber-600 font-black">${escapeHtml(fromCode)}</span> ${escapeHtml(fromCity)}</div>
                         </div>
                         <div class="flex flex-col items-center justify-center min-w-[90px] sm:min-w-[120px]">
-                            <span class="text-[10.5px] font-bold text-slate-500">${ticket.duration || '1 sa 15 dk'}</span>
+                            <span class="text-[10.5px] font-bold text-slate-500">${escapeHtml(displayDuration)}</span>
                             <div class="w-full h-[2px] bg-slate-300 my-1 relative flex items-center justify-center">
                                 <i class="fa-solid fa-plane text-amber-500 text-[9px] bg-white px-1"></i>
                             </div>
-                            <span class="text-[10px] font-bold ${ticket.is_direct !== false ? 'text-emerald-600' : 'text-amber-600'}">${ticket.is_direct !== false ? '✓ Direkt' : '1 Aktarma'}</span>
+                            <span class="text-[10px] font-bold ${ticket.is_direct !== false ? 'text-emerald-600' : 'text-amber-600'}">${ticket.is_direct !== false ? (isEn ? '✓ Direct' : '✓ Direkt') : (isEn ? '1 Stop' : '1 Aktarma')}</span>
                         </div>
                         <div class="text-right">
                             <div class="text-xl font-black text-slate-900 leading-none">${ticket.arrival_time || '10:00'}</div>
@@ -5276,7 +5293,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
                                 ${ticket.price ? `${Number(ticket.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} <span class="text-sm font-bold">${currSym}</span>` : 'Canlı Fiyat'}
                             </div>
-                            <div class="text-[10px] font-semibold text-slate-400 mt-0.5">${totalPaxText} • ${isRoundTrip ? 'Gidiş-Dönüş' : 'Tek Yön'}</div>
+                            <div class="text-[10px] font-semibold text-slate-400 mt-0.5">${totalPaxText} • ${isRoundTrip ? (isEn ? 'Round-Trip' : 'Gidiş-Dönüş') : (isEn ? 'One-Way' : 'Tek Yön')}</div>
                         </div>
                         <a href="${flightTargetUrl}" target="_blank" rel="noopener noreferrer"
                            class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 whitespace-nowrap">
@@ -5300,11 +5317,11 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[8.5px] opacity-60"></i>
                             </a>
                         `).join('')}
-                        ${!hasTripPrice && tripFallbackLink ? `<a href="${tripFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Trip.com', '🌐', 'w-3.5 h-3.5')}<span>Trip.com Teklifleri ↗</span></a>` : ''}
+                        ${!hasTripPrice && tripFallbackLink ? `<a href="${tripFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Trip.com', '🌐', 'w-3.5 h-3.5')}<span>${isEn ? 'Trip.com Deals ↗' : 'Trip.com Teklifleri ↗'}</span></a>` : ''}
                         ${!hasBookingPrice && bookingFallbackLink ? `<a href="${bookingFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Booking / Kayak', '🌐', 'w-3.5 h-3.5')}<span>Booking / Kayak ↗</span></a>` : ''}
                         ${ticket.airline_direct_url ? `<a href="${ticket.airline_direct_url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold inline-flex items-center gap-1.5">${airlineIata ? `<img src="https://www.gstatic.com/flights/airline_logos/70px/${escapeHtml(airlineIata)}.png" alt="" class="w-4 h-4 object-contain inline-block shrink-0" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://pics.avs.io/72/72/${escapeHtml(airlineIata)}.png';}else{this.style.display='none';}">` : getBrandLogoHtml(ticket.carrier, '✈️', 'w-4 h-4')}<span>${escapeHtml((isEn ? (ticket.airline_label_en || "Airline Site ↗") : (ticket.airline_label_tr || "Havayolunda Gör ↗")).replace(/^✈️\s*/, ''))}</span></a>` : ''}
-                        ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-3.5 h-3.5')}<span>Enuygun Teklifleri ↗</span></a>` : ''}
-                        ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}<span>Obilet Teklifleri ↗</span></a>` : ''}
+                        ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-3.5 h-3.5')}<span>${isEn ? 'Enuygun Deals ↗' : 'Enuygun Teklifleri ↗'}</span></a>` : ''}
+                        ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}<span>${isEn ? 'Obilet Deals ↗' : 'Obilet Teklifleri ↗'}</span></a>` : ''}
                     </div>
                 ` : ''}
 
@@ -5519,7 +5536,8 @@ function applyFlightSortAndFilter() {
     // Sayaç Rozetini Güncelle
     const countBadge = document.getElementById("fltCountBadge");
     if (countBadge) {
-        const unitLabel = currentTransportSubTab === 'flight' ? 'uçuş' : 'sefer';
+        const isEnCount = window.currentAppLang === 'en';
+        const unitLabel = currentTransportSubTab === 'flight' ? (isEnCount ? 'flights' : 'uçuş') : (isEnCount ? 'routes' : 'sefer');
         countBadge.textContent = `(${list.length} ${unitLabel})`;
     }
 
@@ -5656,7 +5674,10 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     }
 
     const isIntl = Boolean(hotelInfo.is_international);
-    const tripHotelUrl = hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || buildFlightTripHotelCrossSellUrl(city, { departure_date: cin, return_date: cout, passengers: guests });
+    let tripHotelUrl = hotelInfo.trip_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.trip) || buildFlightTripHotelCrossSellUrl(city, { departure_date: cin, return_date: cout, passengers: guests });
+    if (isEn && tripHotelUrl) {
+        tripHotelUrl = tripHotelUrl.replace('https://tr.trip.com/', 'https://www.trip.com/').replace('locale=tr-TR', 'locale=en-US');
+    }
     const bookingUrl = isIntl ? (hotelInfo.booking_url || `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&sb=1&aid=585474`) : null;
     const enuygunUrl = isIntl ? null : (hotelInfo.enuygun_url || buildFlightEnuygunHotelCrossSellUrl(city, { departure_date: cin, return_date: cout, passengers: guests }));
     const obiletHotelUrl = isIntl ? null : (hotelInfo.obilet_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.obilet) || `https://www.obilet.com/otel/${toAsciiSlug(city)}-otelleri`);
@@ -5733,7 +5754,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         <div>
                             <div class="flex items-center justify-between text-xs mb-1.5">
                                 <span class="font-black text-amber-400 flex items-center gap-1.5">✈️ ${isEn ? 'Flight' : 'Uçuş'}</span>
-                                <span class="text-[10px] text-slate-400">${lowestFlight.duration || (isEn ? 'Direct' : 'Direkt')}</span>
+                                <span class="text-[10px] text-slate-400">${isEn && lowestFlight.duration ? lowestFlight.duration.replace(/\bsa\b/g, 'h').replace(/\bdk\b/g, 'm') : (lowestFlight.duration || (isEn ? 'Direct' : 'Direkt'))}</span>
                             </div>
                             <div class="font-bold text-xs text-white line-clamp-1">${lowestFlight.carrier}</div>
                             <div class="text-lg font-black text-amber-300 mt-2">${lowestFlight.price ? lowestFlight.price + ' ' + (lowestFlight.currency || '₺') : (isEn ? 'Live Fare' : 'Canlı Fiyat')}</div>
@@ -5783,7 +5804,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         <div>
                             <div class="flex items-center justify-between text-xs mb-1.5">
                                 <span class="font-black text-emerald-400 flex items-center gap-1.5">🚌 ${isEn ? 'Bus' : 'Otobüs'}</span>
-                                <span class="text-[10px] text-slate-400">${lowestBus.duration || (isEn ? 'Express' : 'Ekspres')}</span>
+                                <span class="text-[10px] text-slate-400">${isEn && lowestBus.duration ? lowestBus.duration.replace(/\bsa\b/g, 'h').replace(/\bdk\b/g, 'm') : (lowestBus.duration || (isEn ? 'Express' : 'Ekspres'))}</span>
                             </div>
                             <div class="font-bold text-xs text-white line-clamp-1">${lowestBus.carrier || 'Kamil Koç / Obilet'}</div>
                             <div class="text-lg font-black text-emerald-300 mt-2">${lowestBus.price ? lowestBus.price + ' ' + (lowestBus.currency || '₺') : (isEn ? 'Live Fare' : 'Canlı Fiyat')}</div>
@@ -5945,19 +5966,19 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     ${enuygunUrl ? `
                     <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}
-                        <span>Enuygun Otel ↗</span>
+                        <span>${isEn ? 'Enuygun Hotels ↗' : 'Enuygun Otel ↗'}</span>
                     </a>
                     ` : ''}
                     ${obiletHotelUrl ? `
                     <a href="${obiletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}
-                        <span>Obilet Otel ↗</span>
+                        <span>${isEn ? 'Obilet Hotels ↗' : 'Obilet Otel ↗'}</span>
                     </a>
                     ` : ''}
                     ${biletHotelUrl ? `
                     <a href="${biletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Bilet.com', '🏨', 'w-4 h-4')}
-                        <span>Bilet.com Otel ↗</span>
+                        <span>${isEn ? 'Bilet.com Hotels ↗' : 'Bilet.com Otel ↗'}</span>
                     </a>
                     ` : ''}
                     ${etsturUrl ? `

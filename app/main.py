@@ -431,6 +431,19 @@ async def search_tickets(req: SearchRequest, request: Request):
             total_pax, req.trip_type, cabin_class=req.cabin_class,
             adults=adults, children=children, infants=infants
         )
+        fallback_hotel_info = None
+        if getattr(req, "include_hotel", False):
+            try:
+                from app.services.hotel_service import HotelService
+                fallback_hotel_info = HotelService.get_hotel_recommendation(
+                    dest_city=req.destination,
+                    checkin_date=req.departure_date,
+                    checkout_date=req.return_date,
+                    guests=total_pax,
+                    currency=getattr(req, "currency", "TRY") or "TRY",
+                )
+            except Exception:
+                fallback_hotel_info = None
         return {
             "origin": req.origin,
             "destination": req.destination,
@@ -445,6 +458,7 @@ async def search_tickets(req: SearchRequest, request: Request):
             "transport_type": req.transport_type,
             "currency": "₺",
             "currency_code": "TRY",
+            "hotel_info": fallback_hotel_info,
             "deep_links": links,
             "extension_slots": getattr(settings, "EXTENSION_SLOTS", {}),
             "notices": ["🛡️ Anlık yoğunluk nedeniyle doğrudan resmi acente bağlantıları hazırlandı."],

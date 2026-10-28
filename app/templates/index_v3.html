@@ -634,7 +634,7 @@
                         <span data-i18n="tabFerry">⛴️ Feribot</span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('car')" id="tabBtn-car" class="tab-btn">
-                        <span>🚗 Araç & Transfer</span>
+                        <span data-i18n="pillCar">🚗 Araç & Transfer</span>
                     </button>
                 </div>
             </div>
@@ -643,13 +643,13 @@
             <div id="subBar-stay" class="hidden flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
                 <div class="flex flex-wrap items-center gap-1.5">
                     <button type="button" onclick="switchStaySubTab('hotel')" id="stayBtn-hotel" class="tab-btn active">
-                        <span>🏨 Otel & Tatil</span>
+                        <span data-i18n="pillHotel">🏨 Otel & Tatil</span>
                     </button>
                     <button type="button" onclick="switchStaySubTab('airbnb')" id="stayBtn-airbnb" class="tab-btn">
-                        <span>🏡 Kiralık Ev & Villa</span>
+                        <span data-i18n="pillAirbnb">🏡 Kiralık Ev & Villa</span>
                     </button>
                     <button type="button" onclick="switchStaySubTab('pension')" id="stayBtn-pension" class="tab-btn">
-                        <span>🌿 Pansiyon & Butik</span>
+                        <span data-i18n="pillPension">🌿 Pansiyon & Butik</span>
                     </button>
                 </div>
             </div>
@@ -1994,21 +1994,22 @@
             const submitEl = document.getElementById("hotelSubmitBtnText");
             const stayHint = document.getElementById("staySubHint");
 
+            const isEn = window.currentAppLang === 'en';
             if (stayType === 'pension') {
-                if (cityInput) cityInput.placeholder = "Butik Otel, Pansiyon veya Bungalov Bölgesi (Örn: Alaçatı, Kaş, Sapanca, Bozcaada)";
-                if (guaranteeEl) guaranteeEl.textContent = "Yerel butik oteller, taş konaklar, bungalov ve pansiyon fiyatları karşılaştırılır.";
-                if (submitEl) submitEl.textContent = "Pansiyon & Butik Otelleri Bul →";
-                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>Alaçatı, Kaş, Kapadokya, Sapanca & Bozcaada Seçkin Pansiyon ve Butik Oteller</span>`;
+                if (cityInput) cityInput.placeholder = isEn ? "Boutique Hotel, Inn or Bungalow Region (e.g. Alacati, Kas, Sapanca)" : "Butik Otel, Pansiyon veya Bungalov Bölgesi (Örn: Alaçatı, Kaş, Sapanca, Bozcaada)";
+                if (guaranteeEl) guaranteeEl.textContent = isEn ? "Compare local boutique hotels, stone mansions, bungalows and charming inns." : "Yerel butik oteller, taş konaklar, bungalov ve pansiyon fiyatları karşılaştırılır.";
+                if (submitEl) submitEl.textContent = isEn ? "Find Boutique Inns →" : "Pansiyon & Butik Otelleri Bul →";
+                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>${isEn ? 'Curated Boutique Inns & Bungalows across Turkey' : 'Alaçatı, Kaş, Kapadokya, Sapanca & Bozcaada Seçkin Pansiyon ve Butik Oteller'}</span>`;
             } else if (stayType === 'airbnb') {
-                if (cityInput) cityInput.placeholder = "Günlük Kiralık Ev, Rezidans veya Villa Bölgesi (Örn: Fethiye, Kalkan, Bodrum, Roma)";
-                if (guaranteeEl) guaranteeEl.textContent = "Airbnb tarzı müstakil villa, daire ve apart konaklama alternatifleri listelenir.";
-                if (submitEl) submitEl.textContent = "Ev, Daire & Villaları Bul →";
-                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>Booking Homes, Vrbo & Günlük Kiralık Havuzlu Villa / Daire Karşılaştırması</span>`;
+                if (cityInput) cityInput.placeholder = isEn ? "Vacation Rental, Apartment or Villa Region (e.g. Fethiye, Bodrum, Rome)" : "Günlük Kiralık Ev, Rezidans veya Villa Bölgesi (Örn: Fethiye, Kalkan, Bodrum, Roma)";
+                if (guaranteeEl) guaranteeEl.textContent = isEn ? "Compare private villas, holiday apartments and vacation rentals." : "Airbnb tarzı müstakil villa, daire ve apart konaklama alternatifleri listelenir.";
+                if (submitEl) submitEl.textContent = isEn ? "Find Rentals & Villas →" : "Ev, Daire & Villaları Bul →";
+                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>${isEn ? 'Booking Homes, Vrbo & Private Pool Villas Comparison' : 'Booking Homes, Vrbo & Günlük Kiralık Havuzlu Villa / Daire Karşılaştırması'}</span>`;
             } else {
-                if (cityInput) cityInput.placeholder = "Şehir, Ada veya Bölge (Örn: Antalya, Kemer, Bodrum, Paris, Amsterdam)";
-                if (guaranteeEl) guaranteeEl.textContent = "Booking.com, Trip.com & Enuygun canlı verisi üzerinden anlık otel fiyatları listelenir.";
-                if (submitEl) submitEl.textContent = "Otelleri ve Fiyatları Bul →";
-                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>Booking.com, Trip.com, Enuygun & Otelz Canlı Oda Karşılaştırması</span>`;
+                if (cityInput) cityInput.placeholder = isEn ? "City, Island or Region (e.g. Antalya, Istanbul, Paris, Rome)" : "Şehir, Ada veya Bölge (Örn: Antalya, Kemer, Bodrum, Paris, Amsterdam)";
+                if (guaranteeEl) guaranteeEl.textContent = isEn ? "Live room rates compared across Trip.com, Booking.com & official hotel partners." : "Trip.com, Booking.com & Enuygun canlı verisi üzerinden anlık otel fiyatları listelenir.";
+                if (submitEl) submitEl.textContent = isEn ? "Find Hotels & Rates →" : "Otelleri ve Fiyatları Bul →";
+                if (stayHint) stayHint.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i><span>${isEn ? 'Trip.com, Booking.com, Obilet & Enuygun Live Room Comparison' : 'Trip.com, Booking.com, Enuygun & Obilet Canlı Oda Karşılaştırması'}</span>`;
             }
         }
         window.switchStaySubTab = switchStaySubTab;
@@ -2648,6 +2649,18 @@
                 }
             }
 
+            // 8b. Otel Misafir & Oda Seçeneklerini Güncelle
+            const hgSelect = document.getElementById("hotelGuests");
+            if (hgSelect && hgSelect.options.length >= 4) {
+                hgSelect.options[0].textContent = isEnglish ? "1 Adult (1 Room)" : "1 Yetişkin (1 Oda)";
+                hgSelect.options[1].textContent = isEnglish ? "2 Adults (1 Room)" : "2 Yetişkin (1 Oda)";
+                hgSelect.options[2].textContent = isEnglish ? "3 Adults (1 Room)" : "3 Yetişkin (1 Oda)";
+                hgSelect.options[3].textContent = isEnglish ? "Family (4+ Guests)" : "Aile (4+ Kişi)";
+            }
+            if (typeof window.switchStaySubTab === 'function' && window.currentMainPillar === 'stay') {
+                window.switchStaySubTab(window.currentStaySubType || 'hotel');
+            }
+
             // 9. Eğer ekranda arama sonuçları varsa, tekrar render et
             if ((window.lastTransportData || window.lastTransportResults) && window.lastSearchReq && typeof window.renderTransportResults === 'function') {
                 const fullData = window.lastTransportData || { tickets: window.lastTransportResults };
@@ -2675,7 +2688,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261027_v31"></script>
+    <script src="/static/js/app_v3.js?v=20261028_v33"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">
