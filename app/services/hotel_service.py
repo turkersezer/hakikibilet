@@ -26,7 +26,48 @@ class HotelService:
     # Canlı sorgu önbelleği: {cache_key: (timestamp, data)}
     _HOTEL_CACHE: Dict[str, tuple] = {}
     _ENUYGUN_DIRECT_SLUG_CACHE: Dict[str, Optional[str]] = {}
+    _ETSTUR_DIRECT_SLUG_CACHE: Dict[str, Optional[str]] = {}
     _CACHE_TTL = 7200  # 2 saat
+
+    @classmethod
+    def sanitize_hotel_city_name(cls, raw_city: str) -> str:
+        """
+        Havalimanı, feribot iskelesi, liman, tren garı ve otogar eklerini temizleyerek
+        saf şehir/belde adını döndürür (örn. 'Fethiye Limanı (Muğla)' -> 'Fethiye',
+        'Pendik (İstanbul - İDO)' -> 'İstanbul', 'Mudanya (Bursa İskelesi - BUDO)' -> 'Bursa').
+        """
+        raw = str(raw_city or "").strip()
+        if not raw:
+            return "İstanbul"
+
+        raw_lower = raw.lower()
+        # Banliyö iskele/havalimanı eşleştirmeleri -> Ana Büyükşehir
+        if any(k in raw_lower for k in ["sabiha gökçen", "sabiha gokcen", "yenikapı", "yenikapi", "pendik", "kabataş", "kabatas", "bostancı", "bostanci", "kadıköy", "kadikoy", "eminönü", "eminonu", "sirkeci", "harem", "bakırköy", "bakirkoy", "halkalı", "halkali", "söğütlüçeşme", "sogutlucesme"]):
+            return "İstanbul"
+        if any(k in raw_lower for k in ["mudanya", "güzelyalı", "guzelyali", "budo"]):
+            return "Bursa"
+        if any(k in raw_lower for k in ["esenboğa", "esenboga", "eryaman"]):
+            return "Ankara"
+        if any(k in raw_lower for k in ["adnan menderes", "alsancak", "karşıyaka", "karsiyaka", "konak"]):
+            return "İzmir"
+        if "çukurova" in raw_lower or "cukurova" in raw_lower or "şakirpaşa" in raw_lower:
+            return "Adana"
+
+        base = raw.split("(")[0].strip()
+        if "/" in base:
+            base = base.split("/")[0].strip()
+        if " - " in base:
+            base = base.split(" - ")[0].strip()
+
+        # Terminal / İskele / Liman / Havalimanı son eklerini temizle
+        base = re.sub(
+            r"\s+(Feribot\s+İskelesi|Deniz\s+Otobüsü\s+İskelesi|İskelesi|İskele|Limanı|Liman|Havalimanı|Havaalanı|Airport|Otogarı|Otogar|YHT\s+Garı|Tren\s+Garı|Garı|İstasyonu)\b.*$",
+            "",
+            base,
+            flags=re.I,
+        ).strip()
+
+        return base or raw.split("(")[0].strip()
 
     # Trip.com Doğrulanmış City ID Haritası (Asla '0 properties found' veya boş arama kutusu vermez)
     TRIP_CITY_ID_MAP: Dict[str, Dict[str, Any]] = {
@@ -38,16 +79,19 @@ class HotelService:
         "fethiye": {"id": 3773, "name": "Fethiye"},
         "marmaris": {"id": 3775, "name": "Marmaris"},
         "dalaman": {"id": 1749, "name": "Dalaman"},
+        "datca": {"id": 9540, "name": "Datça"},
         "cesme": {"id": 3772, "name": "Çeşme"},
         "alacati": {"id": 243200, "name": "Alaçatı"},
         "kusadasi": {"id": 40519, "name": "Kuşadası"},
         "didim": {"id": 40486, "name": "Didim"},
+        "aydin": {"id": 52947, "name": "Aydın"},
         "ayvalik": {"id": 40475, "name": "Ayvalık"},
         "alanya": {"id": 40464, "name": "Alanya"},
         "kemer": {"id": 40513, "name": "Kemer"},
         "belek": {"id": 1217, "name": "Belek Antalya"},
         "side": {"id": 1217, "name": "Side Antalya"},
         "kas": {"id": 40510, "name": "Kaş"},
+        "kalkan": {"id": 40510, "name": "Kalkan Kaş"},
         "trabzon": {"id": 1760, "name": "Trabzon"},
         "rize": {"id": 40521, "name": "Rize"},
         "samsun": {"id": 1758, "name": "Samsun"},
@@ -104,6 +148,7 @@ class HotelService:
         "yalova": {"id": 62336, "name": "Yalova"},
         "afyonkarahisar": {"id": 6660, "name": "Afyonkarahisar"},
         "kutahya": {"id": 20531, "name": "Kütahya"},
+        "manisa": {"id": 40522, "name": "Manisa"},
         "batman": {"id": 4512, "name": "Batman"},
         "siirt": {"id": 77925, "name": "Siirt"},
         "sirnak": {"id": 230419, "name": "Şırnak"},
@@ -159,10 +204,12 @@ class HotelService:
         "fethiye": "fethiye-6341134",
         "marmaris": "marmaris-4302",
         "dalaman": "dalaman-1031",
+        "datca": "datca-4291",
         "cesme": "cesme-4275",
         "alacati": "alacati-6054832",
         "kusadasi": "kusadasi-4227",
         "didim": "didim-6069857",
+        "aydin": "aydin-4488",
         "ayvalik": "ayvalik-4498",
         "alanya": "alanya-4671",
         "kemer": "kemer-8281",
@@ -225,6 +272,7 @@ class HotelService:
         "yalova": "yalova-4946",
         "afyonkarahisar": "afyonkarahisar-6056",
         "kutahya": "kutahya-4458",
+        "manisa": "manisa-4490",
         "batman": "batman-493",
         "siirt": "siirt-3339",
         "sirnak": "sirnak-6323236",
@@ -234,6 +282,75 @@ class HotelService:
         "tunceli": "tunceli-6323547",
         "adiyaman": "adiyaman-4615",
     }
+
+    @classmethod
+    def resolve_trip_city_meta(
+        cls,
+        city_clean: str,
+        city_slug: str,
+        trip_aid: str = "11051531",
+        trip_sid: str = "333747492",
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Trip.com City ID haritasında olmayan tüm il ve ilçeleri (örn. Aydın, Manisa, Datça, Amasra vb.)
+        Trip.com resmi getHotelKeywords SOA2 servisinden dinamik çözüp önbelleğe alır.
+        """
+        meta = cls.TRIP_CITY_ID_MAP.get(city_slug)
+        if meta and meta.get("id"):
+            return meta
+
+        try:
+            body_bytes = json.dumps({
+                "queryInfo": {"keyword": city_clean, "actionType": "destination"},
+                "head": {
+                    "platform": "PC",
+                    "cver": "0",
+                    "bu": "IBU",
+                    "group": "trip",
+                    "aid": trip_aid,
+                    "sid": trip_sid,
+                    "locale": "tr-TR",
+                    "region": "TR",
+                    "timezone": "3",
+                    "currency": "TRY",
+                    "isSSR": False,
+                },
+            }).encode("utf-8")
+
+            rdata = None
+            try:
+                client = cls._create_primp_client(timeout=3.0)
+                resp = client.post(
+                    "https://tr.trip.com/restapi/soa2/34951/getHotelKeywords",
+                    content=body_bytes,
+                    headers={"Content-Type": "application/json"},
+                )
+                if resp.status_code == 200 and resp.text:
+                    rdata = json.loads(resp.text)
+            except Exception:
+                req = urllib.request.Request(
+                    "https://tr.trip.com/restapi/soa2/34951/getHotelKeywords",
+                    data=body_bytes,
+                    headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=2.5) as resp:
+                    rdata = json.loads(resp.read().decode("utf-8", "ignore"))
+
+            if isinstance(rdata, dict):
+                kw_list = rdata.get("data", {}).get("mainKeywordList", {}).get("keywords", [])
+                for kw_entry in kw_list:
+                    kinfo = (kw_entry.get("keyword") or {}).get("keywordContentInfo") or {}
+                    kid = kinfo.get("keywordId")
+                    kname = kinfo.get("content") or city_clean
+                    if kid:
+                        meta = {"id": int(kid), "name": kname}
+                        cls.TRIP_CITY_ID_MAP[city_slug] = meta
+                        return meta
+        except Exception as e:
+            logger.debug(f"Trip.com dynamic cityId resolve warning ({city_clean}): {e}")
+
+        return None
 
     @classmethod
     def resolve_trip_hotel_url(
@@ -253,44 +370,7 @@ class HotelService:
         """
         trip_domain = "www.trip.com" if is_international else "tr.trip.com"
         locale = "en-US" if is_international else "tr-TR"
-        meta = cls.TRIP_CITY_ID_MAP.get(city_slug)
-
-        if not meta:
-            try:
-                body = json.dumps({
-                    "queryInfo": {"keyword": city_clean, "actionType": "destination"},
-                    "head": {
-                        "platform": "PC",
-                        "cver": "0",
-                        "bu": "IBU",
-                        "group": "trip",
-                        "aid": trip_aid,
-                        "sid": trip_sid,
-                        "locale": "tr-TR",
-                        "region": "TR",
-                        "timezone": "3",
-                        "currency": "TRY",
-                        "isSSR": False,
-                    },
-                }).encode("utf-8")
-                req = urllib.request.Request(
-                    "https://tr.trip.com/restapi/soa2/34951/getHotelKeywords",
-                    data=body,
-                    headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
-                    method="POST",
-                )
-                with urllib.request.urlopen(req, timeout=2.5) as resp:
-                    rdata = json.loads(resp.read().decode("utf-8", "ignore"))
-                    kw_list = rdata.get("data", {}).get("mainKeywordList", {}).get("keywords", [])
-                    if kw_list:
-                        kinfo = kw_list[0].get("keyword", {}).get("keywordContentInfo", {})
-                        kid = kinfo.get("keywordId")
-                        kname = kinfo.get("content") or city_clean
-                        if kid:
-                            meta = {"id": int(kid), "name": kname}
-                            cls.TRIP_CITY_ID_MAP[city_slug] = meta
-            except Exception:
-                pass
+        meta = cls.resolve_trip_city_meta(city_clean, city_slug, trip_aid=trip_aid, trip_sid=trip_sid)
 
         q_city = urllib.parse.quote(city_clean)
         if meta and meta.get("id"):
@@ -314,6 +394,45 @@ class HotelService:
         )
 
     @classmethod
+    def resolve_enuygun_region_slug(cls, city_clean: str, city_slug: str) -> Optional[str]:
+        """
+        Enuygun bölge haritasında olmayan tüm il ve ilçelerin gerçek /otel/bolge/{slug}-{id}/
+        adresini hot-autocomplete-api.enuygun.com üzerinden dinamik çözüp önbelleğe alır.
+        """
+        en_slug = cls.ENUYGUN_HOTEL_SLUG_MAP.get(city_slug)
+        if en_slug:
+            return en_slug
+
+        try:
+            u = f"https://hot-autocomplete-api.enuygun.com/api/v1/autocomplete?q={urllib.parse.quote(city_clean)}&locale=tr"
+            raw = cls._http_get_text(
+                u,
+                headers={"Accept": "application/json", "Referer": "https://www.enuygun.com/otel/"},
+                timeout=3.0,
+            )
+            payload = json.loads(raw)
+            items = payload if isinstance(payload, list) else ((payload.get("data") or {}).get("items") or [])
+            for it in items:
+                if not isinstance(it, dict):
+                    continue
+                itype = str(it.get("type") or "").lower()
+                url_path = str(it.get("url") or "").strip()
+                slug_val = str(it.get("slug") or "").strip().strip("/")
+                if itype == "hotel" or url_path.startswith("/otel/detay/"):
+                    continue
+                if not slug_val and "/otel/bolge/" in url_path:
+                    slug_val = url_path.split("/otel/bolge/")[-1].strip("/")
+                elif not slug_val and url_path:
+                    slug_val = url_path.strip("/").split("/")[-1]
+                if slug_val:
+                    cls.ENUYGUN_HOTEL_SLUG_MAP[city_slug] = slug_val
+                    return slug_val
+        except Exception as e:
+            logger.debug(f"Enuygun region slug resolve warning ({city_clean}): {e}")
+
+        return None
+
+    @classmethod
     def resolve_enuygun_hotel_url(
         cls,
         city_clean: str,
@@ -326,22 +445,7 @@ class HotelService:
         Enuygun Otel'in /otel/bolge/{slug}-{id}/?checkInDate=DD.MM.YYYY&checkOutDate=DD.MM.YYYY&rooms=N
         formatında doğrudan canlı şehir otel listesine inen URL'sini üretir.
         """
-        en_slug = cls.ENUYGUN_HOTEL_SLUG_MAP.get(city_slug)
-        if not en_slug:
-            try:
-                u = f"https://hot-autocomplete-api.enuygun.com/api/v1/autocomplete?q={urllib.parse.quote(city_clean)}&locale=tr"
-                req = urllib.request.Request(u, headers={"User-Agent": "Mozilla/5.0"})
-                with urllib.request.urlopen(req, timeout=2.0) as resp:
-                    items = json.loads(resp.read().decode("utf-8", "ignore"))
-                    if isinstance(items, list) and items:
-                        s = items[0].get("slug") or items[0].get("url")
-                        if s:
-                            en_slug = str(s).strip("/").split("/")[-1]
-                            cls.ENUYGUN_HOTEL_SLUG_MAP[city_slug] = en_slug
-            except Exception:
-                pass
-        if not en_slug:
-            en_slug = city_slug
+        en_slug = cls.resolve_enuygun_region_slug(city_clean, city_slug) or city_slug
         return (
             f"https://www.enuygun.com/otel/bolge/{en_slug}/?"
             f"checkInDate={enuygun_cin}&checkOutDate={enuygun_cout}&rooms={guests}"
@@ -427,20 +531,28 @@ class HotelService:
     @classmethod
     def normalize_hotel_match_key(cls, name: str, city_clean: str = "") -> str:
         """
-        Enuygun ve Trip.com'dan gelen aynı oteli (örn. 'Concorde De Luxe Resort Lara' ile
-        'Concorde De Luxe Resort - Prive Ultra All Inclusive') tek kartta birleştirmek için anahtar üretir.
+        Enuygun, Trip.com ve Etstur'dan gelen aynı oteli (örn. 'Concorde De Luxe Resort Lara' ile
+        'Concorde De Luxe Resort Lara Antalya – Prive Ultra All Inclusive') tek kartta birleştirmek için anahtar üretir.
         """
-        s = cls.slugify_hotel_name(name)
+        cleaned_raw = re.sub(
+            r"\s*[-–|]\s*(Prive\s+|Ultra\s+|All\s+Inclusive.*|All-Inclusive.*|Her\s+Şey\s+Dahil.*|Adult\s+Only.*|Adults\s+Only.*|Sadece\s+Yetişkin.*|Special\s+Class.*)$",
+            "",
+            str(name or ""),
+            flags=re.I,
+        ).strip()
+        s = cls.slugify_hotel_name(cleaned_raw or name)
         city_s = cls.slugify_hotel_name(city_clean)
         stop_words = {
             "hotel", "hotels", "otel", "oteli", "resort", "resorts", "spa", "and", "the", "by",
             "prive", "ultra", "all", "inclusive", "luxury", "collection", "boutique",
             "butik", "palace", "beach", "club", "suites", "suite", "residence",
             "adult", "adults", "only", "sadece", "yetiskin", "special", "class", "thermal",
-            "lara", "kundu", "belek", "kemer", "kaleici", "konyaalti", "sarikamis",
+            "lara", "kundu", "belek", "kemer", "kaleici", "konyaalti", "sarikamis", "sehir", "merkezi",
             city_s
         }
         tokens = [t for t in s.split("-") if t and len(t) > 1 and t not in stop_words and not t.isdigit()]
+        if not tokens:
+            tokens = [t for t in s.split("-") if t and t not in stop_words]
         if not tokens:
             tokens = [t for t in s.split("-") if t and not t.isdigit()]
         return "-".join(tokens[:3])
@@ -486,6 +598,32 @@ class HotelService:
             return resp.read().decode("utf-8", "ignore")
 
     @classmethod
+    def _build_hotel_search_queries(cls, hotel_name: str, city_clean: str) -> List[str]:
+        """
+        Otel adındaki konsept eklerini ('- All Inclusive', '– Prive Ultra All Inclusive' vb.) ve
+        sondaki mükerrer bölge kelimelerini ('Lara Antalya' vb.) temizleyerek aday arama sorguları üretir.
+        """
+        q1 = re.sub(
+            r"\s*[-–|]\s*(Prive\s+|Ultra\s+|All\s+Inclusive.*|All-Inclusive.*|Her\s+Şey\s+Dahil.*|Adult\s+Only.*|Adults\s+Only.*|Sadece\s+Yetişkin.*|Special\s+Class.*)$",
+            "",
+            str(hotel_name or ""),
+            flags=re.I,
+        ).strip()
+        if not q1:
+            q1 = str(hotel_name or "").strip()
+
+        queries = [q1]
+        q2 = re.sub(
+            rf"\s+\b(Lara|Kundu|Belek|Kemer|Konyaaltı|Kaleiçi|{re.escape(city_clean)})\b(\s+\b(Lara|Kundu|Belek|Kemer|Konyaaltı|Kaleiçi|{re.escape(city_clean)})\b)*\s*$",
+            "",
+            q1,
+            flags=re.I,
+        ).strip()
+        if q2 and q2.lower() != q1.lower() and len(q2) >= 4:
+            queries.append(q2)
+        return queries
+
+    @classmethod
     def resolve_enuygun_direct_hotel_slug(cls, hotel_name: str, city_clean: str, city_slug: str) -> Optional[str]:
         """
         Enuygun resmi autocomplete API'sini (hot-autocomplete-api.enuygun.com) kullanarak
@@ -497,15 +635,6 @@ class HotelService:
         cache_key = f"{city_slug}:{mkey}"
         if cache_key in cls._ENUYGUN_DIRECT_SLUG_CACHE:
             return cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key]
-
-        clean_query = re.sub(
-            r"\s*[-–|]\s*(Adult Only|Adults Only|Sadece Yetişkin.*|Special Class.*)$",
-            "",
-            str(hotel_name or ""),
-            flags=re.I,
-        ).strip()
-        if not clean_query:
-            clean_query = str(hotel_name or "").strip()
 
         parent_province_map = {
             "bodrum": "mugla", "fethiye": "mugla", "marmaris": "mugla", "dalaman": "mugla", "datca": "mugla",
@@ -521,58 +650,140 @@ class HotelService:
         if city_slug in parent_province_map:
             allowed_loc_tokens.add(parent_province_map[city_slug])
 
-        api_url = f"https://hot-autocomplete-api.enuygun.com/api/v1/autocomplete?q={urllib.parse.quote(clean_query)}"
-        try:
-            raw = cls._http_get_text(
-                api_url,
-                headers={"Accept": "application/json", "Referer": "https://www.enuygun.com/otel/"},
-                timeout=3.5,
-            )
-            payload = json.loads(raw)
-            items = (payload.get("data") or {}).get("items") or []
-            target_tokens = [t for t in mkey.split("-") if t]
-
-            for x in items:
-                if not isinstance(x, dict) or x.get("type") != "hotel":
-                    continue
-                url_path = str(x.get("url") or "").strip()
-                slug = str(x.get("slug") or "").strip().strip("/")
-                if not slug and url_path.startswith("/otel/detay/"):
-                    slug = url_path.replace("/otel/detay/", "").strip("/")
-                if not slug:
-                    continue
-
-                extra = x.get("extra") or {}
-                loc_str = " ".join([
-                    str(x.get("path") or ""),
-                    str(x.get("name") or ""),
-                    str(extra.get("city") or ""),
-                    str(extra.get("town") or ""),
-                    str(extra.get("subtown") or ""),
-                ])
-                loc_slug = cls.slugify_hotel_name(loc_str)
-                if not any(tok and tok in loc_slug for tok in allowed_loc_tokens):
-                    continue
-
-                cand_key = cls.normalize_hotel_match_key(str(x.get("name") or ""), city_clean)
-                cand_tokens = [t for t in cand_key.split("-") if t]
-                if not cand_tokens or not target_tokens:
-                    continue
-
-                is_name_match = (
-                    cand_key == mkey
-                    or (
-                        cand_tokens[0] == target_tokens[0]
-                        and (set(cand_tokens) <= set(target_tokens) or set(target_tokens) <= set(cand_tokens))
-                    )
+        target_tokens = [t for t in mkey.split("-") if t]
+        for query_str in cls._build_hotel_search_queries(hotel_name, city_clean):
+            api_url = f"https://hot-autocomplete-api.enuygun.com/api/v1/autocomplete?q={urllib.parse.quote(query_str)}"
+            try:
+                raw = cls._http_get_text(
+                    api_url,
+                    headers={"Accept": "application/json", "Referer": "https://www.enuygun.com/otel/"},
+                    timeout=3.5,
                 )
-                if is_name_match:
-                    cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key] = slug
-                    return slug
-        except Exception as e:
-            logger.debug(f"Enuygun autocomplete slug resolve warning ({hotel_name}): {e}")
+                payload = json.loads(raw)
+                items = (payload.get("data") or {}).get("items") or []
+
+                for x in items:
+                    if not isinstance(x, dict) or x.get("type") != "hotel":
+                        continue
+                    url_path = str(x.get("url") or "").strip()
+                    slug = str(x.get("slug") or "").strip().strip("/")
+                    if not slug and url_path.startswith("/otel/detay/"):
+                        slug = url_path.replace("/otel/detay/", "").strip("/")
+                    if not slug:
+                        continue
+
+                    extra = x.get("extra") or {}
+                    loc_str = " ".join([
+                        str(x.get("path") or ""),
+                        str(x.get("name") or ""),
+                        str(extra.get("city") or ""),
+                        str(extra.get("town") or ""),
+                        str(extra.get("subtown") or ""),
+                    ])
+                    loc_slug = cls.slugify_hotel_name(loc_str)
+                    if not any(tok and tok in loc_slug for tok in allowed_loc_tokens):
+                        continue
+
+                    cand_key = cls.normalize_hotel_match_key(str(x.get("name") or ""), city_clean)
+                    cand_tokens = [t for t in cand_key.split("-") if t]
+                    if not cand_tokens or not target_tokens:
+                        continue
+
+                    is_name_match = (
+                        cand_key == mkey
+                        or (
+                            cand_tokens[0] == target_tokens[0]
+                            and (set(cand_tokens) <= set(target_tokens) or set(target_tokens) <= set(cand_tokens))
+                        )
+                    )
+                    if is_name_match:
+                        cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key] = slug
+                        return slug
+            except Exception as e:
+                logger.debug(f"Enuygun autocomplete slug resolve warning ({hotel_name}): {e}")
 
         cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key] = None
+        return None
+
+    @classmethod
+    def resolve_etstur_direct_hotel_slug(cls, hotel_name: str, city_clean: str, city_slug: str) -> Optional[str]:
+        """
+        Etstur resmi /v2/autocomplete API'sini kullanarak bir otelin gerçek Etstur detay URL slug'ını
+        (örn. 'costa-sariyaz-hotel') doğrular. Etstur'da satılmayan tesisler için None döner (Asla 404 /Arama?q= üretmez).
+        """
+        mkey = cls.normalize_hotel_match_key(hotel_name, city_clean)
+        if not mkey:
+            return None
+        cache_key = f"{city_slug}:{mkey}"
+        if cache_key in cls._ETSTUR_DIRECT_SLUG_CACHE:
+            return cls._ETSTUR_DIRECT_SLUG_CACHE[cache_key]
+
+        parent_province_map = {
+            "bodrum": "mugla", "fethiye": "mugla", "marmaris": "mugla", "dalaman": "mugla", "datca": "mugla",
+            "alanya": "antalya", "kemer": "antalya", "belek": "antalya", "side": "antalya", "kas": "antalya",
+            "cesme": "izmir", "alacati": "izmir",
+            "kusadasi": "aydin", "didim": "aydin",
+            "ayvalik": "balikesir", "edremit": "balikesir",
+            "bozcaada": "canakkale",
+            "kapadokya": "nevsehir", "urgup": "nevsehir", "goreme": "nevsehir",
+            "sapanca": "sakarya", "abant": "bolu", "pamukkale": "denizli",
+        }
+        allowed_loc_tokens = {city_slug, cls.slugify_hotel_name(city_clean)}
+        if city_slug in parent_province_map:
+            allowed_loc_tokens.add(parent_province_map[city_slug])
+
+        target_tokens = [t for t in mkey.split("-") if t]
+        for query_str in cls._build_hotel_search_queries(hotel_name, city_clean):
+            api_url = f"https://www.etstur.com/v2/autocomplete?q={urllib.parse.quote(query_str)}"
+            try:
+                raw = cls._http_get_text(
+                    api_url,
+                    headers={"Accept": "application/json", "Referer": "https://www.etstur.com/"},
+                    timeout=3.0,
+                )
+                payload = json.loads(raw)
+                items = payload.get("result") or []
+                if not isinstance(items, list):
+                    continue
+
+                for x in items:
+                    if not isinstance(x, dict) or str(x.get("type") or "").upper() != "HOTEL":
+                        continue
+                    ets_slug = str(x.get("url") or "").strip().strip("/")
+                    if not ets_slug or "/" in ets_slug:
+                        continue
+
+                    state_list = x.get("state") if isinstance(x.get("state"), list) else []
+                    loc_str = " ".join([
+                        str(x.get("title") or ""),
+                        str(x.get("city") or ""),
+                        str(x.get("country") or ""),
+                        " ".join(str(s) for s in state_list),
+                    ])
+                    loc_slug = cls.slugify_hotel_name(loc_str)
+                    if not any(tok and tok in loc_slug for tok in allowed_loc_tokens):
+                        continue
+
+                    cand_title = str(x.get("title") or "").split(",")[0].strip()
+                    cand_key = cls.normalize_hotel_match_key(cand_title, city_clean)
+                    cand_tokens = [t for t in cand_key.split("-") if t]
+                    if not cand_tokens or not target_tokens:
+                        continue
+
+                    is_name_match = (
+                        cand_key == mkey
+                        or (
+                            cand_tokens[0] == target_tokens[0]
+                            and (set(cand_tokens) <= set(target_tokens) or set(target_tokens) <= set(cand_tokens))
+                        )
+                    )
+                    if is_name_match:
+                        cls._ETSTUR_DIRECT_SLUG_CACHE[cache_key] = ets_slug
+                        return ets_slug
+            except Exception as e:
+                logger.debug(f"Etstur autocomplete slug resolve warning ({hotel_name}): {e}")
+
+        cls._ETSTUR_DIRECT_SLUG_CACHE[cache_key] = None
         return None
 
     @classmethod
@@ -585,25 +796,43 @@ class HotelService:
         enuygun_cout: str,
         guests: int,
     ) -> None:
-        missing = [it for it in items if not it.get("enuygun_hotel_url") and it.get("name")]
-        if not missing:
+        """
+        Yurt içi otel kartlarında:
+        1. Enuygun doğrudan otel detay linki (/otel/detay/{slug}/) eksik olanları Enuygun Autocomplete API ile,
+        2. Etstur doğrudan otel detay linkini (https://www.etstur.com/{ets_slug}?check_in=...) Etstur Autocomplete API ile
+        paralel doğrular. Eşleşme olmayanlarda asla 404 veya genel şehir listesine düşürmez.
+        """
+        if not items:
             return
 
         def _resolve_one(it: Dict[str, Any]):
-            slug = cls.resolve_enuygun_direct_hotel_slug(it["name"], city_clean, city_slug)
-            if slug:
-                it["enuygun_slug"] = slug
-                it["enuygun_hotel_url"] = (
-                    f"https://www.enuygun.com/otel/detay/{slug}/?"
-                    f"checkInDate={enuygun_cin}&checkOutDate={enuygun_cout}&rooms={guests}"
-                    f"&utm_source=hakikibilet&utm_medium=affiliate"
-                )
+            hname = it.get("name")
+            if not hname:
+                return
+            if not it.get("enuygun_hotel_url"):
+                slug = cls.resolve_enuygun_direct_hotel_slug(hname, city_clean, city_slug)
+                if slug:
+                    it["enuygun_slug"] = slug
+                    it["enuygun_hotel_url"] = (
+                        f"https://www.enuygun.com/otel/detay/{slug}/?"
+                        f"checkInDate={enuygun_cin}&checkOutDate={enuygun_cout}&rooms={guests}"
+                        f"&utm_source=hakikibilet&utm_medium=affiliate"
+                    )
+            if not it.get("etstur_hotel_url"):
+                ets_slug = cls.resolve_etstur_direct_hotel_slug(hname, city_clean, city_slug)
+                if ets_slug:
+                    it["etstur_slug"] = ets_slug
+                    it["etstur_hotel_url"] = (
+                        f"https://www.etstur.com/{ets_slug}?"
+                        f"check_in={enuygun_cin}&check_out={enuygun_cout}&adult_1={guests}"
+                        f"&utm_source=hakikibilet&utm_medium=affiliate"
+                    )
 
         try:
-            with ThreadPoolExecutor(max_workers=min(10, len(missing))) as pool:
-                list(pool.map(_resolve_one, missing, timeout=5.5))
+            with ThreadPoolExecutor(max_workers=min(12, len(items))) as pool:
+                list(pool.map(_resolve_one, items, timeout=6.0))
         except Exception as e:
-            logger.debug(f"Batch Enuygun direct slug resolve warning: {e}")
+            logger.debug(f"Batch Enuygun/Etstur direct slug resolve warning: {e}")
 
     @staticmethod
     def _extract_balanced_json_array(text: str, bracket_start: int) -> Optional[str]:
@@ -635,7 +864,7 @@ class HotelService:
     @classmethod
     def get_destination_context(cls, city_slug: str, is_international: bool) -> Dict[str, Any]:
         coastal_slugs = {
-            "antalya", "bodrum", "fethiye", "marmaris", "dalaman", "cesme", "alacati",
+            "antalya", "bodrum", "fethiye", "marmaris", "dalaman", "datca", "cesme", "alacati",
             "kusadasi", "didim", "ayvalik", "alanya", "kemer", "belek", "side", "kas",
             "bozcaada", "edremit", "mersin", "girne", "gazimagusa", "sakiz-adasi",
             "rodos-adasi", "kos-adasi", "midilli-adasi", "nice", "barselona", "dubai"
@@ -684,6 +913,7 @@ class HotelService:
         Enuygun /otel/bolge/{en_slug}/ SSR sayfasından 20 gerçek otelin adını, HD fotoğraflarını,
         konseptini (Her Şey Dahil, Oda Kahvaltı vb.), popüler olanaklarını, misafir puanını,
         canlı fiyatını ve doğrudan otel detay sayfası (/otel/detay/{slug}/) linkini çeker.
+        64KB üzeri Next.js RSC parçalanmalarını (örn. antalya-481 ve alanya-4671) eksiksiz birleştirir.
         """
         if not en_slug:
             return []
@@ -700,13 +930,48 @@ class HotelService:
                 },
                 timeout=6.5,
             )
-
-            pushes = re.findall(r'self\.__next_f\.push\(\[1,"(\[\{\\"id\\":.*?)"\]\)', html, re.S)
-            if not pushes:
+            if not html:
                 return []
 
-            raw_json_str = json.loads('"' + pushes[-1] + '"')
-            arr = json.loads(raw_json_str)
+            arr = None
+            raw_chunks = re.findall(r'self\.__next_f\.push\(\[1,"(.*?)"\]\)', html, re.S)
+            if raw_chunks:
+                decoded_parts: List[str] = []
+                for ch in raw_chunks:
+                    try:
+                        decoded_parts.append(json.loads('"' + ch + '"'))
+                    except Exception:
+                        decoded_parts.append(ch.encode("utf-8").decode("unicode_escape", errors="ignore"))
+                full_rsc = "".join(decoded_parts)
+
+                search_from = 0
+                best_priced_count = 0
+                while True:
+                    pos = full_rsc.find('[{"id":', search_from)
+                    if pos == -1:
+                        break
+                    arr_str = cls._extract_balanced_json_array(full_rsc, pos)
+                    if arr_str:
+                        try:
+                            cand_arr = json.loads(arr_str)
+                            if (
+                                isinstance(cand_arr, list)
+                                and cand_arr
+                                and isinstance(cand_arr[0], dict)
+                                and ("slug" in cand_arr[0] or "ratingGeneral" in cand_arr[0] or "images" in cand_arr[0])
+                            ):
+                                priced_cnt = sum(
+                                    1
+                                    for x in cand_arr
+                                    if isinstance(x, dict) and (x.get("price") or x.get("minPrice"))
+                                )
+                                if priced_cnt > best_priced_count:
+                                    best_priced_count = priced_cnt
+                                    arr = cand_arr
+                        except Exception:
+                            pass
+                    search_from = pos + 7
+
             if not isinstance(arr, list):
                 return []
 
@@ -716,15 +981,23 @@ class HotelService:
                     continue
                 name = (h.get("name") or "").strip()
                 slug = (h.get("slug") or "").strip().strip("/")
-                raw_price = h.get("price") or h.get("minPrice")
-                if not name or not slug or not raw_price or float(raw_price) < 650:
+                if not name or not slug:
                     continue
 
-                price_try = float(raw_price)
-                nightly_val = CurrencyService.convert(price_try, "TRY", currency) if currency != "TRY" else price_try
+                direct_price = h.get("price")
+                min_price_eur = h.get("minPrice")
+                price_try = 0.0
+                if direct_price is not None and float(direct_price) >= 650:
+                    price_try = float(direct_price)
+                elif min_price_eur is not None and float(min_price_eur) > 0:
+                    mp_val = float(min_price_eur)
+                    # Enuygun SSR'da price=None olduğunda minPrice alanı EUR bazındadır (örn. 119.34 EUR)
+                    price_try = CurrencyService.convert(mp_val, "EUR", "TRY") if mp_val < 650 else mp_val
 
-                # Enuygun SSR'da bazı tesislerde fiyat toplam konaklama, bazılarında geceliktir;
-                # Enuygun bölge listesinde "price" alanı gecelik başlangıç fiyatıdır.
+                if price_try < 650:
+                    continue
+
+                nightly_val = CurrencyService.convert(price_try, "TRY", currency) if currency != "TRY" else price_try
                 total_val = nightly_val * max(1, nights)
 
                 concept_obj = ((h.get("concepts") or {}).get("concept") or {}) if isinstance(h.get("concepts"), dict) else {}
@@ -818,6 +1091,43 @@ class HotelService:
         trip_domain = "www.trip.com" if is_international else "tr.trip.com"
         locale = "en-US" if is_international else "tr-TR"
         accept_lang = "en-US,en;q=0.9" if is_international else "tr-TR,tr;q=0.9,en-US;q=0.8"
+
+        def _extract_hotel_list_from_html(raw_html: str) -> Optional[List[Dict[str, Any]]]:
+            if not raw_html:
+                return None
+            scripts = re.findall(r'self\.__next_f\.push\(\[1,"(.*?)"\]\)', raw_html, re.S)
+            if not scripts:
+                return None
+            decoded_chunks: List[str] = []
+            for s in scripts:
+                try:
+                    unesc = json.loads('"' + s + '"')
+                except Exception:
+                    unesc = s.encode("utf-8").decode("unicode_escape", errors="ignore")
+                decoded_chunks.append(unesc)
+                if len(s) >= 10000 and '"hotelList":[' in unesc:
+                    pos = unesc.find('"hotelList":[')
+                    arr_str = cls._extract_balanced_json_array(unesc, pos + len('"hotelList":'))
+                    if arr_str:
+                        try:
+                            parsed = json.loads(arr_str)
+                            if isinstance(parsed, list) and parsed:
+                                return parsed
+                        except Exception:
+                            pass
+            full_stream = "".join(decoded_chunks)
+            pos = full_stream.find('"hotelList":[')
+            if pos != -1:
+                arr_str = cls._extract_balanced_json_array(full_stream, pos + len('"hotelList":'))
+                if arr_str:
+                    try:
+                        parsed = json.loads(arr_str)
+                        if isinstance(parsed, list):
+                            return parsed
+                    except Exception:
+                        pass
+            return None
+
         url = (
             f"https://{trip_domain}/hotels/list?"
             f"cityId={city_id}&cityName={urllib.parse.quote(city_clean)}"
@@ -825,24 +1135,16 @@ class HotelService:
         )
         try:
             html = cls._http_get_text(url, timeout=6.0, accept_language=accept_lang)
-            if not html:
-                return []
-
-            scripts = re.findall(r'self\.__next_f\.push\(\[1,"(.*?)"\]\)', html, re.S)
-            hotel_list_raw = None
-            for s in scripts:
-                if len(s) < 15000 or "hotelList" not in s:
-                    continue
-                try:
-                    unesc = json.loads('"' + s + '"')
-                except Exception:
-                    unesc = s.encode("utf-8").decode("unicode_escape", errors="ignore")
-                pos = unesc.find('"hotelList":[')
-                if pos != -1:
-                    arr_str = cls._extract_balanced_json_array(unesc, pos + len('"hotelList":'))
-                    if arr_str:
-                        hotel_list_raw = json.loads(arr_str)
-                        break
+            hotel_list_raw = _extract_hotel_list_from_html(html)
+            if not hotel_list_raw and not is_international:
+                # tr.trip.com anlık boş dönerse www.trip.com üzerinden yedekle
+                fallback_url = (
+                    f"https://www.trip.com/hotels/list?"
+                    f"cityId={city_id}&cityName={urllib.parse.quote(city_clean)}"
+                    f"&checkin={cin}&checkout={cout}&adult={guests}&crn=1&curr=TRY&locale=tr-TR"
+                )
+                html_fb = cls._http_get_text(fallback_url, timeout=5.5, accept_language=accept_lang)
+                hotel_list_raw = _extract_hotel_list_from_html(html_fb)
 
             if not isinstance(hotel_list_raw, list):
                 return []
@@ -859,6 +1161,9 @@ class HotelService:
                 hotel_id = str(summary.get("hotelId") or "").strip()
                 name = str((hinfo.get("nameInfo") or {}).get("name") or "").strip()
                 if not hotel_id or not name:
+                    continue
+                # Ham sokak/mahalle adresi başlığıyla girilmiş kayıtsız apart ilanlarını (örn. 'Arapsuyu Mah. 600. Sok. No:19') ele
+                if re.search(r"\b(mah\.|mahallesi|sok\.|sokak|cad\.|caddesi|no\s*:)\b", name.lower()):
                     continue
 
                 def _to_float(val: Any, default: float = 0.0) -> float:
@@ -1236,7 +1541,6 @@ class HotelService:
 
             # 7. Doğrudan Otelin Kendi Sayfasına İnen (Tarih ve Kişi Sayısı Dolu) Doğrulanmış Linkler
             q_hotel_city = urllib.parse.quote(f"{name} {city_clean}")
-            q_hotel_only = urllib.parse.quote(name)
 
             # Trip.com Doğrudan Otel Detay Linki (/hotels/detail/?hotelId=...)
             trip_hotel_direct = h.get("trip_hotel_url")
@@ -1245,25 +1549,25 @@ class HotelService:
             # SIFIR VARSAYIM KURALI: Asla /otel/bolge/... genel şehir arama sayfasına fallback yapılmaz!
             enuygun_hotel_direct = h.get("enuygun_hotel_url") if not is_international else None
 
+            # Etstur Doğrudan Otel Detay Linki (https://www.etstur.com/{ets_slug}?check_in=...)
+            # SIFIR VARSAYIM KURALI: Asla 404 veren /Arama?q=... adresine düşürülmez!
+            etstur_hotel_direct = h.get("etstur_hotel_url") if not is_international else None
+
+            # Agoda (Türkiye içi ve yurt dışında engelsiz çalışır)
+            agoda_hotel_direct = (
+                f"https://www.agoda.com/tr-tr/search?"
+                f"text={q_hotel_city}&checkIn={cin}&checkOut={cout}"
+                f"&rooms=1&adults={guests}&cid={agoda_cid}"
+            )
+
             if is_international:
                 booking_hotel_direct = (
                     f"https://www.booking.com/searchresults.html?"
                     f"ss={q_hotel_city}&checkin={cin}&checkout={cout}"
                     f"&group_adults={guests}&no_rooms=1&aid={aid}"
                 )
-                agoda_hotel_direct = (
-                    f"https://www.agoda.com/tr-tr/search?"
-                    f"text={q_hotel_city}&checkIn={cin}&checkOut={cout}"
-                    f"&rooms=1&adults={guests}&cid={agoda_cid}"
-                )
-                etstur_hotel_direct = None
             else:
                 booking_hotel_direct = None
-                agoda_hotel_direct = None
-                etstur_hotel_direct = (
-                    f"https://www.etstur.com/Arama?q={q_hotel_only}"
-                    f"&utm_source=hakikibilet&utm_medium=affiliate"
-                )
 
             # Birincil kazanan kanal ve buton (Yalnızca doğrulanmış doğrudan otel detay sayfası olan kanallar)
             ep = h.get("enuygun_price")
@@ -1584,7 +1888,7 @@ class HotelService:
         2. Yurt dışı/adalarda Enuygun linkini kaldırıp Booking ve Agoda'ya kusursuz yönlendirir.
         """
         cin, cout, nights = cls.calculate_dates(checkin_date, checkout_date)
-        city_clean = dest_city.split("(")[0].strip()
+        city_clean = cls.sanitize_hotel_city_name(dest_city)
         city_slug = (
             city_clean.replace("İ", "i")
             .replace("I", "i")
@@ -1606,7 +1910,7 @@ class HotelService:
         
         # Destinasyonun yurt dışı / ada kontrolü (Önce şehir veritabanından, yoksa haritadan teyit)
         from app.cities import find_city
-        matched_loc = find_city(dest_city)
+        matched_loc = find_city(dest_city) or find_city(city_clean)
         dest_meta = cls.DEST_ID_MAP.get(city_slug)
         if matched_loc and "is_international" in matched_loc:
             is_international = bool(matched_loc.get("is_international", False))
@@ -1621,6 +1925,7 @@ class HotelService:
         currency = (currency or "TRY").upper()
         curr_sym = CurrencyService.get_symbol(currency)
         aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+        agoda_cid = getattr(settings, "AFFILIATE_AGODA_CID", "1924128")
         trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
         trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
 
@@ -1636,9 +1941,14 @@ class HotelService:
             trip_sid=trip_sid,
         )
 
-        # 2. Booking.com & Agoda (SADECE YURT DIŞI / ULUSLARARASI DESTİNASYONLARDA AKTİF!
-        # Türkiye içi şehirlerde Booking.com Türk IP'lerine mahkeme kararıyla kapalıdır ve Kars ➔ Karlsruhe gibi yanlış yönlendirme + kırmızı uyarı verir)
+        # 2. Booking.com (Sadece Yurt Dışı) & Agoda (Yurt İçi + Yurt Dışı Engelsiz)
         dest_q = f"&dest_id={dest_id}&dest_type={dest_type}" if dest_id else ""
+        agoda_url = (
+            f"https://www.agoda.com/tr-tr/search?"
+            f"text={urllib.parse.quote(city_clean)}"
+            f"&checkIn={cin}&checkOut={cout}&rooms=1&adults={guests}"
+            f"&cid={agoda_cid}"
+        )
         if is_international:
             booking_url = (
                 f"https://www.booking.com/searchresults.html?"
@@ -1649,15 +1959,8 @@ class HotelService:
                 f"&sb=1"
                 f"&aid={aid}"
             )
-            agoda_url = (
-                f"https://www.agoda.com/tr-tr/search?"
-                f"city={urllib.parse.quote(city_clean)}"
-                f"&checkIn={cin}&checkOut={cout}&rooms=1&adults={guests}"
-                f"&cid={settings.AFFILIATE_AGODA_CID}"
-            )
         else:
             booking_url = None
-            agoda_url = None
 
         # 3. Enuygun Otel (/otel/bolge/...), Obilet Otel, Bilet.com Otel & Etstur Linkleri (YURT İÇİ TÜRKİYE İÇİN AKTİF)
         from app.services.revenue_service import RevenueService
@@ -1694,7 +1997,7 @@ class HotelService:
             )
             ets_slug = "-".join(w.capitalize() for w in city_slug.split("-") if w)
             etstur_url = RevenueService.enrich_url(
-                f"https://www.etstur.com/{ets_slug}-Otelleri",
+                f"https://www.etstur.com/{ets_slug}-Otelleri?check_in={enuygun_cin}&check_out={enuygun_cout}&adult_1={guests}",
                 provider="etstur",
                 vertical="hotel",
             )
@@ -1709,7 +2012,7 @@ class HotelService:
             primary_provider = "Trip.com"
 
         # 4. CANLI MULTI-SOURCE OTEL MOTORU (Enuygun SSR + Trip.com SSR + Hakiki F/P Algoritması)
-        live_cache_key = f"faz1_v2_live_{city_slug}_{cin}_{cout}_{guests}_{currency}_{int(is_international)}"
+        live_cache_key = f"faz1_v3_live_{city_slug}_{cin}_{cout}_{guests}_{currency}_{int(is_international)}"
         now_ts = time.time()
         live_hotels: List[Dict[str, Any]] = []
 
@@ -1718,9 +2021,9 @@ class HotelService:
             if now_ts - ts < cls._CACHE_TTL and cached_hotels:
                 live_hotels = cached_hotels
 
-        trip_meta = cls.TRIP_CITY_ID_MAP.get(city_slug)
+        trip_meta = cls.resolve_trip_city_meta(city_clean, city_slug, trip_aid=trip_aid, trip_sid=trip_sid)
         trip_city_id = int(trip_meta["id"]) if (trip_meta and trip_meta.get("id")) else None
-        en_region_slug = cls.ENUYGUN_HOTEL_SLUG_MAP.get(city_slug) if not is_international else None
+        en_region_slug = cls.resolve_enuygun_region_slug(city_clean, city_slug) if not is_international else None
 
         if not live_hotels:
             en_list: List[Dict[str, Any]] = []

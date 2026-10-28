@@ -5591,9 +5591,13 @@ async function executeHotelSearch(e) {
         const abortCtrl = new AbortController();
         window._activeHotelAbort = abortCtrl;
 
-        const dynamicOrigin = (window.HakikiTravelContext && window.HakikiTravelContext.origin_name)
+        let dynamicOrigin = (window.HakikiTravelContext && window.HakikiTravelContext.origin_name)
             || (document.getElementById("transOrigin") && document.getElementById("transOrigin").value.trim())
             || "İstanbul";
+        const cleanDestToken = city.split("(")[0].trim().toLocaleLowerCase("tr-TR");
+        if (cleanDestToken && dynamicOrigin.toLocaleLowerCase("tr-TR").includes(cleanDestToken)) {
+            dynamicOrigin = cleanDestToken.includes("ankara") ? "İstanbul" : "Ankara";
+        }
 
         const payload = {
             origin: dynamicOrigin,
@@ -6185,7 +6189,7 @@ function renderFilteredHotelCards() {
         ? `https://${tripDomain}/hotels/list?flexType=1&cityId=${cid}&searchWord=${qFilteredCity}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&curr=TRY&locale=${tripLocale}&Allianceid=11051531&SID=333747492`
         : `https://${tripDomain}/hotels/list?flexType=1&searchWord=${qFilteredCity}&keyword=${qFilteredCity}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&curr=TRY&locale=${tripLocale}&Allianceid=11051531&SID=333747492`;
     const filteredEnuygunUrl = !isIntl ? (hotelInfo.enuygun_url || `https://www.enuygun.com/otel/`) : null;
-    const filteredEtsturUrl = !isIntl ? `https://www.etstur.com/Arama?q=${qFilteredCity}&utm_source=hakikibilet&utm_medium=affiliate` : null;
+    const filteredEtsturUrl = !isIntl ? (hotelInfo.etstur_url || null) : null;
     const filteredBookingUrl = isIntl ? `https://www.booking.com/searchresults.html?ss=${qFilteredCity}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=585474` : null;
 
     let cardsHtml = '';
@@ -6391,17 +6395,20 @@ function renderFilteredHotelCards() {
                                 </div>
 
                                 <!-- İkincil Doğrudan Otel Karşılaştırma Şeridi (Etstur / Agoda) -->
-                                <div class="flex items-center justify-between text-[10.5px] text-slate-500 pt-1 border-t border-slate-200/60">
+                                <div class="flex flex-wrap items-center justify-between gap-2 text-[10.5px] text-slate-500 pt-1 border-t border-slate-200/60">
                                     <span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>${isEn ? 'Dates & guests pre-filled' : 'Tarih ve kişi sayısı dolu açılır'}</span>
-                                    ${!isIntl && h.etstur_url ? `
-                                        <a href="${h.etstur_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-sky-700 hover:text-sky-900">
-                                            Etstur'da İncele ↗
-                                        </a>
-                                    ` : (isIntl && h.agoda_url ? `
-                                        <a href="${h.agoda_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-slate-700 hover:text-slate-950">
-                                            Agoda'da İncele ↗
-                                        </a>
-                                    ` : '')}
+                                    <div class="flex items-center gap-2.5">
+                                        ${!isIntl && h.etstur_url ? `
+                                            <a href="${h.etstur_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-sky-700 hover:text-sky-900">
+                                                Etstur'da İncele ↗
+                                            </a>
+                                        ` : ''}
+                                        ${h.agoda_url ? `
+                                            <a href="${h.agoda_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-indigo-700 hover:text-indigo-950">
+                                                Agoda'da İncele ↗
+                                            </a>
+                                        ` : ''}
+                                    </div>
                                 </div>
                             </div>
                         </div>

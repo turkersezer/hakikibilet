@@ -1018,7 +1018,7 @@ class SearchService:
         origin_name = origin["name"] if origin else origin_city
         dest_name = dest["name"] if dest else dest_city
 
-        # 1.1 Aynı Kalkış ve Varış Noktası Erken Koruması (Kiralık Araç & Havalimanı Transferi hariç)
+        # 1.1 Aynı Kalkış ve Varış Noktası Erken Koruması (Kiralık Araç, Havalimanı Transferi ve Konaklama hariç)
         orig_slug = origin["slug"] if origin else origin_city.lower().replace(" ", "-")
         dest_slug = dest["slug"] if dest else dest_city.lower().replace(" ", "-")
         if transport_type != "car" and (orig_slug == dest_slug or origin_city.strip().lower() == dest_city.strip().lower()):
@@ -1029,6 +1029,18 @@ class SearchService:
                 cabin_class=cabin_class, currency=currency_norm,
                 adults=adults, children=children, infants=infants
             )
+            same_city_hotel_info = None
+            if include_hotel or search_mode == "smart_route":
+                try:
+                    same_city_hotel_info = HotelService.get_hotel_recommendation(
+                        dest_city=dest_city or dest_name,
+                        checkin_date=departure_date,
+                        checkout_date=return_date,
+                        guests=total_pax,
+                        currency=currency_norm,
+                    )
+                except Exception as he:
+                    logger.warning(f"Same-city hotel recommendation error: {he}")
             return {
                 "origin": origin_name,
                 "destination": dest_name,
@@ -1048,8 +1060,8 @@ class SearchService:
                 "results_count": 0,
                 "summary": {"total_options": 0, "flight": None, "train": None, "bus": None, "ferry": None},
                 "deep_links": links,
-                "notices": ["⚠️ Kalkış ve varış noktası aynı olamaz. Lütfen farklı bir varış şehri belirleyiniz."],
-                "hotel_info": None,
+                "notices": [] if include_hotel else ["⚠️ Kalkış ve varış noktası aynı olamaz. Lütfen farklı bir varış şehri belirleyiniz."],
+                "hotel_info": same_city_hotel_info,
                 "price_calendar": {"days": [], "days_count": 0, "range_type": calendar_range, "tip": ""}
             }
         
@@ -1078,10 +1090,23 @@ class SearchService:
 
         is_round = (trip_type == "round_trip" and return_date)
 
-        # Alternatif ulaşım rozetlerini (Örn: Otobüs ararken Uçak + Tren fiyatlarını) ana aramayla EŞ ZAMANLI (paralel) başlat!
+        # Alternatif ulaşım rozetlerini (Örn: Otobüs ararken Uçak + Tren fiyatlarını)
+        # veya Konaklama (Otel) aramasını ana aramayla EŞ ZAMANLI (paralel) başlat!
         _alt_executor = None
         _alt_badges_future = None
-        if not include_hotel:
+        _hotel_executor = None
+        _hotel_future = None
+        if include_hotel or search_mode == "smart_route":
+            _hotel_executor = ThreadPoolExecutor(max_workers=1)
+            _hotel_future = _hotel_executor.submit(
+                HotelService.get_hotel_recommendation,
+                dest_city=dest_city or dest_name,
+                checkin_date=departure_date,
+                checkout_date=return_date,
+                guests=total_pax,
+                currency=currency,
+            )
+        else:
             _alt_executor = ThreadPoolExecutor(max_workers=1)
             _alt_badges_future = _alt_executor.submit(
                 cls.build_alternative_mode_badges,
@@ -1388,14 +1413,23 @@ class SearchService:
             search_mode=search_mode
         )
 
-        # Otel Bilgisi ve Fırsat Önerisi (Seçenek A: Parametrik Booking.com / Enuygun Otel)
+        # Otel Bilgisi ve Fırsat Önerisi (Paralel başlatılan otel sorgusunun sonucunu al)
         hotel_info = None
-        if include_hotel or search_mode == "smart_route":
+        if _hotel_future is not None:
+            try:
+                hotel_info = _hotel_future.result(timeout=14.0)
+            except Exception as he:
+                logger.warning(f"Parallel hotel recommendation warning: {he}")
+                hotel_info = None
+            finally:
+                if _hotel_executor:
+                    _hotel_executor.shutdown(wait=False)
+        elif include_hotel or search_mode == "smart_route":
             hotel_info = HotelService.get_hotel_recommendation(
-                dest_city=dest_name,
+                dest_city=dest_city or dest_name,
                 checkin_date=departure_date,
                 checkout_date=return_date,
-                guests=passengers,
+                guests=total_pax,
                 currency=currency
             )
 
