@@ -426,11 +426,14 @@ async def search_tickets(req: SearchRequest, request: Request):
             ))
         except Exception:
             pass
-        links = SearchService.generate_deep_links(
-            req.origin, req.destination, req.departure_date, req.return_date,
-            total_pax, req.trip_type, cabin_class=req.cabin_class,
-            adults=adults, children=children, infants=infants
-        )
+        try:
+            links = SearchService.generate_deep_links(
+                req.origin, req.destination, req.departure_date, req.return_date,
+                total_pax, req.trip_type, cabin_class=req.cabin_class,
+                adults=adults, children=children, infants=infants
+            )
+        except Exception:
+            links = {}
         fallback_hotel_info = None
         if getattr(req, "include_hotel", False):
             try:

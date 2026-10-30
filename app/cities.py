@@ -191,10 +191,24 @@ INTERNATIONAL_CITIES = [
     {"name": "Tiflis (TBS)", "en_name": "Tbilisi Tiflis", "slug": "tiflis", "country": "Gürcistan", "region": "Kafkaslar", "iata": "TBS", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
     {"name": "Bakü (GYD)", "en_name": "Baku", "slug": "baku", "country": "Azerbaycan", "region": "Kafkaslar", "iata": "GYD", "has_airport": True, "has_train": False, "is_international": True},
     {"name": "Üsküp (SKP)", "en_name": "Skopje Uskup", "slug": "uskup", "country": "Kuzey Makedonya", "region": "Balkanlar", "iata": "SKP", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Belgrad (BEG)", "en_name": "Belgrade Belgrad", "slug": "belgrad", "country": "Sırbistan", "region": "Balkanlar", "iata": "BEG", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True},
+    {"name": "Saraybosna (SJJ)", "en_name": "Sarajevo Saraybosna", "slug": "saraybosna", "country": "Bosna-Hersek", "region": "Balkanlar", "iata": "SJJ", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True},
+    {"name": "Tiran (TIA)", "en_name": "Tirana Tiran", "slug": "tiran", "country": "Arnavutluk", "region": "Balkanlar", "iata": "TIA", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True},
+    {"name": "Bükreş (OTP)", "en_name": "Bucharest Bukres", "slug": "bukres", "country": "Romanya", "region": "Balkanlar", "iata": "OTP", "has_airport": True, "has_train": False, "has_bus": True, "is_international": True, "is_overland_neighbor": True},
+    {"name": "Podgorica (TGD)", "en_name": "Podgorica Karadag Montenegro", "slug": "podgorica", "country": "Karadağ", "region": "Balkanlar", "iata": "TGD", "has_airport": True, "has_train": False, "is_international": True},
+    {"name": "Priştine (PRN)", "en_name": "Pristina Pristine Kosova", "slug": "pristine", "country": "Kosova", "region": "Balkanlar", "iata": "PRN", "has_airport": True, "has_train": False, "is_international": True},
+    {"name": "Lizbon (LIS)", "en_name": "Lisbon Lizbon Lisboa", "slug": "lizbon", "country": "Portekiz", "region": "Avrupa", "iata": "LIS", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Kopenhag (CPH)", "en_name": "Copenhagen Kopenhag", "slug": "kopenhag", "country": "Danimarka", "region": "Avrupa", "iata": "CPH", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Stockholm (ARN)", "en_name": "Stockholm", "slug": "stockholm", "country": "İsveç", "region": "Avrupa", "iata": "ARN", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Oslo (OSL)", "en_name": "Oslo", "slug": "oslo", "country": "Norveç", "region": "Avrupa", "iata": "OSL", "has_airport": True, "has_train": True, "is_international": True},
+    {"name": "Varşova (WAW)", "en_name": "Warsaw Varsova", "slug": "varsova", "country": "Polonya", "region": "Avrupa", "iata": "WAW", "has_airport": True, "has_train": True, "is_international": True},
 
     # 🇦🇪 Orta Doğu & Körfez
     {"name": "Dubai (DXB)", "slug": "dubai", "country": "BAE", "region": "Orta Doğu", "iata": "DXB", "has_airport": True, "has_train": False, "is_international": True},
+    {"name": "Abu Dabi (AUH)", "en_name": "Abu Dhabi", "slug": "abu-dabi", "country": "BAE", "region": "Orta Doğu", "iata": "AUH", "has_airport": True, "has_train": False, "is_international": True},
     {"name": "Doha (DOH)", "slug": "doha", "country": "Katar", "region": "Orta Doğu", "iata": "DOH", "has_airport": True, "has_train": False, "is_international": True},
+    {"name": "Kahire (CAI)", "en_name": "Cairo Kahire", "slug": "kahire", "country": "Mısır", "region": "Orta Doğu", "iata": "CAI", "has_airport": True, "has_train": False, "is_international": True},
+    {"name": "Şarm El-Şeyh (SSH)", "en_name": "Sharm El Sheikh", "slug": "sarm-el-seyh", "country": "Mısır", "region": "Orta Doğu", "iata": "SSH", "has_airport": True, "has_train": False, "is_international": True},
     {"name": "Riyad (RUH)", "slug": "riyad", "country": "Suudi Arabistan", "region": "Orta Doğu", "iata": "RUH", "has_airport": True, "has_train": False, "is_international": True},
     {"name": "Cidde (JED)", "slug": "cidde", "country": "Suudi Arabistan", "region": "Orta Doğu", "iata": "JED", "has_airport": True, "has_train": False, "is_international": True},
 
@@ -218,19 +232,19 @@ FERRY_PORTS = [
     {"name": "Avşa Adası", "slug": "avsa-adasi", "port_code": "AVS", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.5050, "lng": 27.5110},
     {"name": "Armutlu İskelesi", "slug": "armutlu", "port_code": "ARM", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.5180, "lng": 28.8280},
     {"name": "Çeşme Limanı (İzmir)", "slug": "cesme", "port_code": "CSM", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 38.3240, "lng": 26.3020},
-    {"name": "Sakız Adası (Chios)", "slug": "sakiz-adasi", "port_code": "JKH", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 38.3680, "lng": 26.1360},
+    {"name": "Sakız Adası (Chios)", "slug": "sakiz-adasi", "port_code": "JKH", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "is_international": True, "requires_visa": True, "lat": 38.3680, "lng": 26.1360},
     {"name": "Bodrum Limanı (Muğla)", "slug": "bodrum-liman", "port_code": "BXN", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 37.0310, "lng": 27.4290},
-    {"name": "Kos Adası (İstanköy)", "slug": "kos-adasi", "port_code": "KGS", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.8930, "lng": 27.2880},
+    {"name": "Kos Adası (İstanköy)", "slug": "kos-adasi", "port_code": "KGS", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "is_international": True, "requires_visa": True, "lat": 36.8930, "lng": 27.2880},
     {"name": "Ayvalık Limanı (Balıkesir)", "slug": "ayvalik", "port_code": "AYV", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 39.3190, "lng": 26.6930},
-    {"name": "Midilli Adası (Lesvos)", "slug": "midilli-adasi", "port_code": "MJT", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 39.1050, "lng": 26.5550},
+    {"name": "Midilli Adası (Lesvos)", "slug": "midilli-adasi", "port_code": "MJT", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "is_international": True, "requires_visa": True, "lat": 39.1050, "lng": 26.5550},
     {"name": "Kuşadası Limanı (Aydın)", "slug": "kusadasi", "port_code": "KUS", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 37.8610, "lng": 27.2600},
-    {"name": "Samos Adası (Sisam)", "slug": "samos-adasi", "port_code": "SMI", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 37.7550, "lng": 26.9770},
+    {"name": "Samos Adası (Sisam)", "slug": "samos-adasi", "port_code": "SMI", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "is_international": True, "requires_visa": True, "lat": 37.7550, "lng": 26.9770},
     {"name": "Fethiye Limanı (Muğla)", "slug": "fethiye", "port_code": "FTH", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 36.6210, "lng": 29.1120},
-    {"name": "Rodos Adası (Rhodes)", "slug": "rodos-adasi", "port_code": "RHO", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.4340, "lng": 28.2170},
+    {"name": "Rodos Adası (Rhodes)", "slug": "rodos-adasi", "port_code": "RHO", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "is_international": True, "requires_visa": True, "lat": 36.4340, "lng": 28.2170},
     {"name": "Marmaris Limanı (Muğla)", "slug": "marmaris", "port_code": "MRM", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 36.8520, "lng": 28.2740},
     {"name": "Kaş Limanı (Antalya)", "slug": "kas", "port_code": "KAS", "region": "Akdeniz", "is_ferry": True, "country": "Türkiye", "lat": 36.1990, "lng": 29.6380},
-    {"name": "Meis Adası (Kastellorizo)", "slug": "meis-adasi", "port_code": "KZS", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.1480, "lng": 29.5930},
-    {"name": "Simi Adası (Symi)", "slug": "simi-adasi", "port_code": "SYM", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "requires_visa": True, "lat": 36.6150, "lng": 27.8360},
+    {"name": "Meis Adası (Kastellorizo)", "slug": "meis-adasi", "port_code": "KZS", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "is_international": True, "requires_visa": True, "lat": 36.1480, "lng": 29.5930},
+    {"name": "Simi Adası (Symi)", "slug": "simi-adasi", "port_code": "SYM", "region": "Yunan Adaları", "is_ferry": True, "country": "Yunanistan", "is_international": True, "requires_visa": True, "lat": 36.6150, "lng": 27.8360},
     {"name": "Çanakkale İskelesi (Gestaş)", "slug": "canakkale-iskele", "port_code": "CNK", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.1510, "lng": 26.4020},
     {"name": "Eceabat / Gelibolu İskelesi (Gestaş)", "slug": "eceabat", "port_code": "ECB", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.1840, "lng": 26.3570},
     {"name": "Geyikli İskelesi (Çanakkale)", "slug": "geyikli", "port_code": "GYK", "region": "Kuzey Ege", "is_ferry": True, "country": "Türkiye", "lat": 39.7980, "lng": 26.1530},
@@ -238,7 +252,7 @@ FERRY_PORTS = [
     {"name": "Kabatepe İskelesi (Çanakkale)", "slug": "kabatepe", "port_code": "KBT", "region": "Kuzey Ege", "is_ferry": True, "country": "Türkiye", "lat": 40.2010, "lng": 26.2680},
     {"name": "Gökçeada Kuzu Limanı (Gestaş)", "slug": "gokceada", "port_code": "GKC", "region": "Kuzey Ege", "is_ferry": True, "country": "Türkiye", "lat": 40.2310, "lng": 25.9500},
     {"name": "Taşucu Limanı (Mersin - KKTC Feribot)", "slug": "tasucu", "port_code": "TSC", "region": "Akdeniz", "is_ferry": True, "country": "Türkiye", "lat": 36.3160, "lng": 33.8840},
-    {"name": "Girne Limanı (KKTC - Kıbrıs)", "slug": "girne", "port_code": "KYR", "region": "KKTC", "is_ferry": True, "country": "KKTC", "lat": 35.3410, "lng": 33.3200},
+    {"name": "Girne Limanı (KKTC - Kıbrıs)", "slug": "girne", "port_code": "KYR", "region": "KKTC", "is_ferry": True, "country": "KKTC", "is_international": True, "lat": 35.3410, "lng": 33.3200},
     {"name": "Galataport Kruvaziyer Limanı (İstanbul)", "slug": "galataport", "port_code": "GLT", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 41.0260, "lng": 28.9830}
 ]
 
@@ -470,6 +484,40 @@ _SPECIAL_DISTRICT_AIRPORT_SLUGS = {
     "tunceli": "elazig",
     "kilis": "gaziantep",
     "osmaniye": "adana",
+    "selimiye": "dalaman",
+    "bozburun": "dalaman",
+    "hisaronu": "dalaman",
+    "icmeler": "dalaman",
+    "turunc": "dalaman",
+    "akyaka": "dalaman",
+    "dalyan": "dalaman",
+    "gocek": "dalaman",
+    "oludeniz": "dalaman",
+    "kalkan": "dalaman",
+    "olimpos": "antalya",
+    "cirali": "antalya",
+    "adrasan": "antalya",
+    "ilica": "izmir",
+    "sigacik": "izmir",
+    "kucukkuyu": "balikesir",
+    "altinoluk": "balikesir",
+    "akcay": "balikesir",
+    "cunda": "balikesir",
+    "agva": "istanbul-sabiha-gokcen",
+    "sile": "istanbul-sabiha-gokcen",
+    "masukiye": "istanbul-sabiha-gokcen",
+    "kartepe": "istanbul-sabiha-gokcen",
+    "abant": "istanbul-sabiha-gokcen",
+    "kartalkaya": "istanbul-sabiha-gokcen",
+    "amasra": "zonguldak",
+    "uzungol": "trabzon",
+    "caykara": "trabzon",
+    "ayder": "rize",
+    "camlihemsin": "rize",
+    "uludag": "bursa",
+    "sarikamis": "kars",
+    "palandoken": "erzurum",
+    "erciyes": "kayseri",
 }
 
 
@@ -491,7 +539,19 @@ def resolve_nearest_airport_city(location_or_name):
         return loc, False
 
     # Doğrudan girilen metni aday slug olarak hazırla
-    raw_cand = re.sub(r"[^a-z0-9-]+", "-", input_str.lower().replace("ı", "i").replace("ğ", "g").replace("ü", "u").replace("ş", "s").replace("ö", "o").replace("ç", "c")).strip("-")
+    norm_input = (
+        input_str.replace("İ", "i")
+        .replace("I", "i")
+        .replace("ı", "i")
+        .lower()
+        .replace("ğ", "g")
+        .replace("ü", "u")
+        .replace("ş", "s")
+        .replace("ö", "o")
+        .replace("ç", "c")
+        .replace("\u0307", "")
+    )
+    raw_cand = re.sub(r"[^a-z0-9-]+", "-", norm_input).strip("-")
     slug = (loc.get("slug") or "").lower().strip() if loc else ""
     raw_slug = re.sub(r"[^a-z0-9-]+", "-", (loc.get("raw_name") or "").lower().strip()).strip("-") if loc else ""
 
@@ -501,6 +561,9 @@ def resolve_nearest_airport_city(location_or_name):
             for c in (TURKEY_CITIES + INTERNATIONAL_CITIES):
                 if c.get("slug") == target_slug and c.get("has_airport") and c.get("iata"):
                     return c, True
+
+    if not loc:
+        return None, False
 
     # İl (Province) üzerinden çözümle (Örn: Manavgat (Antalya) -> Antalya (AYT))
     province_name = loc.get("province")

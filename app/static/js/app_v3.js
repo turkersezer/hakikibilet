@@ -2818,23 +2818,184 @@ function switchHotelScope(scope) {
     populateHotelDatalist(scope);
 }
 
+const CURATED_HOTEL_DESTINATIONS_DOMESTIC = [
+    { name: "Antalya", region: "Akdeniz • Resort & Sahil" },
+    { name: "Bodrum", region: "Muğla • Ege Tatil Beldesi" },
+    { name: "Marmaris", region: "Muğla • Ege & Akdeniz Koyları" },
+    { name: "Selimiye", region: "Marmaris, Muğla • Butik Koy Otelleri" },
+    { name: "Bozburun", region: "Marmaris, Muğla • Butik Sahil" },
+    { name: "Fethiye", region: "Muğla • Likya Sahili" },
+    { name: "Ölüdeniz", region: "Fethiye, Muğla • Mavi Lagün" },
+    { name: "Göcek", region: "Fethiye, Muğla • Marina & Koylar" },
+    { name: "Akyaka", region: "Ula, Muğla • Gökova & Azmak" },
+    { name: "Dalyan", region: "Ortaca, Muğla • İztuzu & Kanal" },
+    { name: "Datça", region: "Muğla • Yarımada & Koylar" },
+    { name: "Çeşme", region: "İzmir • Ege Sahili & Termal" },
+    { name: "Alaçatı", region: "Çeşme, İzmir • Taş Butik Oteller" },
+    { name: "Urla", region: "İzmir • Bağ Yolu & Gastronomi" },
+    { name: "Sığacık", region: "Seferihisar, İzmir • Sakin Şehir" },
+    { name: "Kuşadası", region: "Aydın • Ege Sahili & Kruvaziyer" },
+    { name: "Didim", region: "Aydın • Altınkum Sahili" },
+    { name: "Alanya", region: "Antalya • Kleopatra & Resort" },
+    { name: "Kemer", region: "Antalya • Toroslar & Sahil" },
+    { name: "Belek", region: "Antalya • Ultra Her Şey Dahil & Golf" },
+    { name: "Side", region: "Manavgat, Antalya • Antik Kent & Resort" },
+    { name: "Kaş", region: "Antalya • Butik Tatil & Dalış" },
+    { name: "Kalkan", region: "Kaş, Antalya • Deniz Manzaralı Villa & Butik" },
+    { name: "Olimpos", region: "Kumluca, Antalya • Bungalov & Doğa" },
+    { name: "Çıralı", region: "Kemer, Antalya • Sahil & Butik" },
+    { name: "Kapadokya", region: "Nevşehir • Kaya & Mağara Oteller" },
+    { name: "Ürgüp", region: "Kapadokya, Nevşehir • Taş Konaklar" },
+    { name: "Göreme", region: "Kapadokya, Nevşehir • Balon Manzaralı" },
+    { name: "Ayvalık", region: "Balıkesir • Kuzey Ege" },
+    { name: "Cunda", region: "Ayvalık, Balıkesir • Ada Butik Oteller" },
+    { name: "Edremit", region: "Balıkesir • Kazdağları & Körfez" },
+    { name: "Akçay", region: "Edremit, Balıkesir • Körfez Sahili" },
+    { name: "Altınoluk", region: "Edremit, Balıkesir • Kazdağları Sahili" },
+    { name: "Assos", region: "Ayvacık, Çanakkale • Antik Liman & Taş Oteller" },
+    { name: "Bozcaada", region: "Çanakkale • Kuzey Ege Adası" },
+    { name: "Gökçeada", region: "Çanakkale • Kuzey Ege Adası" },
+    { name: "Sapanca", region: "Sakarya • Göl & Bungalov" },
+    { name: "Maşukiye", region: "Kocaeli • Doğa & Bungalov" },
+    { name: "Kartepe", region: "Kocaeli • Kayak & Doğa" },
+    { name: "Abant", region: "Bolu • Göl & Doğa Otelleri" },
+    { name: "Kartalkaya", region: "Bolu • Kayak Merkezi" },
+    { name: "Ağva", region: "Şile, İstanbul • Nehir & Şömine Butik" },
+    { name: "Şile", region: "İstanbul • Karadeniz Sahili" },
+    { name: "Pamukkale", region: "Denizli • Travertenler & Termal" },
+    { name: "Safranbolu", region: "Karabük • Tarihi Konaklar" },
+    { name: "Amasra", region: "Bartın • Karadeniz Sahil Kasabası" },
+    { name: "Trabzon", region: "Doğu Karadeniz" },
+    { name: "Uzungöl", region: "Çaykara, Trabzon • Yayla & Göl" },
+    { name: "Rize", region: "Doğu Karadeniz & Yaylalar" },
+    { name: "Ayder", region: "Çamlıhemşin, Rize • Yayla & Kaplıca" },
+    { name: "Bursa", region: "Marmara • Termal & Tarih" },
+    { name: "Uludağ", region: "Bursa • Kayak & Kış Otelleri" },
+    { name: "Kars", region: "Doğu Ekspresi & Ani Harabeleri" },
+    { name: "Sarıkamış", region: "Kars • Kristal Kar Kayak Merkezi" },
+    { name: "Erzurum", region: "Doğu Anadolu • Kış Turizmi" },
+    { name: "Palandöken", region: "Erzurum • Kayak Merkezi" },
+    { name: "Kayseri", region: "İç Anadolu • Erciyes & Kültür" },
+    { name: "Erciyes", region: "Kayseri • Kayak Merkezi" },
+    { name: "İstanbul", region: "Marmara • Tarihi Yarımada & Boğaz" },
+    { name: "İzmir", region: "Ege • Kordon & Alsancak" },
+    { name: "Ankara", region: "İç Anadolu • Başkent" },
+    { name: "Eskişehir", region: "İç Anadolu • Odunpazarı & Porsuk" },
+    { name: "Gaziantep", region: "Güneydoğu • Gastronomi & Kültür" },
+    { name: "Mardin", region: "Güneydoğu • Tarihi Taş Konaklar" },
+    { name: "Şanlıurfa", region: "Güneydoğu • Göbeklitepe & Balıklıgöl" },
+    { name: "Diyarbakır", region: "Güneydoğu • Sur & Tarih" },
+    { name: "Hatay", region: "Akdeniz • Antakya & Gastronomi" },
+    { name: "Adana", region: "Akdeniz • Çukurova" },
+    { name: "Mersin", region: "Akdeniz • Sahil & Kızkalesi" },
+    { name: "Afyonkarahisar", region: "Ege • Termal & Spa Başkenti" },
+    { name: "Yalova", region: "Marmara • Termal & Kaplıca" },
+    { name: "Çanakkale", region: "Marmara • Boğaz & Gelibolu" },
+    { name: "Edirne", region: "Trakya • Selimiye & Meriç" },
+    { name: "Konya", region: "İç Anadolu • Mevlana & Kültür" },
+    { name: "Samsun", region: "Orta Karadeniz" },
+    { name: "Ordu", region: "Karadeniz • Boztepe" },
+    { name: "Giresun", region: "Karadeniz • Yayla & Sahil" },
+    { name: "Sinop", region: "Karadeniz • İnceburun & Hamsilos" },
+    { name: "Artvin", region: "Doğu Karadeniz • Karagöl & Macahel" },
+    { name: "Van", region: "Doğu Anadolu • Van Gölü & Akdamar" },
+];
+
+const CURATED_HOTEL_DESTINATIONS_INTL = [
+    { name: "Girne", country: "KKTC", region: "Kuzey Kıbrıs • Resort & Marina" },
+    { name: "Lefkoşa", country: "KKTC", region: "Kuzey Kıbrıs • Merkez" },
+    { name: "Gazimağusa", country: "KKTC", region: "Kuzey Kıbrıs • Bafra & Sahil" },
+    { name: "Sakız Adası", country: "Yunanistan", region: "Yunan Adaları • Chios" },
+    { name: "Rodos Adası", country: "Yunanistan", region: "Yunan Adaları • Rhodes Old Town" },
+    { name: "Kos Adası", country: "Yunanistan", region: "Yunan Adaları • İstanköy" },
+    { name: "Midilli Adası", country: "Yunanistan", region: "Yunan Adaları • Lesbos / Mytilene" },
+    { name: "Samos Adası", country: "Yunanistan", region: "Yunan Adaları • Sisam / Pythagorio" },
+    { name: "Simi Adası", country: "Yunanistan", region: "Yunan Adaları • Symi" },
+    { name: "Meis Adası", country: "Yunanistan", region: "Yunan Adaları • Kastellorizo" },
+    { name: "Paris", country: "Fransa", region: "Avrupa • Şehir Merkezi" },
+    { name: "Roma", country: "İtalya", region: "Avrupa • Tarihi Merkez" },
+    { name: "Londra", country: "İngiltere", region: "Avrupa • Metropol" },
+    { name: "Amsterdam", country: "Hollanda", region: "Avrupa • Kanal & Merkez" },
+    { name: "Barselona", country: "İspanya", region: "Avrupa • Sahil & Eixample" },
+    { name: "Madrid", country: "İspanya", region: "Avrupa • Başkent" },
+    { name: "Milano", country: "İtalya", region: "Avrupa • Duomo & Moda" },
+    { name: "Venedik", country: "İtalya", region: "Avrupa • San Marco & Kanallar" },
+    { name: "Berlin", country: "Almanya", region: "Avrupa • Başkent" },
+    { name: "Münih", country: "Almanya", region: "Avrupa • Bavyera" },
+    { name: "Frankfurt", country: "Almanya", region: "Avrupa • Finans & Merkez" },
+    { name: "Viyana", country: "Avusturya", region: "Avrupa • Tarihi Başkent" },
+    { name: "Prag", country: "Çekya", region: "Avrupa • Eski Şehir" },
+    { name: "Budapeşte", country: "Macaristan", region: "Avrupa • Tuna & Termal" },
+    { name: "Atina", country: "Yunanistan", region: "Balkanlar • Akropolis & Plaka" },
+    { name: "Selanik", country: "Yunanistan", region: "Balkanlar • Sahil & Kordon" },
+    { name: "Sofya", country: "Bulgaristan", region: "Balkanlar • Başkent" },
+    { name: "Bükreş", country: "Romanya", region: "Balkanlar • Eski Şehir" },
+    { name: "Belgrad", country: "Sırbistan", region: "Balkanlar • Vizesiz Turlar" },
+    { name: "Saraybosna", country: "Bosna-Hersek", region: "Balkanlar • Başçarşı (Vizesiz)" },
+    { name: "Üsküp", country: "Kuzey Makedonya", region: "Balkanlar • Vizesiz" },
+    { name: "Tiran", country: "Arnavutluk", region: "Balkanlar • Vizesiz" },
+    { name: "Podgorica", country: "Karadağ", region: "Balkanlar • Vizesiz" },
+    { name: "Batum", country: "Gürcistan", region: "Kafkaslar • Kimlikle Giriş" },
+    { name: "Tiflis", country: "Gürcistan", region: "Kafkaslar • Kimlikle Giriş" },
+    { name: "Bakü", country: "Azerbaycan", region: "Kafkaslar • Kimlikle Giriş" },
+    { name: "Dubai", country: "BAE", region: "Orta Doğu • Marina & Downtown" },
+    { name: "Abu Dabi", country: "BAE", region: "Orta Doğu • Corniche & Yas Island" },
+    { name: "Doha", country: "Katar", region: "Orta Doğu • Körfez" },
+    { name: "Kahire", country: "Mısır", region: "Orta Doğu • Nil & Piramitler" },
+    { name: "Nice", country: "Fransa", region: "Avrupa • Côte d'Azur" },
+    { name: "Monaco", country: "Monaco", region: "Avrupa • Monte Carlo" },
+    { name: "Zürih", country: "İsviçre", region: "Avrupa • İsviçre Alpleri" },
+    { name: "Cenevre", country: "İsviçre", region: "Avrupa • Göl & Merkez" },
+    { name: "Brüksel", country: "Belçika", region: "Avrupa • Grand Place" },
+    { name: "Lizbon", country: "Portekiz", region: "Avrupa • Alfama & Baixa" },
+    { name: "Tokyo", country: "Japonya", region: "Asya • Vizesiz" },
+    { name: "Bangkok", country: "Tayland", region: "Asya • Vizesiz" },
+    { name: "Seul", country: "Güney Kore", region: "Asya • K-Culture" },
+    { name: "Singapur", country: "Singapur", region: "Asya • Marina Bay" },
+    { name: "Bali", country: "Endonezya", region: "Asya • Ubud & Seminyak" },
+    { name: "New York", country: "ABD", region: "Kuzey Amerika • Manhattan" },
+];
+
 function populateHotelDatalist(scope) {
     const hotelCityList = document.getElementById("hotelCitiesList");
-    if (!hotelCityList || !verifiedCities || verifiedCities.length === 0) return;
+    if (!hotelCityList) return;
 
-    let filtered = verifiedCities;
+    const seenNames = new Set();
+    const listItems = [];
+
+    const addEntry = (name, label) => {
+        const cleanName = String(name || "").split("(")[0].split("/")[0].split(" - ")[0].trim();
+        if (!cleanName) return;
+        const key = cleanName.toLocaleLowerCase("tr-TR");
+        if (seenNames.has(key)) return;
+        seenNames.add(key);
+        listItems.push(`<option value="${escapeHtml(cleanName)}">${escapeHtml(label)}</option>`);
+    };
+
     if (scope === 'intl') {
-        filtered = verifiedCities.filter(c => c.country && c.country !== 'Türkiye');
-        if (filtered.length === 0) filtered = verifiedCities;
+        CURATED_HOTEL_DESTINATIONS_INTL.forEach(d => {
+            addEntry(d.name, `🌍 ${d.region} • ${d.country}`);
+        });
+        CURATED_HOTEL_DESTINATIONS_DOMESTIC.forEach(d => {
+            addEntry(d.name, `🇹🇷 ${d.region}`);
+        });
     } else {
-        filtered = verifiedCities.filter(c => !c.country || c.country === 'Türkiye');
+        CURATED_HOTEL_DESTINATIONS_DOMESTIC.forEach(d => {
+            addEntry(d.name, `🇹🇷 ${d.region}`);
+        });
+        if (Array.isArray(verifiedCities)) {
+            verifiedCities.forEach(c => {
+                if (!c.country || c.country === 'Türkiye') {
+                    addEntry(c.name, `🇹🇷 ${c.region || 'Türkiye'}`);
+                }
+            });
+        }
+        CURATED_HOTEL_DESTINATIONS_INTL.forEach(d => {
+            addEntry(d.name, `🌍 ${d.region} • ${d.country}`);
+        });
     }
 
-    hotelCityList.innerHTML = filtered.map(c => {
-        const flag = (c.country && c.country !== 'Türkiye') ? '🌍' : '🇹🇷';
-        const regionStr = c.country ? ` • ${c.country}` : '';
-        return `<option value="${c.name}">${flag} ${c.region || ''}${regionStr}</option>`;
-    }).join("");
+    hotelCityList.innerHTML = listItems.join("");
 }
 
 // 2. ANA SEKME DEĞİŞİMİ
@@ -5559,10 +5720,23 @@ function applyFlightSortAndFilter() {
 }
 
 // 5. OTEL ARAMASI ÇALIŞTIRMA (ÇİFT YÖNLÜ ÇAPRAZ SATIŞ: OTEL ➔ MULTI-MODAL ULAŞIM)
+function cleanHotelDestinationInputValue(rawVal) {
+    let val = String(rawVal || "").trim();
+    if (!val) return "";
+    // Havalimanı / İskele / Gar parantez eklerini temizle (Örn: 'Dalaman (DLM)' -> 'Dalaman', 'Paris (CDG/ORY)' -> 'Paris')
+    val = val.replace(/\s*\([A-Z0-9\s\/\-]{2,15}\)\s*$/i, "").trim();
+    val = val.replace(/\s+(Havalimanı|Havaalanı|Airport|Feribot\s+İskelesi|İskelesi|Limanı|Otogarı|YHT\s+Garı|Tren\s+Garı)\b.*$/i, "").trim();
+    return val;
+}
+
 async function executeHotelSearch(e) {
     if (e) e.preventDefault();
 
-    const city = document.getElementById("hotelCity").value.trim();
+    const hotelCityEl = document.getElementById("hotelCity");
+    let city = cleanHotelDestinationInputValue(hotelCityEl ? hotelCityEl.value : "");
+    if (hotelCityEl && city && hotelCityEl.value.trim() !== city) {
+        hotelCityEl.value = city;
+    }
     const cin = document.getElementById("hotelCheckin").value;
     const cout = document.getElementById("hotelCheckout").value;
     const guests = document.getElementById("hotelGuests").value;
@@ -5619,20 +5793,18 @@ async function executeHotelSearch(e) {
             signal: abortCtrl.signal
         });
 
-        const data = await res.json();
-        renderHotelResults(data.hotel_info, city, cin, cout, guests, data);
+        const rawText = await res.text();
+        let data = {};
+        try {
+            data = JSON.parse(rawText);
+        } catch (_) {
+            data = {};
+        }
+        renderHotelResults(data.hotel_info || null, city, cin, cout, guests, data);
     } catch (err) {
         if (err && err.name === "AbortError") return;
-        resultsArea.innerHTML = `
-            <div class="p-8 text-center bg-rose-50 border border-rose-200 rounded-3xl text-rose-800">
-                <i class="fa-solid fa-circle-exclamation text-2xl mb-2 text-rose-500"></i>
-                <div class="font-bold">Otel araması sırasında bir hata oluştu.</div>
-                <div class="text-xs mt-1 text-rose-600">${escapeHtml(err.message)}</div>
-            </div>
-        `;
+        renderHotelResults(null, city, cin, cout, guests, {});
     }
-
-
 }
 
 // OTEL ARAMA SONUÇLARI: MULTI-MODAL ULAŞIM BANDI + KOMBİNE SEPET + CANLI OTELLER
@@ -5641,8 +5813,9 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     window.lastHotelSearchArgs = { hotelInfo, city, cin, cout, guests, data };
     const isEn = (window.currentAppLang === 'en');
     const resultsArea = document.getElementById("hotelResultsArea");
-    const safeCity = escapeHtml(city);
-    const safeCityJs = String(city || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    const displayCity = (hotelInfo && hotelInfo.destination) ? hotelInfo.destination : city;
+    const safeCity = escapeHtml(displayCity);
+    const safeCityJs = String(displayCity || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     const activeOrigName = (data && data.origin) || (window.HakikiTravelContext && window.HakikiTravelContext.origin_name) || 'İstanbul';
     const safeOrigJs = String(activeOrigName).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     if (!hotelInfo) {
@@ -6668,7 +6841,34 @@ function setupEventListeners() {
 
     // Arama Kutularına tıklandığında içeriği otomatik seçme (Kullanıcının hemen rahatça yeni şehir/ilçe yazabilmesi için)
     const hotelCityInput = document.getElementById("hotelCity");
-    [originInput, destInput, hotelCityInput].forEach(inp => {
+    if (hotelCityInput) {
+        hotelCityInput.addEventListener("focus", function() {
+            setTimeout(() => {
+                try { this.select(); } catch (_) {}
+            }, 60);
+        });
+        hotelCityInput.addEventListener("click", function() {
+            if (!this.dataset.clickedOnce) {
+                this.dataset.clickedOnce = '1';
+                try { this.select(); } catch (_) {}
+            }
+        });
+        hotelCityInput.addEventListener("blur", function() {
+            this.dataset.clickedOnce = '';
+            const cleaned = cleanHotelDestinationInputValue(this.value);
+            if (cleaned && cleaned !== this.value.trim()) {
+                this.value = cleaned;
+            }
+        });
+        hotelCityInput.addEventListener("change", function() {
+            const cleaned = cleanHotelDestinationInputValue(this.value);
+            if (cleaned && cleaned !== this.value.trim()) {
+                this.value = cleaned;
+            }
+        });
+    }
+
+    [originInput, destInput].forEach(inp => {
         if (!inp) return;
         inp.addEventListener("focus", function() {
             setTimeout(() => {
@@ -6697,7 +6897,7 @@ function setupEventListeners() {
         inp.addEventListener("input", function() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                resolveDistrictOrAirportInput(inp, true);
+                resolveDistrictOrAirportInput(inp, null, true);
             }, 400);
         });
     });

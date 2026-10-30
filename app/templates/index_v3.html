@@ -1831,8 +1831,8 @@
                     const hCin = document.getElementById("hotelCheckin");
                     const hCout = document.getElementById("hotelCheckout");
                     
-                    if (hc && (!hc.value || hc.value.trim() === "") && tDest && tDest.value) {
-                        hc.value = tDest.value.trim();
+                    if (hc && hc.value) {
+                        hc.value = hc.value.replace(/\s*\([A-Z0-9\s\/\-]{2,15}\)\s*$/i, "").trim();
                     }
                     if (hCin && (!hCin.value || hCin.value.trim() === "")) {
                         if (tDep && tDep.value) {
@@ -2700,7 +2700,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261028_v36"></script>
+    <script src="/static/js/app_v3.js?v=20261030_v37"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">

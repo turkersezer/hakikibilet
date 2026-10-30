@@ -67,7 +67,21 @@ class HotelService:
             flags=re.I,
         ).strip()
 
-        return base or raw.split("(")[0].strip()
+        cleaned = base or raw.split("(")[0].strip()
+        if cleaned and (cleaned.islower() or cleaned.isupper()):
+            words = []
+            for w in cleaned.split():
+                first_c = w[0]
+                rest_c = w[1:].replace("I", "ı").replace("İ", "i").lower()
+                if first_c in ("i", "İ"):
+                    first_up = "İ"
+                elif first_c in ("ı", "I"):
+                    first_up = "I"
+                else:
+                    first_up = first_c.upper()
+                words.append(first_up + rest_c)
+            cleaned = " ".join(words)
+        return cleaned
 
     # Trip.com Doğrulanmış City ID Haritası (Asla '0 properties found' veya boş arama kutusu vermez)
     TRIP_CITY_ID_MAP: Dict[str, Dict[str, Any]] = {
@@ -78,29 +92,51 @@ class HotelService:
         "bodrum": {"id": 1761, "name": "Bodrum"},
         "fethiye": {"id": 3773, "name": "Fethiye"},
         "marmaris": {"id": 3775, "name": "Marmaris"},
+        "selimiye": {"id": 102640710, "name": "Selimiye"},
+        "bozburun": {"id": 245546, "name": "Bozburun"},
+        "hisaronu": {"id": 3775, "name": "Hisarönü Marmaris"},
+        "icmeler": {"id": 3775, "name": "İçmeler Marmaris"},
+        "turunc": {"id": 3775, "name": "Turunç Marmaris"},
+        "akyaka": {"id": 243958, "name": "Akyaka"},
+        "dalyan": {"id": 40485, "name": "Dalyan"},
+        "gocek": {"id": 40500, "name": "Göcek"},
+        "oludeniz": {"id": 6793045, "name": "Ölüdeniz"},
         "dalaman": {"id": 1749, "name": "Dalaman"},
         "datca": {"id": 9540, "name": "Datça"},
         "cesme": {"id": 3772, "name": "Çeşme"},
         "alacati": {"id": 243200, "name": "Alaçatı"},
+        "ilica": {"id": 3772, "name": "Ilıca Çeşme"},
+        "sigacik": {"id": 1216, "name": "Sığacık Seferihisar"},
+        "urla": {"id": 40538, "name": "Urla"},
         "kusadasi": {"id": 40519, "name": "Kuşadası"},
         "didim": {"id": 40486, "name": "Didim"},
         "aydin": {"id": 52947, "name": "Aydın"},
         "ayvalik": {"id": 40475, "name": "Ayvalık"},
+        "cunda": {"id": 40475, "name": "Cunda Ayvalık"},
         "alanya": {"id": 40464, "name": "Alanya"},
         "kemer": {"id": 40513, "name": "Kemer"},
+        "olimpos": {"id": 40513, "name": "Olimpos Kemer"},
+        "cirali": {"id": 40513, "name": "Çıralı Kemer"},
+        "adrasan": {"id": 40513, "name": "Adrasan"},
         "belek": {"id": 1217, "name": "Belek Antalya"},
         "side": {"id": 1217, "name": "Side Antalya"},
         "kas": {"id": 40510, "name": "Kaş"},
         "kalkan": {"id": 40510, "name": "Kalkan Kaş"},
         "trabzon": {"id": 1760, "name": "Trabzon"},
+        "uzungol": {"id": 53133, "name": "Uzungöl"},
+        "caykara": {"id": 240979, "name": "Çaykara"},
         "rize": {"id": 40521, "name": "Rize"},
+        "ayder": {"id": 246161, "name": "Ayder Çamlıhemşin"},
+        "camlihemsin": {"id": 246161, "name": "Çamlıhemşin"},
         "samsun": {"id": 1758, "name": "Samsun"},
         "ordu": {"id": 20002, "name": "Ordu"},
         "giresun": {"id": 53013, "name": "Giresun"},
         "sinop": {"id": 20797, "name": "Sinop"},
         "artvin": {"id": 61168, "name": "Artvin"},
         "kars": {"id": 7238, "name": "Kars"},
+        "sarikamis": {"id": 53103, "name": "Sarıkamış"},
         "erzurum": {"id": 1754, "name": "Erzurum"},
+        "palandoken": {"id": 1754, "name": "Palandöken Erzurum"},
         "van": {"id": 1750, "name": "Van"},
         "agri": {"id": 4263, "name": "Ağrı"},
         "igdir": {"id": 53021, "name": "Iğdır"},
@@ -116,19 +152,34 @@ class HotelService:
         "hatay": {"id": 97804, "name": "Hatay"},
         "kahramanmaras": {"id": 20795, "name": "Kahramanmaraş"},
         "kayseri": {"id": 1756, "name": "Kayseri"},
+        "erciyes": {"id": 1756, "name": "Erciyes Kayseri"},
         "nevsehir": {"id": 7732, "name": "Nevşehir"},
         "kapadokya": {"id": 7732, "name": "Kapadokya"},
         "urgup": {"id": 9169, "name": "Ürgüp"},
         "goreme": {"id": 9660, "name": "Göreme"},
+        "avanos": {"id": 7732, "name": "Avanos"},
         "konya": {"id": 1757, "name": "Konya"},
         "eskisehir": {"id": 9585, "name": "Eskişehir"},
         "bursa": {"id": 4898, "name": "Bursa"},
+        "uludag": {"id": 4898, "name": "Uludağ Bursa"},
         "sapanca": {"id": 40533, "name": "Sapanca"},
+        "masukiye": {"id": 40315, "name": "Maşukiye Kartepe"},
+        "kartepe": {"id": 40315, "name": "Kartepe"},
+        "agva": {"id": 40461, "name": "Ağva"},
+        "sile": {"id": 40535, "name": "Şile"},
         "abant": {"id": 705625, "name": "Abant Bolu"},
+        "kartalkaya": {"id": 705625, "name": "Kartalkaya Bolu"},
         "canakkale": {"id": 7636, "name": "Çanakkale"},
         "bozcaada": {"id": 40483, "name": "Bozcaada"},
+        "gokceada": {"id": 92396, "name": "Gökçeada"},
+        "assos": {"id": 227517, "name": "Assos Ayvacık"},
+        "behramkale": {"id": 227517, "name": "Behramkale Assos"},
+        "ayvacik": {"id": 227517, "name": "Ayvacık"},
+        "kucukkuyu": {"id": 227517, "name": "Küçükkuyu"},
         "balikesir": {"id": 4999, "name": "Balıkesir"},
         "edremit": {"id": 684699, "name": "Edremit"},
+        "akcay": {"id": 684699, "name": "Akçay Edremit"},
+        "altinoluk": {"id": 684699, "name": "Altınoluk Edremit"},
         "denizli": {"id": 1762, "name": "Denizli"},
         "pamukkale": {"id": 3776, "name": "Pamukkale"},
         "mugla": {"id": 97783, "name": "Muğla"},
@@ -139,6 +190,8 @@ class HotelService:
         "corum": {"id": 52918, "name": "Çorum"},
         "kastamonu": {"id": 40511, "name": "Kastamonu"},
         "safranbolu": {"id": 7726, "name": "Safranbolu"},
+        "amasra": {"id": 40466, "name": "Amasra"},
+        "bartin": {"id": 40477, "name": "Bartın"},
         "zonguldak": {"id": 53144, "name": "Zonguldak"},
         "bolu": {"id": 705625, "name": "Bolu"},
         "edirne": {"id": 40471, "name": "Edirne"},
@@ -159,6 +212,23 @@ class HotelService:
         "girne": {"id": 40314, "name": "Girne"},
         "lefkosa": {"id": 4191, "name": "Lefkoşa"},
         "gazimagusa": {"id": 84382, "name": "Gazimağusa"},
+        "sakiz-adasi": {"id": 7085, "name": "Chios"},
+        "sakiz": {"id": 7085, "name": "Chios"},
+        "chios": {"id": 7085, "name": "Chios"},
+        "rodos-adasi": {"id": 3570, "name": "Rhodes"},
+        "rodos": {"id": 3570, "name": "Rhodes"},
+        "rhodes": {"id": 3570, "name": "Rhodes"},
+        "kos-adasi": {"id": 7159, "name": "Kos"},
+        "kos": {"id": 7159, "name": "Kos"},
+        "midilli-adasi": {"id": 93173, "name": "Mytilene"},
+        "midilli": {"id": 93173, "name": "Mytilene"},
+        "lesbos": {"id": 93173, "name": "Mytilene"},
+        "samos-adasi": {"id": 5902, "name": "Samos"},
+        "samos": {"id": 5902, "name": "Samos"},
+        "simi-adasi": {"id": 3570, "name": "Symi Rhodes"},
+        "simi": {"id": 3570, "name": "Symi Rhodes"},
+        "meis-adasi": {"id": 3570, "name": "Kastellorizo"},
+        "meis": {"id": 3570, "name": "Kastellorizo"},
         "paris": {"id": 192, "name": "Paris"},
         "londra": {"id": 338, "name": "Londra"},
         "roma": {"id": 343, "name": "Roma"},
@@ -203,28 +273,51 @@ class HotelService:
         "bodrum": "bodrum-745",
         "fethiye": "fethiye-6341134",
         "marmaris": "marmaris-4302",
+        "selimiye": "selimiye-6054846",
+        "bozburun": "bozburun-6154991",
+        "hisaronu": "hisaronu-6054853",
+        "icmeler": "icmeler-6054842",
+        "turunc": "turunc-6054844",
+        "akyaka": "akyaka-city-center-553248633981743303",
+        "dalyan": "dalyan-city-center-3000661317",
+        "gocek": "gocek-6054856",
+        "oludeniz": "oludeniz-6054859",
         "dalaman": "dalaman-1031",
         "datca": "datca-4291",
         "cesme": "cesme-4275",
         "alacati": "alacati-6054832",
+        "ilica": "ilica-6127319",
+        "sigacik": "sigacik-6140100",
+        "urla": "urla-6140101",
         "kusadasi": "kusadasi-4227",
         "didim": "didim-6069857",
         "aydin": "aydin-4488",
         "ayvalik": "ayvalik-4498",
+        "cunda": "cunda-adasi-6324180",
         "alanya": "alanya-4671",
         "kemer": "kemer-8281",
+        "olimpos": "olimpos-6134144",
+        "cirali": "cirali-6049272",
+        "adrasan": "adrasan-6134143",
         "belek": "belek-6034717",
         "side": "antalya-481",
         "kas": "kas-6047444",
+        "kalkan": "kalkan-6054861",
         "trabzon": "trabzon-3597",
+        "uzungol": "uzungol-6157520",
+        "caykara": "caykara-6321576",
         "rize": "rize-4473",
+        "ayder": "camlihemsin-6144612",
+        "camlihemsin": "camlihemsin-6144612",
         "samsun": "samsun-3278",
         "ordu": "ordu-4654",
         "giresun": "giresun-4555",
         "sinop": "sinop-6063189",
         "artvin": "artvin-6323606",
         "kars": "kars-1931",
+        "sarikamis": "sarikamis-6323604",
         "erzurum": "erzurum-1161",
+        "palandoken": "palandoken-553248635290254679",
         "van": "van-3677",
         "agri": "agri-6063167",
         "igdir": "igdir-6202684",
@@ -240,19 +333,34 @@ class HotelService:
         "hatay": "hatay-6246842",
         "kahramanmaras": "kahramanmaras-6063186",
         "kayseri": "kayseri-430",
+        "erciyes": "erciyes-6323221",
         "nevsehir": "nevsehir-4605",
         "kapadokya": "nevsehir-4605",
         "urgup": "urgup-4423",
         "goreme": "goreme-6224480",
+        "avanos": "avanos-6063195",
         "konya": "konya-8367",
         "eskisehir": "eskisehir-7119",
         "bursa": "bursa-6431",
+        "uludag": "uludag-6130489",
         "sapanca": "sapanca-6049293",
+        "masukiye": "masukiye-6149334",
+        "kartepe": "kartepe-553248635290254672",
+        "agva": "agva-6046184",
+        "sile": "sile-6127677",
         "abant": "abant-6321966",
+        "kartalkaya": "bolu-4644",
         "canakkale": "canakkale-857",
         "bozcaada": "bozcaada-6125621",
+        "gokceada": "gokceada-6323657",
+        "assos": "assos-6134121",
+        "behramkale": "assos-6134121",
+        "ayvacik": "ayvacik-6323760",
+        "kucukkuyu": "kucukkuyu-6134122",
         "balikesir": "balikesir-553248635924013473",
         "edremit": "edremit-6063182",
+        "akcay": "akcay-6128011",
+        "altinoluk": "altinoluk-6128013",
         "denizli": "denizli-1043",
         "pamukkale": "pamukkale-6063014",
         "mugla": "mugla-4556",
@@ -263,6 +371,8 @@ class HotelService:
         "corum": "corum-4554",
         "kastamonu": "kastamonu-4578",
         "safranbolu": "safranbolu-4482",
+        "amasra": "amasra-6054670",
+        "bartin": "bartin-4551",
         "zonguldak": "zonguldak-4416",
         "bolu": "bolu-4644",
         "edirne": "edirne-5280",
@@ -281,6 +391,48 @@ class HotelService:
         "bingol": "bingol-4616",
         "tunceli": "tunceli-6323547",
         "adiyaman": "adiyaman-4615",
+        "girne": "girne",
+        "lefkosa": "lefkosa",
+        "gazimagusa": "famagusta-6123037",
+        "sakiz-adasi": "sakiz-adasi-1703",
+        "sakiz": "sakiz-adasi-1703",
+        "chios": "sakiz-adasi-1703",
+        "rodos-adasi": "rodos-11286",
+        "rodos": "rodos-11286",
+        "rhodes": "rodos-11286",
+        "kos-adasi": "istankoy-1804",
+        "kos": "istankoy-1804",
+        "midilli-adasi": "lesvos-181073",
+        "midilli": "lesvos-181073",
+        "lesbos": "lesvos-181073",
+        "samos-adasi": "samos-3216",
+        "samos": "samos-3216",
+        "paris": "paris-2734",
+        "londra": "londra-2114",
+        "roma": "roma-3023",
+        "milano": "milano-2394",
+        "venedik": "venedik-3694",
+        "barselona": "barselona-513",
+        "madrid": "madrid-2198",
+        "amsterdam": "amsterdam-378",
+        "berlin": "berlin-598",
+        "munih": "munih-2491",
+        "frankfurt": "frankfurt-1276",
+        "viyana": "viyana-3709",
+        "prag": "prag-2863",
+        "budapeste": "budapeste-795",
+        "atina": "atina-438",
+        "selanik": "selanik-3186",
+        "sofya": "sofya-6050209",
+        "bukres": "bukres-6057278",
+        "belgrad": "belgrad-6333",
+        "saraybosna": "sarajevo-9875",
+        "uskup": "uskup-3191",
+        "tiran": "tiran-3433",
+        "tiflis": "tiflis-3381",
+        "batum": "batumi-726",
+        "baku": "baku-492",
+        "dubai": "dubai-6053839",
     }
 
     @classmethod
@@ -294,6 +446,8 @@ class HotelService:
         """
         Trip.com City ID haritasında olmayan tüm il ve ilçeleri (örn. Aydın, Manisa, Datça, Amasra vb.)
         Trip.com resmi getHotelKeywords SOA2 servisinden dinamik çözüp önbelleğe alır.
+        Eğer ilk dönen kayıt bir otel (tripType == 'H') veya POI ise, controlInfo.regionInfo.basicCityModel.cityId
+        üzerinden gerçek şehir ID'sini alır (Asla otel ID'sini cityId olarak kullanmaz).
         """
         meta = cls.TRIP_CITY_ID_MAP.get(city_slug)
         if meta and meta.get("id"):
@@ -339,14 +493,33 @@ class HotelService:
 
             if isinstance(rdata, dict):
                 kw_list = rdata.get("data", {}).get("mainKeywordList", {}).get("keywords", [])
+                fallback_meta = None
                 for kw_entry in kw_list:
-                    kinfo = (kw_entry.get("keyword") or {}).get("keywordContentInfo") or {}
+                    kw_obj = kw_entry.get("keyword") or {}
+                    kinfo = kw_obj.get("keywordContentInfo") or {}
+                    trip_type = str(kinfo.get("tripType") or "").upper()
+                    has_hotel_info = bool((kw_obj.get("hotelInfo") or {}).get("hotelId"))
+                    reg_info = (kw_entry.get("controlInfo") or {}).get("regionInfo") or {}
+                    basic_city = reg_info.get("basicCityModel") or {}
+                    disp_city = reg_info.get("displayCityModel") or {}
+                    basic_cid = basic_city.get("cityId")
+                    country_name = str(disp_city.get("countryName") or "").strip()
+
                     kid = kinfo.get("keywordId")
-                    kname = kinfo.get("content") or city_clean
-                    if kid:
-                        meta = {"id": int(kid), "name": kname}
+                    kname = kinfo.get("keyword") or kinfo.get("content") or disp_city.get("cityName") or city_clean
+                    if not has_hotel_info and trip_type not in ("H", "P", "S") and kid:
+                        meta = {"id": int(kid), "name": kname, "country": country_name}
                         cls.TRIP_CITY_ID_MAP[city_slug] = meta
                         return meta
+                    elif basic_cid and not fallback_meta:
+                        fallback_meta = {
+                            "id": int(basic_cid),
+                            "name": disp_city.get("cityName") or city_clean,
+                            "country": country_name,
+                        }
+                if fallback_meta:
+                    cls.TRIP_CITY_ID_MAP[city_slug] = fallback_meta
+                    return fallback_meta
         except Exception as e:
             logger.debug(f"Trip.com dynamic cityId resolve warning ({city_clean}): {e}")
 
@@ -412,6 +585,7 @@ class HotelService:
             )
             payload = json.loads(raw)
             items = payload if isinstance(payload, list) else ((payload.get("data") or {}).get("items") or [])
+            fallback_slug = None
             for it in items:
                 if not isinstance(it, dict):
                     continue
@@ -425,8 +599,14 @@ class HotelService:
                 elif not slug_val and url_path:
                     slug_val = url_path.strip("/").split("/")[-1]
                 if slug_val:
-                    cls.ENUYGUN_HOTEL_SLUG_MAP[city_slug] = slug_val
-                    return slug_val
+                    if itype in ("city", "town", "district", "village"):
+                        cls.ENUYGUN_HOTEL_SLUG_MAP[city_slug] = slug_val
+                        return slug_val
+                    elif not fallback_slug:
+                        fallback_slug = slug_val
+            if fallback_slug:
+                cls.ENUYGUN_HOTEL_SLUG_MAP[city_slug] = fallback_slug
+                return fallback_slug
         except Exception as e:
             logger.debug(f"Enuygun region slug resolve warning ({city_clean}): {e}")
 
@@ -623,6 +803,72 @@ class HotelService:
             queries.append(q2)
         return queries
 
+    _PARENT_LOCATION_TOKENS_MAP: Dict[str, tuple] = {
+        "bodrum": ("mugla",),
+        "fethiye": ("mugla",),
+        "marmaris": ("mugla",),
+        "dalaman": ("mugla",),
+        "datca": ("mugla",),
+        "selimiye": ("marmaris", "mugla"),
+        "bozburun": ("marmaris", "mugla"),
+        "hisaronu": ("marmaris", "mugla"),
+        "icmeler": ("marmaris", "mugla"),
+        "turunc": ("marmaris", "mugla"),
+        "akyaka": ("ula", "marmaris", "mugla"),
+        "dalyan": ("ortaca", "koycegiz", "mugla"),
+        "gocek": ("fethiye", "dalaman", "mugla"),
+        "oludeniz": ("fethiye", "mugla"),
+        "alanya": ("antalya",),
+        "kemer": ("antalya",),
+        "belek": ("serik", "antalya"),
+        "side": ("manavgat", "antalya"),
+        "kas": ("antalya",),
+        "kalkan": ("kas", "antalya"),
+        "olimpos": ("kumluca", "kemer", "antalya"),
+        "cirali": ("kemer", "kumluca", "antalya"),
+        "adrasan": ("kumluca", "kemer", "antalya"),
+        "cesme": ("izmir",),
+        "alacati": ("cesme", "izmir"),
+        "ilica": ("cesme", "izmir"),
+        "sigacik": ("seferihisar", "izmir"),
+        "urla": ("izmir",),
+        "kusadasi": ("aydin",),
+        "didim": ("aydin",),
+        "ayvalik": ("balikesir",),
+        "cunda": ("ayvalik", "alibey", "balikesir"),
+        "edremit": ("balikesir",),
+        "akcay": ("edremit", "balikesir"),
+        "altinoluk": ("edremit", "balikesir"),
+        "bozcaada": ("canakkale",),
+        "gokceada": ("canakkale",),
+        "assos": ("ayvacik", "behram", "canakkale"),
+        "behramkale": ("assos", "ayvacik", "canakkale"),
+        "ayvacik": ("assos", "canakkale"),
+        "kucukkuyu": ("ayvacik", "canakkale"),
+        "kapadokya": ("nevsehir", "urgup", "goreme", "avanos"),
+        "urgup": ("nevsehir", "kapadokya"),
+        "goreme": ("nevsehir", "kapadokya"),
+        "avanos": ("nevsehir", "kapadokya"),
+        "sapanca": ("sakarya",),
+        "masukiye": ("kartepe", "sapanca", "kocaeli", "sakarya"),
+        "kartepe": ("masukiye", "kocaeli"),
+        "agva": ("sile", "istanbul"),
+        "sile": ("istanbul",),
+        "abant": ("bolu", "mudurnu"),
+        "kartalkaya": ("bolu",),
+        "pamukkale": ("denizli",),
+        "amasra": ("bartin",),
+        "safranbolu": ("karabuk",),
+        "uzungol": ("caykara", "trabzon"),
+        "caykara": ("uzungol", "trabzon"),
+        "ayder": ("camlihemsin", "rize"),
+        "camlihemsin": ("ayder", "rize"),
+        "uludag": ("osmangazi", "bursa"),
+        "sarikamis": ("kars",),
+        "palandoken": ("erzurum",),
+        "erciyes": ("melikgazi", "kayseri"),
+    }
+
     @classmethod
     def resolve_enuygun_direct_hotel_slug(cls, hotel_name: str, city_clean: str, city_slug: str) -> Optional[str]:
         """
@@ -636,19 +882,9 @@ class HotelService:
         if cache_key in cls._ENUYGUN_DIRECT_SLUG_CACHE:
             return cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key]
 
-        parent_province_map = {
-            "bodrum": "mugla", "fethiye": "mugla", "marmaris": "mugla", "dalaman": "mugla", "datca": "mugla",
-            "alanya": "antalya", "kemer": "antalya", "belek": "antalya", "side": "antalya", "kas": "antalya",
-            "cesme": "izmir", "alacati": "izmir",
-            "kusadasi": "aydin", "didim": "aydin",
-            "ayvalik": "balikesir", "edremit": "balikesir",
-            "bozcaada": "canakkale",
-            "kapadokya": "nevsehir", "urgup": "nevsehir", "goreme": "nevsehir",
-            "sapanca": "sakarya", "abant": "bolu", "pamukkale": "denizli",
-        }
         allowed_loc_tokens = {city_slug, cls.slugify_hotel_name(city_clean)}
-        if city_slug in parent_province_map:
-            allowed_loc_tokens.add(parent_province_map[city_slug])
+        if city_slug in cls._PARENT_LOCATION_TOKENS_MAP:
+            allowed_loc_tokens.update(cls._PARENT_LOCATION_TOKENS_MAP[city_slug])
 
         target_tokens = [t for t in mkey.split("-") if t]
         for query_str in cls._build_hotel_search_queries(hotel_name, city_clean):
@@ -718,19 +954,9 @@ class HotelService:
         if cache_key in cls._ETSTUR_DIRECT_SLUG_CACHE:
             return cls._ETSTUR_DIRECT_SLUG_CACHE[cache_key]
 
-        parent_province_map = {
-            "bodrum": "mugla", "fethiye": "mugla", "marmaris": "mugla", "dalaman": "mugla", "datca": "mugla",
-            "alanya": "antalya", "kemer": "antalya", "belek": "antalya", "side": "antalya", "kas": "antalya",
-            "cesme": "izmir", "alacati": "izmir",
-            "kusadasi": "aydin", "didim": "aydin",
-            "ayvalik": "balikesir", "edremit": "balikesir",
-            "bozcaada": "canakkale",
-            "kapadokya": "nevsehir", "urgup": "nevsehir", "goreme": "nevsehir",
-            "sapanca": "sakarya", "abant": "bolu", "pamukkale": "denizli",
-        }
         allowed_loc_tokens = {city_slug, cls.slugify_hotel_name(city_clean)}
-        if city_slug in parent_province_map:
-            allowed_loc_tokens.add(parent_province_map[city_slug])
+        if city_slug in cls._PARENT_LOCATION_TOKENS_MAP:
+            allowed_loc_tokens.update(cls._PARENT_LOCATION_TOKENS_MAP[city_slug])
 
         target_tokens = [t for t in mkey.split("-") if t]
         for query_str in cls._build_hotel_search_queries(hotel_name, city_clean):
@@ -864,14 +1090,24 @@ class HotelService:
     @classmethod
     def get_destination_context(cls, city_slug: str, is_international: bool) -> Dict[str, Any]:
         coastal_slugs = {
-            "antalya", "bodrum", "fethiye", "marmaris", "dalaman", "datca", "cesme", "alacati",
-            "kusadasi", "didim", "ayvalik", "alanya", "kemer", "belek", "side", "kas",
-            "bozcaada", "edremit", "mersin", "girne", "gazimagusa", "sakiz-adasi",
-            "rodos-adasi", "kos-adasi", "midilli-adasi", "nice", "barselona", "dubai"
+            "antalya", "bodrum", "fethiye", "marmaris", "selimiye", "bozburun", "hisaronu", "icmeler", "turunc",
+            "akyaka", "dalyan", "gocek", "oludeniz", "dalaman", "datca", "cesme", "alacati", "ilica", "sigacik", "urla",
+            "kusadasi", "didim", "ayvalik", "cunda", "alanya", "kemer", "olimpos", "cirali", "adrasan", "belek", "side",
+            "kas", "kalkan", "bozcaada", "gokceada", "assos", "behramkale", "ayvacik", "kucukkuyu", "edremit", "akcay",
+            "altinoluk", "agva", "sile", "amasra", "mersin", "girne", "gazimagusa", "sakiz-adasi", "sakiz",
+            "rodos-adasi", "rodos", "kos-adasi", "kos", "midilli-adasi", "midilli", "samos-adasi", "samos",
+            "nice", "barselona", "dubai", "batum"
         }
-        ski_slugs = {"kars", "erzurum", "kayseri", "bursa", "bolu", "abant", "isparta", "erzincan"}
-        thermal_slugs = {"afyonkarahisar", "yalova", "pamukkale", "denizli", "bursa", "kutahya", "bolu", "sakarya", "sapanca"}
-        boutique_slugs = {"nevsehir", "kapadokya", "urgup", "goreme", "mardin", "safranbolu", "alacati", "bozcaada", "kas", "amasya", "gaziantep", "sanliurfa"}
+        ski_slugs = {
+            "kars", "sarikamis", "erzurum", "palandoken", "kayseri", "erciyes",
+            "bursa", "uludag", "bolu", "abant", "kartalkaya", "kartepe", "isparta", "erzincan"
+        }
+        thermal_slugs = {"afyonkarahisar", "yalova", "pamukkale", "denizli", "bursa", "kutahya", "bolu", "sakarya", "sapanca", "masukiye", "ayder", "camlihemsin"}
+        boutique_slugs = {
+            "nevsehir", "kapadokya", "urgup", "goreme", "avanos", "mardin", "safranbolu", "amasra",
+            "alacati", "bozcaada", "gokceada", "assos", "cunda", "selimiye", "bozburun", "akyaka",
+            "kas", "kalkan", "olimpos", "cirali", "uzungol", "ayder", "amasya", "gaziantep", "sanliurfa"
+        }
 
         profile_types = []
         if city_slug in coastal_slugs:
@@ -1136,10 +1372,11 @@ class HotelService:
         try:
             html = cls._http_get_text(url, timeout=6.0, accept_language=accept_lang)
             hotel_list_raw = _extract_hotel_list_from_html(html)
-            if not hotel_list_raw and not is_international:
-                # tr.trip.com anlık boş dönerse www.trip.com üzerinden yedekle
+            if not hotel_list_raw:
+                # Birincil Trip.com domaini anlık boş dönerse alternatif domain üzerinden yedekle
+                fb_domain = "tr.trip.com" if is_international else "www.trip.com"
                 fallback_url = (
-                    f"https://www.trip.com/hotels/list?"
+                    f"https://{fb_domain}/hotels/list?"
                     f"cityId={city_id}&cityName={urllib.parse.quote(city_clean)}"
                     f"&checkin={cin}&checkout={cout}&adult={guests}&crn=1&curr=TRY&locale=tr-TR"
                 )
@@ -1547,7 +1784,7 @@ class HotelService:
 
             # Enuygun Doğrudan Otel Detay Linki (/otel/detay/{slug}/)
             # SIFIR VARSAYIM KURALI: Asla /otel/bolge/... genel şehir arama sayfasına fallback yapılmaz!
-            enuygun_hotel_direct = h.get("enuygun_hotel_url") if not is_international else None
+            enuygun_hotel_direct = h.get("enuygun_hotel_url")
 
             # Etstur Doğrudan Otel Detay Linki (https://www.etstur.com/{ets_slug}?check_in=...)
             # SIFIR VARSAYIM KURALI: Asla 404 veren /Arama?q=... adresine düşürülmez!
@@ -1572,27 +1809,21 @@ class HotelService:
             # Birincil kazanan kanal ve buton (Yalnızca doğrulanmış doğrudan otel detay sayfası olan kanallar)
             ep = h.get("enuygun_price")
             tp = h.get("trip_price")
-            if not is_international:
-                if ep and tp and enuygun_hotel_direct and trip_hotel_direct:
-                    if ep <= tp:
-                        primary_url = enuygun_hotel_direct
-                        primary_provider = "Enuygun Otel"
-                    else:
-                        primary_url = trip_hotel_direct
-                        primary_provider = "Trip.com"
-                elif enuygun_hotel_direct and (ep or not trip_hotel_direct):
+            if ep and tp and enuygun_hotel_direct and trip_hotel_direct:
+                if ep <= tp:
                     primary_url = enuygun_hotel_direct
                     primary_provider = "Enuygun Otel"
-                elif trip_hotel_direct:
+                else:
                     primary_url = trip_hotel_direct
                     primary_provider = "Trip.com"
-                else:
-                    continue
-            else:
-                if not trip_hotel_direct:
-                    continue
+            elif enuygun_hotel_direct and (ep or not trip_hotel_direct):
+                primary_url = enuygun_hotel_direct
+                primary_provider = "Enuygun Otel"
+            elif trip_hotel_direct:
                 primary_url = trip_hotel_direct
                 primary_provider = "Trip.com"
+            else:
+                continue
 
             nightly_num = float(h.get("nightly_price") or 0)
             total_num = float(h.get("total_price") or (nightly_num * max(1, nights)))
@@ -1908,19 +2139,24 @@ class HotelService:
             .replace(" ", "-")
         )
         
-        # Destinasyonun yurt dışı / ada kontrolü (Önce şehir veritabanından, yoksa haritadan teyit)
+        # Destinasyonun yurt dışı / ada kontrolü (Önce şehir veritabanından, yoksa harita ve Trip.com ülke bilgisinden teyit)
         from app.cities import find_city
         matched_loc = find_city(dest_city) or find_city(city_clean)
         dest_meta = cls.DEST_ID_MAP.get(city_slug)
-        if matched_loc and "is_international" in matched_loc:
-            is_international = bool(matched_loc.get("is_international", False))
-        elif dest_meta:
-            is_international = bool(dest_meta.get("is_intl", False))
-        else:
-            is_international = bool("adasi" in city_slug or "island" in city_slug or "nce" in city_slug or "nice" in city_slug)
-            
-        dest_id = dest_meta.get("dest_id") if dest_meta else None
-        dest_type = dest_meta.get("dest_type", "city") if dest_meta else "city"
+
+        intl_slugs = {
+            "sakiz-adasi", "sakiz", "chios", "rodos-adasi", "rodos", "rhodes",
+            "kos-adasi", "kos", "midilli-adasi", "midilli", "lesbos", "mytilene",
+            "samos-adasi", "samos", "simi-adasi", "simi", "meis-adasi", "meis",
+            "santorini", "mikonos", "mykonos", "girne", "lefkosa", "gazimagusa", "magusa",
+            "kibris", "kktc", "paris", "londra", "roma", "milano", "venedik", "barselona",
+            "madrid", "amsterdam", "berlin", "munih", "frankfurt", "viyana", "prag",
+            "budapeste", "atina", "selanik", "sofya", "bukres", "belgrad", "saraybosna",
+            "uskup", "tiran", "tiflis", "batum", "baku", "dubai", "abu-dabi", "doha",
+            "kahire", "tokyo", "seul", "bangkok", "new-york", "nice", "monaco", "zurih",
+            "cenevre", "bruksel", "lizbon", "kopenhag", "stockholm", "oslo", "varsova",
+            "moskova", "podgorica", "pristine",
+        }
 
         currency = (currency or "TRY").upper()
         curr_sym = CurrencyService.get_symbol(currency)
@@ -1928,6 +2164,24 @@ class HotelService:
         agoda_cid = getattr(settings, "AFFILIATE_AGODA_CID", "1924128")
         trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
         trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
+
+        trip_meta = cls.resolve_trip_city_meta(city_clean, city_slug, trip_aid=trip_aid, trip_sid=trip_sid)
+        trip_city_id = int(trip_meta["id"]) if (trip_meta and trip_meta.get("id")) else None
+        trip_country = str((trip_meta or {}).get("country") or "").strip()
+
+        if city_slug in intl_slugs:
+            is_international = True
+        elif matched_loc and (matched_loc.get("is_international") or (matched_loc.get("country") and matched_loc.get("country") != "Türkiye")):
+            is_international = True
+        elif dest_meta and dest_meta.get("is_intl"):
+            is_international = True
+        elif trip_country and trip_country.lower() not in ("türkiye", "turkiye", "turkey", "tr"):
+            is_international = True
+        else:
+            is_international = bool("adasi" in city_slug and city_slug not in ("avsa-adasi", "marmara-adasi", "bozcaada", "gokceada", "cunda", "alibey-adasi"))
+
+        dest_id = dest_meta.get("dest_id") if dest_meta else None
+        dest_type = dest_meta.get("dest_type", "city") if dest_meta else "city"
 
         # 1. Trip.com Otel Resmi Seviye-3 Derin Arama Linki (Doğrulanmış cityId ile asla '0 properties found' vermez)
         trip_hotel_url = cls.resolve_trip_hotel_url(
@@ -1962,7 +2216,7 @@ class HotelService:
         else:
             booking_url = None
 
-        # 3. Enuygun Otel (/otel/bolge/...), Obilet Otel, Bilet.com Otel & Etstur Linkleri (YURT İÇİ TÜRKİYE İÇİN AKTİF)
+        # 3. Enuygun Otel (/otel/bolge/...), Obilet Otel, Bilet.com Otel & Etstur Linkleri
         from app.services.revenue_service import RevenueService
         try:
             cin_dt = datetime.strptime(cin, "%Y-%m-%d")
@@ -1971,6 +2225,8 @@ class HotelService:
             enuygun_cout = cout_dt.strftime("%d.%m.%Y")
         except Exception:
             enuygun_cin, enuygun_cout = cin, cout
+
+        en_region_slug = cls.resolve_enuygun_region_slug(city_clean, city_slug)
 
         if not is_international:
             raw_enuygun_url = cls.resolve_enuygun_hotel_url(
@@ -2004,7 +2260,18 @@ class HotelService:
             primary_city_url = trip_hotel_url
             primary_provider = "Trip.com"
         else:
-            enuygun_url = None
+            if en_region_slug:
+                raw_enuygun_url = (
+                    f"https://www.enuygun.com/otel/bolge/{en_region_slug}/?"
+                    f"checkInDate={enuygun_cin}&checkOutDate={enuygun_cout}&rooms={guests}"
+                )
+                enuygun_url = RevenueService.enrich_url(
+                    raw_enuygun_url,
+                    provider="enuygun",
+                    vertical="hotel",
+                )
+            else:
+                enuygun_url = None
             obilet_hotel_url = None
             bilet_hotel_url = None
             etstur_url = None
@@ -2012,7 +2279,7 @@ class HotelService:
             primary_provider = "Trip.com"
 
         # 4. CANLI MULTI-SOURCE OTEL MOTORU (Enuygun SSR + Trip.com SSR + Hakiki F/P Algoritması)
-        live_cache_key = f"faz1_v3_live_{city_slug}_{cin}_{cout}_{guests}_{currency}_{int(is_international)}"
+        live_cache_key = f"faz1_v4_live_{city_slug}_{cin}_{cout}_{guests}_{currency}_{int(is_international)}"
         now_ts = time.time()
         live_hotels: List[Dict[str, Any]] = []
 
@@ -2020,10 +2287,6 @@ class HotelService:
             ts, cached_hotels = cls._HOTEL_CACHE[live_cache_key]
             if now_ts - ts < cls._CACHE_TTL and cached_hotels:
                 live_hotels = cached_hotels
-
-        trip_meta = cls.resolve_trip_city_meta(city_clean, city_slug, trip_aid=trip_aid, trip_sid=trip_sid)
-        trip_city_id = int(trip_meta["id"]) if (trip_meta and trip_meta.get("id")) else None
-        en_region_slug = cls.resolve_enuygun_region_slug(city_clean, city_slug) if not is_international else None
 
         if not live_hotels:
             en_list: List[Dict[str, Any]] = []
@@ -2043,7 +2306,7 @@ class HotelService:
                         guests,
                         currency,
                     )
-                    if (not is_international and en_region_slug)
+                    if en_region_slug
                     else None
                 )
                 fut_tr = (
