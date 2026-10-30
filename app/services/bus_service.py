@@ -572,7 +572,11 @@ class BusService:
             return "istanbul-anadolu"
         if "avrupa" in low_raw and ("istanbul" in low_raw or "esenler" in low_raw or "alibeykoy" in low_raw):
             return "istanbul-avrupa"
-        name = re.sub(r'\(.*?\)', '', name).strip()
+        m_merkez = re.match(r'^\s*merkez\s*\(([^)]+)\)', name, flags=re.IGNORECASE)
+        if m_merkez:
+            name = m_merkez.group(1).strip()
+        else:
+            name = re.sub(r'\(.*?\)', '', name).strip()
         if "/" in name:
             name = name.split("/")[0].strip()
         replacements = {
@@ -592,10 +596,14 @@ class BusService:
 
     @classmethod
     def _clean_query_name(cls, city_name: str) -> str:
-        """'Manavgat (Antalya)' -> 'Manavgat' olarak parantez içi il bilgisini temizler."""
+        """'Manavgat (Antalya)' -> 'Manavgat', 'Merkez (Çorum)' -> 'Çorum' olarak parantez içi il bilgisini temizler."""
         if not city_name:
             return ""
-        cleaned = re.sub(r'\(.*?\)', '', city_name).strip()
+        m_merkez = re.match(r'^\s*merkez\s*\(([^)]+)\)', city_name, flags=re.IGNORECASE)
+        if m_merkez:
+            cleaned = m_merkez.group(1).strip()
+        else:
+            cleaned = re.sub(r'\(.*?\)', '', city_name).strip()
         if "/" in cleaned:
             cleaned = cleaned.split("/")[0].strip()
         return cleaned
@@ -956,6 +964,48 @@ class BusService:
         except Exception:
             return clean_date
 
+    _INTL_COUNTRY_CODES: Dict[str, str] = {
+        "sofya": "BG", "filibe": "BG", "plovdiv": "BG", "varna": "BG", "burgas": "BG",
+        "selanik": "GR", "atina": "GR", "dedeagac": "GR", "kavala": "GR", "iskece": "GR", "gumulcine": "GR",
+        "bukres": "RO", "kostence": "RO",
+        "uskup": "MK", "ohrid": "MK",
+        "belgrad": "RS",
+        "saraybosna": "BA",
+        "tiran": "AL",
+        "tiflis": "GE", "batum": "GE",
+        "baku": "AZ",
+        "berlin": "DE", "munih": "DE", "frankfurt": "DE", "stuttgart": "DE", "koln": "DE", "dusseldorf": "DE", "hamburg": "DE",
+        "viyana": "AT",
+        "zurih": "CH", "cenevre": "CH", "basel": "CH",
+        "paris": "FR", "nice": "FR",
+        "amsterdam": "NL",
+        "bruksel": "BE",
+        "roma": "IT", "milano": "IT", "venedik": "IT",
+        "prag": "CZ",
+        "budapeste": "HU",
+        "varsova": "PL",
+    }
+
+    _OMIO_EN_SLUGS: Dict[str, str] = {
+        "sofya": "sofia", "filibe": "plovdiv", "selanik": "thessaloniki", "atina": "athens",
+        "bukres": "bucharest", "uskup": "skopje", "belgrad": "belgrade", "saraybosna": "sarajevo",
+        "tiran": "tirana", "tiflis": "tbilisi", "batum": "batumi", "viyana": "vienna",
+        "munih": "munich", "zurih": "zurich", "cenevre": "geneva", "koln": "cologne",
+        "bruksel": "brussels", "londra": "london", "roma": "rome", "milano": "milan",
+        "venedik": "venice", "prag": "prague", "budapeste": "budapest", "barselona": "barcelona",
+        "varsova": "warsaw", "kopenhag": "copenhagen", "lizbon": "lisbon",
+    }
+
+    @classmethod
+    def _resolve_flixbus_country_code(cls, city_name: str) -> str:
+        slug = cls.get_clean_slug(city_name)
+        if slug in cls._INTL_COUNTRY_CODES:
+            return cls._INTL_COUNTRY_CODES[slug]
+        for k, code in cls._INTL_COUNTRY_CODES.items():
+            if k in slug:
+                return code
+        return "TR"
+
     @classmethod
     def get_kamilkoc_deep_link(
         cls,
@@ -965,6 +1015,7 @@ class BusService:
         passengers: int = 1,
         from_uuid: Optional[str] = None,
         to_uuid: Optional[str] = None,
+        return_date: Optional[str] = None,
     ) -> str:
         """
         Kamil Koç / FlixBus Türkiye resmi bilet alım ve koltuk seçim ekranına (shop.flixbus.com.tr/search)
@@ -976,6 +1027,8 @@ class BusService:
         orig_clean = cls._clean_query_name(origin_name)
         dest_clean = cls._clean_query_name(dest_name)
         pax = max(1, passengers)
+        dep_cc = cls._resolve_flixbus_country_code(origin_name)
+        arr_cc = cls._resolve_flixbus_country_code(dest_name)
 
         if f_id and t_id:
             params = {
@@ -985,9 +1038,12 @@ class BusService:
                 "rideDate": ddmmyyyy,
                 "adult": str(pax),
                 "_locale": "tr",
-                "departureCountryCode": "TR",
-                "arrivalCountryCode": "TR",
+                "departureCountryCode": dep_cc,
+                "arrivalCountryCode": arr_cc,
             }
+            if return_date:
+                params["backRide"] = "1"
+                params["backDate"] = cls._format_date_ddmmyyyy(return_date)
             target_url = "https://shop.flixbus.com.tr/search?" + urllib.parse.urlencode(params)
         else:
             target_url = "https://www.kamilkoc.com.tr/"
@@ -1029,12 +1085,30 @@ class BusService:
     @classmethod
     def get_enuygun_bus_deep_link(cls, origin_name: str, dest_name: str, departure_date: str) -> str:
         """
-        Enuygun otobüs bileti arama sayfasına giden parametreli bağlantı üretir.
+        Enuygun otobüs bileti arama sayfasına giden doğrulanmış HTTP 200 bağlantı üretir.
         """
         orig_slug = cls.get_clean_slug(origin_name)
         dest_slug = cls.get_clean_slug(dest_name)
+        if orig_slug.startswith("istanbul-"):
+            orig_slug = "istanbul"
+        if dest_slug.startswith("istanbul-"):
+            dest_slug = "istanbul"
         ddmmyyyy = cls._format_date_ddmmyyyy(departure_date)
-        return f"https://www.enuygun.com/otobus-bileti/{orig_slug}-{dest_slug}-otobus-bileti/?tarih={ddmmyyyy}"
+        return f"https://www.enuygun.com/otobus-bileti/{orig_slug}-{dest_slug}/?tarih={ddmmyyyy}"
+
+    @classmethod
+    def get_biletcom_bus_deep_link(cls, origin_name: str, dest_name: str, departure_date: str) -> str:
+        """
+        Bilet.com otobüs bileti arama sayfasına giden doğrulanmış HTTP 200 bağlantı üretir.
+        """
+        orig_slug = cls.get_clean_slug(origin_name)
+        dest_slug = cls.get_clean_slug(dest_name)
+        if orig_slug.startswith("istanbul-"):
+            orig_slug = "istanbul"
+        if dest_slug.startswith("istanbul-"):
+            dest_slug = "istanbul"
+        ddmmyyyy = cls._format_date_ddmmyyyy(departure_date)
+        return f"https://www.bilet.com/otobus-bileti/{orig_slug}-{dest_slug}?tarih={ddmmyyyy}"
 
     @classmethod
     def get_carrier_official_url(cls, carrier_name: str) -> Optional[str]:
@@ -1047,11 +1121,11 @@ class BusService:
         return None
 
     @classmethod
-    def get_flixbus_deep_link(cls, origin_name: str, dest_name: str, departure_date: str, passengers: int = 1) -> str:
+    def get_flixbus_deep_link(cls, origin_name: str, dest_name: str, departure_date: str, passengers: int = 1, return_date: Optional[str] = None) -> str:
         """
         FlixBus / Kamil Koç resmi bilet alım ekranına doğrudan giden URL üretir.
         """
-        return cls.get_kamilkoc_deep_link(origin_name, dest_name, departure_date, passengers=passengers)
+        return cls.get_kamilkoc_deep_link(origin_name, dest_name, departure_date, passengers=passengers, return_date=return_date)
 
     @classmethod
     def get_omio_deep_link(cls, origin_name: str, dest_name: str, departure_date: str) -> str:
@@ -1060,9 +1134,15 @@ class BusService:
         """
         orig_slug = cls.get_clean_slug(origin_name)
         dest_slug = cls.get_clean_slug(dest_name)
+        if orig_slug.startswith("istanbul-"):
+            orig_slug = "istanbul"
+        if dest_slug.startswith("istanbul-"):
+            dest_slug = "istanbul"
+        en_orig = cls._OMIO_EN_SLUGS.get(orig_slug, orig_slug)
+        en_dest = cls._OMIO_EN_SLUGS.get(dest_slug, dest_slug)
         from app.config import settings
         tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
-        omio_target = f"https://www.omio.com.tr/travel/{orig_slug}/{dest_slug}?date={departure_date}"
+        omio_target = f"https://www.omio.com/buses/{en_orig}/{en_dest}?departure_date={departure_date}"
         encoded = urllib.parse.quote(omio_target, safe="")
         return f"https://tp.media/r?marker={tp_marker}&p=4083&u={encoded}"
 
@@ -1558,13 +1638,18 @@ class BusService:
 
         flix_journeys: List[Dict[str, Any]] = []
         obilet_journeys: Optional[List[Dict[str, Any]]] = None
-        live_return_journeys: Optional[List[Dict[str, Any]]] = None
+        live_return_journeys: List[Dict[str, Any]] = []
 
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=4) as executor:
             fut_flix = executor.submit(cls.fetch_live_flixbus_journeys, origin_name, dest_name, clean_date)
             fut_obilet = (
                 executor.submit(cls.fetch_live_obilet_journeys, orig_id, dest_id, clean_date)
                 if (orig_id and dest_id and orig_id != dest_id)
+                else None
+            )
+            fut_ret_flix = (
+                executor.submit(cls.fetch_live_flixbus_journeys, dest_name, origin_name, clean_return_date)
+                if (is_round and clean_return_date)
                 else None
             )
             fut_ret = (
@@ -1586,11 +1671,19 @@ class BusService:
                     logger.warning(f"Obilet future error: {e}")
                     obilet_journeys = None
 
+            if fut_ret_flix:
+                try:
+                    ret_fx = fut_ret_flix.result(timeout=9) or []
+                    live_return_journeys.extend(ret_fx)
+                except Exception:
+                    pass
+
             if fut_ret:
                 try:
-                    live_return_journeys = fut_ret.result(timeout=10)
+                    ret_ob = fut_ret.result(timeout=10) or []
+                    live_return_journeys.extend(ret_ob)
                 except Exception:
-                    live_return_journeys = None
+                    pass
 
         # 2. İKİ MOTORUN SONUÇLARINI AKILLICA BİRLEŞTİRME (Deduplication)
         # Kamil Koç seferlerinde FlixBus Resmi verisi önceliklidir; Obilet'te aynı saatte Kamil Koç varsa tek kartta birleşir.
@@ -1808,7 +1901,8 @@ class BusService:
 
         obilet_url = cls.get_obilet_deep_link(origin_name, dest_name, clean_date, subid=subid) if (orig_id and dest_id) else None
         enuygun_url = cls.get_enuygun_bus_deep_link(origin_name, dest_name, clean_date)
-        kamilkoc_url = cls.get_kamilkoc_deep_link(origin_name, dest_name, clean_date, passengers=pax_count)
+        biletcom_url = cls.get_biletcom_bus_deep_link(origin_name, dest_name, clean_date)
+        kamilkoc_url = cls.get_kamilkoc_deep_link(origin_name, dest_name, clean_date, passengers=pax_count, return_date=clean_return_date if is_round else None)
         omio_url = cls.get_omio_deep_link(origin_name, dest_name, clean_date)
 
         tickets: List[Dict[str, Any]] = []
@@ -1832,17 +1926,16 @@ class BusService:
                     cheapest_badge_assigned = True
 
                 return_leg = None
-                ret_try = outbound_try
+                ret_try = 0.0
 
-                if is_round and clean_return_date:
+                if is_round and clean_return_date and live_return_journeys:
                     matched_ret = None
-                    if live_return_journeys:
-                        for rj in live_return_journeys:
-                            if rj["carrier"].lower() == item["carrier"].lower():
-                                matched_ret = rj
-                                break
-                        if not matched_ret:
-                            matched_ret = live_return_journeys[0]
+                    for rj in live_return_journeys:
+                        if rj["carrier"].lower() == item["carrier"].lower():
+                            matched_ret = rj
+                            break
+                    if not matched_ret:
+                        matched_ret = live_return_journeys[0]
 
                     if matched_ret:
                         ret_try = float(matched_ret["price_try"])
@@ -1859,23 +1952,9 @@ class BusService:
                             "is_direct": True,
                             "badge": "Canlı Dönüş Seferi"
                         }
-                    else:
-                        return_leg = {
-                            "origin": item["dest_term"] or f"{dest_display} Otogarı",
-                            "destination": item["orig_term"] or f"{orig_display} Otogarı",
-                            "departure_time": "16:00",
-                            "arrival_time": "22:00",
-                            "departure_date": clean_return_date,
-                            "departure_date_formatted": ret_date_formatted,
-                            "flight_number": f"{item['bus_type']} Rahat",
-                            "carrier": item["carrier"],
-                            "duration": item["duration"],
-                            "is_direct": True,
-                            "badge": "Dönüş Seferi"
-                        }
 
-                total_try = (outbound_try + (ret_try if is_round else 0.0)) * pax_count
-                total_orig_try = (orig_try + (ret_try if is_round else 0.0)) * pax_count
+                total_try = (outbound_try + ret_try) * pax_count
+                total_orig_try = (orig_try + ret_try) * pax_count
                 conv_p = round(CurrencyService.convert(total_try, "TRY", currency), 2) if currency != "TRY" else round(total_try)
                 reg_p = round(CurrencyService.convert(total_orig_try, "TRY", currency), 2) if currency != "TRY" else round(total_orig_try)
 
@@ -1924,7 +2003,11 @@ class BusService:
                         {"name": "Kamil Koç Resmi Web", "url": kamilkoc_url, "price": conv_p, "is_best": True, "badge": "Resmi İndirim & YolKart"}
                     ]
                     if obilet_url:
-                        providers_list.append({"name": "Obilet", "url": obilet_url, "price": conv_p, "is_best": False})
+                        providers_list.append({"name": "Obilet", "url": obilet_url, "price": conv_p if item.get("also_on_obilet") else None, "is_best": False})
+                    if enuygun_url:
+                        providers_list.append({"name": "Enuygun Otobüs", "url": enuygun_url, "price": None, "is_best": False})
+                    if biletcom_url:
+                        providers_list.append({"name": "Bilet.com Otobüs", "url": biletcom_url, "price": None, "is_best": False})
                 else:
                     primary_url = obilet_url or enuygun_url
                     primary_channel = "obilet"
@@ -1933,6 +2016,10 @@ class BusService:
                     providers_list = [
                         {"name": f"Obilet ({item['carrier']})", "url": primary_url, "price": conv_p, "is_best": True}
                     ]
+                    if enuygun_url:
+                        providers_list.append({"name": "Enuygun Otobüs", "url": enuygun_url, "price": None, "is_best": False})
+                    if biletcom_url:
+                        providers_list.append({"name": "Bilet.com Otobüs", "url": biletcom_url, "price": None, "is_best": False})
                     carrier_site = cls.get_carrier_official_url(item["carrier"])
                     if carrier_site:
                         providers_list.append({"name": f"{item['carrier']} Resmi Site", "url": carrier_site, "price": None, "is_best": False})
@@ -1966,7 +2053,7 @@ class BusService:
                     "price": conv_p,
                     "has_live_price": True,
                     "price_status_text": price_status,
-                    "regular_price": reg_p if reg_p > conv_p else round(conv_p * 1.12, 2),
+                    "regular_price": reg_p if reg_p > conv_p else None,
                     "currency": curr_symbol,
                     "currency_code": currency,
                     "badge": badge_text,
@@ -1979,6 +2066,7 @@ class BusService:
                     "kamilkoc_link": kamilkoc_url if is_kamil_or_flix else None,
                     "obilet_link": obilet_url,
                     "enuygun_link": enuygun_url,
+                    "biletcom_link": biletcom_url,
                     "carrier_official_link": cls.get_carrier_official_url(item["carrier"]),
                     "agent_name": "Kamil Koç Resmi" if is_kamil_or_flix else "Obilet",
                     "agent_link": primary_url,
@@ -1989,7 +2077,7 @@ class BusService:
 
             return tickets
 
-        # 3. YEDEK ULUSLARARASI SEFERLER (Canlı FlixBus API'de o gün sefer kalmadıysa)
+        # 3. YEDEK ULUSLARARASI SEFERLER (Canlı FlixBus API'de o gün sefer kalmadıysa uydurma fiyat basmadan resmi sorgu kartı döndür)
         matched_intl = None
         for (r_orig, r_dest), sched in cls.INTERNATIONAL_BUS_ROUTES.items():
             if (r_orig in orig_slug or orig_slug in r_orig) and (r_dest in dest_slug or dest_slug in r_dest):
@@ -1998,10 +2086,6 @@ class BusService:
 
         if matched_intl:
             for idx, item in enumerate(matched_intl):
-                base_eur = item.get("base_eur", 35.0)
-                single_p = round(CurrencyService.convert(base_eur, "EUR", currency), 2)
-                ticket_p = round(single_p * bus_mult, 2)
-                reg_p = round(ticket_p * 1.15, 2)
                 is_next_day = item.get("night", False)
 
                 tickets.append({
@@ -2023,10 +2107,10 @@ class BusService:
                     "duration": item["dur"],
                     "is_direct": True,
                     "is_night_trip": is_next_day,
-                    "price": ticket_p,
-                    "has_live_price": True,
-                    "price_status_text": "FlixBus Doğrulanmış Resmi Fiyat",
-                    "regular_price": reg_p,
+                    "price": None,
+                    "has_live_price": False,
+                    "price_status_text": "Canlı Sefer & Koltuk Sorgula",
+                    "regular_price": None,
                     "currency": curr_symbol,
                     "currency_code": currency,
                     "badge": item["badge"],
@@ -2041,11 +2125,12 @@ class BusService:
                     "kamilkoc_link": kamilkoc_url,
                     "obilet_link": obilet_url,
                     "enuygun_link": enuygun_url,
+                    "biletcom_link": biletcom_url,
                     "direct_link": kamilkoc_url,
                     "booking_link": kamilkoc_url,
                     "providers": [
-                        {"name": f"{item['carrier']} Resmi Bilet", "url": kamilkoc_url, "price": ticket_p, "is_best": True},
-                        {"name": "Omio Çoklu Karşılaştırma", "url": omio_url, "price": ticket_p, "is_best": False}
+                        {"name": f"{item['carrier']} Resmi Bilet", "url": kamilkoc_url, "price": None, "is_best": True},
+                        {"name": "Omio Çoklu Karşılaştırma", "url": omio_url, "price": None, "is_best": False}
                     ]
                 })
             return tickets
@@ -2085,11 +2170,14 @@ class BusService:
             "kamilkoc_link": kamilkoc_url,
             "obilet_link": obilet_url,
             "enuygun_link": enuygun_url,
+            "biletcom_link": biletcom_url,
             "direct_link": fallback_url,
             "booking_link": fallback_url,
             "providers": [
                 {"name": "Kamil Koç Resmi Web", "url": kamilkoc_url, "price": None, "is_best": True},
                 {"name": "Obilet Sefer Listesi", "url": obilet_url, "price": None, "is_best": False},
+                {"name": "Enuygun Otobüs", "url": enuygun_url, "price": None, "is_best": False},
+                {"name": "Bilet.com Otobüs", "url": biletcom_url, "price": None, "is_best": False},
             ]
         })
 

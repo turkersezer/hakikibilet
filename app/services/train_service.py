@@ -494,7 +494,11 @@ class TrainService:
     def normalize_tr(text: str) -> str:
         if not text:
             return ""
-        text = re.sub(r'\(.*?\)', '', text).strip()
+        m_merkez = re.match(r'^\s*merkez\s*\(([^)]+)\)', text, flags=re.IGNORECASE)
+        if m_merkez:
+            text = m_merkez.group(1).strip()
+        else:
+            text = re.sub(r'\(.*?\)', '', text).strip()
         replacements = {
             "İ": "i", "I": "i", "ı": "i",
             "Ğ": "g", "ğ": "g",
@@ -513,14 +517,21 @@ class TrainService:
     def canonical_city_key(cls, text: str) -> str:
         """
         'İstanbul Sabiha Gökçen (SAW)', 'İstanbul Havalimanı (IST)', 'Ankara (ESB)' veya
-        ilçe aramalarını ('Çankaya (Ankara)', 'Kadıköy (İstanbul)') ana TCDD şehir anahtarına ('istanbul', 'ankara') dönüştürür.
+        ilçe aramalarını ('Çankaya (Ankara)', 'Kadıköy (İstanbul)', 'Merkez (Erzincan)') ana TCDD şehir anahtarına dönüştürür.
         """
         clean = cls.normalize_tr(text)
         if not clean:
             return ""
         if clean in cls.CITY_PRIMARY_STATION_IDS:
             return clean
-        for main_city in ("istanbul", "ankara", "izmir", "eskisehir", "konya", "sivas", "karaman", "adana", "mersin", "kayseri", "kars", "erzurum", "malatya", "diyarbakir", "denizli", "kocaeli", "sakarya", "bilecik", "edirne", "balikesir", "kutahya", "afyon", "isparta", "zonguldak", "karabuk", "samsun", "amasya"):
+        for main_city in (
+            "istanbul", "ankara", "izmir", "eskisehir", "konya", "sivas", "karaman",
+            "adana", "mersin", "kayseri", "kars", "erzurum", "erzincan", "malatya",
+            "elazig", "diyarbakir", "batman", "siirt", "van", "bitlis", "denizli",
+            "aydin", "manisa", "usak", "kocaeli", "sakarya", "bilecik", "edirne",
+            "balikesir", "kutahya", "afyon", "isparta", "burdur", "zonguldak",
+            "karabuk", "cankiri", "samsun", "amasya", "kirikkale", "yozgat", "nigde",
+        ):
             if main_city in clean:
                 return main_city
         try:
@@ -965,12 +976,53 @@ class TrainService:
             "cocuk_0_6": 0.0                                 # Kucakta ücretsiz
         }
 
+    _INTL_EN_CITIES: Dict[str, str] = {
+        "londra": "London",
+        "paris": "Paris",
+        "roma": "Rome",
+        "milano": "Milan",
+        "venedik": "Venice",
+        "amsterdam": "Amsterdam",
+        "berlin": "Berlin",
+        "munih": "Munich",
+        "frankfurt": "Frankfurt",
+        "koln": "Cologne",
+        "dusseldorf": "Dusseldorf",
+        "stuttgart": "Stuttgart",
+        "hamburg": "Hamburg",
+        "barselona": "Barcelona",
+        "madrid": "Madrid",
+        "zurih": "Zurich",
+        "cenevre": "Geneva",
+        "basel": "Basel",
+        "viyana": "Vienna",
+        "prag": "Prague",
+        "budapeste": "Budapest",
+        "bruksel": "Brussels",
+        "sofya": "Sofia",
+        "bukres": "Bucharest",
+        "selanik": "Thessaloniki",
+        "atina": "Athens",
+        "uskup": "Skopje",
+        "belgrad": "Belgrade",
+        "saraybosna": "Sarajevo",
+        "varsova": "Warsaw",
+        "kopenhag": "Copenhagen",
+        "stockholm": "Stockholm",
+        "oslo": "Oslo",
+        "lizbon": "Lisbon",
+        "nice": "Nice",
+        "monaco": "Monaco",
+        "istanbul": "Istanbul",
+        "edirne": "Edirne",
+    }
+
     @classmethod
     def get_trainline_deep_link(cls, origin_slug: str, dest_slug: str, departure_date: str) -> str:
         """Trainline Avrupa hızlı tren biletleme ekranına Travelpayouts Marker ile yönlendirir."""
         from app.config import settings
         tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
-        t_url = f"https://www.thetrainline.com/tr/search/results?origin={origin_slug}&destination={dest_slug}&outwardDate={departure_date}"
+        t_url = "https://www.thetrainline.com/en-us"
         encoded = urllib.parse.quote(t_url, safe="")
         return f"https://tp.media/r?marker={tp_marker}&p=4523&u={encoded}"
 
@@ -980,24 +1032,8 @@ class TrainService:
         from app.config import settings
         trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
         trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
-        en_city_map = {
-            "londra": "London",
-            "paris": "Paris",
-            "roma": "Rome",
-            "milano": "Milan",
-            "amsterdam": "Amsterdam",
-            "berlin": "Berlin",
-            "munih": "Munich",
-            "barselona": "Barcelona",
-            "madrid": "Madrid",
-            "zurih": "Zurich",
-            "viyana": "Vienna",
-            "prag": "Prague",
-            "sofya": "Sofia",
-            "bukres": "Bucharest",
-        }
-        dep_c = en_city_map.get(origin_slug, origin_slug.title())
-        arr_c = en_city_map.get(dest_slug, dest_slug.title())
+        dep_c = cls._INTL_EN_CITIES.get(origin_slug, origin_slug.title())
+        arr_c = cls._INTL_EN_CITIES.get(dest_slug, dest_slug.title())
         return (
             f"https://uk.trip.com/trains/list?"
             f"depCity={urllib.parse.quote(dep_c)}"
@@ -1011,7 +1047,9 @@ class TrainService:
         """Omio Avrupa hızlı tren ve çok modlu biletleme ekranına Travelpayouts Marker ile yönlendirir."""
         from app.config import settings
         tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
-        omio_target = f"https://www.omio.com.tr/travel/{origin_slug}/{dest_slug}?date={departure_date}"
+        en_orig = cls._INTL_EN_CITIES.get(origin_slug, origin_slug).lower().replace(" ", "-")
+        en_dest = cls._INTL_EN_CITIES.get(dest_slug, dest_slug).lower().replace(" ", "-")
+        omio_target = f"https://www.omio.com/trains/{en_orig}/{en_dest}?departure_date={departure_date}"
         encoded = urllib.parse.quote(omio_target, safe="")
         return f"https://tp.media/r?marker={tp_marker}&p=4083&u={encoded}"
 
@@ -1069,28 +1107,32 @@ class TrainService:
             is_trainline = (matched_intl.get("type") == "intl_trainline")
             price_eur = matched_intl.get("price_eur", 50.0)
             conv_p = round(CurrencyService.convert(price_eur * train_mult, "EUR", currency), 2)
-            reg_p = round(conv_p * 1.15, 2)
             is_next_day = matched_intl.get("next_day", False)
 
             if is_trainline:
-                booking_url = cls.get_trainline_deep_link(orig_clean, dest_clean, departure_date)
                 trip_train_url = cls.get_trip_train_deep_link(orig_clean, dest_clean, departure_date)
                 omio_url = cls.get_omio_deep_link(orig_clean, dest_clean, departure_date)
-                provider_name = "Trainline Resmi Bilet Ekranı"
-                price_status = "Trainline & Trip.com Doğrulanmış Taban Fiyat"
+                trainline_url = cls.get_trainline_deep_link(orig_clean, dest_clean, departure_date)
+                booking_url = trip_train_url
+                provider_name = "Trip.com Trains Resmi Bilet Ekranı"
+                price_status = "Canlı Sefer & Bilet Sorgula"
+                card_price = None
+                card_has_live = False
                 providers_list = [
-                    {"name": "Trainline Resmi Ekran", "url": booking_url, "price": conv_p, "is_best": True},
-                    {"name": "Trip.com Trains (Resmi Partner)", "url": trip_train_url, "price": conv_p, "is_best": False},
-                    {"name": "Omio Hızlı Tren Karşılaştırması", "url": omio_url, "price": conv_p, "is_best": False}
+                    {"name": "Trip.com Trains (Resmi Partner)", "url": trip_train_url, "price": None, "is_best": True},
+                    {"name": "Omio Hızlı Tren Karşılaştırması", "url": omio_url, "price": None, "is_best": False},
+                    {"name": "Trainline Global", "url": trainline_url, "price": None, "is_best": False},
                 ]
             else:
                 booking_url = "https://ebilet.tcddtasimacilik.gov.tr/"
                 trip_train_url = cls.get_trip_train_deep_link(orig_clean, dest_clean, departure_date)
                 provider_name = "TCDD Uluslararası E-Bilet"
-                price_status = "TCDD / BDZ Doğrulanmış Tarife"
+                price_status = "TCDD / BDZ Resmi Sabit Tarife"
+                card_price = conv_p
+                card_has_live = True
                 providers_list = [
                     {"name": "TCDD Uluslararası E-Bilet", "url": booking_url, "price": conv_p, "is_best": True},
-                    {"name": "Trip.com Trains (Avrupa Raylı Sistem)", "url": trip_train_url, "price": conv_p, "is_best": False}
+                    {"name": "Trip.com Trains (Avrupa Raylı Sistem)", "url": trip_train_url, "price": None, "is_best": False}
                 ]
 
             return_leg = None
@@ -1128,24 +1170,26 @@ class TrainService:
                 "duration": matched_intl["duration"],
                 "is_direct": True,
                 "is_night_trip": is_next_day,
-                "price": conv_p,
-                "has_live_price": True,
+                "price": card_price,
+                "has_live_price": card_has_live,
                 "price_status_text": price_status,
-                "regular_price": reg_p,
+                "regular_price": None,
                 "currency": curr_symbol,
                 "currency_code": currency,
                 "badge": matched_intl["badge"],
                 "route_notice": f"🌍 Uluslararası Tren Hattı • {matched_intl['name']}",
                 "official_name": provider_name,
                 "official_link": booking_url,
-                "agent_name": "Trainline Global" if is_trainline else "TCDD Taşımacılık",
+                "agent_name": "Trip.com Trains" if is_trainline else "TCDD Taşımacılık",
                 "agent_link": booking_url,
                 "direct_link": booking_url,
                 "booking_link": booking_url,
+                "winner_url": booking_url,
+                "winner_provider": provider_name,
                 "trip_train_link": trip_train_url,
                 "is_round": is_round,
                 "return_leg": return_leg,
-                "discounts": {
+                "discounts": None if is_trainline else {
                     "genc_ogrenci": round(conv_p * 0.85, 2),
                     "emekli": round(conv_p * 0.85, 2),
                     "yas_65_ustu": round(conv_p * 0.70, 2),
@@ -1167,25 +1211,10 @@ class TrainService:
 
         if live_journeys:
             for idx, lj in enumerate(live_journeys):
-                raw_price = float(lj["price_try"])
-                converted_price = CurrencyService.convert(raw_price * train_mult, "TRY", currency) if currency != "TRY" else (raw_price * train_mult)
-                final_p = round(converted_price, 2) if currency != "TRY" else round(converted_price)
-                reg_p = round(final_p * 1.15, 2)
-
-                discounts_ticket = cls.get_discount_breakdown(raw_price)
-                discounts_converted = {
-                    k: round(CurrencyService.convert(v * train_mult, "TRY", currency), 2) if currency != "TRY" else round(v * train_mult, 2)
-                    for k, v in discounts_ticket.items()
-                }
-
-                ogrenci_fmt = cls.format_price_tr(discounts_converted["genc_ogrenci"])
-                yas65_fmt = cls.format_price_tr(discounts_converted["yas_65_ustu"])
-                emekli_fmt = cls.format_price_tr(discounts_converted.get("emekli", discounts_converted["genc_ogrenci"]))
-                discount_info_text = f"💡 İndirimli Bilet: 65+ Yaş: {yas65_fmt} {curr_symbol} • Emekli: {emekli_fmt} {curr_symbol} • Öğrenci: {ogrenci_fmt} {curr_symbol} (TCDD Ekranında Seçilebilir)"
-
                 return_leg = None
-                if is_round and return_date:
-                    ret_match = live_ret_journeys[idx % len(live_ret_journeys)] if live_ret_journeys else None
+                ret_match = None
+                if is_round and return_date and live_ret_journeys:
+                    ret_match = live_ret_journeys[idx % len(live_ret_journeys)]
                     if ret_match:
                         return_leg = {
                             "origin": ret_match["origin_station"],
@@ -1200,20 +1229,24 @@ class TrainService:
                             "is_direct": True,
                             "badge": ret_match["badge"],
                         }
-                    else:
-                        return_leg = {
-                            "origin": lj["dest_station"],
-                            "destination": lj["origin_station"],
-                            "departure_time": "18:00",
-                            "arrival_time": "22:20",
-                            "departure_date": return_date,
-                            "departure_date_formatted": ret_date_formatted,
-                            "flight_number": f"{lj['flight_number']} (Dönüş)",
-                            "carrier": lj["carrier"],
-                            "duration": lj["duration"],
-                            "is_direct": True,
-                            "badge": "Dönüş Seferi",
-                        }
+
+                raw_price = float(lj["price_try"])
+                ret_raw_price = float(ret_match["price_try"]) if ret_match else 0.0
+                total_raw_try = (raw_price + ret_raw_price) * pax_count
+                converted_price = CurrencyService.convert(total_raw_try, "TRY", currency) if currency != "TRY" else total_raw_try
+                final_p = round(converted_price, 2) if currency != "TRY" else round(converted_price)
+
+                leg_mult = pax_count * (2 if ret_match else 1)
+                discounts_ticket = cls.get_discount_breakdown(raw_price)
+                discounts_converted = {
+                    k: round(CurrencyService.convert(v * leg_mult, "TRY", currency), 2) if currency != "TRY" else round(v * leg_mult, 2)
+                    for k, v in discounts_ticket.items()
+                }
+
+                ogrenci_fmt = cls.format_price_tr(discounts_converted["genc_ogrenci"])
+                yas65_fmt = cls.format_price_tr(discounts_converted["yas_65_ustu"])
+                emekli_fmt = cls.format_price_tr(discounts_converted.get("emekli", discounts_converted["genc_ogrenci"]))
+                discount_info_text = f"💡 İndirimli Bilet: 65+ Yaş: {yas65_fmt} {curr_symbol} • Emekli: {emekli_fmt} {curr_symbol} • Öğrenci: {ogrenci_fmt} {curr_symbol} (TCDD Ekranında Seçilebilir)"
 
                 is_night = lj["is_next_day"] or lj["dep_time"] >= "20:00" or lj["dep_time"] < "06:00"
 
@@ -1240,7 +1273,7 @@ class TrainService:
                     "price": final_p,
                     "has_live_price": True,
                     "price_status_text": "TCDD Canlı Sefer & Resmi Tarife",
-                    "regular_price": reg_p,
+                    "regular_price": None,
                     "currency": curr_symbol,
                     "currency_code": currency,
                     "badge": lj["badge"],
@@ -1283,7 +1316,7 @@ class TrainService:
                 raw_price = 550.0 if is_anahat else base_yht
                 converted_price = CurrencyService.convert(raw_price * train_mult, "TRY", currency)
                 final_p = round(converted_price, 2)
-                reg_p = round(final_p * 1.15, 2)
+                reg_p = None
 
                 is_night = item.get("next_day", False) or item["dep"] >= "21:00"
                 discounts_ticket = cls.get_discount_breakdown(raw_price)
@@ -1396,7 +1429,7 @@ class TrainService:
                 "price": conv_p,
                 "has_live_price": True,
                 "price_status_text": "TCDD E-Bilet Doğrulanmış Taban Fiyat",
-                "regular_price": round(conv_p * 1.15, 2),
+                "regular_price": None,
                 "currency": curr_symbol,
                 "currency_code": currency,
                 "badge": tariff["badge"],

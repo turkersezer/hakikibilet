@@ -259,6 +259,16 @@ function swapOriginDest(e) {
     originInput.value = destInput.value;
     destInput.value = temp;
 
+    const tempRaw = originInput.dataset.rawUserQuery || "";
+    const tempRes = originInput.dataset.resolvedValue || "";
+    const tempMode = originInput.dataset.resolvedForMode || "";
+    originInput.dataset.rawUserQuery = destInput.dataset.rawUserQuery || "";
+    originInput.dataset.resolvedValue = destInput.dataset.resolvedValue || "";
+    originInput.dataset.resolvedForMode = destInput.dataset.resolvedForMode || "";
+    destInput.dataset.rawUserQuery = tempRaw;
+    destInput.dataset.resolvedValue = tempRes;
+    destInput.dataset.resolvedForMode = tempMode;
+
     originInput.dispatchEvent(new Event("input", { bubbles: true }));
     destInput.dispatchEvent(new Event("input", { bubbles: true }));
     updateAirportHints();
@@ -2075,59 +2085,124 @@ window.switchToTransportAndSearch = function(targetMode) {
     }
 };
 
+function extractCleanBaseLocation(inputEl) {
+    if (!inputEl) return "";
+    const curVal = (inputEl.value || "").trim();
+    if (!curVal) return "";
+    if (inputEl.dataset.rawUserQuery && curVal === (inputEl.dataset.resolvedValue || "").trim()) {
+        return inputEl.dataset.rawUserQuery;
+    }
+    const merkezMatch = curVal.match(/^merkez\s*\(([^)]+)\)/i);
+    if (merkezMatch && merkezMatch[1]) {
+        return merkezMatch[1].trim();
+    }
+    let v = curVal
+        .replace(/\s*-\s*Söğütlüçeşme YHT$/i, "")
+        .replace(/\s*-\s*Pendik YHT$/i, "")
+        .replace(/\s*-\s*Bostancı YHT$/i, "")
+        .replace(/\s*-\s*Bakırköy YHT$/i, "")
+        .replace(/\s*-\s*Halkalı Garı$/i, "")
+        .replace(/\s*-\s*Basmane Garı$/i, "")
+        .replace(/\s*-\s*Esenler Otogarı$/i, "")
+        .replace(/\s*-\s*Alibeyköy Cep Otogarı$/i, "")
+        .replace(/\s*-\s*Dudullu Terminali$/i, "")
+        .replace(/\s*-\s*Harem Otogarı$/i, "")
+        .replace(/\s*-\s*Samandıra Terminali$/i, "")
+        .replace(/\s*-\s*AŞTİ Otobüs Terminali$/i, "")
+        .replace(/\s*-\s*Şehirlerarası Otobüs Terminali(\s*\([^)]+\))?$/i, "")
+        .replace(/\s*-\s*Mudanya\s*\(BUDO\)$/i, "")
+        .replace(/\s*-\s*Güzelyalı\s*\(İDO\)$/i, "")
+        .replace(/\s*-\s*Mersin\s*\/\s*Çukurova(\s*\([^)]+\))?$/i, "")
+        .replace(/\s*\/\s*Çukurova(\s*\([^)]+\))?$/i, "")
+        .replace(/\s*-\s*Edremit(\s*\([^)]+\))?$/i, "")
+        .replace(/\s+Sabiha Gökçen(\s*\([^)]+\))?$/i, "")
+        .replace(/\s+Esenboğa(\s*\([^)]+\))?$/i, "")
+        .replace(/\s+Adnan Menderes(\s*\([^)]+\))?$/i, "")
+        .replace(/\s+Milas(\s*\([^)]+\))?$/i, "")
+        .replace(/\s+Havalimanı(\s*\([^)]+\))?$/i, "")
+        .replace(/\s+Şehirlerarası Otobüs Terminali$/i, "")
+        .replace(/\s+Otobüs Terminali$/i, "")
+        .replace(/\s+Şehirlerarası Otogarı$/i, "")
+        .replace(/\s+Otogarı$/i, "")
+        .replace(/\s+Gar\s*\([^)]+\)$/i, "")
+        .replace(/\s+Garı\s*\([^)]+\)$/i, "")
+        .replace(/\s+Garı$/i, "")
+        .replace(/\s+Gar$/i, "")
+        .replace(/\s+YHT$/i, "")
+        .replace(/\s*\([^)]+\)\s*$/, "")
+        .trim();
+    return v || curVal;
+}
+window.extractCleanBaseLocation = extractCleanBaseLocation;
+
 function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
     if (!inputEl || !inputEl.value) return;
     const currentMode = mode || window.currentTransportSubTab || 'flight';
+
+    // Sekmeler arası geçişte önceki modun otomatik tamamlama eklerini (Dalaman (DLM), Söğütlüçeşme YHT vb.) temizle
+    if (inputEl.dataset.resolvedForMode && inputEl.dataset.resolvedForMode !== currentMode) {
+        const restored = extractCleanBaseLocation(inputEl);
+        if (restored) {
+            inputEl.value = restored;
+        }
+    }
+
     const raw = inputEl.value.trim();
     if (!raw) return;
+
+    const baseRaw = (inputEl.dataset.rawUserQuery && raw === (inputEl.dataset.resolvedValue || "").trim())
+        ? inputEl.dataset.rawUserQuery
+        : extractCleanBaseLocation(inputEl);
 
     const clean = normalizeTurkish(raw);
     if (!clean || clean.length < 2) return;
 
-    if (currentMode === 'flight') {
-        clearFieldWarningNotice(inputEl);
-        // UÇAK MODU: Zaten parantezli IATA kodu varsa dokunma
-        if (/\([A-Z0-9/ -]{3,}\)/.test(raw)) return;
+    const beforeVal = raw;
+    try {
+        if (currentMode === 'flight') {
+            clearFieldWarningNotice(inputEl);
+            // UÇAK MODU: Zaten parantezli IATA kodu varsa dokunma
+            if (/\([A-Z0-9/ -]{3,}\)/.test(raw)) return;
 
-        // 1. DISTRICT_TO_AIRPORT_MAP içinde ara
-        for (const [key, item] of Object.entries(DISTRICT_TO_AIRPORT_MAP)) {
-            const normKey = normalizeTurkish(key);
-            const match = onlyExactMatch
-                ? (clean === normKey)
-                : (clean === normKey || (clean.length >= 3 && normKey.startsWith(clean)));
-
-            if (match) {
-                inputEl.value = item.target;
-                if (item.note) {
-                    window._lastDistrictNotice = item.note;
-                }
-                if (typeof window.trackHakikiEvent === 'function' && raw !== item.target) {
-                    window.trackHakikiEvent({ event_type: 'geo_resolve', transport_type: currentMode, origin: raw, destination: item.target, warning_text: item.note || `${raw} ➔ ${item.target}` });
-                }
-                return;
-            }
-        }
-
-        // 2. verifiedCities (Aktif Havalimanı Listesi) içinde ara
-        if (Array.isArray(verifiedCities) && verifiedCities.length > 0) {
-            for (const c of verifiedCities) {
-                const normName = normalizeTurkish(c.name);
-                const normSlug = normalizeTurkish(c.slug);
+            // 1. DISTRICT_TO_AIRPORT_MAP içinde ara
+            for (const [key, item] of Object.entries(DISTRICT_TO_AIRPORT_MAP)) {
+                const normKey = normalizeTurkish(key);
                 const match = onlyExactMatch
-                    ? (clean === normName || clean === normSlug)
-                    : (clean === normName || clean === normSlug || (clean.length >= 3 && (normName.startsWith(clean) || normSlug.startsWith(clean))));
+                    ? (clean === normKey)
+                    : (clean === normKey || (clean.length >= 3 && normKey.startsWith(clean)));
 
                 if (match) {
-                    if (c.iata) {
-                        inputEl.value = `${c.name} (${c.iata})`;
-                    } else {
-                        inputEl.value = c.name;
+                    inputEl.value = item.target;
+                    if (item.note) {
+                        window._lastDistrictNotice = item.note;
+                    }
+                    if (typeof window.trackHakikiEvent === 'function' && raw !== item.target) {
+                        window.trackHakikiEvent({ event_type: 'geo_resolve', transport_type: currentMode, origin: raw, destination: item.target, warning_text: item.note || `${raw} ➔ ${item.target}` });
                     }
                     return;
                 }
             }
-        }
-    } else if (currentMode === 'bus') {
+
+            // 2. verifiedCities (Aktif Havalimanı Listesi) içinde ara
+            if (Array.isArray(verifiedCities) && verifiedCities.length > 0) {
+                for (const c of verifiedCities) {
+                    const normName = normalizeTurkish(c.name);
+                    const normSlug = normalizeTurkish(c.slug);
+                    const match = onlyExactMatch
+                        ? (clean === normName || clean === normSlug)
+                        : (clean === normName || clean === normSlug || (clean.length >= 3 && (normName.startsWith(clean) || normSlug.startsWith(clean))));
+
+                    if (match) {
+                        if (c.iata) {
+                            inputEl.value = `${c.name} (${c.iata})`;
+                        } else {
+                            inputEl.value = c.name;
+                        }
+                        return;
+                    }
+                }
+            }
+        } else if (currentMode === 'bus') {
         clearFieldWarningNotice(inputEl);
         // OTOBÜS MODU: İstanbul Anadolu & Avrupa Şemsiye Bölgeleri, Büyükşehirler & İlçe Otogarları
         const BUS_DISTRICT_TO_TERMINAL_MAP = {
@@ -2334,7 +2409,10 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
             for (const c of verifiedCities) {
                 const normName = normalizeTurkish(c.name);
                 const normSlug = normalizeTurkish(c.slug);
-                if (clean === normName || clean === normSlug || (clean.length >= 3 && normName.startsWith(clean))) {
+                const match = onlyExactMatch
+                    ? (clean === normName || clean === normSlug)
+                    : (clean === normName || clean === normSlug || (clean.length >= 3 && normName.startsWith(clean)));
+                if (match) {
                     inputEl.value = c.name;
                     return;
                 }
@@ -2450,7 +2528,11 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
         };
 
         for (const [tk, tv] of Object.entries(TRAIN_STATION_MAP)) {
-            if (clean === normalizeTurkish(tk) || (clean.length >= 4 && normalizeTurkish(tk).startsWith(clean))) {
+            const normTk = normalizeTurkish(tk);
+            const match = onlyExactMatch
+                ? (clean === normTk)
+                : (clean === normTk || (clean.length >= 4 && normTk.startsWith(clean)));
+            if (match) {
                 inputEl.value = tv;
                 return;
             }
@@ -2499,6 +2581,12 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
             'yalova': 'Yalova',
             'bandirma': 'Bandırma',
             'bandırma': 'Bandırma',
+            'erdek': 'Erdek',
+            'avsa': 'Avşa Adası',
+            'avşa': 'Avşa Adası',
+            'eskihisar': 'Eskihisar',
+            'topcular': 'Topçular',
+            'topçular': 'Topçular',
             'cesme': 'Çeşme',
             'çeşme': 'Çeşme',
             'sakiz': 'Sakız Adası (Chios)',
@@ -2508,30 +2596,48 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
             'midilli': 'Midilli Adası (Lesvos)',
             'ayvalik': 'Ayvalık',
             'ayvalık': 'Ayvalık',
+            'dikili': 'Dikili',
             'kusadasi': 'Kuşadası',
             'kuşadası': 'Kuşadası',
+            'sigacik': 'Sığacık',
+            'sığacık': 'Sığacık',
+            'seferihisar': 'Sığacık',
             'samos': 'Samos Adası',
             'marmaris': 'Marmaris',
+            'fethiye': 'Fethiye',
             'rodos': 'Rodos Adası',
+            'simi': 'Simi Adası',
+            'symi': 'Simi Adası',
             'kas': 'Kaş',
             'kaş': 'Kaş',
+            'meis': 'Meis Adası',
             'tasucu': 'Taşucu',
             'taşucu': 'Taşucu',
             'girne': 'Girne (Kıbrıs)',
             'canakkale': 'Çanakkale',
             'çanakkale': 'Çanakkale',
+            'eceabat': 'Eceabat',
+            'geyikli': 'Geyikli',
             'bozcaada': 'Bozcaada',
+            'kabatepe': 'Kabatepe',
             'gokceada': 'Gökçeada',
             'gökçeada': 'Gökçeada'
         };
         for (const [fk, fv] of Object.entries(FERRY_PORT_MAP)) {
-            if (clean === normalizeTurkish(fk) || (clean.length >= 4 && normalizeTurkish(fk).startsWith(clean))) {
+            const normFk = normalizeTurkish(fk);
+            const match = onlyExactMatch
+                ? (clean === normFk)
+                : (clean === normFk || (clean.length >= 4 && normFk.startsWith(clean)));
+            if (match) {
                 inputEl.value = fv;
                 return;
             }
         }
     } else if (currentMode === 'car') {
         clearFieldWarningNotice(inputEl);
+        if (window.currentCarSubMode === 'transfer' && inputEl.id === 'transDest') {
+            return;
+        }
         // ARAÇ KİRALAMA: Havalimanı & Şehir İçi Ofis Çözümleme
         const CAR_RENTAL_MAP = {
             'istanbul': 'İstanbul Havalimanı (IST)',
@@ -2546,18 +2652,47 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
             'trabzon': 'Trabzon Havalimanı (TZX)',
             'adana': 'Adana / Çukurova (COV)',
             'kayseri': 'Kayseri Havalimanı (ASR)',
-            'gaziantep': 'Gaziantep Havalimanı (GZT)'
+            'gaziantep': 'Gaziantep Havalimanı (GZT)',
+            'kars': 'Kars Harakani Havalimanı (KSY)',
+            'sivas': 'Sivas Nuri Demirağ Havalimanı (VAS)',
+            'mardin': 'Mardin Havalimanı (MQM)',
+            'erzurum': 'Erzurum Havalimanı (ERZ)',
+            'samsun': 'Samsun Çarşamba Havalimanı (SZF)',
+            'diyarbakir': 'Diyarbakır Havalimanı (DIY)',
+            'diyarbakır': 'Diyarbakır Havalimanı (DIY)',
+            'van': 'Van Ferit Melen Havalimanı (VAN)',
+            'rize': 'Rize-Artvin Havalimanı (RZV)',
+            'nevsehir': 'Nevşehir Kapadokya Havalimanı (NAV)',
+            'nevşehir': 'Nevşehir Kapadokya Havalimanı (NAV)',
+            'kapadokya': 'Nevşehir Kapadokya Havalimanı (NAV)'
         };
         for (const [ck, cv] of Object.entries(CAR_RENTAL_MAP)) {
-            if (clean === normalizeTurkish(ck) || (clean.length >= 3 && normalizeTurkish(ck).startsWith(clean))) {
+            const normCk = normalizeTurkish(ck);
+            const match = onlyExactMatch
+                ? (clean === normCk)
+                : (clean === normCk || (clean.length >= 3 && normCk.startsWith(clean)));
+            if (match) {
                 inputEl.value = cv;
                 return;
             }
         }
     }
+    } finally {
+        const afterVal = (inputEl.value || "").trim();
+        if (afterVal && afterVal !== beforeVal) {
+            inputEl.dataset.rawUserQuery = baseRaw || beforeVal;
+            inputEl.dataset.resolvedValue = afterVal;
+            inputEl.dataset.resolvedForMode = currentMode;
+        } else if (afterVal) {
+            if (!inputEl.dataset.rawUserQuery || afterVal !== (inputEl.dataset.resolvedValue || "").trim()) {
+                inputEl.dataset.rawUserQuery = baseRaw || afterVal;
+            }
+            inputEl.dataset.resolvedValue = afterVal;
+            inputEl.dataset.resolvedForMode = currentMode;
+        }
+    }
 }
 window.resolveLocationInput = resolveLocationInput;
-window.resolveDistrictOrAirportInput = resolveLocationInput;
 window.resolveDistrictOrAirportInput = resolveLocationInput;
 
 function populateDatalists(transportMode, scope) {
@@ -2724,15 +2859,20 @@ function populateDatalists(transportMode, scope) {
             <option value="Bursa">⛴️ Bursa - Mudanya (BUDO) / Güzelyalı (İDO)</option>
             <option value="Yalova">⛴️ Yalova İskelesi (İDO Hızlı Arabalı Feribot)</option>
             <option value="Bandırma">⛴️ Bandırma Limanı (İDO Hızlı Deniz Otobüsü)</option>
+            <option value="Erdek">⛴️ Balıkesir - Erdek İskelesi (Gestaş Avşa/Marmara)</option>
             <option value="Avşa Adası">🏝️ Avşa Adası (Marmara)</option>
+            <option value="Eskihisar">⛴️ Kocaeli - Eskihisar İskelesi (İDO Arabalı Vapur)</option>
+            <option value="Topçular">⛴️ Yalova - Topçular İskelesi (İDO Arabalı Vapur)</option>
             <option value="Çeşme">🇬🇷 İzmir - Çeşme Uluslararası Limanı</option>
             <option value="Sakız Adası">🇬🇷 Sakız Adası (Chios - Kapıda Vize)</option>
             <option value="Bodrum">🇬🇷 Muğla - Bodrum Yolcu Limanı</option>
             <option value="Kos Adası">🇬🇷 Kos Adası (İstanköy - Kapıda Vize)</option>
             <option value="Simi Adası">🇬🇷 Simi Adası (Symi - Kapıda Vize)</option>
             <option value="Ayvalık">🇬🇷 Balıkesir - Ayvalık Limanı</option>
+            <option value="Dikili">🇬🇷 İzmir - Dikili Limanı (Midilli Seferleri)</option>
             <option value="Midilli Adası">🇬🇷 Midilli Adası (Lesvos - Kapıda Vize)</option>
             <option value="Kuşadası">🇬🇷 Aydın - Kuşadası Ege Port Limanı</option>
+            <option value="Sığacık">🇬🇷 İzmir - Seferihisar Sığacık Teos Marina (Samos Seferleri)</option>
             <option value="Samos Adası">🇬🇷 Samos Adası (Sisam - Kapıda Vize)</option>
             <option value="Marmaris">🇬🇷 Muğla - Marmaris Cruise & Feribot Limanı</option>
             <option value="Fethiye">🇬🇷 Muğla - Fethiye Limanı</option>
@@ -3102,6 +3242,19 @@ async function switchTransportSubTab(subTab) {
             carBar.classList.remove("flex");
         }
     }
+
+    // Sekme değiştiğinde önceki modun havalimanı/otogar/gar soneklerini temizleyip yeni moda göre çözümle
+    if (originInput && originInput.value.trim()) {
+        clearFieldWarningNotice(originInput);
+        originInput.value = extractCleanBaseLocation(originInput);
+        resolveLocationInput(originInput, subTab);
+    }
+    if (destInput && destInput.value.trim()) {
+        clearFieldWarningNotice(destInput);
+        destInput.value = extractCleanBaseLocation(destInput);
+        resolveLocationInput(destInput, subTab);
+    }
+
     updateAirportHints();
 }
 
@@ -4948,8 +5101,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
             const trainNo = ticket.flight_number || 'YHT';
             const badgeText = ticket.badge || 'YHT';
             const isIntlTrain = ticket.id && ticket.id.startsWith('tr-intl');
-            const targetUrl = ticket.direct_link || ticket.official_link || 'https://ebilet.tcddtasimacilik.gov.tr/';
-            const btnLabel = isIntlTrain ? (isEn ? 'Trainline ↗' : 'Trainline ile Al ↗') : (isEn ? 'TCDD Official ↗' : 'TCDD E-Bilet ↗');
+            const targetUrl = ticket.winner_url || ticket.direct_link || ticket.official_link || 'https://ebilet.tcddtasimacilik.gov.tr/';
+            const btnLabel = (isEn ? ticket.winner_button_text_en : ticket.winner_button_text) || (isIntlTrain ? (isEn ? 'Trip.com Trains ↗' : 'Trip.com Tren ↗') : (isEn ? 'TCDD Official ↗' : 'TCDD E-Bilet ↗'));
 
             const hasDiscounts = Boolean(discounts.genc_ogrenci || discounts.yas_65_ustu || discounts.emekli);
             const drawerHtml = hasDiscounts ? `
@@ -5011,10 +5164,17 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <!-- Sağ: Fiyat + Tek Tık Buton -->
                         <div class="flex items-center justify-between md:justify-end gap-3 md:w-64 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
                             <div class="text-left md:text-right">
-                                <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
-                                    ${Number(ticket.price).toLocaleString('tr-TR')} <span class="text-sm font-bold">${currSym}</span>
-                                </div>
-                                <div class="text-[10px] font-semibold text-slate-400 mt-0.5">Resmi Taban Ücret</div>
+                                ${ticket.price ? `
+                                    <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
+                                        ${Number(ticket.price).toLocaleString('tr-TR')} <span class="text-sm font-bold">${currSym}</span>
+                                    </div>
+                                    <div class="text-[10px] font-semibold text-slate-400 mt-0.5">${escapeHtml(ticket.price_status_text || 'Resmi Taban Ücret')}</div>
+                                ` : `
+                                    <div class="text-sm sm:text-base font-black text-indigo-900 leading-tight">
+                                        ${isEn ? 'Live Rail Fares' : 'Canlı Tren Fiyatı'}
+                                    </div>
+                                    <div class="text-[10px] font-semibold text-slate-400 mt-0.5">${escapeHtml(ticket.price_status_text || (isEn ? 'Click for Selected Date' : 'Seçili Tarih İçin Sorgula'))}</div>
+                                `}
                             </div>
                             <a href="${targetUrl}" target="_blank" rel="noopener noreferrer"
                                class="px-4 py-2.5 bg-indigo-900 hover:bg-black text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 whitespace-nowrap">
@@ -5134,6 +5294,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 ${isKamilOrFlix && ticket.kamilkoc_link ? `<a href="${ticket.kamilkoc_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-black inline-flex items-center gap-1.5">${getBrandLogoHtml('Kamil Koç', '🚌', 'w-4 h-4')}<span>Kamil Koç Resmi (${priceStr}) ↗</span></a>` : ''}
                                 ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}<span>Obilet (${!isKamilOrFlix && priceStr ? priceStr : 'Koltuk Seç'}) ↗</span></a>` : ''}
                                 ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}<span>${isEn ? 'Enuygun Deals ↗' : 'Enuygun Teklifleri ↗'}</span></a>` : ''}
+                                ${ticket.biletcom_link ? `<a href="${ticket.biletcom_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-950 border border-sky-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Bilet.com', '🎫', 'w-4 h-4')}<span>${isEn ? 'Bilet.com Bus ↗' : 'Bilet.com Otobüs ↗'}</span></a>` : ''}
                                 ${!isKamilOrFlix && ticket.carrier_official_link ? `<a href="${ticket.carrier_official_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml(ticket.carrier, '🚌', 'w-4 h-4')}<span>${escapeHtml(ticket.carrier)} Resmi Site ↗</span></a>` : ''}
                             </div>
                             <div class="flex flex-wrap items-center gap-1 text-[10.5px] text-slate-600">
@@ -5211,7 +5372,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 ${hasVerifiedPrice ? `
                                     <div class="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded mb-0.5">
                                         <i class="fa-solid fa-circle-check text-[9px]"></i>
-                                        <span>Canlı En Ucuz (${escapeHtml(ticket.winner_name || 'Acente')})</span>
+                                        <span>${ticket.has_live_price ? `Canlı En Ucuz (${escapeHtml(ticket.winner_name || 'Acente')})` : `Resmi Tarife (${escapeHtml(ticket.winner_name || 'Operatör')})`}</span>
                                     </div>
                                     <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
                                         <span id="ferryPriceVal-${cardDomId}">${Number(ticket.price).toLocaleString('tr-TR')}</span> <span class="text-sm font-bold">${currSym}</span>
@@ -6895,6 +7056,12 @@ function setupEventListeners() {
         });
         let debounceTimer = null;
         inp.addEventListener("input", function() {
+            const curTyped = (this.value || "").trim();
+            if (curTyped !== (this.dataset.resolvedValue || "").trim()) {
+                this.dataset.rawUserQuery = curTyped;
+                delete this.dataset.resolvedValue;
+                delete this.dataset.resolvedForMode;
+            }
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 resolveDistrictOrAirportInput(inp, null, true);

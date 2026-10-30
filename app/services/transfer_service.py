@@ -442,6 +442,15 @@ class TransferService:
             if city_obj and city_obj.get("iata"):
                 iata = city_obj["iata"].upper()
                 city_name = city_obj.get("name", clean_input)
+            else:
+                try:
+                    from app.cities import resolve_nearest_airport_city
+                    near_c, _ = resolve_nearest_airport_city(city_obj or clean_input)
+                    if near_c and near_c.get("iata"):
+                        iata = near_c["iata"].upper()
+                        city_name = (city_obj.get("name") if city_obj else None) or near_c.get("name", clean_input)
+                except Exception:
+                    pass
 
         return iata, city_name
 
@@ -464,22 +473,23 @@ class TransferService:
             if p_iata and (not iata or "(" in pickup_location or "havaliman" in pickup_location.lower()):
                 iata, city_name = p_iata, p_city
 
+        clean_city = (city_name or dest_city_or_code or "İstanbul").split("(")[0].strip()
         target_info = cls.AIRPORT_TRANSFER_TARGETS.get(iata, {
-            "name": f"{city_name} Havalimanı / Merkez",
-            "bilet_slug": "istanbul-havalimani",
-            "welcome_slug": "istanbul",
-            "city": city_name,
-            "alis": "İstanbul Havalimanı",
-            "alis_id": "ChIJqZW8Cvb_n0ARBuUkyCzgDDg",
-            "alis_ilce": "Arnavutköy",
-            "alis_sehir": "İstanbul",
-            "birakis": "Taksim Meydanı",
-            "birakis_id": "ChIJY71WBmW3yhQRw7YgjLJYoIw",
-            "birakis_ilce": "Beyoğlu",
-            "birakis_sehir": "İstanbul",
-            "havas": "HAVAŞ & Resmi Havalimanı Otobüsleri",
+            "name": f"{clean_city} Havalimanı ({iata})" if iata else f"{clean_city} Havalimanı / Merkez",
+            "bilet_slug": f"{_to_ascii_slug(clean_city)}-havalimani",
+            "welcome_slug": _to_ascii_slug(clean_city) or "istanbul",
+            "city": clean_city,
+            "alis": f"{clean_city} Havalimanı ({iata})" if iata else f"{clean_city} Havalimanı",
+            "alis_id": "",
+            "alis_ilce": "Merkez",
+            "alis_sehir": clean_city,
+            "birakis": f"{clean_city} Şehir Merkezi",
+            "birakis_id": "",
+            "birakis_ilce": "Merkez",
+            "birakis_sehir": clean_city,
+            "havas": f"HAVAŞ & {clean_city} Havalimanı Resmi Otobüsleri",
             "shuttle_url": "https://www.havas.net/otobus-hizmetleri",
-            "shuttle_routes": f"{city_name} Havalimanı ➔ Şehir Merkezi & Otogar",
+            "shuttle_routes": f"{clean_city} Havalimanı ➔ {clean_city} Şehir Merkezi & Otogar",
             "rail_info": "🚌 Uçuş İniş Saatlerine Entegre Havalimanı Servisleri",
         })
 

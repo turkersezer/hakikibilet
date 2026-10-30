@@ -134,9 +134,9 @@ class SearchService:
         biz_extra_enuygun = "&sinif=business" if is_biz else ""
 
         # Yolcu parametreleri (Yetişkin / Çocuk / Bebek)
-        adults = max(1, adults or passengers or 1)
-        children = max(0, children or 0)
-        infants = max(0, infants or 0)
+        children = max(0, int(children or 0))
+        infants = max(0, int(infants or 0))
+        adults = max(int(adults or 1), int(passengers or 1) - children - infants, 1)
 
         pgs_pax = f"adultCount={adults}"
         if children > 0:
@@ -160,14 +160,17 @@ class SearchService:
             "reason": None if (origin_has_airport and dest_has_airport) else f"{origin_city_name if not origin_has_airport else dest_city_name} şehrinde aktif havalimanı bulunmamaktadır."
         }
         if flight_links["available"]:
+            flight_orig_slug = (eff_orig_airport.get("slug") if eff_orig_airport and eff_orig_airport.get("slug") else None) or origin_slug
+            flight_dest_slug = (eff_dest_airport.get("slug") if eff_dest_airport and eff_dest_airport.get("slug") else None) or dest_slug
+
             # Pegasus ve AJet ana operasyon üssü Sabiha Gökçen (SAW) kilitlemesi:
             # Kullanıcı genel "İstanbul" seçtiyse ve rota iç hat ise, Pegasus'u SAW koduna yönlendirerek
             # IST üzerinden aktarmalı fahiş fiyat hatasını önle.
             pgs_orig_code = "saw" if (origin_iata == "IST" and "havalimanı" not in origin_city_name.lower() and "havalimani" not in origin_city_name.lower()) else origin_iata.lower()
             pgs_dest_code = "saw" if (dest_iata == "IST" and "havalimanı" not in dest_city_name.lower() and "havalimani" not in dest_city_name.lower()) else dest_iata.lower()
-            pegasus_route = f"{origin_slug}-{dest_slug}-{pgs_orig_code}a-{pgs_dest_code}a"
+            pegasus_route = f"{flight_orig_slug}-{flight_dest_slug}-{pgs_orig_code}a-{pgs_dest_code}a"
 
-            enuygun_route = f"{origin_slug}-{dest_slug}-{origin_iata.lower()}a-{dest_iata.lower()}a"
+            enuygun_route = f"{flight_orig_slug}-{flight_dest_slug}-{origin_iata.lower()}a-{dest_iata.lower()}a"
             # Travelpayouts / Aviasales Uçak Arama Deep Linki (Marker: 585474)
             tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
             try:
@@ -204,7 +207,8 @@ class SearchService:
             trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "")
             trip_aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
             trip_flighttype = "rt" if is_round else "ow"
-            flight_links["trip"] = f"https://tr.trip.com/flights/{origin_slug}-to-{dest_slug}/tickets-{origin_iata.lower()}-{dest_iata.lower()}?flighttype={trip_flighttype}&dcity={origin_iata.lower()}&acity={dest_iata.lower()}&ddate={departure_date}{trip_ret_param}&curr={currency}{trip_aff_param}"
+            trip_pax_param = f"&quantity={adults}" + (f"&childqty={children}" if children > 0 else "") + (f"&babyqty={infants}" if infants > 0 else "")
+            flight_links["trip"] = f"https://tr.trip.com/flights/{flight_orig_slug}-to-{flight_dest_slug}/tickets-{origin_iata.lower()}-{dest_iata.lower()}?flighttype={trip_flighttype}&dcity={origin_iata.lower()}&acity={dest_iata.lower()}&ddate={departure_date}{trip_ret_param}{trip_pax_param}&curr={currency}{trip_aff_param}"
             from app.cities import build_obilet_flight_url
             flight_links["obilet"] = build_obilet_flight_url(
                 from_code=origin_iata,
@@ -216,8 +220,8 @@ class SearchService:
                 children=children,
                 infants=infants,
                 cabin_class=cabin_class,
-                orig_slug=origin_slug,
-                dest_slug=dest_slug,
+                orig_slug=flight_orig_slug,
+                dest_slug=flight_dest_slug,
             )
         else:
             flight_links["pegasus"] = None
@@ -229,15 +233,16 @@ class SearchService:
             flight_links["travelpayouts"] = None
             flight_links["aviasales"] = None
 
-        # 2. Tren Deep Linkleri (TCDD E-Bilet & Avrupa Trainline / Omio)
+        # 2. Tren Deep Linkleri (TCDD E-Bilet & Avrupa Trip.com Trains / Trainline / Omio)
         train_links = {
             "available": train_available,
             "is_tcdd": is_tcdd_train,
             "is_international": is_intl_train,
             "reason": train_reason,
             "tcdd": "https://ebilet.tcddtasimacilik.gov.tr/" if is_tcdd_train else None,
-            "trainline": f"https://www.thetrainline.com/book/results?origin={origin_slug}&destination={dest_slug}&outwardDate={departure_date}&currency={currency}" if is_intl_train else None,
-            "omio": f"https://www.omio.com/search-frontend/results/{origin_slug}/{dest_slug}/{departure_date}?locale=tr&currency={currency}" if is_intl_train else None,
+            "trip_trains": TrainService.get_trip_train_deep_link(origin_slug, dest_slug, departure_date) if is_intl_train else None,
+            "trainline": TrainService.get_trainline_deep_link(origin_slug, dest_slug, departure_date) if is_intl_train else None,
+            "omio": TrainService.get_omio_deep_link(origin_slug, dest_slug, departure_date) if is_intl_train else None,
             "tcdd_search_hint": f"Kalkış: {origin.get('train_station', origin_city_name) if origin else origin_city_name} -> Varış: {dest.get('train_station', dest_city_name) if dest else dest_city_name}" if is_tcdd_train else "Demiryolu hattı yok"
         }
 
@@ -256,26 +261,39 @@ class SearchService:
                 "obilet": None,
                 "kamilkoc": None,
                 "pamukkale": None,
+                "enuygun": None,
+                "biletcom": None,
                 "flixbus": None,
                 "omio": None
             }
         else:
             from app.services.bus_service import BusService
+            kamilkoc_bus_link = BusService.get_kamilkoc_deep_link(
+                origin_city_name, dest_city_name, departure_date,
+                passengers=adults + children,
+                return_date=return_date if is_round else None
+            )
             if is_intra_europe:
-                bus_link = BusService.get_flixbus_deep_link(origin_city_name, dest_city_name, departure_date)
+                bus_link = kamilkoc_bus_link
                 omio_bus_link = BusService.get_omio_deep_link(origin_city_name, dest_city_name, departure_date)
+                enuygun_bus_link = None
+                biletcom_bus_link = None
             else:
                 bus_link = BusService.get_obilet_deep_link(origin_city_name, dest_city_name, departure_date)
-                omio_bus_link = None
+                omio_bus_link = BusService.get_omio_deep_link(origin_city_name, dest_city_name, departure_date) if is_overland else None
+                enuygun_bus_link = BusService.get_enuygun_bus_deep_link(origin_city_name, dest_city_name, departure_date)
+                biletcom_bus_link = BusService.get_biletcom_bus_deep_link(origin_city_name, dest_city_name, departure_date)
 
             bus_links = {
                 "available": True,
                 "is_overland_neighbor": is_overland or is_intra_europe,
                 "reason": None,
                 "obilet": None if is_intra_europe else bus_link,
-                "kamilkoc": None if is_intra_europe else bus_link,
+                "kamilkoc": kamilkoc_bus_link,
                 "pamukkale": None if is_intra_europe else bus_link,
-                "flixbus": bus_link if is_intra_europe else None,
+                "enuygun": enuygun_bus_link,
+                "biletcom": biletcom_bus_link,
+                "flixbus": kamilkoc_bus_link if (is_intra_europe or is_overland) else None,
                 "omio": omio_bus_link
             }
 
@@ -1003,9 +1021,9 @@ class SearchService:
         adults: int = 1, children: int = 0, infants: int = 0
     ):
         # Yolcu sayılarını normalize et
-        adults = max(1, adults or passengers or 1)
-        children = max(0, children or 0)
-        infants = max(0, infants or 0)
+        children = max(0, int(children or 0))
+        infants = max(0, int(infants or 0))
+        adults = max(int(adults or 1), int(passengers or 1) - children - infants, 1)
         total_pax = adults + children + infants
 
         # 1. "Her Yere" arama modu kontrolü
@@ -1179,8 +1197,10 @@ class SearchService:
                     print(f"Live flights fetch error: {live_err}")
 
                 if not live_flights_fetched:
-                    orig_iata = (origin.get('iata') if origin else None) or 'SAW'
-                    dst_iata = (dest.get('iata') if dest else None) or 'ESB'
+                    orig_iata = (origin.get('iata') if origin and origin.get('iata') else None) or (eff_orig_airport.get('iata') if eff_orig_airport else None) or 'SAW'
+                    dst_iata = (dest.get('iata') if dest and dest.get('iata') else None) or (eff_dest_airport.get('iata') if eff_dest_airport else None) or 'ESB'
+                    fl_orig_slug = (eff_orig_airport.get('slug') if eff_orig_airport and eff_orig_airport.get('slug') else None) or orig_slug
+                    fl_dest_slug = (eff_dest_airport.get('slug') if eff_dest_airport and eff_dest_airport.get('slug') else None) or dest_slug
                     is_international = bool(origin and origin.get("is_international") or dest and dest.get("is_international"))
                     trip_url = links["flight"]["trip"]
                     google_url = links["flight"]["google_flights"]
@@ -1196,8 +1216,8 @@ class SearchService:
                         children=children,
                         infants=infants,
                         cabin_class=cabin_class,
-                        orig_slug=orig_slug,
-                        dest_slug=dest_slug,
+                        orig_slug=fl_orig_slug,
+                        dest_slug=fl_dest_slug,
                     )
 
                     booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")

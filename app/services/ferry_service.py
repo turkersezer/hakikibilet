@@ -270,6 +270,54 @@ class FerryService:
             "from_code": "KBT",
             "to_code": "GKC",
         },
+        {
+            "route_key": "erdek-avsa",
+            "category": "domestic",
+            "origin": "Erdek İskelesi (Balıkesir - GESTAŞ)",
+            "dest": "Avşa & Marmara Adası İskelesi",
+            "operator": "GESTAŞ",
+            "vessel": "Arabalı GESTAŞ Gemisi",
+            "duration": "1 sa 50 dk",
+            "schedules": [("11:00", "Öğle Seferi"), ("19:00", "Akşam Seferi")],
+            "vehicle_allowed": True,
+            "driver_included_in_vehicle": True,
+            "ped_base_try": 320.0,
+            "car_base_try": 1350.0,
+            "moto_base_try": 450.0,
+            "is_island": True,
+            "requires_visa": False,
+            "obilet_slug": "erdek-avsa-adasi",
+            "feribotlines_slug": None,
+            "biletcom_path": "feribot-bileti",
+            "official_url": "https://www.gdu.com.tr/sefer-saatleri",
+            "from_code": "ERD",
+            "to_code": "AVS",
+        },
+        {
+            "route_key": "eskihisar-topcular",
+            "category": "domestic",
+            "origin": "Eskihisar İskelesi (Gebze / Kocaeli - İDO)",
+            "dest": "Topçular İskelesi (Yalova - İDO)",
+            "operator": "İDO",
+            "vessel": "7/24 Arabalı Vapur (Sirkülasyon)",
+            "duration": "30 dk",
+            "schedules": [("08:00", "Sabah 15 Dk'da Bir Kesintisiz"), ("14:00", "Gün Boyu 15 Dk'da Bir Kesintisiz"), ("21:00", "Gece 20 Dk'da Bir Kesintisiz")],
+            "vehicle_allowed": True,
+            "driver_included_in_vehicle": True,
+            "all_passengers_included_in_vehicle": True,
+            "ped_base_try": 95.0,
+            "car_base_try": 495.0,
+            "car_round_try": 860.0,
+            "moto_base_try": 210.0,
+            "is_island": False,
+            "requires_visa": False,
+            "obilet_slug": None,
+            "feribotlines_slug": None,
+            "biletcom_path": "feribot-bileti",
+            "official_url": "https://www.ido.com.tr/eskihisar-topcular",
+            "from_code": "ESK",
+            "to_code": "TOP",
+        },
 
         # ==========================================
         # 2. AKDENİZ & KIBRIS (KKTC) SEFERLERİ (ÇİPLİ KİMLİKLE VİZESİZ)
@@ -443,6 +491,50 @@ class FerryService:
             "official_url": "https://www.meandertravel.com/",
             "ferryhopper_ports": ("KUS", "BTH"),
             "from_code": "KUS",
+            "to_code": "SMI",
+        },
+        {
+            "route_key": "dikili-midilli",
+            "category": "greek_islands",
+            "origin": "Dikili Limanı (İzmir)",
+            "dest": "Midilli Adası Limanı (Lesvos)",
+            "operator": "Turyol / İDO",
+            "vessel": "Hızlı Katamaran (Yalnızca Yaya)",
+            "duration": "30 dk",
+            "schedules": [("08:30", "Sabah Seferi")],
+            "vehicle_allowed": False,
+            "driver_included_in_vehicle": False,
+            "is_island": True,
+            "requires_visa": True,
+            "seasonal_winter_reduced": True,
+            "obilet_slug": "dikili-midilli",
+            "feribotlines_slug": "dikili-midilli-adasi-feribot-bileti",
+            "biletcom_path": "yunan-adalari/dikili-midilli",
+            "official_url": "https://www.turyolonline.com/",
+            "ferryhopper_ports": ("DIK", "LES"),
+            "from_code": "DIK",
+            "to_code": "MJT",
+        },
+        {
+            "route_key": "sigacik-samos",
+            "category": "greek_islands",
+            "origin": "Seferihisar Sığacık Teos Limanı (İzmir)",
+            "dest": "Samos Adası (Karlovasi - Sisam)",
+            "operator": "İDO Yurt Dışı",
+            "vessel": "Hızlı Deniz Otobüsü (Yalnızca Yaya)",
+            "duration": "1 sa",
+            "schedules": [("08:00", "Sabah Seferi")],
+            "vehicle_allowed": False,
+            "driver_included_in_vehicle": False,
+            "is_island": True,
+            "requires_visa": True,
+            "seasonal_winter_reduced": True,
+            "obilet_slug": "seferihisar-samos",
+            "feribotlines_slug": "seferihisar-samos-adasi-feribot-bileti",
+            "biletcom_path": "yunan-adalari/seferihisar-samos",
+            "official_url": "https://www.ido.com.tr/",
+            "ferryhopper_ports": ("SIG", "SMI"),
+            "from_code": "SIG",
             "to_code": "SMI",
         },
         {
@@ -1609,6 +1701,12 @@ class FerryService:
                         })
 
                 # 4. ANAYASAL EN UCUZ CANLI FİYAT + TIE-BREAKER SEÇİMİ
+                has_scraped_live = bool(
+                    sched_ob_try
+                    or market_data.get("obilet_min_try")
+                    or market_data.get("feribotlines_min_try")
+                    or market_data.get("biletcom_min_try")
+                )
                 priced_providers = [p for p in providers if p.get("price") is not None and float(p["price"]) > 0]
                 if priced_providers:
                     priced_providers.sort(key=lambda p: (round(float(p["price"])), -int(p["commission_rank"])))
@@ -1616,15 +1714,20 @@ class FerryService:
                     winner["is_best"] = True
                     ticket_price = float(winner["price"])
                     has_live_price = True
-                    price_status = (
-                        route.get("cruise_inclusions")
-                        if is_cruise
-                        else (
+                    if is_cruise:
+                        price_status = route.get("cruise_inclusions")
+                    elif has_scraped_live and not (is_vehicle_requested and is_veh_allowed):
+                        price_status = (
                             "Canlı Doğrulanmış Gidiş-Dönüş Fiyatı • Liman Vergisi Dahil"
                             if is_round
                             else "Canlı Doğrulanmış Fiyat • Liman Vergisi Dahil"
                         )
-                    )
+                    else:
+                        price_status = (
+                            "Resmi Operatör Gidiş-Dönüş Tarifesi • Liman Vergisi Dahil"
+                            if is_round
+                            else "Resmi Operatör Tarifesi • Liman Vergisi Dahil"
+                        )
                     winner_btn_tr = winner["button_text_tr"]
                     winner_btn_en = winner["button_text_en"]
                 else:

@@ -235,6 +235,306 @@ class CarRentalService:
             "garenta_path": "balikesir",
             "label": "Balıkesir Edremit Koca Seyit Havalimanı (EDO)",
         },
+        "VAS": {
+            "city_slug": "sivas",
+            "y360_path": "turkiye/sivas/nuri-demirag-havalimani",
+            "y360_pid": "",
+            "y360_pp": "39.8138,36.9035",
+            "enuygun_slug": "havalimani/sivas-nuri-demirag-havalimani",
+            "obilet_path": "sivas",
+            "garenta_path": "sivas",
+            "label": "Sivas Nuri Demirağ Havalimanı (VAS)",
+        },
+        "MQM": {
+            "city_slug": "mardin",
+            "y360_path": "turkiye/mardin/mardin-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.2233,40.6317",
+            "enuygun_slug": "havalimani/mardin-havalimani",
+            "obilet_path": "mardin",
+            "garenta_path": "mardin",
+            "label": "Mardin Prof. Dr. Aziz Sancar Havalimanı (MQM)",
+        },
+        "MLX": {
+            "city_slug": "malatya",
+            "y360_path": "turkiye/malatya/erhac-havalimani",
+            "y360_pid": "",
+            "y360_pp": "38.4353,38.0910",
+            "enuygun_slug": "havalimani/malatya-erhac-havalimani",
+            "obilet_path": "malatya",
+            "garenta_path": "malatya",
+            "label": "Malatya Erhaç Havalimanı (MLX)",
+        },
+        "EZS": {
+            "city_slug": "elazig",
+            "y360_path": "turkiye/elazig/elazig-havalimani",
+            "y360_pid": "",
+            "y360_pp": "38.6069,39.2914",
+            "enuygun_slug": "havalimani/elazig-havalimani",
+            "obilet_path": "elazig",
+            "garenta_path": "elazig",
+            "label": "Elazığ Havalimanı (EZS)",
+        },
+        "DNZ": {
+            "city_slug": "denizli",
+            "y360_path": "turkiye/denizli/cardak-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.7856,29.7013",
+            "enuygun_slug": "havalimani/denizli-cardak-havalimani",
+            "obilet_path": "denizli",
+            "garenta_path": "denizli",
+            "label": "Denizli Çardak Havalimanı (DNZ)",
+        },
+        "HTY": {
+            "city_slug": "hatay",
+            "y360_path": "turkiye/hatay/hatay-havalimani",
+            "y360_pid": "",
+            "y360_pp": "36.3628,36.2822",
+            "enuygun_slug": "havalimani/hatay-havalimani",
+            "obilet_path": "hatay",
+            "garenta_path": "hatay",
+            "label": "Hatay Havalimanı (HTY)",
+        },
+        "OGU": {
+            "city_slug": "ordu",
+            "y360_path": "turkiye/ordu/ordu-giresun-havalimani",
+            "y360_pid": "",
+            "y360_pp": "40.9670,38.0860",
+            "enuygun_slug": "havalimani/ordu-giresun-havalimani",
+            "obilet_path": "ordu",
+            "garenta_path": "ordu",
+            "label": "Ordu-Giresun Havalimanı (OGU)",
+        },
+        "GNY": {
+            "city_slug": "sanliurfa",
+            "y360_path": "turkiye/sanliurfa/gap-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.4500,38.9000",
+            "enuygun_slug": "havalimani/sanliurfa-gap-havalimani",
+            "obilet_path": "sanliurfa",
+            "garenta_path": "sanliurfa",
+            "label": "Şanlıurfa GAP Havalimanı (GNY)",
+        },
+        "MZH": {
+            "city_slug": "amasya",
+            "y360_path": "turkiye/amasya/merzifon-havalimani",
+            "y360_pid": "",
+            "y360_pp": "40.8294,35.5219",
+            "enuygun_slug": "havalimani/amasya-merzifon-havalimani",
+            "obilet_path": "amasya",
+            "garenta_path": "amasya",
+            "label": "Amasya Merzifon Havalimanı (MZH)",
+        },
+        "NOP": {
+            "city_slug": "sinop",
+            "y360_path": "turkiye/sinop/sinop-havalimani",
+            "y360_pid": "",
+            "y360_pp": "42.0158,35.0664",
+            "enuygun_slug": "havalimani/sinop-havalimani",
+            "obilet_path": "sinop",
+            "garenta_path": "sinop",
+            "label": "Sinop Havalimanı (NOP)",
+        },
+        "KFS": {
+            "city_slug": "kastamonu",
+            "y360_path": "turkiye/kastamonu/kastamonu-havalimani",
+            "y360_pid": "",
+            "y360_pp": "41.3142,33.7958",
+            "enuygun_slug": "havalimani/kastamonu-havalimani",
+            "obilet_path": "kastamonu",
+            "garenta_path": "kastamonu",
+            "label": "Kastamonu Havalimanı (KFS)",
+        },
+        "ERC": {
+            "city_slug": "erzincan",
+            "y360_path": "turkiye/erzincan/yildirim-akbulut-havalimani",
+            "y360_pid": "",
+            "y360_pp": "39.7102,39.5270",
+            "enuygun_slug": "havalimani/erzincan-havalimani",
+            "obilet_path": "erzincan",
+            "garenta_path": "erzincan",
+            "label": "Erzincan Yıldırım Akbulut Havalimanı (ERC)",
+        },
+        "KCM": {
+            "city_slug": "kahramanmaras",
+            "y360_path": "turkiye/kahramanmaras/kahramanmaras-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.5390,36.9534",
+            "enuygun_slug": "havalimani/kahramanmaras-havalimani",
+            "obilet_path": "kahramanmaras",
+            "garenta_path": "kahramanmaras",
+            "label": "Kahramanmaraş Havalimanı (KCM)",
+        },
+        "KYA": {
+            "city_slug": "konya",
+            "y360_path": "turkiye/konya/konya-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.9790,32.5619",
+            "enuygun_slug": "havalimani/konya-havalimani",
+            "obilet_path": "konya",
+            "garenta_path": "konya",
+            "label": "Konya Havalimanı (KYA)",
+        },
+        "CKZ": {
+            "city_slug": "canakkale",
+            "y360_path": "turkiye/canakkale/canakkale-havalimani",
+            "y360_pid": "",
+            "y360_pp": "40.1377,26.4268",
+            "enuygun_slug": "havalimani/canakkale-havalimani",
+            "obilet_path": "canakkale",
+            "garenta_path": "canakkale",
+            "label": "Çanakkale Havalimanı (CKZ)",
+        },
+        "ONQ": {
+            "city_slug": "zonguldak",
+            "y360_path": "turkiye/zonguldak/caycuma-havalimani",
+            "y360_pid": "",
+            "y360_pp": "41.5064,32.0886",
+            "enuygun_slug": "havalimani/zonguldak-caycuma-havalimani",
+            "obilet_path": "zonguldak",
+            "garenta_path": "zonguldak",
+            "label": "Zonguldak Çaycuma Havalimanı (ONQ)",
+        },
+        "ISE": {
+            "city_slug": "isparta",
+            "y360_path": "turkiye/isparta/suleyman-demirel-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.8554,30.3684",
+            "enuygun_slug": "havalimani/isparta-suleyman-demirel-havalimani",
+            "obilet_path": "isparta",
+            "garenta_path": "isparta",
+            "label": "Isparta Süleyman Demirel Havalimanı (ISE)",
+        },
+        "BAL": {
+            "city_slug": "batman",
+            "y360_path": "turkiye/batman/batman-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.9290,41.1166",
+            "enuygun_slug": "havalimani/batman-havalimani",
+            "obilet_path": "batman",
+            "garenta_path": "batman",
+            "label": "Batman Havalimanı (BAL)",
+        },
+        "MSR": {
+            "city_slug": "mus",
+            "y360_path": "turkiye/mus/mus-havalimani",
+            "y360_pid": "",
+            "y360_pp": "38.7478,41.6612",
+            "enuygun_slug": "havalimani/mus-havalimani",
+            "obilet_path": "mus",
+            "garenta_path": "mus",
+            "label": "Muş Sultan Alparslan Havalimanı (MSR)",
+        },
+        "AJI": {
+            "city_slug": "agri",
+            "y360_path": "turkiye/agri/ahmedi-hani-havalimani",
+            "y360_pid": "",
+            "y360_pp": "39.6545,43.0271",
+            "enuygun_slug": "havalimani/agri-havalimani",
+            "obilet_path": "agri",
+            "garenta_path": "agri",
+            "label": "Ağrı Ahmed-i Hani Havalimanı (AJI)",
+        },
+        "IGD": {
+            "city_slug": "igdir",
+            "y360_path": "turkiye/igdir/sehit-bulent-aydin-havalimani",
+            "y360_pid": "",
+            "y360_pp": "39.9831,43.8665",
+            "enuygun_slug": "havalimani/igdir-havalimani",
+            "obilet_path": "igdir",
+            "garenta_path": "igdir",
+            "label": "Iğdır Şehit Bülent Aydın Havalimanı (IGD)",
+        },
+        "SXZ": {
+            "city_slug": "siirt",
+            "y360_path": "turkiye/siirt/siirt-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.9789,41.8404",
+            "enuygun_slug": "havalimani/siirt-havalimani",
+            "obilet_path": "siirt",
+            "garenta_path": "siirt",
+            "label": "Siirt Havalimanı (SXZ)",
+        },
+        "NKT": {
+            "city_slug": "sirnak",
+            "y360_path": "turkiye/sirnak/serafettin-elci-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.3639,42.0597",
+            "enuygun_slug": "havalimani/sirnak-serafettin-elci-havalimani",
+            "obilet_path": "sirnak",
+            "garenta_path": "sirnak",
+            "label": "Şırnak Şerafettin Elçi Havalimanı (NKT)",
+        },
+        "ADF": {
+            "city_slug": "adiyaman",
+            "y360_path": "turkiye/adiyaman/adiyaman-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.7314,38.4689",
+            "enuygun_slug": "havalimani/adiyaman-havalimani",
+            "obilet_path": "adiyaman",
+            "garenta_path": "adiyaman",
+            "label": "Adıyaman Havalimanı (ADF)",
+        },
+        "TJK": {
+            "city_slug": "tokat",
+            "y360_path": "turkiye/tokat/tokat-havalimani",
+            "y360_pid": "",
+            "y360_pp": "40.3117,36.3711",
+            "enuygun_slug": "havalimani/tokat-havalimani",
+            "obilet_path": "tokat",
+            "garenta_path": "tokat",
+            "label": "Tokat Havalimanı (TJK)",
+        },
+        "BGG": {
+            "city_slug": "bingol",
+            "y360_path": "turkiye/bingol/bingol-havalimani",
+            "y360_pid": "",
+            "y360_pp": "38.8611,40.5925",
+            "enuygun_slug": "havalimani/bingol-havalimani",
+            "obilet_path": "bingol",
+            "garenta_path": "bingol",
+            "label": "Bingöl Havalimanı (BGG)",
+        },
+        "YKO": {
+            "city_slug": "hakkari",
+            "y360_path": "turkiye/hakkari/selahaddin-eyyubi-havalimani",
+            "y360_pid": "",
+            "y360_pp": "37.5503,44.2378",
+            "enuygun_slug": "havalimani/hakkari-yuksekova-havalimani",
+            "obilet_path": "hakkari",
+            "garenta_path": "hakkari",
+            "label": "Hakkari Yüksekova Havalimanı (YKO)",
+        },
+        "AOE": {
+            "city_slug": "eskisehir",
+            "y360_path": "turkiye/eskisehir/hasan-polatkan-havalimani",
+            "y360_pid": "",
+            "y360_pp": "39.8099,30.5194",
+            "enuygun_slug": "havalimani/eskisehir-anadolu-havalimani",
+            "obilet_path": "eskisehir",
+            "garenta_path": "eskisehir",
+            "label": "Eskişehir Hasan Polatkan Havalimanı (AOE)",
+        },
+        "KZR": {
+            "city_slug": "kutahya",
+            "y360_path": "turkiye/kutahya/zafer-havalimani",
+            "y360_pid": "",
+            "y360_pp": "39.1114,30.1300",
+            "enuygun_slug": "havalimani/kutahya-zafer-havalimani",
+            "obilet_path": "kutahya",
+            "garenta_path": "kutahya",
+            "label": "Kütahya Zafer Havalimanı (KZR)",
+        },
+        "GZP": {
+            "city_slug": "antalya",
+            "y360_path": "turkiye/antalya/gazipasa-havalimani",
+            "y360_pid": "",
+            "y360_pp": "36.2993,32.3006",
+            "enuygun_slug": "havalimani/alanya-gazipasa-havalimani",
+            "obilet_path": "antalya/gazipasa-alanya-havalimani",
+            "garenta_path": "antalya",
+            "label": "Alanya Gazipaşa Havalimanı (GZP)",
+        },
     }
 
     @classmethod
@@ -286,6 +586,16 @@ class CarRentalService:
         city_obj = find_city(raw)
         if not detected_iata and city_obj and city_obj.get("iata"):
             detected_iata = str(city_obj["iata"]).upper()
+        if not detected_iata:
+            try:
+                from app.cities import resolve_nearest_airport_city
+                near_c, _ = resolve_nearest_airport_city(city_obj or raw)
+                if near_c and near_c.get("iata"):
+                    detected_iata = str(near_c["iata"]).upper()
+                    if not city_obj:
+                        city_obj = near_c
+            except Exception:
+                pass
 
         base_city_slug = cls.clean_slug(city_obj["slug"] if city_obj else raw)
         for suffix in ["-havalimani", "-sabiha-gokcen", "-adnan-menderes", "-esenboga", "-milas", "-cukurova"]:
@@ -362,6 +672,16 @@ class CarRentalService:
                 except Exception:
                     return
 
+            # Sayfanın kendi Google Place ID'sini (target_pid) belirle;
+            # Sayfa altındaki "Popüler Lokasyonlar" (Samos 764 TL, İzmir 764 TL, IST 879 TL vb.) linklerinin
+            # diğer şehirlerin fiyatlarını kirletmesini %100 engelle!
+            target_pid = result["y360_pid"]
+            if not target_pid:
+                nd_m = re.search(r'"place_id"\s*:\s*"(ChIJ[^"]+)"', html)
+                if nd_m:
+                    target_pid = nd_m.group(1)
+                    result["y360_pid"] = target_pid
+
             cat_buckets: Dict[str, List[float]] = {
                 "economy": [],
                 "mid": [],
@@ -371,6 +691,21 @@ class CarRentalService:
             }
             for m in re.finditer(r'href=["\'](/arac-kiralama/search\?[^"\']+)["\'][^>]*>(.*?)</a>', html, re.S):
                 href = m.group(1).replace("&amp;", "&")
+                pid_m = re.search(r"pid=([^&\\]+)", href)
+                pp_m = re.search(r"p_p=([^&\\]+)", href)
+                link_pid = pid_m.group(1) if pid_m else ""
+                c_m = re.search(r"(?:^|[?&])c=([a-z_]+)", href)
+                cat_code = c_m.group(1) if c_m else ""
+                if cat_code not in cat_buckets:
+                    continue
+
+                # Yalnızca bu havalimanı/şehrin kendi PID'sine ait kategori kartlarını kabul et
+                if not target_pid or not link_pid or link_pid != target_pid:
+                    continue
+
+                if not result["y360_pp"] and pp_m:
+                    result["y360_pp"] = pp_m.group(1)
+
                 inner = re.sub(r"<[^>]+>", " ", m.group(2))
                 pm = re.search(r"([\d\.]+(?:,\d+)?)\s*(?:TL|₺)", inner)
                 if not pm:
@@ -379,17 +714,17 @@ class CarRentalService:
                 if not p_val:
                     continue
 
-                if not result["y360_pid"]:
-                    pid_m = re.search(r"pid=([^&\\]+)", href)
-                    pp_m = re.search(r"p_p=([^&\\]+)", href)
-                    if pid_m and pp_m:
-                        result["y360_pid"] = pid_m.group(1)
-                        result["y360_pp"] = pp_m.group(1)
+                cat_buckets[cat_code].append(p_val)
 
-                c_m = re.search(r"(?:^|[?&])c=([a-z_]+)", href)
-                cat_code = c_m.group(1) if c_m else ""
-                if cat_code in cat_buckets:
-                    cat_buckets[cat_code].append(p_val)
+            # Eğer henüz Bilet.com / Yolcu360 için Place ID bulunamadıysa dinamik typeahead ile çöz
+            if not result["y360_pid"]:
+                try:
+                    from app.services.transfer_service import TransferService
+                    dyn = TransferService._resolve_bilet_typeahead(meta.get("label") or f"{city_slug} Havalimanı")
+                    if dyn and dyn.get("place_id"):
+                        result["y360_pid"] = dyn["place_id"]
+                except Exception:
+                    pass
 
             if cat_buckets["economy"]:
                 sorted_eco = sorted(cat_buckets["economy"])
@@ -495,13 +830,24 @@ class CarRentalService:
         tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
 
         # 1. Yolcu360: Doğrudan tarihli & en ucuz sıralı /arac-kiralama/search ekranına iner!
-        clean_pid = (pid or "ChIJqZW8Cvb_n0ARBuUkyCzgDDg").split("\\")[0]
-        clean_pp = (pp or "41.259656501755316,28.74417437428462").split("\\")[0]
-        yolcu360_base = (
-            f"https://yolcu360.com/arac-kiralama/search"
-            f"?p_d={pickup_date}&d_d={dropoff_date}&p_t=10:00&d_t=10:00"
-            f"&a=30-65&sb=lowest_price_first&p_p={clean_pp}&pid={clean_pid}"
-        )
+        clean_pid = (pid or "").split("\\")[0]
+        clean_pp = (pp or "").split("\\")[0]
+        if not clean_pid:
+            try:
+                from app.services.transfer_service import TransferService
+                dyn = TransferService._resolve_bilet_typeahead(meta.get("label") or f"{location_name} Havalimanı")
+                if dyn and dyn.get("place_id"):
+                    clean_pid = dyn["place_id"]
+            except Exception:
+                pass
+        if clean_pid and clean_pp:
+            yolcu360_base = (
+                f"https://yolcu360.com/arac-kiralama/search"
+                f"?p_d={pickup_date}&d_d={dropoff_date}&p_t=10:00&d_t=10:00"
+                f"&a=30-65&sb=lowest_price_first&p_p={clean_pp}&pid={clean_pid}"
+            )
+        else:
+            yolcu360_base = f"https://yolcu360.com/arac-kiralama/{meta['y360_path']}"
 
         # 2. Enuygun Araç: Doğrudan tarihli & lokasyonlu arama sonuç ekranı (HTTP 200)
         enuygun_loc = str(meta.get("enuygun_slug") or city_slug).split("/")[-1]

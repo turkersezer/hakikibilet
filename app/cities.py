@@ -137,7 +137,16 @@ TURKEY_CITIES = [
     {"name": "Giresun", "slug": "giresun", "iata": "OGU", "train_station": None, "has_airport": True, "has_train": False, "lat": 40.9128, "lng": 38.3895},
     {"name": "Kırklareli", "slug": "kirklareli", "iata": None, "train_station": None, "has_airport": False, "has_train": False, "lat": 41.7333, "lng": 27.2167,
      "nearest_domestic_hub": {"name": "Tekirdağ Çorlu (TEQ)", "iata": "TEQ", "city": "Tekirdağ", "duration": "1 sa 10 dk", "transport": "bus"},
-     "nearest_intl_hub": {"name": "İstanbul Havalimanı (IST)", "iata": "IST", "city": "İstanbul", "duration": "2 sa", "transport": "bus"}}
+     "nearest_intl_hub": {"name": "İstanbul Havalimanı (IST)", "iata": "IST", "city": "İstanbul", "duration": "2 sa", "transport": "bus"}},
+    {"name": "Erzincan", "slug": "erzincan", "iata": "ERC", "train_station": "Erzincan Gar (Doğu Ekspresi)", "has_airport": True, "has_train": True, "lat": 39.7500, "lng": 39.5000},
+    {"name": "Kahramanmaraş", "slug": "kahramanmaras", "iata": "KCM", "train_station": None, "has_airport": True, "has_train": False, "lat": 37.5753, "lng": 36.9228},
+    {"name": "Muğla", "slug": "mugla", "iata": "DLM", "alt_iata": "BJV", "train_station": None, "has_airport": True, "has_train": False, "lat": 37.2153, "lng": 28.3636},
+    {"name": "Çorum", "slug": "corum", "iata": None, "train_station": None, "has_airport": False, "has_train": False, "lat": 40.5499, "lng": 34.9537,
+     "nearest_domestic_hub": {"name": "Amasya Merzifon (MZH)", "iata": "MZH", "city": "Amasya", "duration": "45 dk", "transport": "bus"},
+     "nearest_intl_hub": {"name": "Ankara Esenboğa (ESB)", "iata": "ESB", "city": "Ankara", "duration": "2 sa 30 dk", "transport": "bus"}},
+    {"name": "Ardahan", "slug": "ardahan", "iata": None, "train_station": None, "has_airport": False, "has_train": False, "lat": 41.1105, "lng": 42.7022,
+     "nearest_domestic_hub": {"name": "Kars Harakani (KSY)", "iata": "KSY", "city": "Kars", "duration": "1 sa 10 dk", "transport": "bus"},
+     "nearest_intl_hub": {"name": "Kars Harakani (KSY)", "iata": "KSY", "city": "Kars", "duration": "1 sa 10 dk", "transport": "bus"}}
 ]
 
 # ==================== YURT DIŞI POPÜLER METROPOLLER & AVRUPA TREN MERKEZLERİ ====================
@@ -253,7 +262,12 @@ FERRY_PORTS = [
     {"name": "Gökçeada Kuzu Limanı (Gestaş)", "slug": "gokceada", "port_code": "GKC", "region": "Kuzey Ege", "is_ferry": True, "country": "Türkiye", "lat": 40.2310, "lng": 25.9500},
     {"name": "Taşucu Limanı (Mersin - KKTC Feribot)", "slug": "tasucu", "port_code": "TSC", "region": "Akdeniz", "is_ferry": True, "country": "Türkiye", "lat": 36.3160, "lng": 33.8840},
     {"name": "Girne Limanı (KKTC - Kıbrıs)", "slug": "girne", "port_code": "KYR", "region": "KKTC", "is_ferry": True, "country": "KKTC", "is_international": True, "lat": 35.3410, "lng": 33.3200},
-    {"name": "Galataport Kruvaziyer Limanı (İstanbul)", "slug": "galataport", "port_code": "GLT", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 41.0260, "lng": 28.9830}
+    {"name": "Galataport Kruvaziyer Limanı (İstanbul)", "slug": "galataport", "port_code": "GLT", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 41.0260, "lng": 28.9830},
+    {"name": "Erdek İskelesi (Balıkesir - GESTAŞ)", "slug": "erdek-iskele", "port_code": "ERD", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.3980, "lng": 27.7920},
+    {"name": "Eskihisar İskelesi (Gebze / Kocaeli - İDO)", "slug": "eskihisar", "port_code": "ESK", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.7690, "lng": 29.4270},
+    {"name": "Topçular İskelesi (Yalova - İDO)", "slug": "topcular", "port_code": "TOP", "region": "Marmara", "is_ferry": True, "country": "Türkiye", "lat": 40.6880, "lng": 29.4420},
+    {"name": "Dikili Limanı (İzmir)", "slug": "dikili", "port_code": "DIK", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 39.0720, "lng": 26.8860},
+    {"name": "Seferihisar Sığacık Teos Limanı (İzmir)", "slug": "sigacik-liman", "port_code": "SIG", "region": "Ege", "is_ferry": True, "country": "Türkiye", "lat": 38.1940, "lng": 26.7840}
 ]
 
 from app.turkey_districts import TURKEY_DISTRICTS
@@ -292,6 +306,12 @@ def find_location(location_name: str):
             if c.get("slug") == "istanbul-havalimani":
                 return c
 
+    # 0.5. "Merkez (Çorum)" / "Merkez (Erzincan)" formatındaki merkez ilçe kayıtlarını doğrudan il adına çevir
+    m_merkez = re.match(r'^\s*merkez\s*\(([^)]+)\)', loc_clean, flags=re.IGNORECASE)
+    if m_merkez:
+        loc_clean = m_merkez.group(1).strip().lower()
+        loc_ascii = _norm_ascii(loc_clean)
+
     # 1. Parantez içindeki IATA / Liman Kodlarını öncelikli kontrol et (Örn: "Antalya (AYT)")
     codes = re.findall(r'\b[A-Za-z]{3}\b', raw)
     for code in codes:
@@ -315,8 +335,12 @@ def find_location(location_name: str):
             (c.get("iata") and c.get("iata", "").lower() == loc_clean)):
             return c
 
-    # 2. Parantezleri temizleyip eşleştir (Örn: "Antalya (AYT)" -> "antalya")
-    base_name = re.sub(r'\(.*?\)', '', loc_clean).strip()
+    # 2. Parantezleri temizleyip eşleştir (Örn: "Antalya (AYT)" -> "antalya", "Merkez (Çorum)" -> "çorum")
+    m_merkez = re.match(r'^\s*merkez\s*\(([^)]+)\)', loc_clean, flags=re.IGNORECASE)
+    if m_merkez:
+        base_name = m_merkez.group(1).strip()
+    else:
+        base_name = re.sub(r'\(.*?\)', '', loc_clean).strip()
     base_ascii = _norm_ascii(base_name)
     if base_name:
         for c in ALL_LOCATIONS:
@@ -518,6 +542,22 @@ _SPECIAL_DISTRICT_AIRPORT_SLUGS = {
     "sarikamis": "kars",
     "palandoken": "erzurum",
     "erciyes": "kayseri",
+    "corum": "amasya",
+    "sungurlu": "amasya",
+    "osmancik": "amasya",
+    "cankiri": "ankara",
+    "kirikkale": "ankara",
+    "kirsehir": "nevsehir",
+    "yozgat": "kayseri",
+    "sorgun": "kayseri",
+    "burdur": "isparta",
+    "bucak": "antalya",
+    "salda": "denizli",
+    "afsin": "kahramanmaras",
+    "elbistan": "kahramanmaras",
+    "erzincan": "erzincan",
+    "kahramanmaras": "kahramanmaras",
+    "maras": "kahramanmaras",
 }
 
 
