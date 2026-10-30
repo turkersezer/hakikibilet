@@ -395,14 +395,25 @@ def fetch_live_flights_from_google(
     """
     from app.cities import FALLBACK_MAJOR_HUB_BY_IATA, find_city
 
-    origin_city, _ = resolve_nearest_airport_city(origin_city_name)
-    dest_city, _ = resolve_nearest_airport_city(dest_city_name)
+    origin_city, orig_is_nearby = resolve_nearest_airport_city(origin_city_name)
+    dest_city, dest_is_nearby = resolve_nearest_airport_city(dest_city_name)
 
     if not origin_city or not dest_city:
         return []
 
     if not origin_city.get("has_airport") or not dest_city.get("has_airport"):
         return []
+
+    orig_nearby_note = (
+        f"ℹ️ {origin_city_name} için en yakın aktif ana havalimanı olan {origin_city.get('name')} seferleri listelenmiştir."
+        if orig_is_nearby
+        else None
+    )
+    dest_nearby_note = (
+        f"ℹ️ {dest_city_name} için en yakın aktif ana havalimanı olan {dest_city.get('name')} seferleri listelenmiştir."
+        if dest_is_nearby
+        else None
+    )
 
     hub_fallback_notes: List[str] = []
     is_dom_route = not bool(origin_city.get("is_international") or dest_city.get("is_international"))
@@ -439,6 +450,18 @@ def fetch_live_flights_from_google(
     is_round = (trip_type == "round_trip" and bool(return_date))
     seat_mode = "business" if cabin_class == "business" else "economy"
 
+    def _apply_caller_notes(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        caller_notes = [n for n in [orig_nearby_note, dest_nearby_note, *hub_fallback_notes] if n]
+        if not caller_notes:
+            return items
+        for it in items:
+            existing_parts = [p.strip() for p in str(it.get("route_notice") or "").split("•") if p.strip()]
+            for cn in caller_notes:
+                if cn not in existing_parts:
+                    existing_parts.append(cn)
+            it["route_notice"] = " • ".join(existing_parts) if existing_parts else None
+        return items
+
     # 1. Önbellek (Cache) Kontrolü (10 Dakika TTL • RAM + Disk Korumalı)
     # ÖNEMLİ: include_multi_ota=False (esnek takvim şeridi) asla ana arama (include_multi_ota=True) önbelleğini ezemez!
     base_cache_key = f"{orig_slug}:{dest_slug}:{departure_date}:{return_date or ''}:{'rt' if is_round else 'ow'}:{seat_mode}:{adults}:{children}:{infants}"
@@ -449,10 +472,10 @@ def fetch_live_flights_from_google(
         if not include_multi_ota and base_cache_key in _FLIGHT_CACHE:
             full_entry = _FLIGHT_CACHE[base_cache_key]
             if now_ts - full_entry["ts"] < FLIGHT_CACHE_TTL_SECONDS:
-                return copy.deepcopy(full_entry["data"])
+                return _apply_caller_notes(copy.deepcopy(full_entry["data"]))
         cached_entry = _FLIGHT_CACHE.get(cache_key)
         if cached_entry and (now_ts - cached_entry["ts"] < FLIGHT_CACHE_TTL_SECONDS):
-            return copy.deepcopy(cached_entry["data"])
+            return _apply_caller_notes(copy.deepcopy(cached_entry["data"]))
 
     disk_path = _get_flight_disk_cache_path(cache_key)
     full_disk_path = _get_flight_disk_cache_path(base_cache_key)
@@ -481,9 +504,16 @@ def fetch_live_flights_from_google(
                                     orig_slug=orig_slug,
                                     dest_slug=dest_slug,
                                 )
+                            if str(_it.get("airline_direct_url") or "") in (
+                                "https://ajet.com/tr",
+                                "https://www.turkishairlines.com/tr-tr/ucak-bileti/",
+                                "https://www.sunexpress.com/tr-tr/",
+                                "https://www.flypgs.com/",
+                            ):
+                                _it["airline_direct_url"] = _it.get("official_link") or _it.get("airline_direct_url")
                         with _FLIGHT_CACHE_LOCK:
                             _FLIGHT_CACHE[cache_key] = {"ts": float(disk_payload["ts"]), "data": copy.deepcopy(disk_data)}
-                        return copy.deepcopy(disk_data)
+                        return _apply_caller_notes(copy.deepcopy(disk_data))
             except Exception:
                 pass
 
@@ -1151,5 +1181,5 @@ def fetch_live_flights_from_google(
         except Exception:
             pass
 
-    return results
+    return _apply_caller_notes(results)
 

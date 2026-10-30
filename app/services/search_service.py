@@ -1335,7 +1335,7 @@ class SearchService:
             else:
                 msg = links["train"].get("reason") or f"ℹ️ {origin_name} - {dest_name} arasında doğrudan tarifeli tren seferi bulunmamaktadır."
                 if transport_type == "train":
-                    notices.append(f"⚠️ {msg}")
+                    notices.append(msg if str(msg).startswith(("⚠️", "ℹ️")) else f"⚠️ {msg}")
                 elif transport_type == "all":
                     notices.append(msg)
 
@@ -2021,7 +2021,7 @@ class SearchService:
             return None
 
         def _fetch_flight_badge() -> Optional[Dict[str, Any]]:
-            if current_mode not in ("bus", "train"):
+            if current_mode not in ("bus", "train", "ferry"):
                 return None
             eff_orig, orig_nearby = resolve_nearest_airport_city(origin_name)
             eff_dest, dest_nearby = resolve_nearest_airport_city(dest_name)
@@ -2054,9 +2054,13 @@ class SearchService:
             if dest_nearby and dest_iata_label:
                 title_tr = f"En Ucuz Uçak ({dest_city_short} {dest_iata_label})"
                 title_en = f"Cheapest Flight ({dest_city_short} {dest_iata_label})"
+            elif orig_nearby and eff_orig.get("iata"):
+                orig_city_short = (eff_orig.get("name") or "").split("(")[0].strip()
+                title_tr = f"En Ucuz Uçak ({orig_city_short} {eff_orig.get('iata')})"
+                title_en = f"Cheapest Flight ({orig_city_short} {eff_orig.get('iata')})"
             else:
-                title_tr = "Direkt Uçak Bileti"
-                title_en = "Direct Flights"
+                title_tr = "En Ucuz Uçak"
+                title_en = "Cheapest Flight"
 
             return {
                 "mode": "flight",
@@ -2074,10 +2078,10 @@ class SearchService:
 
         badges: List[Dict[str, Any]] = []
         with ThreadPoolExecutor(max_workers=3) as ex:
-            fut_bus = ex.submit(_fetch_bus_badge)
-            fut_tr = ex.submit(_fetch_train_badge)
             fut_fl = ex.submit(_fetch_flight_badge)
-            for fut in (fut_bus, fut_tr, fut_fl):
+            fut_tr = ex.submit(_fetch_train_badge)
+            fut_bus = ex.submit(_fetch_bus_badge)
+            for fut in (fut_fl, fut_tr, fut_bus):
                 try:
                     res_b = fut.result(timeout=7)
                     if res_b:

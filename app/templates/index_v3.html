@@ -1900,7 +1900,7 @@
 
 
         // 1. SEYAHAT ALT KIRILIMLARI (a. Uçak | b. Otobüs | c. Tren | d. Gemi | e. Araç Kiralama)
-        function switchUnifiedTab(mode) {
+        async function switchUnifiedTab(mode) {
             if (mode === 'hotel') {
                 switchMainPillar('stay');
                 switchStaySubTab('hotel');
@@ -1941,7 +1941,7 @@
             }
 
             if (window.switchTransportSubTab) {
-                window.switchTransportSubTab(mode);
+                await window.switchTransportSubTab(mode);
             }
 
             if (searchBtnLabel) {
@@ -2700,7 +2700,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261030_v38"></script>
+    <script src="/static/js/app_v3.js?v=20261030_v39"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">

@@ -218,52 +218,55 @@ def resolve_carrier_meta(
         display_name = "Pegasus Airlines"
         provider_id = "official_pegasus"
         badge = "Comfort Flex ⭐" if cabin_class == "business" else "Pegasus Seferi"
-        airline_direct_url = "https://www.flypgs.com/"
-        airline_label_tr = "✈️ Pegasus'ta Gör ↗"
-        airline_label_en = "✈️ View on Pegasus ↗"
         if is_round and ret_date:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+Pegasus&hl=tr&gl=tr&curr=TRY"
+            airline_direct_url = f"https://web.flypgs.com/booking?language=tr&adultCount={max(1, int(adults or 1))}&departurePort={from_code}&arrivalPort={to_code}&departureDate={dep_date}&returnDate={ret_date}&currency=TRY"
         else:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+Pegasus&hl=tr&gl=tr&curr=TRY"
+            airline_direct_url = f"https://web.flypgs.com/booking?language=tr&adultCount={max(1, int(adults or 1))}&departurePort={from_code}&arrivalPort={to_code}&departureDate={dep_date}&currency=TRY"
+        airline_label_tr = "✈️ Pegasus'ta Gör ↗"
+        airline_label_en = "✈️ View on Pegasus ↗"
 
     # AJet / AnadoluJet (VF)
     elif "ajet" in c_lower or "anadolu" in c_lower or c_code == "VF":
         display_name = "AJet (AnadoluJet)"
         provider_id = "official_ajet"
         badge = "Business ⭐" if cabin_class == "business" else "AJet Seferi"
-        airline_direct_url = "https://ajet.com/tr"
-        airline_label_tr = "✈️ AJet'te Gör ↗"
-        airline_label_en = "✈️ View on AJet ↗"
         if is_round and ret_date:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+AJet&hl=tr&gl=tr&curr=TRY"
         else:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+AJet&hl=tr&gl=tr&curr=TRY"
+        # AJet SPA dışarıdan GET parametresi kabul etmeyip varış kutusunu "Seçiniz" (boş) bıraktığı için
+        # kalkış + varış + tarih + AJet filtresi %100 dolu gelen resmi Google Flights/AJet köprüsünü kullanıyoruz.
+        airline_direct_url = official_link
+        airline_label_tr = "✈️ AJet Resmi Seferi ↗"
+        airline_label_en = "✈️ Official AJet Fare ↗"
 
     # Türk Hava Yolları (TK)
     elif "turkish" in c_lower or "thy" in c_lower or "türk hava" in c_lower or c_code == "TK":
         display_name = "Türk Hava Yolları"
         provider_id = "official_thy"
         badge = "Business Class ⭐" if cabin_class == "business" else "⭐ THY Konforu"
-        airline_direct_url = "https://www.turkishairlines.com/tr-tr/ucak-bileti/"
-        airline_label_tr = "✈️ THY'de Gör ↗"
-        airline_label_en = "✈️ View on Turkish Airlines ↗"
         if is_round and ret_date:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+Turkish+Airlines&hl=tr&gl=tr&curr=TRY"
         else:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+Turkish+Airlines&hl=tr&gl=tr&curr=TRY"
+        airline_direct_url = official_link
+        airline_label_tr = "✈️ THY Resmi Seferi ↗"
+        airline_label_en = "✈️ Official THY Fare ↗"
 
     # SunExpress (XQ)
     elif "sunexpress" in c_lower or c_code == "XQ":
         display_name = "SunExpress"
         provider_id = "official_sunexpress"
         badge = "SunClassic" if cabin_class == "business" else "SunExpress Seferi"
-        airline_direct_url = "https://www.sunexpress.com/tr-tr/"
-        airline_label_tr = "✈️ SunExpress'te Gör ↗"
-        airline_label_en = "✈️ View on SunExpress ↗"
         if is_round and ret_date:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+through+{ret_date}+SunExpress&hl=tr&gl=tr&curr=TRY"
         else:
             official_link = f"https://www.google.com/travel/flights?q=flights+from+{from_code}+to+{to_code}+on+{dep_date}+one+way+SunExpress&hl=tr&gl=tr&curr=TRY"
+        airline_direct_url = official_link
+        airline_label_tr = "✈️ SunExpress Resmi Seferi ↗"
+        airline_label_en = "✈️ Official SunExpress Fare ↗"
 
     # Diğer / Uluslararası Havayolları (Lufthansa, Emirates, Qatar, Corendon vb.)
     else:

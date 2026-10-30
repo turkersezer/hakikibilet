@@ -812,14 +812,14 @@ const DISTRICT_TO_AIRPORT_MAP = {
         "note": null
     },
     "afyon": {
-        "target": "Zafer (KZR)",
+        "target": "Ankara (ESB)",
         "label": "Afyonkarahisar",
-        "note": "Afyonkarahisar tarifeli uçuşları Kütahya Zafer Bölgesel Havalimanı (KZR) üzerinden icra edilmektedir."
+        "note": "Afyonkarahisar bölgesindeki Zafer Havalimanı'nda (KZR) her gün tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan Ankara Esenboğa (ESB) uçuşları listelenmektedir."
     },
     "afyonkarahisar": {
-        "target": "Zafer (KZR)",
+        "target": "Ankara (ESB)",
         "label": "Afyonkarahisar",
-        "note": "Afyonkarahisar tarifeli uçuşları Kütahya Zafer Bölgesel Havalimanı (KZR) üzerinden icra edilmektedir."
+        "note": "Afyonkarahisar bölgesindeki Zafer Havalimanı'nda (KZR) her gün tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan Ankara Esenboğa (ESB) uçuşları listelenmektedir."
     },
     "agri": {
         "target": "Ağrı (AJI)",
@@ -887,14 +887,14 @@ const DISTRICT_TO_AIRPORT_MAP = {
         "note": "Balıkesir tarifeli ticari uçuşları Edremit Koca Seyit Havalimanı (EDO) üzerinden gerçekleştirilmektedir."
     },
     "bartin": {
-        "target": "Zonguldak (ONQ)",
+        "target": "Ankara (ESB)",
         "label": "Bartın",
-        "note": "Bartın için en yakın aktif havalimanı Zonguldak Çaycuma (ONQ) uçuşları listelenmektedir."
+        "note": "Bartın yakınındaki Zonguldak (ONQ) Havalimanı'nda her gün tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan Ankara Esenboğa (ESB) uçuşları listelenmektedir."
     },
     "bartın": {
-        "target": "Zonguldak (ONQ)",
+        "target": "Ankara (ESB)",
         "label": "Bartın",
-        "note": "Bartın için en yakın aktif havalimanı Zonguldak Çaycuma (ONQ) uçuşları listelenmektedir."
+        "note": "Bartın yakınındaki Zonguldak (ONQ) Havalimanı'nda her gün tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan Ankara Esenboğa (ESB) uçuşları listelenmektedir."
     },
     "batman": {
         "target": "Batman (BAL)",
@@ -907,9 +907,9 @@ const DISTRICT_TO_AIRPORT_MAP = {
         "note": "Bayburt için en yakın aktif havalimanı Trabzon (TZX) veya Erzurum (ERZ) uçuşları listelenmektedir."
     },
     "bilecik": {
-        "target": "Eskişehir (AOE)",
+        "target": "İstanbul Sabiha Gökçen (SAW)",
         "label": "Bilecik",
-        "note": "Bilecik için Eskişehir (AOE) veya Sabiha Gökçen (SAW) uçuşları listelenmektedir."
+        "note": "Bilecik'te havalimanı bulunmadığından (ve Eskişehir AOE iç hatlara kapalı olduğundan) en yakın ana merkez olan İstanbul Sabiha Gökçen (SAW) uçuşları listelenmektedir."
     },
     "bingol": {
         "target": "Bingöl (BGG)",
@@ -932,14 +932,14 @@ const DISTRICT_TO_AIRPORT_MAP = {
         "note": "Bolu için en yakın aktif havalimanı Sabiha Gökçen (SAW) veya Ankara (ESB) uçuşları listelenmektedir."
     },
     "burdur": {
-        "target": "Isparta (ISE)",
+        "target": "Antalya (AYT)",
         "label": "Burdur",
-        "note": "Burdur için en yakın havalimanı Isparta Süleyman Demirel (ISE) veya Antalya (AYT) uçuşları listelenmektedir."
+        "note": "Burdur için en yakın ana havalimanı olan Antalya Havalimanı (AYT - ~120 km) uçuşları listelenmektedir."
     },
     "bursa": {
         "target": "Bursa (YEI)",
         "label": "Bursa",
-        "note": "Bursa tarifeli uçuşları Yenişehir (YEI) veya Sabiha Gökçen (SAW) üzerinden icra edilmektedir."
+        "note": "Bursa tarifeli uçuşları Yenişehir (YEI) üzerinden sorgulanmakta; doğrudan sefer olmayan hatlarda en yakın ana merkez Sabiha Gökçen (SAW) uçuşları listelenmektedir."
     },
     "canakkale": {
         "target": "Çanakkale (CKZ)",
@@ -1022,14 +1022,14 @@ const DISTRICT_TO_AIRPORT_MAP = {
         "note": null
     },
     "eskisehir": {
-        "target": "Eskişehir (AOE)",
+        "target": "Ankara (ESB)",
         "label": "Eskişehir",
-        "note": null
+        "note": "Eskişehir Hasan Polatkan Havalimanı'nda (AOE) tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan Ankara Esenboğa (ESB - YHT ile 1 saat 15 dk) uçuşları listelenmektedir."
     },
     "eskişehir": {
-        "target": "Eskişehir (AOE)",
+        "target": "Ankara (ESB)",
         "label": "Eskişehir",
-        "note": null
+        "note": "Eskişehir Hasan Polatkan Havalimanı'nda (AOE) tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan Ankara Esenboğa (ESB - YHT ile 1 saat 15 dk) uçuşları listelenmektedir."
     },
     "gaziantep": {
         "target": "Gaziantep (GZT)",
@@ -1137,14 +1137,14 @@ const DISTRICT_TO_AIRPORT_MAP = {
         "note": null
     },
     "karabuk": {
-        "target": "Zonguldak (ONQ)",
+        "target": "Ankara (ESB)",
         "label": "Karabük",
-        "note": "Karabük / Safranbolu için Zonguldak Çaycuma (ONQ) veya Kastamonu (KFS) uçuşları listelenmektedir."
+        "note": "Karabük / Safranbolu yakınındaki Zonguldak (ONQ) Havalimanı'nda her gün tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan Ankara Esenboğa (ESB) uçuşları listelenmektedir."
     },
     "karabük": {
-        "target": "Zonguldak (ONQ)",
+        "target": "Ankara (ESB)",
         "label": "Karabük",
-        "note": "Karabük / Safranbolu için Zonguldak Çaycuma (ONQ) veya Kastamonu (KFS) uçuşları listelenmektedir."
+        "note": "Karabük / Safranbolu yakınındaki Zonguldak (ONQ) Havalimanı'nda her gün tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan Ankara Esenboğa (ESB) uçuşları listelenmektedir."
     },
     "safranbolu": {
         "target": "Kastamonu (KFS)",
@@ -1457,14 +1457,14 @@ const DISTRICT_TO_AIRPORT_MAP = {
         "note": "Tunceli için en yakın aktif havalimanı Elazığ (EZS) veya Erzincan (ERC) uçuşları listelenmektedir."
     },
     "usak": {
-        "target": "Zafer (KZR)",
+        "target": "İzmir (ADB)",
         "label": "Uşak",
-        "note": "Uşak için Zafer Bölgesel Havalimanı (KZR) veya İzmir (ADB) uçuşları listelenmektedir."
+        "note": "Uşak Havalimanı'nda (USQ) aktif tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan İzmir Adnan Menderes (ADB) uçuşları listelenmektedir."
     },
     "uşak": {
-        "target": "Zafer (KZR)",
+        "target": "İzmir (ADB)",
         "label": "Uşak",
-        "note": "Uşak için Zafer Bölgesel Havalimanı (KZR) veya İzmir (ADB) uçuşları listelenmektedir."
+        "note": "Uşak Havalimanı'nda (USQ) aktif tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan İzmir Adnan Menderes (ADB) uçuşları listelenmektedir."
     },
     "van": {
         "target": "Van (VAN)",
@@ -2160,7 +2160,20 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
     const beforeVal = raw;
     try {
         if (currentMode === 'flight') {
+            // Eğer kutudaki değer bir önceki çözümlemeden (ör. Uşak ➔ İzmir (ADB)) kalmışsa ve kullanıcı metni değiştirmemişse uyarıyı koru
+            if (raw === (inputEl.dataset.resolvedValue || "").trim() && inputEl.dataset.resolvedForMode === 'flight') {
+                if (inputEl.dataset.districtNotice) {
+                    showFieldWarningNotice(inputEl, `⚠️ ${inputEl.dataset.districtNotice}`);
+                } else {
+                    clearFieldWarningNotice(inputEl);
+                }
+                return;
+            }
+
+            // Kullanıcı yeni bir şehir yazdıysa önceki yönlendirme uyarısını sıfırla
+            inputEl.dataset.districtNotice = "";
             clearFieldWarningNotice(inputEl);
+
             // UÇAK MODU: Zaten parantezli IATA kodu varsa dokunma
             if (/\([A-Z0-9/ -]{3,}\)/.test(raw)) return;
 
@@ -2174,7 +2187,11 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
                 if (match) {
                     inputEl.value = item.target;
                     if (item.note) {
+                        inputEl.dataset.districtNotice = item.note;
                         window._lastDistrictNotice = item.note;
+                        showFieldWarningNotice(inputEl, `⚠️ ${item.note}`);
+                    } else {
+                        inputEl.dataset.districtNotice = "";
                     }
                     if (typeof window.trackHakikiEvent === 'function' && raw !== item.target) {
                         window.trackHakikiEvent({ event_type: 'geo_resolve', transport_type: currentMode, origin: raw, destination: item.target, warning_text: item.note || `${raw} ➔ ${item.target}` });
@@ -3244,12 +3261,15 @@ async function switchTransportSubTab(subTab) {
     }
 
     // Sekme değiştiğinde önceki modun havalimanı/otogar/gar soneklerini temizleyip yeni moda göre çözümle
+    window._lastDistrictNotice = null;
     if (originInput && originInput.value.trim()) {
+        originInput.dataset.districtNotice = "";
         clearFieldWarningNotice(originInput);
         originInput.value = extractCleanBaseLocation(originInput);
         resolveLocationInput(originInput, subTab);
     }
     if (destInput && destInput.value.trim()) {
+        destInput.dataset.districtNotice = "";
         clearFieldWarningNotice(destInput);
         destInput.value = extractCleanBaseLocation(destInput);
         resolveLocationInput(destInput, subTab);
@@ -3271,10 +3291,19 @@ function ensureObiletPriceSort(url) {
 async function executeTransportSearch(e) {
     if (e) e.preventDefault();
 
+    window._lastDistrictNotice = null;
     const oInp = document.getElementById("transOrigin");
     const dInp = document.getElementById("transDest");
     if (oInp) resolveLocationInput(oInp, currentTransportSubTab);
     if (dInp) resolveLocationInput(dInp, currentTransportSubTab);
+
+    // Sadece o anki kalkış ve varış kutularına ait yönlendirme uyarısını aktif tut (önceki aramadan asla sızmasın)
+    const activeNotices = [];
+    if (oInp && oInp.dataset.districtNotice) activeNotices.push(oInp.dataset.districtNotice);
+    if (dInp && dInp.dataset.districtNotice && !activeNotices.includes(dInp.dataset.districtNotice)) {
+        activeNotices.push(dInp.dataset.districtNotice);
+    }
+    window._lastDistrictNotice = activeNotices.length > 0 ? activeNotices.join(" • ") : null;
 
     let origin = oInp ? oInp.value.trim() : "";
     let destination = dInp ? dInp.value.trim() : "";
@@ -3719,12 +3748,36 @@ function renderTransportResults(data, searchReq) {
         `;
     }
 
-    // Popüler İlçe / Bölge ➔ En Yakın Havalimanı Yönlendirme Bilgilendirmesi (Marmaris ➔ Dalaman vb.)
+    // Popüler İlçe / Bölge / Pasif Havalimanı ➔ En Yakın Aktif Havalimanı Yönlendirme Bilgilendirmesi (Uşak ➔ ADB, Eskişehir ➔ ESB, Marmaris ➔ DLM vb.)
+    const backendFlightNotices = (modeType === 'flight' && Array.isArray(data.notices))
+        ? data.notices.filter(n => !n.includes("Güven ve Şeffaflık İlkesi"))
+        : [];
+    const combinedFlightNotices = [];
     if (modeType === 'flight' && window._lastDistrictNotice) {
+        combinedFlightNotices.push(window._lastDistrictNotice);
+    }
+    backendFlightNotices.forEach(bn => {
+        const cleanBn = String(bn).replace(/^ℹ️\s*/, '').replace(/^⚠️\s*/, '').trim();
+        if (cleanBn && !combinedFlightNotices.some(existing => existing.includes(cleanBn.slice(0, 25)) || cleanBn.includes(existing.slice(0, 25)))) {
+            combinedFlightNotices.push(cleanBn);
+        }
+    });
+    if (modeType === 'flight' && combinedFlightNotices.length > 0) {
         html += `
-            <div class="bg-amber-50 border border-amber-200 text-amber-950 rounded-xl px-3.5 py-2 mb-3 text-xs font-semibold flex items-center gap-2">
-                <i class="fa-solid fa-location-dot text-amber-600 shrink-0"></i>
-                <span>${escapeHtml(window._lastDistrictNotice)}</span>
+            <div class="bg-gradient-to-r from-amber-50 via-amber-100/80 to-amber-50 border-2 border-amber-400 text-amber-950 rounded-2xl p-4 mb-3.5 shadow-sm flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+                    <i class="fa-solid fa-plane-circle-exclamation"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                        <span class="px-2.5 py-0.5 rounded-md bg-amber-500 text-slate-950 text-[10.5px] font-black uppercase tracking-wider">
+                            📍 ${isEn ? 'Nearest Active Airport Redirection' : 'Yakın Havalimanı Yönlendirmesi'}
+                        </span>
+                    </div>
+                    <div class="text-xs sm:text-sm font-extrabold text-amber-950 leading-relaxed">
+                        ${combinedFlightNotices.map(n => escapeHtml(n)).join('<br>')}
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -3798,7 +3851,7 @@ function renderTransportResults(data, searchReq) {
             </div>
         `;
 
-        // 3. Haftanın En Ucuz Otobüs & Tren Alternatif Rozetleri (Tek Satır)
+        // 3. Haftanın En Ucuz Uçak, Tren & Otobüs Alternatif Rozetleri (Tek Satır)
         if (altBadges.length > 0) {
             html += `
                 <div class="mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px]">
@@ -3808,7 +3861,7 @@ function renderTransportResults(data, searchReq) {
                             const bTitle = isEn ? b.title_en : b.title_tr;
                             const bPrice = b.min_price ? `${fmtNum(b.min_price)} ${b.currency}` : (isEn ? 'Live Fares' : 'Canlı');
                             return `
-                                <button type="button" onclick="switchUnifiedTab('${b.mode}'); executeTransportSearch();"
+                                <button type="button" onclick="Promise.resolve(switchUnifiedTab('${b.mode}')).then(() => executeTransportSearch());"
                                         class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-800 border border-slate-200 text-[11px] font-bold transition cursor-pointer inline-flex items-center gap-1.5">
                                     <span>${b.icon} ${bTitle}:</span>
                                     <span class="font-black text-amber-700">${bPrice}</span>
@@ -4238,17 +4291,40 @@ function renderTransportResults(data, searchReq) {
         const secondaryNotice = routeNotices.length > 1
             ? routeNotices.slice(1).join(" • ")
             : (modeType === 'ferry'
-                ? (isEn ? "Please select a coastal port or use Smart Route for combined travel." : "Lütfen feribot iskelesi olan bir kıyı noktası seçiniz veya aşağıdaki resmi deniz acentelerinden güncel seferleri sorgulayınız.")
+                ? (isEn ? "Please select a coastal port or switch to available flight, train, or bus options below." : "Bu güzergahta doğrudan deniz/feribot hattı bulunmadığından aşağıdaki aktif ulaşım alternatiflerini (uçak, varsa tren veya otobüs) tek tıkla inceleyebilirsiniz.")
                 : (modeType === 'train'
-                    ? (isEn ? "Please check bus or flight options for this route." : "Bu güzergah için otobüs veya uçak alternatiflerini inceleyebilirsiniz.")
+                    ? (isEn ? "Please check available flight or bus options for this route below." : "Bu güzergah için aşağıdaki aktif uçak veya otobüs alternatiflerini tek tıkla inceleyebilirsiniz.")
                     : (isEn ? "Please try a different date or transport mode." : "Lütfen farklı bir tarih veya alternatif ulaşım modunu seçiniz.")));
         const emptyIcon = modeType === 'ferry' ? 'fa-anchor-circle-xmark' : (modeType === 'train' ? 'fa-train' : (modeType === 'bus' ? 'fa-bus' : 'fa-plane-slash'));
         const deepLinksList = Array.isArray(data.deep_links) ? data.deep_links : [];
+        const fmtAltEmpty = (n) => Number(n).toLocaleString(isEn ? 'en-US' : 'tr-TR');
+        const altQuickButtonsHtml = (Array.isArray(altBadges) && altBadges.length > 0) ? `
+            <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-center gap-2.5">
+                <span class="text-xs font-black text-slate-600 mr-1">⚡ ${isEn ? 'Available Modes on This Route:' : 'Bu Rotadaki Aktif Ulaşım Seçenekleri:'}</span>
+                ${altBadges.map(b => {
+                    const bTitle = isEn ? b.title_en : b.title_tr;
+                    const bPrice = b.min_price ? `${fmtAltEmpty(b.min_price)} ${b.currency}` : (isEn ? 'View Fares' : 'Seferleri Gör');
+                    const btnColor = b.mode === 'flight'
+                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 border-amber-400'
+                        : (b.mode === 'train'
+                            ? 'bg-indigo-900 hover:bg-slate-950 text-white border-indigo-800'
+                            : 'bg-emerald-800 hover:bg-emerald-950 text-white border-emerald-700');
+                    return `
+                        <button type="button" onclick="Promise.resolve(switchUnifiedTab('${b.mode}')).then(() => executeTransportSearch());"
+                                class="px-4 py-2.5 rounded-xl text-xs font-black border shadow-xs transition cursor-pointer inline-flex items-center gap-2 ${btnColor}">
+                            <span>${b.icon} ${escapeHtml(bTitle)}:</span>
+                            <span class="underline decoration-2">${escapeHtml(bPrice)} →</span>
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        ` : '';
         html += `
             <div class="bg-white p-8 sm:p-10 rounded-3xl border-2 border-slate-200 text-center shadow-xs mb-6">
                 <i class="fa-solid ${emptyIcon} text-3xl text-amber-500 mb-3"></i>
                 <div class="font-black text-slate-800 text-base">${escapeHtml(primaryNotice)}</div>
                 <div class="text-xs text-slate-500 mt-1.5 font-medium max-w-2xl mx-auto">${escapeHtml(secondaryNotice)}</div>
+                ${altQuickButtonsHtml}
                 ${deepLinksList.length > 0 ? `
                     <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-center gap-2">
                         ${deepLinksList.map((dl, idx) => `
@@ -5570,6 +5646,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
             tripFallbackLink = tripFallbackLink.replace('https://tr.trip.com/', 'https://www.trip.com/').replace('locale=tr-TR', 'locale=en-US');
         }
         const bookingFallbackLink = ticket.kayak_link || '';
+        let safeAirlineDirectUrl = ticket.airline_direct_url || '';
+        if (['https://ajet.com/tr', 'https://www.turkishairlines.com/tr-tr/ucak-bileti/', 'https://www.sunexpress.com/tr-tr/', 'https://www.flypgs.com/'].includes(safeAirlineDirectUrl)) {
+            safeAirlineDirectUrl = ticket.official_link || safeAirlineDirectUrl;
+        }
         const hasDrawer = verifiedProviders.length > 0 || tripFallbackLink || bookingFallbackLink || ticket.enuygun_link || ticket.obilet_link;
 
         return `
@@ -5641,7 +5721,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         `).join('')}
                         ${!hasTripPrice && tripFallbackLink ? `<a href="${tripFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Trip.com', '🌐', 'w-3.5 h-3.5')}<span>${isEn ? 'Trip.com Deals ↗' : 'Trip.com Teklifleri ↗'}</span></a>` : ''}
                         ${!hasBookingPrice && bookingFallbackLink ? `<a href="${bookingFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Booking / Kayak', '🌐', 'w-3.5 h-3.5')}<span>Booking / Kayak ↗</span></a>` : ''}
-                        ${ticket.airline_direct_url ? `<a href="${ticket.airline_direct_url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold inline-flex items-center gap-1.5">${airlineIata ? `<img src="https://www.gstatic.com/flights/airline_logos/70px/${escapeHtml(airlineIata)}.png" alt="" class="w-4 h-4 object-contain inline-block shrink-0" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://pics.avs.io/72/72/${escapeHtml(airlineIata)}.png';}else{this.style.display='none';}">` : getBrandLogoHtml(ticket.carrier, '✈️', 'w-4 h-4')}<span>${escapeHtml((isEn ? (ticket.airline_label_en || "Airline Site ↗") : (ticket.airline_label_tr || "Havayolunda Gör ↗")).replace(/^✈️\s*/, ''))}</span></a>` : ''}
+                        ${safeAirlineDirectUrl ? `<a href="${safeAirlineDirectUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold inline-flex items-center gap-1.5">${airlineIata ? `<img src="https://www.gstatic.com/flights/airline_logos/70px/${escapeHtml(airlineIata)}.png" alt="" class="w-4 h-4 object-contain inline-block shrink-0" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://pics.avs.io/72/72/${escapeHtml(airlineIata)}.png';}else{this.style.display='none';}">` : getBrandLogoHtml(ticket.carrier, '✈️', 'w-4 h-4')}<span>${escapeHtml((isEn ? (ticket.airline_label_en || "Airline Site ↗") : (ticket.airline_label_tr || "Havayolunda Gör ↗")).replace(/^✈️\s*/, ''))}</span></a>` : ''}
                         ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-3.5 h-3.5')}<span>${isEn ? 'Enuygun Deals ↗' : 'Enuygun Teklifleri ↗'}</span></a>` : ''}
                         ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}<span>${isEn ? 'Obilet Deals ↗' : 'Obilet Teklifleri ↗'}</span></a>` : ''}
                     </div>
