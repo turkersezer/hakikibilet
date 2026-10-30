@@ -281,6 +281,24 @@ def fetch_kiwi_live_offers(
             dst_code = str(((last_seg.get("destination") or {}).get("station") or {}).get("code") or "").upper()
             via_code = str(((first_seg.get("destination") or {}).get("station") or {}).get("code") or "").upper()
 
+            if len(segs) > 1:
+                seg_codes_mkt = []
+                seg_codes_op = []
+                for s_item in segs:
+                    s_data = (s_item or {}).get("segment") or {}
+                    s_num = str(s_data.get("code") or "").strip()
+                    s_car = str((s_data.get("carrier") or {}).get("code") or carrier_code).strip().upper()
+                    s_op = str((s_data.get("operatingCarrier") or {}).get("code") or s_car).strip().upper()
+                    if s_car and s_num:
+                        seg_codes_mkt.append(f"{s_car} {s_num}")
+                    if s_op and s_num:
+                        seg_codes_op.append(f"{s_op} {s_num}")
+                full_flight_no = " + ".join(seg_codes_mkt) if seg_codes_mkt else f"{carrier_code} {flight_code_num}".strip()
+                alt_flight_no = " + ".join(seg_codes_op) if seg_codes_op else full_flight_no
+            else:
+                full_flight_no = f"{carrier_code} {flight_code_num}".strip()
+                alt_flight_no = f"{op_carrier_code} {flight_code_num}".strip() if op_carrier_code else full_flight_no
+
             offer_item = {
                 "name": "Kiwi.com",
                 "price": price_val,
@@ -296,22 +314,31 @@ def fetch_kiwi_live_offers(
                 "carrier_code": carrier_code,
                 "carrier_name": carrier_name,
                 "fn_code": flight_code_num,
-                "flight_no": f"{carrier_code} {flight_code_num}".strip(),
+                "flight_no": full_flight_no,
                 "is_direct": (len(segs) == 1),
             }
 
-            primary_key = normalize_flight_key(f"{carrier_code}{flight_code_num}")
+            primary_key = normalize_flight_key(full_flight_no)
             _merge_offer(offers_map, primary_key, "kiwi", offer_item)
 
             # Codeshare (Örn: TK / VF AnadoluJet ortak uçuşları) için ikinci anahtarı da kaydet
-            if op_carrier_code and op_carrier_code != carrier_code:
-                alt_key = normalize_flight_key(f"{op_carrier_code}{flight_code_num}")
+            alt_key = normalize_flight_key(alt_flight_no)
+            if alt_key and alt_key != primary_key:
                 _merge_offer(offers_map, alt_key, "kiwi", offer_item)
 
-            # Ayrıca saat bazlı yedek eşleştirme anahtarı (TIME:SAW:ADB:06:00:PC)
-            if dep_hhmm and src_code and dst_code:
-                time_key = f"TIME:{src_code}:{dst_code}:{dep_hhmm}:{carrier_code}"
-                _merge_offer(offers_map, time_key, "kiwi", offer_item)
+            if len(segs) == 1:
+                # Sadece direkt uçuşlarda saat bazlı yedek eşleştirme anahtarı (TIME:SAW:ADB:06:00:PC)
+                if dep_hhmm and src_code and dst_code:
+                    time_key = f"TIME:{src_code}:{dst_code}:{dep_hhmm}:{carrier_code}"
+                    _merge_offer(offers_map, time_key, "kiwi", offer_item)
+            else:
+                # Aktarmalı uçuşlarda kalkış + varış saati bazlı eşleştirme anahtarı (CONN:MLX:AYT:08:05:12:55:VF)
+                if dep_hhmm and arr_hhmm and src_code and dst_code:
+                    conn_key = f"CONN:{src_code}:{dst_code}:{dep_hhmm}:{arr_hhmm}:{carrier_code}"
+                    _merge_offer(offers_map, conn_key, "kiwi", offer_item)
+                    if op_carrier_code and op_carrier_code != carrier_code:
+                        conn_op_key = f"CONN:{src_code}:{dst_code}:{dep_hhmm}:{arr_hhmm}:{op_carrier_code}"
+                        _merge_offer(offers_map, conn_op_key, "kiwi", offer_item)
 
     except Exception as exc:
         logger.debug(f"Kiwi GraphQL live offer fetch warning: {exc}")
@@ -536,7 +563,17 @@ def fetch_rapidapi_skyscanner_offers(
                 continue
 
             clean_price = round(float(raw_price), 2)
-            f_key = normalize_flight_key(f"{carrier_code}{flight_num}")
+            if len(segs) > 1:
+                seg_parts = []
+                for s_obj in segs:
+                    s_mc = str((s_obj.get("marketingCarrier") or {}).get("displayCode") or carrier_code).upper().strip()
+                    s_fn = str(s_obj.get("flightNumber") or "").strip()
+                    if s_mc and s_fn:
+                        seg_parts.append(f"{s_mc} {s_fn}")
+                full_sky_flight_no = " + ".join(seg_parts) if seg_parts else f"{carrier_code} {flight_num}".strip()
+            else:
+                full_sky_flight_no = f"{carrier_code} {flight_num}".strip()
+            f_key = normalize_flight_key(full_sky_flight_no)
 
             dep_dt_str = str(first_leg.get("departure") or "")
             arr_dt_str = str(first_leg.get("arrival") or "")
@@ -574,16 +611,18 @@ def fetch_rapidapi_skyscanner_offers(
                 "carrier_code": carrier_code,
                 "fn_code": flight_num,
                 "carrier_name": carrier_disp_name,
-                "flight_no": f"{carrier_code} {flight_num}".strip(),
+                "flight_no": full_sky_flight_no,
                 "is_direct": (len(segs) == 1),
             }
 
             _merge_offer(offers_map, f_key, "skyscanner", offer_item)
 
-            if dep_time:
+            if len(segs) == 1 and dep_time:
                 _merge_offer(offers_map, f"TIME:{orig_disp}:{dest_disp}:{dep_time}:{carrier_code}", "skyscanner", offer_item)
                 _merge_offer(offers_map, f"TIME:{seg_orig}:{seg_dest}:{dep_time}:{carrier_code}", "skyscanner", offer_item)
                 _merge_offer(offers_map, f"SHORT:{dep_time}:{carrier_code}", "skyscanner", offer_item)
+            elif len(segs) > 1 and dep_time and arr_time:
+                _merge_offer(offers_map, f"CONN:{orig_disp}:{dest_disp}:{dep_time}:{arr_time}:{carrier_code}", "skyscanner", offer_item)
 
         _save_to_cache(cache_key, offers_map)
     except Exception as exc:
@@ -687,7 +726,20 @@ def fetch_rapidapi_booking_offers(
             if not carrier_code or not flight_num:
                 continue
 
-            f_key = normalize_flight_key(f"{carrier_code}{flight_num}")
+            if len(legs) > 1:
+                leg_parts = []
+                for lg_obj in legs:
+                    lg_fi = lg_obj.get("flightInfo") or {}
+                    lg_ci = lg_fi.get("carrierInfo") or {}
+                    lg_cc = str(lg_ci.get("operatingCarrier") or lg_ci.get("marketingCarrier") or carrier_code).upper().strip()
+                    lg_fn = str(lg_fi.get("flightNumber") or "").strip()
+                    if lg_cc and lg_fn:
+                        leg_parts.append(f"{lg_cc} {lg_fn}")
+                full_booking_flight_no = " + ".join(leg_parts) if leg_parts else f"{carrier_code} {flight_num}".strip()
+            else:
+                full_booking_flight_no = f"{carrier_code} {flight_num}".strip()
+
+            f_key = normalize_flight_key(full_booking_flight_no)
             dep_time_raw = str(first_seg.get("departureTime") or "")
             arr_time_raw = str(first_seg.get("arrivalTime") or "")
             dep_time = dep_time_raw[11:16] if len(dep_time_raw) >= 16 else None
@@ -716,16 +768,18 @@ def fetch_rapidapi_booking_offers(
                 "carrier_code": carrier_code,
                 "fn_code": flight_num,
                 "carrier_name": carrier_code,
-                "flight_no": f"{carrier_code} {flight_num}".strip(),
+                "flight_no": full_booking_flight_no,
                 "is_direct": (len(legs) == 1),
             }
 
             _merge_offer(offers_map, f_key, "booking", offer_item)
 
-            if dep_time:
+            if len(legs) == 1 and dep_time:
                 time_key = f"TIME:{orig_actual}:{dest_actual}:{dep_time}:{carrier_code}"
                 _merge_offer(offers_map, time_key, "booking", offer_item)
                 _merge_offer(offers_map, f"SHORT:{dep_time}:{carrier_code}", "booking", offer_item)
+            elif len(legs) > 1 and dep_time and arr_time:
+                _merge_offer(offers_map, f"CONN:{orig_actual}:{dest_actual}:{dep_time}:{arr_time}:{carrier_code}", "booking", offer_item)
 
         _save_to_cache(cache_key, offers_map)
     except Exception as exc:

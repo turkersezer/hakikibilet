@@ -162,10 +162,24 @@ def _parse_unique_flights(raw_items: List[Any]) -> List[Dict[str, Any]]:
                 if len(leg_codes) > 1:
                     flight_no = " + ".join(leg_codes)
 
-            total_duration_mins = sum(
+            sum_leg_mins = sum(
                 (leg[11] if len(leg) > 11 and isinstance(leg[11], int) else 75)
                 for leg in legs
             )
+            total_duration_mins = sum_leg_mins
+            if len(legs) > 1:
+                try:
+                    if (
+                        len(first_leg) > 20 and isinstance(first_leg[20], list) and len(first_leg[20]) == 3
+                        and len(last_leg) > 21 and isinstance(last_leg[21], list) and len(last_leg[21]) == 3
+                    ):
+                        d1 = datetime(first_leg[20][0], first_leg[20][1], first_leg[20][2], dep_t[0], dep_t[1])
+                        d2 = datetime(last_leg[21][0], last_leg[21][1], last_leg[21][2], arr_t[0], arr_t[1])
+                        elapsed_m = int((d2 - d1).total_seconds() // 60)
+                        if elapsed_m >= sum_leg_mins:
+                            total_duration_mins = elapsed_m
+                except Exception:
+                    pass
             hours = total_duration_mins // 60
             mins = total_duration_mins % 60
             duration_str = f"{hours} sa {mins} dk" if hours > 0 else f"{mins} dk"
@@ -243,7 +257,7 @@ def _build_fallback_sorted_raw_from_ota(
         base_dt = datetime.now()
 
     for key, channels in multi_ota_map.items():
-        if not key or key.startswith("TIME:") or key.startswith("SHORT:") or not isinstance(channels, dict):
+        if not key or key.startswith("TIME:") or key.startswith("SHORT:") or key.startswith("CONN:") or not isinstance(channels, dict):
             continue
         # Tüm aktif kanallardan (Skyscanner, Booking, Trip, Kiwi) en zengin meta veriyi ve en düşük doğrulanmış fiyatı seç
         cand_offs = [
@@ -316,7 +330,7 @@ def _build_fallback_sorted_raw_from_ota(
             leg_last[6] = to_code
             legs.append(leg_last)
 
-        sig = (carrier_code or airline_name, from_code, to_code, dep_time)
+        sig = (carrier_code or airline_name, from_code, to_code, dep_time, arr_time)
         if sig not in unique_fallback or price < unique_fallback[sig]["price"]:
             unique_fallback[sig] = {
                 "f0": [],
@@ -459,25 +473,53 @@ def fetch_live_flights_from_google(
                 language="tr"
             )
             html = ""
+            req_params = {**q.params(), "gl": "TR", "hl": "tr", "curr": "TRY"}
+            req_cookies = {
+                "SOCS": "CAESHAgBEhJnd3NfMjAyMzA4MTAtMF9SQzIaAmVuIAEaBgiAo_CmBg",
+                "CONSENT": "YES+cb.20230531-04-p0.tr+FX+999",
+            }
             try:
                 from primp import Client as PrimpClient
-                p_client = PrimpClient(
-                    impersonate="chrome_145",
-                    impersonate_os="macos",
-                    referer=True,
-                    cookie_store=True,
-                )
-                p_res = p_client.get(
-                    "https://www.google.com/travel/flights",
-                    params=q.params(),
-                    cookies={
-                        "SOCS": "CAESHAgBEhJnd3NfMjAyMzA4MTAtMF9SQzIaAmVuIAEaBgiAo_CmBg",
-                        "CONSENT": "YES+cb.20230531-04-p0.tr+FX+999",
-                    },
-                )
-                html = p_res.text or ""
+                p_client = None
+                for imp_ver in ("chrome_145", "chrome_133", "chrome_131", "chrome_130", "chrome_128", "chrome_126", "chrome_124", "chrome_120", None):
+                    try:
+                        if imp_ver:
+                            p_client = PrimpClient(
+                                impersonate=imp_ver,
+                                referer=True,
+                                cookie_store=True,
+                            )
+                        else:
+                            p_client = PrimpClient(referer=True, cookie_store=True)
+                        break
+                    except Exception:
+                        continue
+                if p_client is not None:
+                    p_res = p_client.get(
+                        "https://www.google.com/travel/flights",
+                        params=req_params,
+                        cookies=req_cookies,
+                    )
+                    html = p_res.text or ""
             except Exception:
-                html = fetch_flights_html(q)
+                html = ""
+            if not html or "ds:1" not in html:
+                try:
+                    import requests as _requests
+                    r_res = _requests.get(
+                        "https://www.google.com/travel/flights",
+                        params=req_params,
+                        cookies=req_cookies,
+                        headers={
+                            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                            "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7",
+                        },
+                        timeout=8.0,
+                    )
+                    if r_res.status_code == 200 and "ds:1" in (r_res.text or ""):
+                        html = r_res.text
+                except Exception:
+                    pass
             if not html or "ds:1" not in html:
                 html = fetch_flights_html(q)
             parser = LexborHTMLParser(html)
@@ -728,6 +770,7 @@ def fetch_live_flights_from_google(
             short_time_key = f"SHORT:{dep_time}:{carrier_code}"
             city_time_key = f"TIME:IST:{to_code}:{dep_time}:{carrier_code}"
             city_dest_time_key = f"TIME:{from_code}:IST:{dep_time}:{carrier_code}"
+            conn_time_key = f"CONN:{from_code}:{to_code}:{dep_time}:{arr_time}:{carrier_code}"
 
             ota_for_flight: Dict[str, Dict[str, Any]] = {}
             if is_direct:
@@ -739,6 +782,9 @@ def fetch_live_flights_from_google(
                     ota_for_flight.update(multi_ota_map[city_dest_time_key])
                 if time_key in multi_ota_map:
                     ota_for_flight.update(multi_ota_map[time_key])
+            else:
+                if conn_time_key in multi_ota_map:
+                    ota_for_flight.update(multi_ota_map[conn_time_key])
             if f_key and f_key in multi_ota_map:
                 ota_for_flight.update(multi_ota_map[f_key])
 

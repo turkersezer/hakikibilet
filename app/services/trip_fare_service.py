@@ -137,6 +137,14 @@ def parse_trip_flightlist_json(
                 alt_d_key = f"TIME:{from_code.upper()}:{alt_d}:{dep_hm}:{airline_code}"
                 if alt_d_key not in offers or clean_price < offers[alt_d_key]["trip"]["price"]:
                     offers[alt_d_key] = {"trip": item}
+        elif len(sections) > 1 and dep_hm and airline_code:
+            last_sec = sections[-1] or {}
+            arr_dt_str = str(last_sec.get("arriveDateTime") or "")
+            arr_hm = arr_dt_str[11:16] if len(arr_dt_str) >= 16 else None
+            if arr_hm:
+                conn_key = f"CONN:{from_code.upper()}:{to_code.upper()}:{dep_hm}:{arr_hm}:{airline_code}"
+                if conn_key not in offers or clean_price < offers[conn_key]["trip"]["price"]:
+                    offers[conn_key] = {"trip": item}
 
     return offers
 
@@ -453,10 +461,10 @@ def parse_kayak_dom_text(
         if not m_time:
             continue
         dep_time = m_time.group(1)
+        arr_time = m_time.group(2)
         window = lines[i + 1 : min(len(lines), i + 16)]
         win_joined = " | ".join(window).lower()
-        if "aktarma" in win_joined and "direkt" not in win_joined:
-            continue
+        is_connecting_kayak = ("aktarma" in win_joined and "direkt" not in win_joined)
 
         from_ap = orig_code.upper()
         for w in window[:4]:
@@ -515,13 +523,19 @@ def parse_kayak_dom_text(
             "url": b_url,
             "channel": "booking",
             "dep_time": dep_time,
+            "arr_time": arr_time,
         }
-        t_key = f"TIME:{from_ap}:{dest_code.upper()}:{dep_time}:{carrier}"
-        s_key = f"SHORT:{dep_time}:{carrier}"
-        if t_key not in offers or price_val < offers[t_key]["booking"]["price"]:
-            offers[t_key] = {"booking": item}
-        if s_key not in offers or price_val < offers[s_key]["booking"]["price"]:
-            offers[s_key] = {"booking": item}
+        if is_connecting_kayak:
+            conn_key = f"CONN:{from_ap}:{dest_code.upper()}:{dep_time}:{arr_time}:{carrier}"
+            if conn_key not in offers or price_val < offers[conn_key]["booking"]["price"]:
+                offers[conn_key] = {"booking": item}
+        else:
+            t_key = f"TIME:{from_ap}:{dest_code.upper()}:{dep_time}:{carrier}"
+            s_key = f"SHORT:{dep_time}:{carrier}"
+            if t_key not in offers or price_val < offers[t_key]["booking"]["price"]:
+                offers[t_key] = {"booking": item}
+            if s_key not in offers or price_val < offers[s_key]["booking"]["price"]:
+                offers[s_key] = {"booking": item}
 
     return offers
 
