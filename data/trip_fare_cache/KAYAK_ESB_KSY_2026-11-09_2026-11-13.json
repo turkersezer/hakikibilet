@@ -1,0 +1,167 @@
+{
+  "ts": 1793085294.376155,
+  "offers": {
+    "TIME:ESB:KSY:10:30:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7068.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30"
+      }
+    },
+    "SHORT:10:30:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7068.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30"
+      }
+    },
+    "TIME:ESB:KSY:12:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7068.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:50"
+      }
+    },
+    "SHORT:12:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7068.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:50"
+      }
+    },
+    "TIME:ESB:KSY:11:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7535.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:00"
+      }
+    },
+    "SHORT:11:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7535.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:00"
+      }
+    },
+    "TIME:ESB:KSY:12:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7473.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:50"
+      }
+    },
+    "SHORT:12:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7473.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:50"
+      }
+    },
+    "TIME:ESB:KSY:10:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7473.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30"
+      }
+    },
+    "SHORT:10:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7473.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30"
+      }
+    },
+    "TIME:ESB:KSY:22:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7491.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:35"
+      }
+    },
+    "SHORT:22:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7491.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:35"
+      }
+    },
+    "TIME:ESB:KSY:05:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7473.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:45"
+      }
+    },
+    "SHORT:05:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7473.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:45"
+      }
+    },
+    "TIME:ESB:KSY:19:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7491.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:45"
+      }
+    },
+    "SHORT:19:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7491.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:45"
+      }
+    },
+    "TIME:ESB:KSY:07:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8191.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:30"
+      }
+    },
+    "SHORT:07:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8191.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:30"
+      }
+    }
+  }
+}

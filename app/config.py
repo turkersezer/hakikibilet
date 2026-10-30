@@ -254,11 +254,11 @@ class Settings:
     }
 
     # RapidAPI Booking.com Canlı Otel & Uçuş Entegrasyonu
-    RAPIDAPI_BOOKING_KEY: str = os.getenv("RAPIDAPI_BOOKING_KEY", "")
+    RAPIDAPI_BOOKING_KEY: str = os.getenv("RAPIDAPI_BOOKING_KEY", "148a35e0b3msh6fee0694743036ap1fba10jsn5361646b970c")
     RAPIDAPI_BOOKING_HOST: str = os.getenv("RAPIDAPI_BOOKING_HOST", "booking-com15.p.rapidapi.com")
 
     # Hibrit Çoklu Acente (Multi-OTA) Canlı Uçuş Fiyat Entegrasyonları (Faz 1B)
-    RAPIDAPI_FLIGHTS_KEY: str = os.getenv("RAPIDAPI_FLIGHTS_KEY", "")
+    RAPIDAPI_FLIGHTS_KEY: str = os.getenv("RAPIDAPI_FLIGHTS_KEY", "148a35e0b3msh6fee0694743036ap1fba10jsn5361646b970c")
     RAPIDAPI_FLIGHTS_HOST: str = os.getenv("RAPIDAPI_FLIGHTS_HOST", "sky-scrapper.p.rapidapi.com")
     TRAVELPAYOUTS_API_TOKEN: str = os.getenv("TRAVELPAYOUTS_API_TOKEN", "")
     KIWI_AFFILIATE_ID: str = os.getenv("KIWI_AFFILIATE_ID", "travelpayouts")

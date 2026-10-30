@@ -2,7 +2,7 @@ import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
-from app.cities import find_city, resolve_nearest_airport_city, TURKEY_CITIES
+from app.cities import find_city, resolve_nearest_airport_city, TURKEY_CITIES, FALLBACK_MAJOR_HUB_BY_IATA
 from app.config import settings
 from app.services.currency_service import CurrencyService
 from app.services.hotel_service import HotelService
@@ -105,12 +105,28 @@ class SearchService:
         sky_dep = cls.format_date_for_skyscanner(departure_date)
         enuygun_dep = cls.format_date_for_enuygun(departure_date)
 
+        origin_is_intl = bool(origin and origin.get("is_international"))
+        dest_is_intl = bool(dest and dest.get("is_international"))
+
+        # İç hatlarda tarifeli iç hat uçuşu olmayan havalimanlarını (AOE Eskişehir, USQ Uşak) ana hub'a yönlendir
+        if not origin_is_intl and not dest_is_intl:
+            orig_fb = FALLBACK_MAJOR_HUB_BY_IATA.get(origin_iata or "")
+            if orig_fb and orig_fb.get("domestic_inactive"):
+                fb_city = find_city(orig_fb["hub_slug"])
+                if fb_city:
+                    eff_orig_airport = fb_city
+                    origin_iata = orig_fb["hub_iata"]
+            dest_fb = FALLBACK_MAJOR_HUB_BY_IATA.get(dest_iata or "")
+            if dest_fb and dest_fb.get("domestic_inactive"):
+                fb_city = find_city(dest_fb["hub_slug"])
+                if fb_city:
+                    eff_dest_airport = fb_city
+                    dest_iata = dest_fb["hub_iata"]
+
         origin_has_airport = bool(origin_iata and ((origin and origin.get("has_airport")) or eff_orig_airport))
         dest_has_airport = bool(dest_iata and ((dest and dest.get("has_airport")) or eff_dest_airport) and origin_iata != dest_iata)
         origin_has_train = bool(origin and origin.get("has_train"))
         dest_has_train = bool(dest and dest.get("has_train"))
-        origin_is_intl = bool(origin and origin.get("is_international"))
-        dest_is_intl = bool(dest and dest.get("is_international"))
 
         # Tren Kuralları: TCDD 597 istasyon canlı ağı + Balkan Ekspresi + Trainline Avrupa Hızlı Trenleri
         from app.services.train_service import TrainService
@@ -1085,6 +1101,17 @@ class SearchService:
         
         eff_orig_airport, orig_nearby_airport = resolve_nearest_airport_city(origin or origin_name)
         eff_dest_airport, dest_nearby_airport = resolve_nearest_airport_city(dest or dest_name)
+        if not (bool(origin and origin.get("is_international")) or bool(dest and dest.get("is_international"))):
+            orig_fb_chk = FALLBACK_MAJOR_HUB_BY_IATA.get((eff_orig_airport.get("iata") if eff_orig_airport else "") or "")
+            if orig_fb_chk and orig_fb_chk.get("domestic_inactive"):
+                fb_c = find_city(orig_fb_chk["hub_slug"])
+                if fb_c:
+                    eff_orig_airport = fb_c
+            dest_fb_chk = FALLBACK_MAJOR_HUB_BY_IATA.get((eff_dest_airport.get("iata") if eff_dest_airport else "") or "")
+            if dest_fb_chk and dest_fb_chk.get("domestic_inactive"):
+                fb_c = find_city(dest_fb_chk["hub_slug"])
+                if fb_c:
+                    eff_dest_airport = fb_c
         origin_has_airport = bool(eff_orig_airport and eff_orig_airport.get("has_airport"))
         dest_has_airport = bool(
             eff_dest_airport
@@ -1180,6 +1207,11 @@ class SearchService:
                     )
                     if live_flights:
                         for lf in live_flights:
+                            if lf.get("route_notice"):
+                                for rn_part in str(lf["route_notice"]).split("•"):
+                                    rn_clean = rn_part.strip()
+                                    if rn_clean and "aktarmalıdır" not in rn_clean and rn_clean not in notices:
+                                        notices.append(rn_clean)
                             if currency != "TRY":
                                 lf["price"] = round(CurrencyService.convert(lf["price"], "TRY", currency), 2)
                                 if lf.get("regular_price"):

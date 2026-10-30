@@ -1,0 +1,95 @@
+{
+  "ts": 1793086898.7020748,
+  "offers": {
+    "TIME:SAW:BJV:15:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "15:35"
+      }
+    },
+    "SHORT:15:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "15:35"
+      }
+    },
+    "TIME:SAW:BJV:18:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "18:40"
+      }
+    },
+    "SHORT:18:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "18:40"
+      }
+    },
+    "TIME:SAW:BJV:06:20:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1429.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:20"
+      }
+    },
+    "SHORT:06:20:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1429.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:20"
+      }
+    },
+    "TIME:SAW:BJV:08:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:30"
+      }
+    },
+    "SHORT:08:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:30"
+      }
+    },
+    "TIME:SAW:BJV:23:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:00"
+      }
+    },
+    "SHORT:23:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-BJV/2026-11-10?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:00"
+      }
+    }
+  }
+}

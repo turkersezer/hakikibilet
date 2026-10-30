@@ -1,0 +1,315 @@
+{
+  "ts": 1793359032.3181126,
+  "offers": {
+    "CONN:ESB:BRU:07:45:12:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8564.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:45",
+        "arr_time": "12:50"
+      }
+    },
+    "CONN:ESB:BRU:07:45:08:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6445.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:45",
+        "arr_time": "08:45"
+      }
+    },
+    "CONN:ESB:BRU:05:45:10:25:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9332.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:45",
+        "arr_time": "10:25"
+      }
+    },
+    "CONN:ESB:BRU:09:55:15:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9594.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:55",
+        "arr_time": "15:45"
+      }
+    },
+    "CONN:ESB:BRU:04:10:12:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8564.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "04:10",
+        "arr_time": "12:50"
+      }
+    },
+    "CONN:ESB:BRU:11:00:17:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 10341.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:00",
+        "arr_time": "17:00"
+      }
+    },
+    "CONN:ESB:BRU:07:30:13:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 10285.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:30",
+        "arr_time": "13:55"
+      }
+    },
+    "CONN:ESB:BRU:07:45:15:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9594.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:45",
+        "arr_time": "15:45"
+      }
+    },
+    "CONN:ESB:BRU:07:30:12:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9546.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:30",
+        "arr_time": "12:50"
+      }
+    },
+    "CONN:ESB:BRU:10:30:17:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 10341.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30",
+        "arr_time": "17:00"
+      }
+    },
+    "CONN:ESB:BRU:17:55:22:20:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 19047.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "17:55",
+        "arr_time": "22:20"
+      }
+    },
+    "CONN:ESB:BRU:05:45:12:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9546.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:45",
+        "arr_time": "12:50"
+      }
+    },
+    "CONN:ESB:BRU:10:30:15:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 10686.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30",
+        "arr_time": "15:45"
+      }
+    },
+    "CONN:ESB:BRU:11:55:17:10:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 17305.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:55",
+        "arr_time": "17:10"
+      }
+    },
+    "CONN:ESB:BRU:04:10:10:25:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9022.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "04:10",
+        "arr_time": "10:25"
+      }
+    },
+    "CONN:ESB:BRU:00:10:12:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8564.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "00:10",
+        "arr_time": "12:50"
+      }
+    },
+    "CONN:ESB:BRU:20:05:12:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7132.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:05",
+        "arr_time": "12:50"
+      }
+    },
+    "CONN:ESB:BRU:15:55:22:20:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 19047.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "15:55",
+        "arr_time": "22:20"
+      }
+    },
+    "CONN:ESB:BRU:18:10:22:20:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 12158.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "18:10",
+        "arr_time": "22:20"
+      }
+    },
+    "CONN:ESB:BRU:07:45:13:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 10908.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:45",
+        "arr_time": "13:55"
+      }
+    },
+    "CONN:ESB:BRU:22:35:10:25:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8860.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:35",
+        "arr_time": "10:25"
+      }
+    },
+    "CONN:ESB:BRU:13:15:12:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7133.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "13:15",
+        "arr_time": "12:50"
+      }
+    },
+    "CONN:ESB:BRU:09:55:16:35:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7890.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:55",
+        "arr_time": "16:35"
+      }
+    },
+    "CONN:ESB:BRU:09:55:12:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7133.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:55",
+        "arr_time": "12:50"
+      }
+    },
+    "CONN:ESB:BRU:07:45:16:35:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7751.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:45",
+        "arr_time": "16:35"
+      }
+    },
+    "CONN:ESB:BRU:07:30:16:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8120.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:30",
+        "arr_time": "16:35"
+      }
+    },
+    "CONN:ESB:BRU:03:55:15:20:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 34725.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "03:55",
+        "arr_time": "15:20"
+      }
+    },
+    "CONN:ESB:BRU:07:30:06:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 54010.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:30",
+        "arr_time": "06:50"
+      }
+    },
+    "CONN:ESB:BRU:11:55:09:50:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 75450.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:55",
+        "arr_time": "09:50"
+      }
+    },
+    "CONN:ESB:BRU:05:45:06:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 54010.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:45",
+        "arr_time": "06:50"
+      }
+    },
+    "CONN:ESB:BRU:03:55:12:55:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 17894.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-BRU/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "03:55",
+        "arr_time": "12:55"
+      }
+    }
+  }
+}

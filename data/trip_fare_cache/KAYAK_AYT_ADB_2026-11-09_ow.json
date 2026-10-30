@@ -1,0 +1,525 @@
+{
+  "ts": 1793359002.2996216,
+  "offers": {
+    "TIME:AYT:ADB:18:25:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3021.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "18:25",
+        "arr_time": "19:35"
+      }
+    },
+    "SHORT:18:25:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3021.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "18:25",
+        "arr_time": "19:35"
+      }
+    },
+    "CONN:AYT:ADB:22:10:07:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2686.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:10",
+        "arr_time": "07:15"
+      }
+    },
+    "TIME:AYT:ADB:20:15:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2953.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:15",
+        "arr_time": "21:25"
+      }
+    },
+    "SHORT:20:15:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2953.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:15",
+        "arr_time": "21:25"
+      }
+    },
+    "TIME:AYT:ADB:08:15:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3035.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "09:25"
+      }
+    },
+    "SHORT:08:15:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3035.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "09:25"
+      }
+    },
+    "CONN:AYT:ADB:12:15:15:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3534.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:15",
+        "arr_time": "15:45"
+      }
+    },
+    "CONN:AYT:ADB:20:50:00:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3562.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:50",
+        "arr_time": "00:15"
+      }
+    },
+    "CONN:AYT:ADB:09:35:14:25:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3588.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:35",
+        "arr_time": "14:25"
+      }
+    },
+    "CONN:AYT:ADB:11:10:14:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3729.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:10",
+        "arr_time": "14:35"
+      }
+    },
+    "CONN:AYT:ADB:15:30:19:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3765.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "15:30",
+        "arr_time": "19:10"
+      }
+    },
+    "CONN:AYT:ADB:16:30:20:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3838.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:30",
+        "arr_time": "20:55"
+      }
+    },
+    "CONN:AYT:ADB:10:30:14:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3497.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30",
+        "arr_time": "14:35"
+      }
+    },
+    "CONN:AYT:ADB:15:00:19:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3627.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "15:00",
+        "arr_time": "19:10"
+      }
+    },
+    "CONN:AYT:ADB:09:35:15:35:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3588.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:35",
+        "arr_time": "15:35"
+      }
+    },
+    "CONN:AYT:ADB:07:40:11:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3795.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:40",
+        "arr_time": "11:20"
+      }
+    },
+    "CONN:AYT:ADB:08:25:14:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3098.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:25",
+        "arr_time": "14:20"
+      }
+    },
+    "CONN:AYT:ADB:14:50:20:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3838.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "14:50",
+        "arr_time": "20:55"
+      }
+    },
+    "CONN:AYT:ADB:23:15:06:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2899.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:15",
+        "arr_time": "06:40"
+      }
+    },
+    "CONN:AYT:ADB:19:40:23:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4053.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:40",
+        "arr_time": "23:40"
+      }
+    },
+    "CONN:AYT:ADB:23:30:06:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3362.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:30",
+        "arr_time": "06:55"
+      }
+    },
+    "CONN:AYT:ADB:13:10:18:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3290.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "13:10",
+        "arr_time": "18:15"
+      }
+    },
+    "CONN:AYT:ADB:17:10:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4230.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "17:10",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:AYT:ADB:13:30:18:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3537.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "13:30",
+        "arr_time": "18:15"
+      }
+    },
+    "CONN:AYT:ADB:10:00:14:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3564.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:00",
+        "arr_time": "14:35"
+      }
+    },
+    "CONN:AYT:ADB:18:20:00:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3199.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "18:20",
+        "arr_time": "00:45"
+      }
+    },
+    "CONN:AYT:ADB:05:20:09:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4538.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:20",
+        "arr_time": "09:30"
+      }
+    },
+    "CONN:AYT:ADB:22:45:06:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3284.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:45",
+        "arr_time": "06:40"
+      }
+    },
+    "CONN:AYT:ADB:06:35:10:30:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4158.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:35",
+        "arr_time": "10:30"
+      }
+    },
+    "CONN:AYT:ADB:14:15:20:30:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4087.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "14:15",
+        "arr_time": "20:30"
+      }
+    },
+    "CONN:AYT:ADB:06:35:10:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4118.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:35",
+        "arr_time": "10:40"
+      }
+    },
+    "CONN:AYT:ADB:06:40:11:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4587.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:40",
+        "arr_time": "11:20"
+      }
+    },
+    "CONN:AYT:ADB:21:20:08:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3588.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:20",
+        "arr_time": "08:55"
+      }
+    },
+    "CONN:AYT:ADB:23:30:10:15:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3362.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:30",
+        "arr_time": "10:15"
+      }
+    },
+    "CONN:AYT:ADB:07:40:14:15:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4087.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:40",
+        "arr_time": "14:15"
+      }
+    },
+    "CONN:AYT:ADB:09:35:14:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3704.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:35",
+        "arr_time": "14:20"
+      }
+    },
+    "CONN:AYT:ADB:14:15:18:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4278.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "14:15",
+        "arr_time": "18:15"
+      }
+    },
+    "CONN:AYT:ADB:16:30:22:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3948.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:30",
+        "arr_time": "22:00"
+      }
+    },
+    "CONN:AYT:ADB:03:55:10:15:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4690.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "03:55",
+        "arr_time": "10:15"
+      }
+    },
+    "CONN:AYT:ADB:11:05:20:30:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4087.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:05",
+        "arr_time": "20:30"
+      }
+    },
+    "CONN:AYT:ADB:08:55:14:10:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4023.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:55",
+        "arr_time": "14:10"
+      }
+    },
+    "CONN:AYT:ADB:11:05:15:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4252.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:05",
+        "arr_time": "15:45"
+      }
+    },
+    "CONN:AYT:ADB:10:55:14:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4657.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:55",
+        "arr_time": "14:20"
+      }
+    },
+    "CONN:AYT:ADB:03:55:08:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4861.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "03:55",
+        "arr_time": "08:35"
+      }
+    },
+    "CONN:AYT:ADB:23:30:06:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3461.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:30",
+        "arr_time": "06:40"
+      }
+    },
+    "CONN:AYT:ADB:16:55:22:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5193.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:55",
+        "arr_time": "22:00"
+      }
+    },
+    "CONN:AYT:ADB:15:30:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4529.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "15:30",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:AYT:ADB:15:00:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4379.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "15:00",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:AYT:ADB:17:50:22:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6667.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "17:50",
+        "arr_time": "22:00"
+      }
+    },
+    "CONN:AYT:ADB:05:20:11:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5833.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:20",
+        "arr_time": "11:20"
+      }
+    },
+    "CONN:AYT:ADB:04:25:09:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6647.0,
+        "url": "https://www.kayak.com.tr/flights/AYT-ADB/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "04:25",
+        "arr_time": "09:50"
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "ts": 1793359043.8912,
+  "offers": {
+    "TIME:IST:MZH:09:15:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2408.0,
+        "url": "https://www.kayak.com.tr/flights/IST-MZH/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:15",
+        "arr_time": "10:45"
+      }
+    },
+    "SHORT:09:15:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2408.0,
+        "url": "https://www.kayak.com.tr/flights/IST-MZH/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:15",
+        "arr_time": "10:45"
+      }
+    }
+  }
+}

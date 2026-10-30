@@ -1,0 +1,59 @@
+{
+  "ts": 1793020775.2024157,
+  "offers": {
+    "TIME:SAW:MLX:19:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1799.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-MLX/2026-11-02?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55"
+      }
+    },
+    "SHORT:19:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1799.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-MLX/2026-11-02?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:SAW:MLX:23:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1797.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-MLX/2026-11-02?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:45"
+      }
+    },
+    "SHORT:23:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1797.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-MLX/2026-11-02?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:45"
+      }
+    },
+    "TIME:SAW:MLX:06:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1801.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-MLX/2026-11-02?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:15"
+      }
+    },
+    "SHORT:06:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1801.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-MLX/2026-11-02?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:15"
+      }
+    }
+  }
+}

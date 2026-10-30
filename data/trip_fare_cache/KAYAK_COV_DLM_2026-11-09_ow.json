@@ -1,0 +1,23 @@
+{
+  "ts": 1792999889.8741271,
+  "offers": {
+    "TIME:COV:DLM:14:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1400.0,
+        "url": "https://www.kayak.com.tr/flights/COV-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "14:00"
+      }
+    },
+    "SHORT:14:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1400.0,
+        "url": "https://www.kayak.com.tr/flights/COV-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "14:00"
+      }
+    }
+  }
+}

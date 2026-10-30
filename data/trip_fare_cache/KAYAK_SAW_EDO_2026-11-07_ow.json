@@ -1,0 +1,23 @@
+{
+  "ts": 1792866154.4713304,
+  "offers": {
+    "TIME:SAW:EDO:17:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1400.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-EDO/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "17:40"
+      }
+    },
+    "SHORT:17:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1400.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-EDO/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "17:40"
+      }
+    }
+  }
+}

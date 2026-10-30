@@ -1,0 +1,495 @@
+{
+  "ts": 1793358955.0545163,
+  "offers": {
+    "CONN:MLX:AYT:08:15:13:30:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3068.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "13:30"
+      }
+    },
+    "CONN:MLX:AYT:09:05:14:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3369.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "14:20"
+      }
+    },
+    "CONN:MLX:AYT:08:15:17:20:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3068.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "17:20"
+      }
+    },
+    "CONN:MLX:AYT:22:25:07:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3347.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "07:10"
+      }
+    },
+    "CONN:MLX:AYT:08:15:14:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "14:20"
+      }
+    },
+    "CONN:MLX:AYT:08:15:12:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4977.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "12:40"
+      }
+    },
+    "CONN:MLX:AYT:06:00:15:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4628.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "15:50"
+      }
+    },
+    "CONN:MLX:AYT:09:05:17:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4078.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "17:20"
+      }
+    },
+    "CONN:MLX:AYT:09:05:16:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4482.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "16:20"
+      }
+    },
+    "CONN:MLX:AYT:08:15:16:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4227.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "16:20"
+      }
+    },
+    "CONN:MLX:AYT:22:25:06:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4342.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "06:55"
+      }
+    },
+    "CONN:MLX:AYT:09:05:18:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4253.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "18:45"
+      }
+    },
+    "CONN:MLX:AYT:08:15:18:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "18:45"
+      }
+    },
+    "CONN:MLX:AYT:08:15:20:15:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3824.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "20:15"
+      }
+    },
+    "CONN:MLX:AYT:21:10:15:45:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4874.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:10",
+        "arr_time": "15:45"
+      }
+    },
+    "CONN:MLX:AYT:22:25:10:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4114.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "10:20"
+      }
+    },
+    "CONN:MLX:AYT:09:05:20:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4078.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "20:15"
+      }
+    },
+    "CONN:MLX:AYT:08:15:22:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3824.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "22:45"
+      }
+    },
+    "CONN:MLX:AYT:08:15:20:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "20:00"
+      }
+    },
+    "CONN:MLX:AYT:22:25:11:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4308.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "11:15"
+      }
+    },
+    "CONN:MLX:AYT:08:15:01:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "01:20"
+      }
+    },
+    "CONN:MLX:AYT:06:00:20:40:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4423.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:MLX:AYT:08:15:00:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "00:30"
+      }
+    },
+    "CONN:MLX:AYT:09:05:20:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4253.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "20:00"
+      }
+    },
+    "CONN:MLX:AYT:08:15:21:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "21:55"
+      }
+    },
+    "CONN:MLX:AYT:06:00:21:25:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4644.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "21:25"
+      }
+    },
+    "CONN:MLX:AYT:08:15:10:20:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3805.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "10:20"
+      }
+    },
+    "CONN:MLX:AYT:08:15:22:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "22:10"
+      }
+    },
+    "CONN:MLX:AYT:08:15:22:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "22:45"
+      }
+    },
+    "CONN:MLX:AYT:09:05:22:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4078.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "22:45"
+      }
+    },
+    "CONN:MLX:AYT:09:05:00:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4253.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "00:30"
+      }
+    },
+    "CONN:MLX:AYT:09:05:01:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4253.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "01:20"
+      }
+    },
+    "CONN:MLX:AYT:22:25:12:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4342.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "12:55"
+      }
+    },
+    "CONN:MLX:AYT:09:05:21:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4253.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "21:55"
+      }
+    },
+    "CONN:MLX:AYT:09:05:22:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4253.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05",
+        "arr_time": "22:10"
+      }
+    },
+    "CONN:MLX:AYT:22:25:17:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4114.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "17:20"
+      }
+    },
+    "CONN:MLX:AYT:22:25:14:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4308.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "14:00"
+      }
+    },
+    "CONN:MLX:AYT:22:25:15:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4308.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "15:00"
+      }
+    },
+    "CONN:MLX:AYT:06:00:14:10:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8398.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "14:10"
+      }
+    },
+    "CONN:MLX:AYT:21:10:14:20:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6149.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:10",
+        "arr_time": "14:20"
+      }
+    },
+    "CONN:MLX:AYT:08:15:07:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3998.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15",
+        "arr_time": "07:10"
+      }
+    },
+    "CONN:MLX:AYT:22:25:17:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4308.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:25",
+        "arr_time": "17:50"
+      }
+    },
+    "CONN:MLX:AYT:22:55:08:10:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7768.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:55",
+        "arr_time": "08:10"
+      }
+    },
+    "CONN:MLX:AYT:21:10:13:20:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6915.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:10",
+        "arr_time": "13:20"
+      }
+    },
+    "CONN:MLX:AYT:21:10:03:35:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9738.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:10",
+        "arr_time": "03:35"
+      }
+    },
+    "CONN:MLX:AYT:11:55:03:35:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9738.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:55",
+        "arr_time": "03:35"
+      }
+    },
+    "CONN:MLX:AYT:21:10:08:40:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9738.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:10",
+        "arr_time": "08:40"
+      }
+    },
+    "CONN:MLX:AYT:21:10:10:35:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9738.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:10",
+        "arr_time": "10:35"
+      }
+    },
+    "CONN:MLX:AYT:21:10:12:00:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9738.0,
+        "url": "https://www.kayak.com.tr/flights/MLX-AYT/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:10",
+        "arr_time": "12:00"
+      }
+    }
+  }
+}

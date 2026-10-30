@@ -1,0 +1,491 @@
+{
+  "ts": 1793110258.099599,
+  "offers": {
+    "TIME:SAW:AYT:10:05:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:05"
+      }
+    },
+    "SHORT:10:05:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:05"
+      }
+    },
+    "TIME:SAW:AYT:11:05:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:05"
+      }
+    },
+    "SHORT:11:05:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:05"
+      }
+    },
+    "TIME:SAW:AYT:12:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:50"
+      }
+    },
+    "SHORT:12:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:50"
+      }
+    },
+    "TIME:SAW:AYT:09:00:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:00"
+      }
+    },
+    "SHORT:09:00:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:SAW:AYT:11:05:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:05"
+      }
+    },
+    "SHORT:11:05:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:05"
+      }
+    },
+    "TIME:SAW:AYT:11:35:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:35"
+      }
+    },
+    "SHORT:11:35:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:35"
+      }
+    },
+    "TIME:SAW:AYT:13:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "13:50"
+      }
+    },
+    "SHORT:13:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "13:50"
+      }
+    },
+    "TIME:SAW:AYT:06:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00"
+      }
+    },
+    "SHORT:06:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00"
+      }
+    },
+    "TIME:SAW:AYT:03:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "03:55"
+      }
+    },
+    "SHORT:03:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "03:55"
+      }
+    },
+    "TIME:SAW:AYT:05:35:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:35"
+      }
+    },
+    "SHORT:05:35:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:35"
+      }
+    },
+    "TIME:SAW:AYT:03:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "03:55"
+      }
+    },
+    "SHORT:03:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "03:55"
+      }
+    },
+    "TIME:SAW:AYT:16:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:40"
+      }
+    },
+    "SHORT:16:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:40"
+      }
+    },
+    "TIME:SAW:AYT:09:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4529.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:00"
+      }
+    },
+    "SHORT:09:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4529.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:00"
+      }
+    },
+    "TIME:SAW:AYT:13:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4499.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "13:20"
+      }
+    },
+    "SHORT:13:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4499.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "13:20"
+      }
+    },
+    "TIME:SAW:AYT:05:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4493.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:35"
+      }
+    },
+    "SHORT:05:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4493.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "05:35"
+      }
+    },
+    "TIME:SAW:AYT:23:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20"
+      }
+    },
+    "SHORT:23:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20"
+      }
+    },
+    "TIME:SAW:AYT:16:00:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:00"
+      }
+    },
+    "SHORT:16:00:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:00"
+      }
+    },
+    "TIME:SAW:AYT:00:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "00:10"
+      }
+    },
+    "SHORT:00:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "00:10"
+      }
+    },
+    "TIME:SAW:AYT:21:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:15"
+      }
+    },
+    "SHORT:21:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "21:15"
+      }
+    },
+    "TIME:SAW:AYT:19:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:30"
+      }
+    },
+    "SHORT:19:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:30"
+      }
+    },
+    "TIME:SAW:AYT:18:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "18:55"
+      }
+    },
+    "SHORT:18:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3584.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "18:55"
+      }
+    },
+    "TIME:SAW:AYT:09:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4498.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:35"
+      }
+    },
+    "SHORT:09:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4498.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:35"
+      }
+    },
+    "TIME:SAW:AYT:20:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:30"
+      }
+    },
+    "SHORT:20:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:30"
+      }
+    },
+    "TIME:SAW:AYT:22:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:30"
+      }
+    },
+    "SHORT:22:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3548.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:30"
+      }
+    },
+    "TIME:SAW:AYT:07:40:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3884.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:40"
+      }
+    },
+    "SHORT:07:40:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3884.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:40"
+      }
+    },
+    "TIME:SAW:AYT:07:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3848.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:40"
+      }
+    },
+    "SHORT:07:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3848.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "07:40"
+      }
+    },
+    "TIME:SAW:AYT:10:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4100.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:10"
+      }
+    },
+    "SHORT:10:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4100.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-AYT/2026-11-10/2026-11-13?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:10"
+      }
+    }
+  }
+}

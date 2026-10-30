@@ -1,0 +1,95 @@
+{
+  "ts": 1793000033.116527,
+  "offers": {
+    "TIME:SAW:DLM:08:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1402.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15"
+      }
+    },
+    "SHORT:08:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1402.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:15"
+      }
+    },
+    "TIME:SAW:DLM:17:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1520.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "17:30"
+      }
+    },
+    "SHORT:17:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1520.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "17:30"
+      }
+    },
+    "TIME:SAW:DLM:06:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1598.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:55"
+      }
+    },
+    "SHORT:06:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1598.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:55"
+      }
+    },
+    "TIME:SAW:DLM:19:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55"
+      }
+    },
+    "SHORT:19:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55"
+      }
+    },
+    "TIME:SAW:DLM:23:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:30"
+      }
+    },
+    "SHORT:23:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1401.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-DLM/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:30"
+      }
+    }
+  }
+}

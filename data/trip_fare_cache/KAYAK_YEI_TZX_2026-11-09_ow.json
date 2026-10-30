@@ -1,0 +1,35 @@
+{
+  "ts": 1793359012.7236528,
+  "offers": {
+    "TIME:YEI:TZX:14:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3025.0,
+        "url": "https://www.kayak.com.tr/flights/YEI-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "14:55",
+        "arr_time": "16:30"
+      }
+    },
+    "SHORT:14:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3025.0,
+        "url": "https://www.kayak.com.tr/flights/YEI-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "14:55",
+        "arr_time": "16:30"
+      }
+    },
+    "CONN:YEI:TZX:16:40:01:10:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9134.0,
+        "url": "https://www.kayak.com.tr/flights/YEI-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:40",
+        "arr_time": "01:10"
+      }
+    }
+  }
+}

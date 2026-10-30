@@ -1,0 +1,23 @@
+{
+  "ts": 1793085329.759674,
+  "offers": {
+    "TIME:ESB:KSY:10:30:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3527.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30"
+      }
+    },
+    "SHORT:10:30:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3527.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-KSY/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:30"
+      }
+    }
+  }
+}

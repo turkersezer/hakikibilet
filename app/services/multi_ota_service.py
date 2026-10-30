@@ -21,12 +21,55 @@ import re
 import time
 import logging
 import requests
+from datetime import datetime
 from app.config import settings
 from app.cities import find_city
 
 logger = logging.getLogger(__name__)
 
 KIWI_GRAPHQL_URL = "https://api.skypicker.com/umbrella/v2/graphql"
+
+# Türkiye Sınırları İçindeki Tüm Sivil Havalimanı IATA Kodları (Yurt İçi Egemenlik & Mantık Süzgeci İçin)
+TR_AIRPORT_CODES = {
+    "IST", "SAW", "ISTA", "ESB", "ADB", "AYT", "GZP", "COV", "ADA", "TZX", "DLM", "BJV",
+    "DIY", "GZT", "ASR", "SZF", "VAN", "ERZ", "KSY", "MLX", "EZS", "KYA", "GNY",
+    "HTY", "MQM", "BAL", "VAS", "DNZ", "EDO", "BZI", "RZV", "OGU", "NAV", "MZH",
+    "IGD", "AJI", "MSR", "NKT", "YKO", "BGG", "SXZ", "ADF", "CKZ", "KFS", "NOP",
+    "TJK", "ERC", "KCM", "AOE", "USQ", "KZR", "ISE", "ONQ", "TEQ", "YEI", "KCO",
+}
+
+
+def _is_valid_domestic_itinerary(
+    is_domestic_search: bool,
+    num_segs: int,
+    station_codes: List[str],
+    dep_iso: str = "",
+    arr_iso: str = "",
+) -> bool:
+    """
+    Yurt içi (Türkiye -> Türkiye) uçuş aramalarında evrensel mantık süzgeci (Sanity Filter):
+    1. En fazla 1 aktarmaya (2 uçuş bacağına) izin verir; 3-4 bacaklı kombinasyonları reddeder.
+    2. Ara aktarma noktalarının tamamı Türkiye sınırları içinde (TR_AIRPORT_CODES) olmalıdır;
+       Diyarbakır -> Brüksel (Belçika) -> Eskişehir gibi yabancı ülke aktarmalarını kesinlikle eler.
+    3. Toplam yolculuk süresi 16.5 saati (990 dk) aşan gece konaklamalı/40-50 saatlik absürt biletleri eler.
+    """
+    if not is_domestic_search:
+        return True
+    if num_segs > 2:
+        return False
+    for st in station_codes:
+        if st and st.strip().upper() not in TR_AIRPORT_CODES:
+            return False
+    if len(dep_iso) >= 19 and len(arr_iso) >= 19:
+        try:
+            dt1 = datetime.fromisoformat(dep_iso[:19])
+            dt2 = datetime.fromisoformat(arr_iso[:19])
+            elapsed_m = (dt2 - dt1).total_seconds() / 60.0
+            if elapsed_m > 990 or elapsed_m <= 0:
+                return False
+        except Exception:
+            pass
+    return True
 
 # Akıllı Önbellek (Kota Koruyucu - 15 Dakika TTL)
 _OTA_CACHE: Dict[str, Tuple[float, Any]] = {}
@@ -225,6 +268,7 @@ def fetch_kiwi_live_offers(
         data = resp.json().get("data") or {}
         root_key = "returnItineraries" if (is_round and return_date) else "onewayItineraries"
         itineraries = (data.get(root_key) or {}).get("itineraries") or []
+        is_dom_kiwi = (orig_codes[0].upper() in TR_AIRPORT_CODES and dest_codes[0].upper() in TR_AIRPORT_CODES)
 
         for it in itineraries:
             if not isinstance(it, dict):
@@ -238,6 +282,22 @@ def fetch_kiwi_live_offers(
 
             first_seg = (segs[0] or {}).get("segment") or {}
             last_seg = (segs[-1] or {}).get("segment") or first_seg
+            local_time = str(((first_seg.get("source") or {}).get("localTime")) or "")
+            arr_local_time = str(((last_seg.get("destination") or {}).get("localTime")) or "")
+
+            all_seg_stations = []
+            for s_item in segs:
+                s_data = (s_item or {}).get("segment") or {}
+                s_src = str(((s_data.get("source") or {}).get("station") or {}).get("code") or "").upper()
+                s_dst = str(((s_data.get("destination") or {}).get("station") or {}).get("code") or "").upper()
+                if s_src:
+                    all_seg_stations.append(s_src)
+                if s_dst:
+                    all_seg_stations.append(s_dst)
+
+            if not _is_valid_domestic_itinerary(is_dom_kiwi, len(segs), all_seg_stations, local_time, arr_local_time):
+                continue
+
             flight_code_num = str(first_seg.get("code") or "").strip()
             carrier = first_seg.get("carrier") or {}
             op_carrier = first_seg.get("operatingCarrier") or {}
@@ -442,6 +502,8 @@ def fetch_rapidapi_skyscanner_offers(
     return_date: Optional[str] = None,
     seat_mode: str = "economy",
     adults: int = 1,
+    children: int = 0,
+    infants: int = 0,
 ) -> Dict[str, Dict[str, Dict[str, Any]]]:
     """
     RapidAPI Sky-Scrapper (Skyscanner Live Gateway) üzerinden doğrulanmış canlı uçuş fiyatlarını çeker.
@@ -452,7 +514,8 @@ def fetch_rapidapi_skyscanner_offers(
 
     o_code = orig_codes[0].upper()
     d_code = dest_codes[0].upper()
-    cache_key = f"SKY:{o_code}:{d_code}:{departure_date}:{return_date or ''}:{seat_mode}:{adults}"
+    is_dom_sky = (o_code in TR_AIRPORT_CODES and d_code in TR_AIRPORT_CODES)
+    cache_key = f"SKY:{o_code}:{d_code}:{departure_date}:{return_date or ''}:{seat_mode}:{adults}:{children}:{infants}"
     cached = _get_from_cache(cache_key)
     if cached is not None:
         return cached
@@ -483,6 +546,7 @@ def fetch_rapidapi_skyscanner_offers(
         if not o_entity or not d_entity:
             return offers_map
 
+        seated_pax = max(1, int(adults or 1) + int(children or 0))
         params = {
             "originSkyId": o_sky,
             "destinationSkyId": d_sky,
@@ -492,9 +556,11 @@ def fetch_rapidapi_skyscanner_offers(
             "currency": "TRY",
             "market": "tr-TR",
             "countryCode": "TR",
-            "adults": str(adults),
+            "adults": str(seated_pax),
             "cabinClass": "business" if seat_mode == "business" else "economy",
         }
+        if int(infants or 0) > 0:
+            params["infants"] = str(int(infants))
         if return_date:
             params["returnDate"] = return_date
 
@@ -502,7 +568,7 @@ def fetch_rapidapi_skyscanner_offers(
             f"https://{api_host}/api/v2/flights/searchFlights",
             headers=headers,
             params=params,
-            timeout=5.0,
+            timeout=7.5,
         )
         if resp.status_code != 200:
             return offers_map
@@ -510,7 +576,7 @@ def fetch_rapidapi_skyscanner_offers(
         data_obj = resp.json().get("data") or {}
         itins = list(data_obj.get("itineraries") or [])
         sess_id = (data_obj.get("context") or {}).get("sessionId")
-        if sess_id and (data_obj.get("context") or {}).get("status") == "incomplete":
+        if not itins and sess_id and (data_obj.get("context") or {}).get("status") == "incomplete":
             try:
                 r2 = requests.get(
                     f"https://{api_host}/api/v2/flights/searchIncomplete",
@@ -542,6 +608,18 @@ def fetch_rapidapi_skyscanner_offers(
             first_leg = legs[0]
             segs = first_leg.get("segments") or []
             if not segs:
+                continue
+            dep_dt_str_chk = str(first_leg.get("departure") or "")
+            arr_dt_str_chk = str(first_leg.get("arrival") or "")
+            sky_stations = []
+            for s_obj in segs:
+                so_c = str((s_obj.get("origin") or {}).get("displayCode") or "").upper()
+                sd_c = str((s_obj.get("destination") or {}).get("displayCode") or "").upper()
+                if so_c:
+                    sky_stations.append(so_c)
+                if sd_c:
+                    sky_stations.append(sd_c)
+            if not _is_valid_domestic_itinerary(is_dom_sky, len(segs), sky_stations, dep_dt_str_chk, arr_dt_str_chk):
                 continue
             first_seg = segs[0]
             flight_num = str(first_seg.get("flightNumber") or "").strip()
@@ -638,6 +716,8 @@ def fetch_rapidapi_booking_offers(
     return_date: Optional[str] = None,
     seat_mode: str = "economy",
     adults: int = 1,
+    children: int = 0,
+    infants: int = 0,
 ) -> Dict[str, Dict[str, Dict[str, Any]]]:
     """
     RapidAPI booking-com15 (Booking.com Flights API) üzerinden doğrulanmış canlı uçuş fiyatlarını çeker.
@@ -648,7 +728,8 @@ def fetch_rapidapi_booking_offers(
 
     o_code = orig_codes[0].upper()
     d_code = dest_codes[0].upper()
-    cache_key = f"BOOKING:{o_code}:{d_code}:{departure_date}:{return_date or ''}:{seat_mode}:{adults}"
+    is_dom_booking = (o_code in TR_AIRPORT_CODES and d_code in TR_AIRPORT_CODES)
+    cache_key = f"BOOKING:{o_code}:{d_code}:{departure_date}:{return_date or ''}:{seat_mode}:{adults}:{children}:{infants}"
     cached = _get_from_cache(cache_key)
     if cached is not None:
         return cached
@@ -678,6 +759,8 @@ def fetch_rapidapi_booking_offers(
             "currency_code": "TRY",
             "cabinClass": "BUSINESS" if seat_mode == "business" else "ECONOMY",
         }
+        if int(children or 0) > 0:
+            params["children"] = ",".join(["8"] * int(children))
         if return_date:
             params["returnDate"] = return_date
 
@@ -691,8 +774,17 @@ def fetch_rapidapi_booking_offers(
             from app.services.trip_fare_service import fetch_kayak_live_offers
             fallback_kayak = fetch_kayak_live_offers(orig_codes, dest_codes, departure_date, return_date)
             if fallback_kayak:
-                _save_to_cache(cache_key, fallback_kayak)
-                return fallback_kayak
+                seated_pax_k = max(1, int(adults or 1) + int(children or 0))
+                scaled_kayak: Dict[str, Dict[str, Dict[str, Any]]] = {}
+                for k_key, k_channels in fallback_kayak.items():
+                    scaled_kayak[k_key] = {}
+                    for ch_k, ch_v in k_channels.items():
+                        item_copy = dict(ch_v)
+                        if item_copy.get("price") and seated_pax_k > 1:
+                            item_copy["price"] = round(float(item_copy["price"]) * seated_pax_k, 2)
+                        scaled_kayak[k_key][ch_k] = item_copy
+                _save_to_cache(cache_key, scaled_kayak)
+                return scaled_kayak
             return offers_map
 
         payload = resp.json() or {}
@@ -717,6 +809,18 @@ def fetch_rapidapi_booking_offers(
             first_seg = segments[0]
             legs = first_seg.get("legs") or []
             if not legs:
+                continue
+            dep_time_chk = str(first_seg.get("departureTime") or "")
+            arr_time_chk = str(first_seg.get("arrivalTime") or "")
+            bk_stations = []
+            for lg_obj in legs:
+                la = str((lg_obj.get("departureAirport") or {}).get("code") or "").upper()
+                lb = str((lg_obj.get("arrivalAirport") or {}).get("code") or "").upper()
+                if la:
+                    bk_stations.append(la)
+                if lb:
+                    bk_stations.append(lb)
+            if not _is_valid_domestic_itinerary(is_dom_booking, len(legs), bk_stations, dep_time_chk, arr_time_chk):
                 continue
 
             flight_info = legs[0].get("flightInfo") or {}
@@ -904,6 +1008,8 @@ def fetch_multi_ota_flight_map(
                 return_date,
                 seat_mode,
                 adults,
+                children,
+                infants,
             ),
             executor.submit(
                 fetch_rapidapi_booking_offers,
@@ -913,6 +1019,8 @@ def fetch_multi_ota_flight_map(
                 return_date,
                 seat_mode,
                 adults,
+                children,
+                infants,
             ),
             executor.submit(
                 fetch_kiwi_live_offers,

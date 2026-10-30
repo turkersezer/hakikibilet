@@ -1,0 +1,41 @@
+{
+  "ts": 1793345613.6817665,
+  "offers": {
+    "TIME:ESB:GYD:12:15:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6297.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-GYD/2026-11-15?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:15"
+      }
+    },
+    "SHORT:12:15:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6297.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-GYD/2026-11-15?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:15"
+      }
+    },
+    "TIME:ESB:GYD:12:10:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 19342.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-GYD/2026-11-15?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:10"
+      }
+    },
+    "SHORT:12:10:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 19342.0,
+        "url": "https://www.kayak.com.tr/flights/ESB-GYD/2026-11-15?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:10"
+      }
+    }
+  }
+}

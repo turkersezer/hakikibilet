@@ -1,0 +1,59 @@
+{
+  "ts": 1793004219.3091767,
+  "offers": {
+    "TIME:SAW:ZRH:11:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2923.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-ZRH/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:55"
+      }
+    },
+    "SHORT:11:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2923.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-ZRH/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:55"
+      }
+    },
+    "TIME:SAW:ZRH:08:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3093.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-ZRH/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:45"
+      }
+    },
+    "SHORT:08:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3093.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-ZRH/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:45"
+      }
+    },
+    "TIME:SAW:ZRH:12:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4835.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-ZRH/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:45"
+      }
+    },
+    "SHORT:12:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4835.0,
+        "url": "https://www.kayak.com.tr/flights/SAW-ZRH/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:45"
+      }
+    }
+  }
+}

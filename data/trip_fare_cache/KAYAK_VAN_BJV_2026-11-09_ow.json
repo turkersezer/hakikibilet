@@ -1,0 +1,365 @@
+{
+  "ts": 1793358983.7509065,
+  "offers": {
+    "CONN:VAN:BJV:09:40:15:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5787.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:40",
+        "arr_time": "15:20"
+      }
+    },
+    "CONN:VAN:BJV:19:55:09:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4818.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:16:40:09:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4818.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:40",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:15:05:21:00:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7001.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "15:05",
+        "arr_time": "21:00"
+      }
+    },
+    "CONN:VAN:BJV:20:15:07:40:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5908.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:15",
+        "arr_time": "07:40"
+      }
+    },
+    "CONN:VAN:BJV:09:20:15:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7158.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:20",
+        "arr_time": "15:20"
+      }
+    },
+    "CONN:VAN:BJV:12:15:21:00:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7001.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "12:15",
+        "arr_time": "21:00"
+      }
+    },
+    "CONN:VAN:BJV:09:40:19:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6568.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:40",
+        "arr_time": "19:35"
+      }
+    },
+    "CONN:VAN:BJV:09:20:19:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6927.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:20",
+        "arr_time": "19:35"
+      }
+    },
+    "CONN:VAN:BJV:11:35:19:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6790.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:35",
+        "arr_time": "19:35"
+      }
+    },
+    "CONN:VAN:BJV:16:40:00:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7274.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:40",
+        "arr_time": "00:15"
+      }
+    },
+    "CONN:VAN:BJV:09:40:00:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6568.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:40",
+        "arr_time": "00:15"
+      }
+    },
+    "CONN:VAN:BJV:10:00:19:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7274.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:00",
+        "arr_time": "19:35"
+      }
+    },
+    "CONN:VAN:BJV:20:15:09:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6927.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:15",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:10:00:09:45:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5940.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:00",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:09:20:00:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6927.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:20",
+        "arr_time": "00:15"
+      }
+    },
+    "CONN:VAN:BJV:19:55:07:40:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7396.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55",
+        "arr_time": "07:40"
+      }
+    },
+    "CONN:VAN:BJV:19:55:22:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5906.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55",
+        "arr_time": "22:00"
+      }
+    },
+    "CONN:VAN:BJV:11:35:00:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6790.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:35",
+        "arr_time": "00:15"
+      }
+    },
+    "CONN:VAN:BJV:11:00:19:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 9009.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:00",
+        "arr_time": "19:35"
+      }
+    },
+    "CONN:VAN:BJV:10:00:00:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7274.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:00",
+        "arr_time": "00:15"
+      }
+    },
+    "CONN:VAN:BJV:09:40:07:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6602.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:40",
+        "arr_time": "07:40"
+      }
+    },
+    "CONN:VAN:BJV:09:20:07:40:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6961.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:20",
+        "arr_time": "07:40"
+      }
+    },
+    "CONN:VAN:BJV:20:15:16:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6927.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:15",
+        "arr_time": "16:50"
+      }
+    },
+    "CONN:VAN:BJV:09:40:09:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6568.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:40",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:09:20:09:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6927.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:20",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:16:40:07:40:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7308.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:40",
+        "arr_time": "07:40"
+      }
+    },
+    "CONN:VAN:BJV:19:55:09:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7539.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:20:15:19:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6927.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:15",
+        "arr_time": "19:55"
+      }
+    },
+    "CONN:VAN:BJV:11:35:07:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6863.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:35",
+        "arr_time": "07:40"
+      }
+    },
+    "CONN:VAN:BJV:19:55:16:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7322.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:55",
+        "arr_time": "16:50"
+      }
+    },
+    "CONN:VAN:BJV:10:00:07:40:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7395.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:00",
+        "arr_time": "07:40"
+      }
+    },
+    "CONN:VAN:BJV:16:40:09:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7361.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:40",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:20:15:00:15:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6927.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:15",
+        "arr_time": "00:15"
+      }
+    },
+    "CONN:VAN:BJV:11:35:09:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6788.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "11:35",
+        "arr_time": "09:45"
+      }
+    },
+    "CONN:VAN:BJV:10:00:09:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7361.0,
+        "url": "https://www.kayak.com.tr/flights/VAN-BJV/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:00",
+        "arr_time": "09:45"
+      }
+    }
+  }
+}

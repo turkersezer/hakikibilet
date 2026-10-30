@@ -1,0 +1,77 @@
+{
+  "ts": 1792998960.194517,
+  "offers": {
+    "TIME:COV:ADB:09:05:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1799.0,
+        "url": "https://www.kayak.com.tr/flights/COV-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05"
+      }
+    },
+    "SHORT:09:05:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 1799.0,
+        "url": "https://www.kayak.com.tr/flights/COV-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:05"
+      }
+    },
+    "TIME:COV:ADB:20:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2069.0,
+        "url": "https://www.kayak.com.tr/flights/COV-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:55"
+      }
+    },
+    "SHORT:20:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2069.0,
+        "url": "https://www.kayak.com.tr/flights/COV-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:55"
+      }
+    },
+    "TIME:COV:ADB:08:50:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2546.0,
+        "url": "https://www.kayak.com.tr/flights/COV-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:50"
+      }
+    },
+    "SHORT:08:50:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2546.0,
+        "url": "https://www.kayak.com.tr/flights/COV-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:50"
+      }
+    },
+    "TIME:COV:ADB:22:45:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2346.0,
+        "url": "https://www.kayak.com.tr/flights/COV-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:45"
+      }
+    },
+    "SHORT:22:45:XQ": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 2346.0,
+        "url": "https://www.kayak.com.tr/flights/COV-ADB/2026-11-07?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "22:45"
+      }
+    }
+  }
+}

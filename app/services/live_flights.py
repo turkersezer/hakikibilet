@@ -130,6 +130,21 @@ def _parse_unique_flights(raw_items: List[Any]) -> List[Dict[str, Any]]:
             from_code = first_leg[3]
             to_code = last_leg[6]
 
+            from app.services.multi_ota_service import TR_AIRPORT_CODES
+            is_dom_leg_search = (str(from_code).upper() in TR_AIRPORT_CODES and str(to_code).upper() in TR_AIRPORT_CODES)
+            if is_dom_leg_search:
+                if len(legs) > 2:
+                    continue
+                invalid_via = False
+                for lg in legs:
+                    lg_orig = str(lg[3] or "").upper() if len(lg) > 3 else ""
+                    lg_dest = str(lg[6] or "").upper() if len(lg) > 6 else ""
+                    if (lg_orig and lg_orig not in TR_AIRPORT_CODES) or (lg_dest and lg_dest not in TR_AIRPORT_CODES):
+                        invalid_via = True
+                        break
+                if invalid_via:
+                    continue
+
             dep_t = parse_time(first_leg[8] if len(first_leg) > 8 else None)
             arr_t = parse_time(last_leg[10] if len(last_leg) > 10 else None)
             dep_time = f"{dep_t[0]:02d}:{dep_t[1]:02d}"
@@ -180,6 +195,8 @@ def _parse_unique_flights(raw_items: List[Any]) -> List[Dict[str, Any]]:
                             total_duration_mins = elapsed_m
                 except Exception:
                     pass
+            if is_dom_leg_search and total_duration_mins > 990:
+                continue
             hours = total_duration_mins // 60
             mins = total_duration_mins % 60
             duration_str = f"{hours} sa {mins} dk" if hours > 0 else f"{mins} dk"
@@ -369,12 +386,15 @@ def fetch_live_flights_from_google(
     children: int = 0,
     infants: int = 0,
     include_multi_ota: bool = True,
+    _allow_hub_fallback: bool = True,
 ) -> List[Dict[str, Any]]:
     """
     Google Flights altyapısını kullanarak canlı havayolu seferlerini, net fiyatlarını ve kabin sınıfını çeker.
     Tüm kategorileri ve havalimanı çiftlerini tarayarak eksiksiz sefer listesi döndürür.
     Havalimanı olmayan ilçe/şehir aramalarında (ör. Manavgat, Alanya, Fethiye, Çeşme) en yakın aktif havalimanını çözümler.
     """
+    from app.cities import FALLBACK_MAJOR_HUB_BY_IATA, find_city
+
     origin_city, _ = resolve_nearest_airport_city(origin_city_name)
     dest_city, _ = resolve_nearest_airport_city(dest_city_name)
 
@@ -383,6 +403,28 @@ def fetch_live_flights_from_google(
 
     if not origin_city.get("has_airport") or not dest_city.get("has_airport"):
         return []
+
+    hub_fallback_notes: List[str] = []
+    is_dom_route = not bool(origin_city.get("is_international") or dest_city.get("is_international"))
+    if is_dom_route and _allow_hub_fallback:
+        orig_iata_raw = str(origin_city.get("iata") or "").upper()
+        dest_iata_raw = str(dest_city.get("iata") or "").upper()
+        if orig_iata_raw in FALLBACK_MAJOR_HUB_BY_IATA and FALLBACK_MAJOR_HUB_BY_IATA[orig_iata_raw].get("domestic_inactive"):
+            fb_info = FALLBACK_MAJOR_HUB_BY_IATA[orig_iata_raw]
+            fb_city = find_city(fb_info["hub_slug"])
+            if fb_city:
+                hub_fallback_notes.append(
+                    f"ℹ️ {origin_city.get('name')} ({orig_iata_raw}) Havalimanı'nda tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan {fb_info['hub_name']} ({fb_info['transfer_note']}) seferleri listelenmiştir."
+                )
+                origin_city = fb_city
+        if dest_iata_raw in FALLBACK_MAJOR_HUB_BY_IATA and FALLBACK_MAJOR_HUB_BY_IATA[dest_iata_raw].get("domestic_inactive"):
+            fb_info = FALLBACK_MAJOR_HUB_BY_IATA[dest_iata_raw]
+            fb_city = find_city(fb_info["hub_slug"])
+            if fb_city:
+                hub_fallback_notes.append(
+                    f"ℹ️ {dest_city.get('name')} ({dest_iata_raw}) Havalimanı'nda tarifeli iç hat seferi bulunmadığından en yakın ana merkez olan {fb_info['hub_name']} ({fb_info['transfer_note']}) seferleri listelenmiştir."
+                )
+                dest_city = fb_city
 
     if origin_city.get("iata") and origin_city.get("iata") == dest_city.get("iata"):
         return []
@@ -586,6 +628,49 @@ def fetch_live_flights_from_google(
     if not sorted_raw and multi_ota_map:
         sorted_raw = _build_fallback_sorted_raw_from_ota(multi_ota_map, departure_date)
     if not sorted_raw:
+        # 2. Kademe Dinamik Yedek Hub (Dynamic Hub Fallback):
+        # Kısıtlı/sezonluk havalimanlarında (Örn: YEI, ISE, KZR, ONQ, TEQ, CKZ, KFS, NOP, TJK, SXZ)
+        # seçilen rotada 0 geçerli uçuş döndüyse otomatik olarak en yakın 7/24 aktif ana hub'a geç.
+        if _allow_hub_fallback:
+            orig_i = str(origin_city.get("iata") or "").upper()
+            dest_i = str(dest_city.get("iata") or "").upper()
+            new_orig_name = origin_city_name
+            new_dest_name = dest_city_name
+            dyn_notes: List[str] = []
+            if orig_i in FALLBACK_MAJOR_HUB_BY_IATA:
+                fbo = FALLBACK_MAJOR_HUB_BY_IATA[orig_i]
+                new_orig_name = fbo["hub_slug"]
+                dyn_notes.append(
+                    f"ℹ️ {origin_city.get('name')} ({orig_i}) Havalimanı'nda bu rotada doğrudan sefer bulunmadığından en yakın ana merkez olan {fbo['hub_name']} ({fbo['transfer_note']}) seferleri listelenmiştir."
+                )
+            if dest_i in FALLBACK_MAJOR_HUB_BY_IATA:
+                fbd = FALLBACK_MAJOR_HUB_BY_IATA[dest_i]
+                new_dest_name = fbd["hub_slug"]
+                dyn_notes.append(
+                    f"ℹ️ {dest_city.get('name')} ({dest_i}) Havalimanı'nda bu rotada doğrudan sefer bulunmadığından en yakın ana merkez olan {fbd['hub_name']} ({fbd['transfer_note']}) seferleri listelenmiştir."
+                )
+            if dyn_notes and (new_orig_name != origin_city_name or new_dest_name != dest_city_name):
+                fb_results = fetch_live_flights_from_google(
+                    origin_city_name=new_orig_name,
+                    dest_city_name=new_dest_name,
+                    departure_date=departure_date,
+                    return_date=return_date,
+                    passengers=passengers,
+                    trip_type=trip_type,
+                    cabin_class=cabin_class,
+                    adults=adults,
+                    children=children,
+                    infants=infants,
+                    include_multi_ota=include_multi_ota,
+                    _allow_hub_fallback=False,
+                )
+                if fb_results:
+                    combined_note = " ".join(dyn_notes)
+                    for item_r in fb_results:
+                        existing_rn = item_r.get("route_notice")
+                        item_r["route_notice"] = f"{combined_note} • {existing_rn}" if existing_rn else combined_note
+                    return fb_results
+
         with _FLIGHT_CACHE_LOCK:
             _FLIGHT_CACHE[cache_key] = {"ts": now_ts, "data": []}
         return []
@@ -658,6 +743,9 @@ def fetch_live_flights_from_google(
             route_notice = None
             if not is_direct:
                 route_notice = f"Bu uçuş {first_leg[6]} aktarmalıdır. Toplam yolculuk süresi: {duration_str}."
+            if hub_fallback_notes:
+                fb_prefix = " ".join(hub_fallback_notes)
+                route_notice = f"{fb_prefix} • {route_notice}" if route_notice else fb_prefix
 
             # Trip.com Flights Canlı Uçak Biletleme Linki (Global IATA Güvencesi, Türkçe Ekran ve TL)
             trip_flighttype = "rt" if (is_round and return_date) else "ow"

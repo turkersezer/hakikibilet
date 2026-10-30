@@ -1,0 +1,495 @@
+{
+  "ts": 1793358964.2512374,
+  "offers": {
+    "CONN:DIY:TZX:09:50:15:10:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3915.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "15:10"
+      }
+    },
+    "CONN:DIY:TZX:06:00:14:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3582.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "14:10"
+      }
+    },
+    "CONN:DIY:TZX:23:20:07:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3782.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20",
+        "arr_time": "07:35"
+      }
+    },
+    "CONN:DIY:TZX:20:50:01:10:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4816.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:50",
+        "arr_time": "01:10"
+      }
+    },
+    "CONN:DIY:TZX:10:10:15:10:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5500.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:10",
+        "arr_time": "15:10"
+      }
+    },
+    "CONN:DIY:TZX:09:45:17:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4578.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:45",
+        "arr_time": "17:30"
+      }
+    },
+    "CONN:DIY:TZX:19:10:01:10:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4816.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:10",
+        "arr_time": "01:10"
+      }
+    },
+    "CONN:DIY:TZX:09:50:22:00:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3915.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "22:00"
+      }
+    },
+    "CONN:DIY:TZX:06:00:12:20:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4415.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "12:20"
+      }
+    },
+    "CONN:DIY:TZX:16:50:23:00:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5500.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "16:50",
+        "arr_time": "23:00"
+      }
+    },
+    "CONN:DIY:TZX:09:45:15:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5500.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:45",
+        "arr_time": "15:10"
+      }
+    },
+    "CONN:DIY:TZX:20:45:11:50:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3915.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:45",
+        "arr_time": "11:50"
+      }
+    },
+    "CONN:DIY:TZX:20:45:14:55:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 3915.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:45",
+        "arr_time": "14:55"
+      }
+    },
+    "CONN:DIY:TZX:09:50:17:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "17:30"
+      }
+    },
+    "CONN:DIY:TZX:09:50:20:20:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5316.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "20:20"
+      }
+    },
+    "CONN:DIY:TZX:20:50:09:25:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4816.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:50",
+        "arr_time": "09:25"
+      }
+    },
+    "CONN:DIY:TZX:06:00:15:10:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4415.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "15:10"
+      }
+    },
+    "CONN:DIY:TZX:19:10:09:25:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4816.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "19:10",
+        "arr_time": "09:25"
+      }
+    },
+    "CONN:DIY:TZX:09:50:01:10:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5316.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "01:10"
+      }
+    },
+    "CONN:DIY:TZX:10:10:19:10:TK": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 6946.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "10:10",
+        "arr_time": "19:10"
+      }
+    },
+    "CONN:DIY:TZX:09:50:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:DIY:TZX:23:20:09:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4782.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20",
+        "arr_time": "09:30"
+      }
+    },
+    "CONN:DIY:TZX:09:45:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5650.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:45",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:DIY:TZX:09:45:22:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5500.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:45",
+        "arr_time": "22:00"
+      }
+    },
+    "CONN:DIY:TZX:20:45:07:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:45",
+        "arr_time": "07:35"
+      }
+    },
+    "CONN:DIY:TZX:06:00:17:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4565.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "17:30"
+      }
+    },
+    "CONN:DIY:TZX:09:45:00:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5650.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:45",
+        "arr_time": "00:40"
+      }
+    },
+    "CONN:DIY:TZX:23:00:12:45:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5873.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:00",
+        "arr_time": "12:45"
+      }
+    },
+    "CONN:DIY:TZX:09:50:00:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "00:40"
+      }
+    },
+    "CONN:DIY:TZX:23:20:11:50:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4816.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20",
+        "arr_time": "11:50"
+      }
+    },
+    "CONN:DIY:TZX:23:00:16:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5873.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:00",
+        "arr_time": "16:30"
+      }
+    },
+    "CONN:DIY:TZX:23:00:07:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7280.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:00",
+        "arr_time": "07:35"
+      }
+    },
+    "CONN:DIY:TZX:09:45:07:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 5650.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:45",
+        "arr_time": "07:35"
+      }
+    },
+    "CONN:DIY:TZX:20:45:09:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:45",
+        "arr_time": "09:30"
+      }
+    },
+    "CONN:DIY:TZX:23:20:14:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4816.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20",
+        "arr_time": "14:55"
+      }
+    },
+    "CONN:DIY:TZX:09:50:07:35:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "07:35"
+      }
+    },
+    "CONN:DIY:TZX:06:00:22:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4415.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "22:00"
+      }
+    },
+    "CONN:DIY:TZX:06:00:00:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4565.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "00:40"
+      }
+    },
+    "CONN:DIY:TZX:23:20:14:05:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4783.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20",
+        "arr_time": "14:05"
+      }
+    },
+    "CONN:DIY:TZX:20:45:14:05:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4924.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:45",
+        "arr_time": "14:05"
+      }
+    },
+    "CONN:DIY:TZX:06:00:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4565.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "06:00",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:DIY:TZX:23:00:09:25:VF": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 7933.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:00",
+        "arr_time": "09:25"
+      }
+    },
+    "CONN:DIY:TZX:08:20:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 8728.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "08:20",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:DIY:TZX:09:50:09:30:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "09:50",
+        "arr_time": "09:30"
+      }
+    },
+    "CONN:DIY:TZX:23:20:22:00:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4816.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20",
+        "arr_time": "22:00"
+      }
+    },
+    "CONN:DIY:TZX:23:20:19:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4782.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20",
+        "arr_time": "19:55"
+      }
+    },
+    "CONN:DIY:TZX:23:20:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4782.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "23:20",
+        "arr_time": "20:40"
+      }
+    },
+    "CONN:DIY:TZX:20:45:19:55:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:45",
+        "arr_time": "19:55"
+      }
+    },
+    "CONN:DIY:TZX:20:45:20:40:PC": {
+      "booking": {
+        "name": "Booking / Kayak",
+        "price": 4923.0,
+        "url": "https://www.kayak.com.tr/flights/DIY-TZX/2026-11-09?sort=bestflight_a&aid=585474",
+        "channel": "booking",
+        "dep_time": "20:45",
+        "arr_time": "20:40"
+      }
+    }
+  }
+}
