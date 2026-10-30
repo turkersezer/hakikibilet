@@ -2090,7 +2090,18 @@ function extractCleanBaseLocation(inputEl) {
     const curVal = (inputEl.value || "").trim();
     if (!curVal) return "";
     if (inputEl.dataset.rawUserQuery && curVal === (inputEl.dataset.resolvedValue || "").trim()) {
-        return inputEl.dataset.rawUserQuery;
+        const rawQ = inputEl.dataset.rawUserQuery.trim();
+        const normRawQ = normalizeTurkish(rawQ);
+        const AIRPORT_SHORTHANDS = new Set([
+            'saw', 'ist', 'ahl', 'esb', 'adb', 'ayt', 'ksy', 'tzx', 'bjv', 'dlm', 'cov', 'ada', 'gzp',
+            'asr', 'gzt', 'diy', 'erz', 'erc', 'van', 'szf', 'mqm', 'rzv', 'nav', 'vas', 'kya', 'aoe',
+            'mlx', 'ezs', 'bal', 'dnz', 'edo', 'usq', 'kzr', 'afy', 'ise', 'onq', 'kco', 'teq', 'yei',
+            'ckz', 'sxz', 'mzh', 'tjk', 'nop', 'kfs', 'ogu', 'hty', 'gny', 'adf', 'aji', 'igd', 'yko',
+            'nkt', 'bgg', 'msr', 'sabiha', 'sabiha gokcen', 'esenboga', 'adnan menderes', 'cukurova'
+        ]);
+        if (!AIRPORT_SHORTHANDS.has(normRawQ)) {
+            return rawQ;
+        }
     }
     const merkezMatch = curVal.match(/^merkez\s*\(([^)]+)\)/i);
     if (merkezMatch && merkezMatch[1]) {
@@ -2220,6 +2231,13 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
                 }
             }
         } else if (currentMode === 'bus') {
+        if (raw === (inputEl.dataset.resolvedValue || "").trim() && inputEl.dataset.resolvedForMode === 'bus') {
+            if (inputEl.dataset.districtNotice) {
+                showFieldWarningNotice(inputEl, `⚠️ ${inputEl.dataset.districtNotice}`);
+            }
+            return;
+        }
+        inputEl.dataset.districtNotice = "";
         clearFieldWarningNotice(inputEl);
         // OTOBÜS MODU: İstanbul Anadolu & Avrupa Şemsiye Bölgeleri, Büyükşehirler & İlçe Otogarları
         const BUS_DISTRICT_TO_TERMINAL_MAP = {
@@ -2257,7 +2275,19 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
             'küçükyalı': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
             'suadiye': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
             'caddebostan': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: null },
-            'sabiha': { target: 'İstanbul (Sabiha Gökçen Havalimanı Otobüs Noktası)', note: null },
+            'sabiha': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: "Otobüs sekmesinde 'Sabiha Gökçen (SAW)' yerine İstanbul Anadolu Yakası otogarları (Dudullu / Harem / Samandıra) seçildi." },
+            'saw': { target: 'İstanbul (Anadolu - Dudullu / Harem / Samandıra)', note: "Otobüs sekmesinde havalimanı kodu ('SAW') seçilemez; İstanbul Anadolu Yakası otogarları olarak düzeltildi." },
+            'ist': { target: 'İstanbul - Esenler Otogarı', note: "Otobüs sekmesinde havalimanı kodu ('IST') seçilemez; İstanbul - Esenler Otogarı olarak düzeltildi." },
+            'esb': { target: 'Ankara - AŞTİ Otobüs Terminali', note: "Otobüs sekmesinde havalimanı kodu ('ESB') seçilemez; Ankara - AŞTİ Otobüs Terminali olarak düzeltildi." },
+            'adb': { target: 'İzmir Şehirlerarası Otobüs Terminali', note: "Otobüs sekmesinde havalimanı kodu ('ADB') seçilemez; İzmir Şehirlerarası Otobüs Terminali olarak düzeltildi." },
+            'ayt': { target: 'Antalya Şehirlerarası Otobüs Terminali', note: "Otobüs sekmesinde havalimanı kodu ('AYT') seçilemez; Antalya Şehirlerarası Otobüs Terminali olarak düzeltildi." },
+            'ksy': { target: 'Kars', note: "Otobüs sekmesinde havalimanı kodu ('KSY') seçilemez; Kars Otogarı olarak düzeltildi." },
+            'tzx': { target: 'Trabzon', note: "Otobüs sekmesinde havalimanı kodu ('TZX') seçilemez; Trabzon Otogarı olarak düzeltildi." },
+            'bjv': { target: 'Bodrum Otogarı', note: "Otobüs sekmesinde havalimanı kodu ('BJV') seçilemez; Bodrum Otogarı olarak düzeltildi." },
+            'dlm': { target: 'Dalaman Otogarı', note: "Otobüs sekmesinde havalimanı kodu ('DLM') seçilemez; Dalaman Otogarı olarak düzeltildi." },
+            'gzp': { target: 'Alanya Otogarı', note: "Otobüs sekmesinde havalimanı kodu ('GZP') seçilemez; Alanya Otogarı olarak düzeltildi." },
+            'cov': { target: 'Adana', note: "Otobüs sekmesinde havalimanı kodu ('COV') seçilemez; Adana Merkez Otogarı olarak düzeltildi." },
+            'ada': { target: 'Adana', note: "Otobüs sekmesinde havalimanı kodu ('ADA') seçilemez; Adana Merkez Otogarı olarak düzeltildi." },
 
             // İstanbul Avrupa Yakası
             'esenler': { target: 'İstanbul - Esenler Otogarı', note: null },
@@ -2417,7 +2447,9 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
             if (clean === normalizeTurkish(bk)) {
                 inputEl.value = bv.target;
                 if (bv.note) {
+                    inputEl.dataset.districtNotice = bv.note;
                     window._lastDistrictNotice = bv.note;
+                    showFieldWarningNotice(inputEl, `⚠️ ${bv.note}`);
                 }
                 return;
             }
@@ -2440,6 +2472,91 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
             return;
         }
     } else if (currentMode === 'train') {
+        // Eğer kutudaki değer bir önceki çözümlemeden (ör. SAW ➔ İstanbul - Söğütlüçeşme YHT) kalmışsa ve kullanıcı metni değiştirmemişse uyarıyı koru
+        if (raw === (inputEl.dataset.resolvedValue || "").trim() && inputEl.dataset.resolvedForMode === 'train') {
+            if (inputEl.dataset.districtNotice) {
+                showFieldWarningNotice(inputEl, `⚠️ ${inputEl.dataset.districtNotice}`);
+            }
+            return;
+        }
+        inputEl.dataset.districtNotice = "";
+
+        // Havalimanı Kodu (SAW, IST, ESB, ADB, KSY vb.) -> TCDD Garı Otomatik Düzeltme Haritası
+        const TRAIN_AIRPORT_TO_STATION_MAP = {
+            'saw': { target: 'İstanbul - Söğütlüçeşme YHT', note: "Tren sekmesinde havalimanı kodu ('SAW') seçilemez; kalkış/varış noktası otomatik olarak İstanbul - Söğütlüçeşme YHT garına düzeltildi." },
+            'sabiha': { target: 'İstanbul - Söğütlüçeşme YHT', note: "Tren sekmesinde Sabiha Gökçen (SAW) yerine en yakın yüksek hızlı tren garı olan İstanbul - Söğütlüçeşme / Pendik YHT seçildi." },
+            'sabiha gokcen': { target: 'İstanbul - Söğütlüçeşme YHT', note: "Tren sekmesinde Sabiha Gökçen (SAW) yerine İstanbul - Söğütlüçeşme / Pendik YHT garı seçildi." },
+            'istanbul sabiha gokcen': { target: 'İstanbul - Söğütlüçeşme YHT', note: "Tren sekmesinde Sabiha Gökçen (SAW) yerine İstanbul - Söğütlüçeşme YHT garı seçildi." },
+            'ist': { target: 'İstanbul - Söğütlüçeşme YHT', note: "Tren sekmesinde havalimanı kodu ('IST') seçilemez; otomatik olarak İstanbul - Söğütlüçeşme YHT garına düzeltildi." },
+            'ahl': { target: 'İstanbul - Halkalı Garı', note: "Tren sekmesinde havalimanı kodu ('AHL') seçilemez; İstanbul - Halkalı Garı olarak düzeltildi." },
+            'istanbul havalimani': { target: 'İstanbul - Söğütlüçeşme YHT', note: "Tren sekmesinde İstanbul Havalimanı (IST) yerine İstanbul - Söğütlüçeşme YHT garı seçildi." },
+            'esb': { target: 'Ankara Gar (YHT)', note: "Tren sekmesinde havalimanı kodu ('ESB') seçilemez; otomatik olarak Ankara Gar (YHT) olarak düzeltildi." },
+            'esenboga': { target: 'Ankara Gar (YHT)', note: "Tren sekmesinde Esenboğa (ESB) yerine Ankara Gar (YHT) seçildi." },
+            'adb': { target: 'İzmir - Basmane Garı', note: "Tren sekmesinde havalimanı kodu ('ADB') seçilemez; otomatik olarak İzmir - Basmane Garı olarak düzeltildi." },
+            'adnan menderes': { target: 'İzmir - Basmane Garı', note: "Tren sekmesinde Adnan Menderes (ADB) yerine İzmir - Basmane Garı seçildi." },
+            'ksy': { target: 'Kars Gar (Doğu Ekspresi)', note: "Tren sekmesinde havalimanı kodu ('KSY') seçilemez; otomatik olarak Kars Gar (Doğu Ekspresi) olarak düzeltildi." },
+            'harakani': { target: 'Kars Gar (Doğu Ekspresi)', note: "Tren sekmesinde Kars Harakani Havalimanı yerine Kars Gar (Doğu Ekspresi) seçildi." },
+            'vas': { target: 'Sivas Gar (YHT)', note: "Tren sekmesinde havalimanı kodu ('VAS') seçilemez; Sivas Gar (YHT) olarak düzeltildi." },
+            'kya': { target: 'Konya Gar (YHT)', note: "Tren sekmesinde havalimanı kodu ('KYA') seçilemez; Konya Gar (YHT) olarak düzeltildi." },
+            'aoe': { target: 'Eskişehir Gar (YHT)', note: "Tren sekmesinde havalimanı kodu ('AOE') seçilemez; Eskişehir Gar (YHT) olarak düzeltildi." },
+            'erz': { target: 'Erzurum Gar', note: "Tren sekmesinde havalimanı kodu ('ERZ') seçilemez; Erzurum Gar olarak düzeltildi." },
+            'erc': { target: 'Erzincan Gar', note: "Tren sekmesinde havalimanı kodu ('ERC') seçilemez; Erzincan Gar olarak düzeltildi." },
+            'asr': { target: 'Kayseri Gar', note: "Tren sekmesinde havalimanı kodu ('ASR') seçilemez; Kayseri Gar olarak düzeltildi." },
+            'mlx': { target: 'Malatya Gar', note: "Tren sekmesinde havalimanı kodu ('MLX') seçilemez; Malatya Gar olarak düzeltildi." },
+            'ezs': { target: 'Elazığ Gar', note: "Tren sekmesinde havalimanı kodu ('EZS') seçilemez; Elazığ Gar olarak düzeltildi." },
+            'diy': { target: 'Diyarbakır Gar', note: "Tren sekmesinde havalimanı kodu ('DIY') seçilemez; Diyarbakır Gar olarak düzeltildi." },
+            'bal': { target: 'Batman Gar', note: "Tren sekmesinde havalimanı kodu ('BAL') seçilemez; Batman Gar olarak düzeltildi." },
+            'dnz': { target: 'Denizli Gar (Pamukkale Ekspresi)', note: "Tren sekmesinde havalimanı kodu ('DNZ') seçilemez; Denizli Gar olarak düzeltildi." },
+            'cov': { target: 'Adana Gar', note: "Tren sekmesinde havalimanı kodu ('COV') seçilemez; Adana Gar olarak düzeltildi." },
+            'ada': { target: 'Adana Gar', note: "Tren sekmesinde havalimanı kodu ('ADA') seçilemez; Adana Gar olarak düzeltildi." },
+            'cukurova': { target: 'Adana Gar', note: "Tren sekmesinde Çukurova Havalimanı (COV) yerine Adana Gar seçildi." },
+            'szf': { target: 'Samsun Gar', note: "Tren sekmesinde havalimanı kodu ('SZF') seçilemez; Samsun Gar olarak düzeltildi." },
+            'van': { target: 'Bitlis - Tatvan Garı (Van Gölü Ekspresi)', note: "Van için en yakın TCDD anahat istasyonu olan Bitlis - Tatvan Garı (Van Gölü Ekspresi) seçildi." },
+            'sxz': { target: 'Siirt - Kurtalan Garı', note: "Tren sekmesinde Siirt için TCDD anahat istasyonu olan Kurtalan Garı seçildi." },
+            'usq': { target: 'Uşak Gar', note: "Tren sekmesinde havalimanı kodu ('USQ') seçilemez; Uşak Gar olarak düzeltildi." },
+            'kzr': { target: 'Kütahya Gar', note: "Tren sekmesinde havalimanı kodu ('KZR') seçilemez; Kütahya Gar olarak düzeltildi." },
+            'afy': { target: 'Afyonkarahisar Gar', note: "Tren sekmesinde havalimanı kodu ('AFY') seçilemez; Afyonkarahisar Gar olarak düzeltildi." },
+            'onq': { target: 'Zonguldak Gar', note: "Tren sekmesinde havalimanı kodu ('ONQ') seçilemez; Zonguldak Gar olarak düzeltildi." },
+            'kco': { target: 'Kocaeli - İzmit YHT', note: "Tren sekmesinde havalimanı kodu ('KCO') seçilemez; Kocaeli - İzmit YHT olarak düzeltildi." },
+            'mzh': { target: 'Amasya Gar', note: "Tren sekmesinde havalimanı kodu ('MZH') seçilemez; Amasya Gar olarak düzeltildi." }
+        };
+
+        if (TRAIN_AIRPORT_TO_STATION_MAP[clean]) {
+            const apMatch = TRAIN_AIRPORT_TO_STATION_MAP[clean];
+            inputEl.value = apMatch.target;
+            if (apMatch.note) {
+                inputEl.dataset.districtNotice = apMatch.note;
+                window._lastDistrictNotice = apMatch.note;
+                showFieldWarningNotice(inputEl, `⚠️ ${apMatch.note}`);
+            }
+            return;
+        }
+
+        // Havalimanı kodu girilen ancak demiryolu hattı olmayan iller (AYT -> Antalya, TZX -> Trabzon vb.)
+        const TRAIN_AIRPORT_TO_INACTIVE_CITY = {
+            'ayt': 'antalya',
+            'gzp': 'antalya',
+            'tzx': 'trabzon',
+            'bjv': 'bodrum',
+            'dlm': 'mugla',
+            'gzt': 'gaziantep',
+            'mqm': 'mardin',
+            'rzv': 'rize',
+            'nav': 'nevsehir',
+            'yei': 'bursa',
+            'ckz': 'canakkale',
+            'igd': 'igdir',
+            'aji': 'agri',
+            'yko': 'hakkari',
+            'nkt': 'sirnak',
+            'gny': 'sanliurfa',
+            'adf': 'adiyaman',
+            'ogu': 'ordu',
+            'nop': 'sinop',
+            'kfs': 'kastamonu'
+        };
+        const resolvedInactiveKey = TRAIN_AIRPORT_TO_INACTIVE_CITY[clean] || clean;
+
         // TREN MODU: YHT & TCDD Gar Çözümleme + Aktif Yolcu Hattı Olmayan İller Uyarısı
         const TRAIN_INACTIVE_PROVINCES = {
             "antalya": { name: "Antalya", nearest: "Burdur veya Konya Gar (YHT)" },
@@ -2479,10 +2596,16 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
             "bingol": { name: "Bingöl", nearest: "Muş veya Elazığ Gar" }
         };
 
-        const inactiveInfo = TRAIN_INACTIVE_PROVINCES[clean];
+        const inactiveInfo = TRAIN_INACTIVE_PROVINCES[resolvedInactiveKey];
         if (inactiveInfo) {
+            if (TRAIN_AIRPORT_TO_INACTIVE_CITY[clean]) {
+                inputEl.value = inactiveInfo.name;
+            }
             window._lastTrainInactiveWarning = inactiveInfo;
-            showFieldWarningNotice(inputEl, `⚠️ ${inactiveInfo.name} ilinde aktif demiryolu/YHT hattı bulunmamaktadır. En yakın istasyon: ${inactiveInfo.nearest}.`);
+            const warnMsg = `${inactiveInfo.name} ilinde aktif demiryolu/YHT hattı bulunmamaktadır. En yakın istasyon: ${inactiveInfo.nearest}.`;
+            inputEl.dataset.districtNotice = warnMsg;
+            window._lastDistrictNotice = warnMsg;
+            showFieldWarningNotice(inputEl, `⚠️ ${warnMsg}`);
             return;
         } else {
             clearFieldWarningNotice(inputEl);
@@ -3748,30 +3871,36 @@ function renderTransportResults(data, searchReq) {
         `;
     }
 
-    // Popüler İlçe / Bölge / Pasif Havalimanı ➔ En Yakın Aktif Havalimanı Yönlendirme Bilgilendirmesi (Uşak ➔ ADB, Eskişehir ➔ ESB, Marmaris ➔ DLM vb.)
-    const backendFlightNotices = (modeType === 'flight' && Array.isArray(data.notices))
+    // Popüler İlçe / Bölge / Pasif Havalimanı / İstasyon ➔ Otomatik Düzeltme & Yönlendirme Bilgilendirmesi (Uşak ➔ ADB, Tren SAW ➔ İstanbul YHT vb.)
+    const backendModeNotices = ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && Array.isArray(data.notices) && tickets.length > 0)
         ? data.notices.filter(n => !n.includes("Güven ve Şeffaflık İlkesi"))
         : [];
     const combinedFlightNotices = [];
-    if (modeType === 'flight' && window._lastDistrictNotice) {
+    if ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && window._lastDistrictNotice) {
         combinedFlightNotices.push(window._lastDistrictNotice);
     }
-    backendFlightNotices.forEach(bn => {
+    backendModeNotices.forEach(bn => {
         const cleanBn = String(bn).replace(/^ℹ️\s*/, '').replace(/^⚠️\s*/, '').trim();
         if (cleanBn && !combinedFlightNotices.some(existing => existing.includes(cleanBn.slice(0, 25)) || cleanBn.includes(existing.slice(0, 25)))) {
             combinedFlightNotices.push(cleanBn);
         }
     });
-    if (modeType === 'flight' && combinedFlightNotices.length > 0) {
+    if ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && combinedFlightNotices.length > 0) {
+        const bannerIcon = modeType === 'train' ? 'fa-train' : (modeType === 'bus' ? 'fa-bus' : 'fa-plane-circle-exclamation');
+        const bannerBadgeText = modeType === 'train'
+            ? (isEn ? 'Station Auto-Correction & Notice' : 'İstasyon / Gar Otomatik Düzeltmesi')
+            : (modeType === 'bus'
+                ? (isEn ? 'Terminal Auto-Correction & Notice' : 'Otogar / Terminal Otomatik Düzeltmesi')
+                : (isEn ? 'Nearest Active Airport Redirection' : 'Yakın Havalimanı Yönlendirmesi'));
         html += `
             <div class="bg-gradient-to-r from-amber-50 via-amber-100/80 to-amber-50 border-2 border-amber-400 text-amber-950 rounded-2xl p-4 mb-3.5 shadow-sm flex items-start gap-3.5">
                 <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
-                    <i class="fa-solid fa-plane-circle-exclamation"></i>
+                    <i class="fa-solid ${bannerIcon}"></i>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-2 mb-1">
                         <span class="px-2.5 py-0.5 rounded-md bg-amber-500 text-slate-950 text-[10.5px] font-black uppercase tracking-wider">
-                            📍 ${isEn ? 'Nearest Active Airport Redirection' : 'Yakın Havalimanı Yönlendirmesi'}
+                            📍 ${bannerBadgeText}
                         </span>
                     </div>
                     <div class="text-xs sm:text-sm font-extrabold text-amber-950 leading-relaxed">
@@ -4296,7 +4425,38 @@ function renderTransportResults(data, searchReq) {
                     ? (isEn ? "Please check available flight or bus options for this route below." : "Bu güzergah için aşağıdaki aktif uçak veya otobüs alternatiflerini tek tıkla inceleyebilirsiniz.")
                     : (isEn ? "Please try a different date or transport mode." : "Lütfen farklı bir tarih veya alternatif ulaşım modunu seçiniz.")));
         const emptyIcon = modeType === 'ferry' ? 'fa-anchor-circle-xmark' : (modeType === 'train' ? 'fa-train' : (modeType === 'bus' ? 'fa-bus' : 'fa-plane-slash'));
-        const deepLinksList = Array.isArray(data.deep_links) ? data.deep_links : [];
+        const deepLinksList = [];
+        if (Array.isArray(data.deep_links)) {
+            deepLinksList.push(...data.deep_links);
+        } else if (data.deep_links && typeof data.deep_links === 'object') {
+            if (modeType === 'train') {
+                const trLinks = data.deep_links.train || {};
+                deepLinksList.push({
+                    name: isEn ? '🚆 TCDD Official E-Ticket Portal' : '🚆 TCDD E-Bilet Resmi Ekranı',
+                    url: trLinks.tcdd || 'https://ebilet.tcddtasimacilik.gov.tr/'
+                });
+                if (trLinks.trip_trains) {
+                    deepLinksList.push({ name: 'Trip.com Trains', url: trLinks.trip_trains });
+                }
+                if (trLinks.omio) {
+                    deepLinksList.push({ name: 'Omio Rail', url: trLinks.omio });
+                }
+            } else if (modeType === 'bus' && data.deep_links.bus) {
+                const bLinks = data.deep_links.bus;
+                if (bLinks.obilet) deepLinksList.push({ name: '🚌 Obilet Otobüs Seferleri', url: bLinks.obilet });
+                if (bLinks.kamilkoc) deepLinksList.push({ name: '🚌 Kamil Koç / FlixBus', url: bLinks.kamilkoc });
+                if (bLinks.enuygun) deepLinksList.push({ name: '🚌 Enuygun Otobüs', url: bLinks.enuygun });
+            } else if (modeType === 'ferry' && data.deep_links.ferry) {
+                const fLinks = data.deep_links.ferry;
+                if (fLinks.obilet) deepLinksList.push({ name: '⛴️ Obilet Feribot', url: fLinks.obilet });
+                if (fLinks.feribotlines) deepLinksList.push({ name: '⛴️ Feribotlines', url: fLinks.feribotlines });
+            } else if (modeType === 'flight' && data.deep_links.flight) {
+                const flLinks = data.deep_links.flight;
+                if (flLinks.trip) deepLinksList.push({ name: '✈️ Trip.com Uçuşlar', url: flLinks.trip });
+                if (flLinks.google_flights) deepLinksList.push({ name: '✈️ Google Flights', url: flLinks.google_flights });
+                if (flLinks.enuygun) deepLinksList.push({ name: '✈️ Enuygun Uçak Bileti', url: flLinks.enuygun });
+            }
+        }
         const fmtAltEmpty = (n) => Number(n).toLocaleString(isEn ? 'en-US' : 'tr-TR');
         const altQuickButtonsHtml = (Array.isArray(altBadges) && altBadges.length > 0) ? `
             <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-center gap-2.5">

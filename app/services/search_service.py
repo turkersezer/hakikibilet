@@ -1048,7 +1048,18 @@ class SearchService:
 
         origin = find_city(origin_city)
         dest = find_city(dest_city)
-        
+
+        # Tren, Otobüs ve Feribot modlarında SAW / IST gibi alt havalimanı nesnelerini ana İstanbul iline normalize et
+        _orig_airport_sub_label = None
+        _dest_airport_sub_label = None
+        if transport_type in ("train", "bus", "ferry"):
+            if origin and origin.get("slug") in ("istanbul-sabiha-gokcen", "istanbul-havalimani"):
+                _orig_airport_sub_label = origin.get("name")
+                origin = find_city("İstanbul") or origin
+            if dest and dest.get("slug") in ("istanbul-sabiha-gokcen", "istanbul-havalimani"):
+                _dest_airport_sub_label = dest.get("name")
+                dest = find_city("İstanbul") or dest
+
         origin_name = origin["name"] if origin else origin_city
         dest_name = dest["name"] if dest else dest_city
 
@@ -1320,10 +1331,17 @@ class SearchService:
 
         # 2. TREN SEÇENEKLERİ (TCDD YHT & Trainline Avrupa Hızlı Trenleri)
         if transport_type in ("all", "train"):
+            if transport_type == "train":
+                if _orig_airport_sub_label or (len((origin_city or "").strip()) == 3 and (origin_city or "").strip().isalpha()):
+                    raw_lbl = _orig_airport_sub_label or (origin_city or "").strip().upper()
+                    notices.append(f"ℹ️ Tren sekmesinde '{raw_lbl}' havalimanı kodu yerine {origin_name} (Söğütlüçeşme / Pendik YHT) garı baz alınmıştır.")
+                if _dest_airport_sub_label or (len((dest_city or "").strip()) == 3 and (dest_city or "").strip().isalpha()):
+                    raw_d_lbl = _dest_airport_sub_label or (dest_city or "").strip().upper()
+                    notices.append(f"ℹ️ Tren sekmesinde '{raw_d_lbl}' havalimanı kodu yerine {dest_name} Garı baz alınmıştır.")
             from app.services.train_service import TrainService
             train_tickets = TrainService.search_trains(
-                origin_name=origin_name,
-                dest_name=dest_name,
+                origin_name=origin_city if ("YHT" in (origin_city or "") or "Gar" in (origin_city or "")) else origin_name,
+                dest_name=dest_city if ("YHT" in (dest_city or "") or "Gar" in (dest_city or "")) else dest_name,
                 departure_date=departure_date,
                 passengers=passengers,
                 currency=currency,

@@ -151,8 +151,14 @@ class TrainService:
         ("bilecik", "istanbul"): {"type": "yht", "price": 460.0, "duration": "2 sa 05 dk", "carrier": "TCDD Taşımacılık (YHT)"},
 
         # 2. Anahat Ekspresleri
-        ("ankara", "kars"): {"type": "anahat_single", "name": "Doğu Ekspresi", "train_no": "22010", "price": 650.0, "duration": "26 sa 26 dk", "carrier": "TCDD Taşımacılık (Doğu Ekspresi)", "dep": "18:00", "arr": "20:26", "next_day": True, "badge": "⭐ Efsane Doğu Ekspresi (Pulman / Kuşet)"},
-        ("kars", "ankara"): {"type": "anahat_single", "name": "Doğu Ekspresi", "train_no": "92009", "price": 650.0, "duration": "26 sa 27 dk", "carrier": "TCDD Taşımacılık (Doğu Ekspresi)", "dep": "08:00", "arr": "10:27", "next_day": True, "badge": "⭐ Efsane Doğu Ekspresi (Pulman / Kuşet)"},
+        ("ankara", "kars"): {"type": "anahat_single", "name": "Doğu Ekspresi", "train_no": "22010", "price": 650.0, "duration": "26 sa 26 dk", "carrier": "TCDD Taşımacılık (Doğu Ekspresi)", "dep": "18:00", "arr": "20:26", "next_day": True, "badge": "⭐ Efsane Doğu Ekspresi (Pulman / Kuşet)", "station_from": "Ankara Gar", "station_to": "Kars Gar (Doğu Ekspresi)"},
+        ("kars", "ankara"): {"type": "anahat_single", "name": "Doğu Ekspresi", "train_no": "92009", "price": 650.0, "duration": "26 sa 27 dk", "carrier": "TCDD Taşımacılık (Doğu Ekspresi)", "dep": "08:00", "arr": "10:27", "next_day": True, "badge": "⭐ Efsane Doğu Ekspresi (Pulman / Kuşet)", "station_from": "Kars Gar (Doğu Ekspresi)", "station_to": "Ankara Gar"},
+        ("ankara", "erzurum"): {"type": "anahat_single", "name": "Doğu Ekspresi", "train_no": "22010", "price": 560.0, "duration": "21 sa 30 dk", "carrier": "TCDD Taşımacılık (Doğu Ekspresi)", "dep": "18:00", "arr": "15:30", "next_day": True, "badge": "⭐ Doğu Ekspresi (Pulman / Kuşet)", "station_from": "Ankara Gar", "station_to": "Erzurum Gar"},
+        ("erzurum", "ankara"): {"type": "anahat_single", "name": "Doğu Ekspresi", "train_no": "92009", "price": 560.0, "duration": "21 sa 40 dk", "carrier": "TCDD Taşımacılık (Doğu Ekspresi)", "dep": "12:15", "arr": "10:27", "next_day": True, "badge": "⭐ Doğu Ekspresi (Pulman / Kuşet)", "station_from": "Erzurum Gar", "station_to": "Ankara Gar"},
+        ("ankara", "erzincan"): {"type": "anahat_single", "name": "Doğu Ekspresi", "train_no": "22010", "price": 480.0, "duration": "17 sa 20 dk", "carrier": "TCDD Taşımacılık (Doğu Ekspresi)", "dep": "18:00", "arr": "11:20", "next_day": True, "badge": "⭐ Doğu Ekspresi", "station_from": "Ankara Gar", "station_to": "Erzincan Gar"},
+        ("erzincan", "ankara"): {"type": "anahat_single", "name": "Doğu Ekspresi", "train_no": "92009", "price": 480.0, "duration": "17 sa 30 dk", "carrier": "TCDD Taşımacılık (Doğu Ekspresi)", "dep": "16:45", "arr": "10:27", "next_day": True, "badge": "⭐ Doğu Ekspresi", "station_from": "Erzincan Gar", "station_to": "Ankara Gar"},
+        ("ankara", "kayseri"): {"type": "anahat_single", "name": "Doğu / Güney Ekspresi", "train_no": "22010", "price": 380.0, "duration": "6 sa 55 dk", "carrier": "TCDD Taşımacılık (Anahat Ekspres)", "dep": "18:00", "arr": "00:55", "next_day": True, "badge": "Anahat Ekspresi", "station_from": "Ankara Gar", "station_to": "Kayseri Gar"},
+        ("kayseri", "ankara"): {"type": "anahat_single", "name": "Doğu / Güney Ekspresi", "train_no": "92009", "price": 380.0, "duration": "7 sa 05 dk", "carrier": "TCDD Taşımacılık (Anahat Ekspres)", "dep": "03:20", "arr": "10:27", "next_day": False, "badge": "Anahat Ekspresi", "station_from": "Kayseri Gar", "station_to": "Ankara Gar"},
         ("izmir", "ankara"): {"type": "anahat_single", "name": "İzmir Mavi Ekspresi", "train_no": "32005", "price": 620.0, "duration": "14 sa 02 dk", "carrier": "TCDD Taşımacılık (İzmir Mavi)", "dep": "19:05", "arr": "09:07", "next_day": True, "badge": "🌙 Yataklı & Pulman Gece Treni"},
         ("ankara", "izmir"): {"type": "anahat_single", "name": "İzmir Mavi Ekspresi", "train_no": "22006", "price": 620.0, "duration": "13 sa 45 dk", "carrier": "TCDD Taşımacılık (İzmir Mavi)", "dep": "19:00", "arr": "08:45", "next_day": True, "badge": "🌙 Yataklı & Pulman Gece Treni"},
         ("konya", "izmir"): {"type": "anahat_single", "name": "Konya Mavi Ekspresi", "train_no": "72008", "price": 580.0, "duration": "13 sa 00 dk", "carrier": "TCDD Taşımacılık (Konya Mavi)", "dep": "19:00", "arr": "08:00", "next_day": True, "badge": "🌙 Gece Anahat Treni"},
@@ -165,8 +171,14 @@ class TrainService:
         ("izmir", "isparta"): {"type": "anahat_single", "name": "Göller Ekspresi", "train_no": "32015", "price": 440.0, "duration": "8 sa 15 dk", "carrier": "TCDD Taşımacılık (Göller Ekspresi)", "dep": "23:05", "arr": "07:20", "next_day": True, "badge": "🌙 Göller Gece Ekspresi"},
         ("ankara", "tatvan"): {"type": "anahat_single", "name": "Van Gölü Ekspresi", "train_no": "22012", "price": 650.0, "duration": "26 sa 10 dk", "carrier": "TCDD Taşımacılık (Van Gölü Ekspresi)", "dep": "11:20", "arr": "13:30", "next_day": True, "badge": "⭐ Van Gölü Ekspresi (Pulman / Kuşet)"},
         ("tatvan", "ankara"): {"type": "anahat_single", "name": "Van Gölü Ekspresi", "train_no": "52011", "price": 650.0, "duration": "26 sa 20 dk", "carrier": "TCDD Taşımacılık (Van Gölü Ekspresi)", "dep": "10:25", "arr": "12:45", "next_day": True, "badge": "⭐ Van Gölü Ekspresi (Pulman / Kuşet)"},
+        ("ankara", "van"): {"type": "anahat_single", "name": "Van Gölü Ekspresi", "train_no": "22012", "price": 650.0, "duration": "26 sa 10 dk", "carrier": "TCDD Taşımacılık (Van Gölü Ekspresi)", "dep": "11:20", "arr": "13:30", "next_day": True, "badge": "⭐ Van Gölü Ekspresi (Tatvan Gar Varışlı)", "station_from": "Ankara Gar", "station_to": "Tatvan Gar (Van Gölü Ekspresi)"},
+        ("van", "ankara"): {"type": "anahat_single", "name": "Van Gölü Ekspresi", "train_no": "52011", "price": 650.0, "duration": "26 sa 20 dk", "carrier": "TCDD Taşımacılık (Van Gölü Ekspresi)", "dep": "10:25", "arr": "12:45", "next_day": True, "badge": "⭐ Van Gölü Ekspresi (Tatvan Gar Kalkışlı)", "station_from": "Tatvan Gar (Van Gölü Ekspresi)", "station_to": "Ankara Gar"},
         ("ankara", "kurtalan"): {"type": "anahat_single", "name": "Güney Kurtalan Ekspresi", "train_no": "22014", "price": 620.0, "duration": "25 sa 00 dk", "carrier": "TCDD Taşımacılık (Güney Kurtalan)", "dep": "11:20", "arr": "12:20", "next_day": True, "badge": "⭐ Güney Kurtalan Ekspresi"},
         ("kurtalan", "ankara"): {"type": "anahat_single", "name": "Güney Kurtalan Ekspresi", "train_no": "52013", "price": 620.0, "duration": "27 sa 25 dk", "carrier": "TCDD Taşımacılık (Güney Kurtalan)", "dep": "09:20", "arr": "12:45", "next_day": True, "badge": "⭐ Güney Kurtalan Ekspresi"},
+        ("ankara", "diyarbakir"): {"type": "anahat_single", "name": "Güney Kurtalan Ekspresi", "train_no": "22014", "price": 580.0, "duration": "21 sa 30 dk", "carrier": "TCDD Taşımacılık (Güney Kurtalan)", "dep": "11:20", "arr": "08:50", "next_day": True, "badge": "⭐ Güney Kurtalan Ekspresi", "station_from": "Ankara Gar", "station_to": "Diyarbakır Gar"},
+        ("diyarbakir", "ankara"): {"type": "anahat_single", "name": "Güney Kurtalan Ekspresi", "train_no": "52013", "price": 580.0, "duration": "22 sa 15 dk", "carrier": "TCDD Taşımacılık (Güney Kurtalan)", "dep": "14:30", "arr": "12:45", "next_day": True, "badge": "⭐ Güney Kurtalan Ekspresi", "station_from": "Diyarbakır Gar", "station_to": "Ankara Gar"},
+        ("ankara", "batman"): {"type": "anahat_single", "name": "Güney Kurtalan Ekspresi", "train_no": "22014", "price": 600.0, "duration": "23 sa 30 dk", "carrier": "TCDD Taşımacılık (Güney Kurtalan)", "dep": "11:20", "arr": "10:50", "next_day": True, "badge": "⭐ Güney Kurtalan Ekspresi", "station_from": "Ankara Gar", "station_to": "Batman Gar"},
+        ("batman", "ankara"): {"type": "anahat_single", "name": "Güney Kurtalan Ekspresi", "train_no": "52013", "price": 600.0, "duration": "24 sa 15 dk", "carrier": "TCDD Taşımacılık (Güney Kurtalan)", "dep": "12:30", "arr": "12:45", "next_day": True, "badge": "⭐ Güney Kurtalan Ekspresi", "station_from": "Batman Gar", "station_to": "Ankara Gar"},
         ("ankara", "malatya"): {"type": "anahat_single", "name": "4 Eylül Mavi Ekspresi", "train_no": "22018", "price": 560.0, "duration": "15 sa 59 dk", "carrier": "TCDD Taşımacılık (4 Eylül Mavi)", "dep": "19:10", "arr": "11:09", "next_day": True, "badge": "⭐ 4 Eylül Mavi Ekspresi"},
         ("malatya", "ankara"): {"type": "anahat_single", "name": "4 Eylül Mavi Ekspresi", "train_no": "52019", "price": 560.0, "duration": "15 sa 54 dk", "carrier": "TCDD Taşımacılık (4 Eylül Mavi)", "dep": "15:30", "arr": "07:24", "next_day": True, "badge": "⭐ 4 Eylül Mavi Ekspresi"},
         ("konya", "adana"): {"type": "anahat_single", "name": "Toros Ekspresi", "train_no": "62002", "price": 320.0, "duration": "6 sa 20 dk", "carrier": "TCDD Taşımacılık (Toros Ekspresi)", "dep": "14:45", "arr": "21:05", "next_day": False, "badge": "Gündüz Toros Ekspresi"},
@@ -175,6 +187,392 @@ class TrainService:
         ("adana", "elazig"): {"type": "anahat_single", "name": "Fırat Ekspresi", "train_no": "52001", "price": 310.0, "duration": "9 sa 15 dk", "carrier": "TCDD Taşımacılık (Fırat Ekspresi)", "dep": "08:45", "arr": "18:00", "next_day": False, "badge": "Fırat Ekspresi"},
         ("kayseri", "adana"): {"type": "anahat_single", "name": "Erciyes Ekspresi", "train_no": "22032", "price": 260.0, "duration": "5 sa 45 dk", "carrier": "TCDD Taşımacılık (Erciyes Ekspresi)", "dep": "07:30", "arr": "13:15", "next_day": False, "badge": "Erciyes Ekspresi"},
         ("adana", "kayseri"): {"type": "anahat_single", "name": "Erciyes Ekspresi", "train_no": "22031", "price": 260.0, "duration": "5 sa 45 dk", "carrier": "TCDD Taşımacılık (Erciyes Ekspresi)", "dep": "16:30", "arr": "22:15", "next_day": False, "badge": "Erciyes Ekspresi"},
+
+        # 2B. YHT + Anahat Bağlantılı Resmi Koridorlar (İstanbul ⇄ Kars Doğu Ekspresi, Van Gölü, Güney Kurtalan, Toros, Pamukkale vb.)
+        ("istanbul", "kars"): {
+            "type": "anahat_single",
+            "name": "YHT + Doğu Ekspresi (Ankara Gar Aktarmalı)",
+            "train_no": "YHT 81006 + 22010",
+            "price": 1640.0,
+            "duration": "31 sa 16 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Doğu Ekspresi)",
+            "dep": "11:10",
+            "arr": "20:26",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (YHT + Doğu Ekspresi)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Kars Gar (Doğu Ekspresi)",
+            "full_route": "İstanbul (Söğütlüçeşme YHT 11:10) ➔ Ankara Gar (15:39 / Doğu Ekspresi 18:00) ➔ Erzincan ➔ Erzurum ➔ Kars Gar (20:26)",
+        },
+        ("kars", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Doğu Ekspresi + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "92009 + YHT 81011",
+            "price": 1640.0,
+            "duration": "32 sa 17 dk",
+            "carrier": "TCDD Taşımacılık (Doğu Ekspresi + YHT)",
+            "dep": "08:00",
+            "arr": "16:17",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Doğu Ekspresi + YHT)",
+            "station_from": "Kars Gar (Doğu Ekspresi)",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Kars Gar (Doğu Ekspresi 08:00) ➔ Erzurum ➔ Erzincan ➔ Ankara Gar (10:27 / YHT 11:45) ➔ İstanbul (Söğütlüçeşme YHT 16:17)",
+        },
+        ("istanbul", "erzurum"): {
+            "type": "anahat_single",
+            "name": "YHT + Doğu Ekspresi (Ankara Gar Aktarmalı)",
+            "train_no": "YHT 81006 + 22010",
+            "price": 1550.0,
+            "duration": "26 sa 20 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Doğu Ekspresi)",
+            "dep": "11:10",
+            "arr": "15:30",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (YHT + Doğu Ekspresi)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Erzurum Gar",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Ankara Gar ➔ Erzincan ➔ Erzurum Gar",
+        },
+        ("erzurum", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Doğu Ekspresi + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "92009 + YHT 81011",
+            "price": 1550.0,
+            "duration": "28 sa 02 dk",
+            "carrier": "TCDD Taşımacılık (Doğu Ekspresi + YHT)",
+            "dep": "12:15",
+            "arr": "16:17",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Doğu Ekspresi + YHT)",
+            "station_from": "Erzurum Gar",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Erzurum Gar ➔ Erzincan ➔ Ankara Gar ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "erzincan"): {
+            "type": "anahat_single",
+            "name": "YHT + Doğu Ekspresi (Ankara/Sivas Aktarmalı)",
+            "train_no": "YHT 81006 + 22010",
+            "price": 1470.0,
+            "duration": "22 sa 10 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Doğu Ekspresi)",
+            "dep": "11:10",
+            "arr": "11:20",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (YHT + Doğu Ekspresi)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Erzincan Gar",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Ankara Gar ➔ Sivas ➔ Erzincan Gar",
+        },
+        ("erzincan", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Doğu Ekspresi + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "92009 + YHT 81011",
+            "price": 1470.0,
+            "duration": "23 sa 32 dk",
+            "carrier": "TCDD Taşımacılık (Doğu Ekspresi + YHT)",
+            "dep": "16:45",
+            "arr": "16:17",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Doğu Ekspresi + YHT)",
+            "station_from": "Erzincan Gar",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Erzincan Gar ➔ Sivas ➔ Ankara Gar ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "tatvan"): {
+            "type": "anahat_single",
+            "name": "YHT + Van Gölü Ekspresi (Ankara Gar Aktarmalı)",
+            "train_no": "YHT 81002 + 22012",
+            "price": 1640.0,
+            "duration": "32 sa 00 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Van Gölü Ekspresi)",
+            "dep": "05:30",
+            "arr": "13:30",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (YHT + Van Gölü Ekspresi)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Tatvan Gar (Van Gölü Ekspresi)",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Ankara Gar ➔ Kayseri ➔ Malatya ➔ Elazığ ➔ Tatvan Gar",
+        },
+        ("tatvan", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Van Gölü Ekspresi + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "52011 + YHT 81015",
+            "price": 1640.0,
+            "duration": "31 sa 57 dk",
+            "carrier": "TCDD Taşımacılık (Van Gölü Ekspresi + YHT)",
+            "dep": "10:25",
+            "arr": "18:22",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Van Gölü Ekspresi + YHT)",
+            "station_from": "Tatvan Gar (Van Gölü Ekspresi)",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Tatvan Gar ➔ Elazığ ➔ Malatya ➔ Kayseri ➔ Ankara Gar ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "van"): {
+            "type": "anahat_single",
+            "name": "YHT + Van Gölü Ekspresi (Ankara Gar Aktarmalı)",
+            "train_no": "YHT 81002 + 22012",
+            "price": 1640.0,
+            "duration": "32 sa 00 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Van Gölü Ekspresi)",
+            "dep": "05:30",
+            "arr": "13:30",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Tatvan Gar Varışlı)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Tatvan Gar (Van Gölü Ekspresi)",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Ankara Gar ➔ Tatvan Gar (Van Gölü Ekspresi)",
+        },
+        ("van", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Van Gölü Ekspresi + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "52011 + YHT 81015",
+            "price": 1640.0,
+            "duration": "31 sa 57 dk",
+            "carrier": "TCDD Taşımacılık (Van Gölü Ekspresi + YHT)",
+            "dep": "10:25",
+            "arr": "18:22",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Tatvan Gar Kalkışlı)",
+            "station_from": "Tatvan Gar (Van Gölü Ekspresi)",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Tatvan Gar (Van Gölü Ekspresi) ➔ Ankara Gar ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "kurtalan"): {
+            "type": "anahat_single",
+            "name": "YHT + Güney Kurtalan Ekspresi (Ankara Gar Aktarmalı)",
+            "train_no": "YHT 81002 + 22014",
+            "price": 1610.0,
+            "duration": "30 sa 50 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Güney Kurtalan)",
+            "dep": "05:30",
+            "arr": "12:20",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (YHT + Güney Kurtalan)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Siirt - Kurtalan Garı",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Ankara Gar ➔ Diyarbakır ➔ Batman ➔ Kurtalan Gar",
+        },
+        ("kurtalan", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Güney Kurtalan Ekspresi + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "52013 + YHT 81015",
+            "price": 1610.0,
+            "duration": "33 sa 02 dk",
+            "carrier": "TCDD Taşımacılık (Güney Kurtalan + YHT)",
+            "dep": "09:20",
+            "arr": "18:22",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Güney Kurtalan + YHT)",
+            "station_from": "Siirt - Kurtalan Garı",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Kurtalan Gar ➔ Batman ➔ Diyarbakır ➔ Ankara Gar ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "diyarbakir"): {
+            "type": "anahat_single",
+            "name": "YHT + Güney Kurtalan Ekspresi (Ankara Gar Aktarmalı)",
+            "train_no": "YHT 81002 + 22014",
+            "price": 1570.0,
+            "duration": "27 sa 20 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Güney Kurtalan)",
+            "dep": "05:30",
+            "arr": "08:50",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (YHT + Güney Kurtalan)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Diyarbakır Gar",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Ankara Gar ➔ Malatya ➔ Diyarbakır Gar",
+        },
+        ("diyarbakir", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Güney Kurtalan Ekspresi + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "52013 + YHT 81015",
+            "price": 1570.0,
+            "duration": "27 sa 52 dk",
+            "carrier": "TCDD Taşımacılık (Güney Kurtalan + YHT)",
+            "dep": "14:30",
+            "arr": "18:22",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Güney Kurtalan + YHT)",
+            "station_from": "Diyarbakır Gar",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Diyarbakır Gar ➔ Malatya ➔ Ankara Gar ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "malatya"): {
+            "type": "anahat_single",
+            "name": "YHT + 4 Eylül Mavi Ekspresi (Ankara Gar Aktarmalı)",
+            "train_no": "YHT 81012 + 22018",
+            "price": 1550.0,
+            "duration": "22 sa 04 dk",
+            "carrier": "TCDD Taşımacılık (YHT + 4 Eylül Mavi)",
+            "dep": "13:05",
+            "arr": "11:09",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (YHT + 4 Eylül Mavi)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Malatya Gar",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Ankara Gar ➔ Sivas ➔ Malatya Gar",
+        },
+        ("malatya", "istanbul"): {
+            "type": "anahat_single",
+            "name": "4 Eylül Mavi + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "52019 + YHT 81007",
+            "price": 1550.0,
+            "duration": "21 sa 46 dk",
+            "carrier": "TCDD Taşımacılık (4 Eylül Mavi + YHT)",
+            "dep": "15:30",
+            "arr": "13:16",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (4 Eylül Mavi + YHT)",
+            "station_from": "Malatya Gar",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Malatya Gar ➔ Sivas ➔ Ankara Gar ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "kayseri"): {
+            "type": "anahat_single",
+            "name": "YHT + Doğu Ekspresi (Ankara Gar Aktarmalı)",
+            "train_no": "YHT 81006 + 22010",
+            "price": 1370.0,
+            "duration": "13 sa 45 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Anahat)",
+            "dep": "11:10",
+            "arr": "00:55",
+            "next_day": True,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (YHT + Anahat)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Kayseri Gar",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Ankara Gar ➔ Kayseri Gar",
+        },
+        ("kayseri", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Anahat + YHT (Ankara Gar Aktarmalı)",
+            "train_no": "92009 + YHT 81011",
+            "price": 1370.0,
+            "duration": "12 sa 57 dk",
+            "carrier": "TCDD Taşımacılık (Anahat + YHT)",
+            "dep": "03:20",
+            "arr": "16:17",
+            "next_day": False,
+            "is_direct": False,
+            "badge": "🔄 Ankara Gar Aktarmalı (Anahat + YHT)",
+            "station_from": "Kayseri Gar",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Kayseri Gar ➔ Ankara Gar ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "adana"): {
+            "type": "anahat_single",
+            "name": "YHT + Toros Ekspresi (Konya Gar Aktarmalı)",
+            "train_no": "YHT 81302 + 62002",
+            "price": 1500.0,
+            "duration": "12 sa 25 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Toros Ekspresi)",
+            "dep": "08:40",
+            "arr": "21:05",
+            "next_day": False,
+            "is_direct": False,
+            "badge": "🔄 Konya Gar Aktarmalı (YHT + Toros Ekspresi)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Adana Gar",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Konya Gar (YHT) ➔ Adana Gar",
+        },
+        ("adana", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Toros Ekspresi + YHT (Konya Gar Aktarmalı)",
+            "train_no": "62001 + YHT 81309",
+            "price": 1500.0,
+            "duration": "12 sa 45 dk",
+            "carrier": "TCDD Taşımacılık (Toros Ekspresi + YHT)",
+            "dep": "07:45",
+            "arr": "20:30",
+            "next_day": False,
+            "is_direct": False,
+            "badge": "🔄 Konya Gar Aktarmalı (Toros Ekspresi + YHT)",
+            "station_from": "Adana Gar",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Adana Gar ➔ Konya Gar (YHT) ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "denizli"): {
+            "type": "anahat_single",
+            "name": "YHT + Pamukkale Ekspresi (Eskişehir Gar Aktarmalı)",
+            "train_no": "YHT 81032 + 72014",
+            "price": 1040.0,
+            "duration": "12 sa 27 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Pamukkale Ekspresi)",
+            "dep": "07:20",
+            "arr": "19:47",
+            "next_day": False,
+            "is_direct": False,
+            "badge": "🔄 Eskişehir Gar Aktarmalı (YHT + Pamukkale Ekspresi)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "Denizli Gar (Pamukkale Ekspresi)",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Eskişehir Gar (YHT) ➔ Afyon ➔ Denizli Gar",
+        },
+        ("denizli", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Pamukkale Ekspresi + YHT (Eskişehir Gar Aktarmalı)",
+            "train_no": "32013 + YHT 81021",
+            "price": 1040.0,
+            "duration": "14 sa 26 dk",
+            "carrier": "TCDD Taşımacılık (Pamukkale Ekspresi + YHT)",
+            "dep": "08:40",
+            "arr": "23:06",
+            "next_day": False,
+            "is_direct": False,
+            "badge": "🔄 Eskişehir Gar Aktarmalı (Pamukkale Ekspresi + YHT)",
+            "station_from": "Denizli Gar (Pamukkale Ekspresi)",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "Denizli Gar ➔ Afyon ➔ Eskişehir Gar (YHT) ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
+        ("istanbul", "izmir"): {
+            "type": "anahat_single",
+            "name": "YHT + Ege Ekspresi (Eskişehir Gar Aktarmalı)",
+            "train_no": "YHT 81002 + 72018",
+            "price": 1080.0,
+            "duration": "13 sa 47 dk",
+            "carrier": "TCDD Taşımacılık (YHT + Ege Ekspresi)",
+            "dep": "05:30",
+            "arr": "19:17",
+            "next_day": False,
+            "is_direct": False,
+            "badge": "🔄 Eskişehir Gar Aktarmalı (YHT + Ege Ekspresi)",
+            "station_from": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "station_to": "İzmir - Basmane Garı",
+            "full_route": "İstanbul (Söğütlüçeşme YHT) ➔ Eskişehir Gar (YHT) ➔ Kütahya ➔ Balıkesir ➔ Manisa ➔ İzmir Basmane",
+        },
+        ("izmir", "istanbul"): {
+            "type": "anahat_single",
+            "name": "Ege Ekspresi + YHT (Eskişehir Gar Aktarmalı)",
+            "train_no": "32011 + YHT 81021",
+            "price": 1080.0,
+            "duration": "16 sa 26 dk",
+            "carrier": "TCDD Taşımacılık (Ege Ekspresi + YHT)",
+            "dep": "06:40",
+            "arr": "23:06",
+            "next_day": False,
+            "is_direct": False,
+            "badge": "🔄 Eskişehir Gar Aktarmalı (Ege Ekspresi + YHT)",
+            "station_from": "İzmir - Basmane Garı",
+            "station_to": "İstanbul - Söğütlüçeşme / Pendik YHT",
+            "full_route": "İzmir Basmane ➔ Manisa ➔ Balıkesir ➔ Kütahya ➔ Eskişehir Gar (YHT) ➔ İstanbul (Söğütlüçeşme YHT)",
+        },
 
         # 3. Bölgesel Hatlar
         ("adana", "mersin"): {"type": "bolgesel", "name": "Çukurova Bölgesel", "price": 85.0, "duration": "45 dk", "carrier": "TCDD Taşımacılık (Bölgesel)", "badge": "Sık Seferli Hızlı Bölgesel"},
@@ -513,15 +911,72 @@ class TrainService:
         s = "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn")
         return s.lower().strip()
 
+    # Havalimanı IATA kodu veya adı girildiğinde Tren modunda eşlenecek ana şehir anahtarları
+    _AIRPORT_TO_TRAIN_CITY_KEY: Dict[str, str] = {
+        "saw": "istanbul",
+        "sabiha": "istanbul",
+        "sabiha gokcen": "istanbul",
+        "ist": "istanbul",
+        "ahl": "istanbul",
+        "istanbul havalimani": "istanbul",
+        "esb": "ankara",
+        "esenboga": "ankara",
+        "adb": "izmir",
+        "adnan menderes": "izmir",
+        "ksy": "kars",
+        "harakani": "kars",
+        "vas": "sivas",
+        "kya": "konya",
+        "aoe": "eskisehir",
+        "erz": "erzurum",
+        "erc": "erzincan",
+        "asr": "kayseri",
+        "erkilet": "kayseri",
+        "mlx": "malatya",
+        "erhac": "malatya",
+        "ezs": "elazig",
+        "diy": "diyarbakir",
+        "bal": "batman",
+        "dnz": "denizli",
+        "cardak": "denizli",
+        "cov": "adana",
+        "ada": "adana",
+        "cukurova": "adana",
+        "sakirpasa": "adana",
+        "szf": "samsun",
+        "carsamba": "samsun",
+        "van": "van",
+        "sxz": "kurtalan",
+        "usq": "usak",
+        "kzr": "kutahya",
+        "afy": "afyon",
+        "ise": "isparta",
+        "onq": "zonguldak",
+        "kco": "kocaeli",
+        "edo": "balikesir",
+        "teq": "tekirdag",
+        "mzh": "amasya",
+    }
+
     @classmethod
     def canonical_city_key(cls, text: str) -> str:
         """
-        'İstanbul Sabiha Gökçen (SAW)', 'İstanbul Havalimanı (IST)', 'Ankara (ESB)' veya
+        'İstanbul Sabiha Gökçen (SAW)', 'İstanbul Havalimanı (IST)', 'Ankara (ESB)', 'SAW', 'KSY' veya
         ilçe aramalarını ('Çankaya (Ankara)', 'Kadıköy (İstanbul)', 'Merkez (Erzincan)') ana TCDD şehir anahtarına dönüştürür.
         """
-        clean = cls.normalize_tr(text)
-        if not clean:
+        if not text:
             return ""
+        raw_low = cls.normalize_tr(re.sub(r"[()]", " ", str(text)))
+        clean = cls.normalize_tr(text)
+        if not clean and not raw_low:
+            return ""
+        if clean in cls._AIRPORT_TO_TRAIN_CITY_KEY:
+            return cls._AIRPORT_TO_TRAIN_CITY_KEY[clean]
+        if raw_low in cls._AIRPORT_TO_TRAIN_CITY_KEY:
+            return cls._AIRPORT_TO_TRAIN_CITY_KEY[raw_low]
+        for token in raw_low.split():
+            if len(token) == 3 and token in cls._AIRPORT_TO_TRAIN_CITY_KEY:
+                return cls._AIRPORT_TO_TRAIN_CITY_KEY[token]
         if clean in cls.CITY_PRIMARY_STATION_IDS:
             return clean
         for main_city in (
@@ -532,15 +987,28 @@ class TrainService:
             "balikesir", "kutahya", "afyon", "isparta", "burdur", "zonguldak",
             "karabuk", "cankiri", "samsun", "amasya", "kirikkale", "yozgat", "nigde",
         ):
-            if main_city in clean:
+            if main_city in clean or main_city in raw_low:
                 return main_city
         try:
             from app.cities import find_city
             loc = find_city(text)
-            if loc and loc.get("province"):
-                prov_clean = cls.normalize_tr(loc["province"])
-                if prov_clean:
-                    return prov_clean
+            if loc:
+                if loc.get("province"):
+                    prov_clean = cls.normalize_tr(loc["province"])
+                    if prov_clean:
+                        return prov_clean
+                loc_name_clean = cls.normalize_tr(loc.get("name", ""))
+                loc_slug_clean = cls.normalize_tr(loc.get("slug", ""))
+                for main_city in (
+                    "istanbul", "ankara", "izmir", "eskisehir", "konya", "sivas", "karaman",
+                    "adana", "mersin", "kayseri", "kars", "erzurum", "erzincan", "malatya",
+                    "elazig", "diyarbakir", "batman", "siirt", "van", "bitlis", "denizli",
+                    "aydin", "manisa", "usak", "kocaeli", "sakarya", "bilecik", "edirne",
+                    "balikesir", "kutahya", "afyon", "isparta", "burdur", "zonguldak",
+                    "karabuk", "cankiri", "samsun", "amasya", "kirikkale", "yozgat", "nigde",
+                ):
+                    if main_city in loc_name_clean or main_city in loc_slug_clean:
+                        return main_city
         except Exception:
             pass
         return clean
@@ -798,8 +1266,8 @@ class TrainService:
                 except Exception:
                     station_data_map[sid] = []
 
-        orig_clean = cls.normalize_tr(origin_name)
-        dest_clean = cls.normalize_tr(dest_name)
+        orig_clean = cls.canonical_city_key(origin_name) or cls.normalize_tr(origin_name)
+        dest_clean = cls.canonical_city_key(dest_name) or cls.normalize_tr(dest_name)
 
         matched_by_train_no: Dict[Any, Dict[str, Any]] = {}
 
@@ -1065,8 +1533,8 @@ class TrainService:
         2) Türkiye içi tüm hatlarda TCDD'nin 597 istasyonlu canlı API'sinden gerçek tren numaralarını,
            kalkış/varış saatlerini, peron bilgilerini ve kanuni indirimleri (Genç %15, 65+ Yaş %50) çeker.
         """
-        orig_clean = cls.normalize_tr(origin_name)
-        dest_clean = cls.normalize_tr(dest_name)
+        orig_clean = cls.canonical_city_key(origin_name) or cls.normalize_tr(origin_name)
+        dest_clean = cls.canonical_city_key(dest_name) or cls.normalize_tr(dest_name)
         orig_display = origin_name.strip().title()
         dest_display = dest_name.strip().title()
 
@@ -1391,12 +1859,15 @@ class TrainService:
             disc = cls.get_discount_breakdown(raw_p)
             disc_conv = {k: round(CurrencyService.convert(v * train_mult, "TRY", currency), 2) for k, v in disc.items()}
             is_nxt = tariff.get("next_day", False)
+            is_dir = tariff.get("is_direct", True)
+            st_from = tariff.get("station_from") or (f"{origin_name}" if "Gar" in origin_name or "YHT" in origin_name else f"{origin_name} Garı")
+            st_to = tariff.get("station_to") or (f"{dest_name}" if "Gar" in dest_name or "YHT" in dest_name else f"{dest_name} Garı")
 
             return_leg = None
             if is_round and return_date:
                 return_leg = {
-                    "origin": f"{dest_name} Garı",
-                    "destination": f"{origin_name} Garı",
+                    "origin": st_to,
+                    "destination": st_from,
                     "departure_time": tariff["dep"],
                     "arrival_time": tariff["arr"],
                     "departure_date": return_date,
@@ -1404,26 +1875,27 @@ class TrainService:
                     "flight_number": f"{tariff['name']} (Dönüş)",
                     "carrier": tariff["carrier"],
                     "duration": tariff["duration"],
-                    "is_direct": True,
+                    "is_direct": is_dir,
                     "badge": "Dönüş Ekspresi"
                 }
 
             tickets.append({
-                "id": f"tcdd-anahat-{orig_clean}",
+                "id": f"tcdd-anahat-{orig_clean}-{dest_clean}",
                 "transport_type": "train",
                 "train_category": "anahat",
                 "carrier": tariff["carrier"],
                 "carrier_logo": "🚆",
                 "flight_number": f"{tariff['name']} ({tariff['train_no']})",
-                "origin": f"{origin_name} Garı",
-                "destination": f"{dest_name} Garı",
+                "origin": st_from,
+                "destination": st_to,
                 "departure_time": tariff["dep"],
                 "arrival_time": tariff["arr"],
+                "departure_date": departure_date,
                 "departure_date_formatted": dep_date_formatted,
                 "arrival_date_formatted": next_day_formatted if is_nxt else dep_date_formatted,
                 "is_next_day": is_nxt,
                 "duration": tariff["duration"],
-                "is_direct": True,
+                "is_direct": is_dir,
                 "is_night_trip": True,
                 "return_leg": return_leg,
                 "price": conv_p,
@@ -1433,6 +1905,7 @@ class TrainService:
                 "currency": curr_symbol,
                 "currency_code": currency,
                 "badge": tariff["badge"],
+                "full_route": tariff.get("full_route"),
                 "route_notice": f"💡 İndirimli Bilet: 65+ Yaş: {cls.format_price_tr(disc_conv['yas_65_ustu'])} {curr_symbol} • Emekli: {cls.format_price_tr(disc_conv.get('emekli', disc_conv['genc_ogrenci']))} {curr_symbol} • Öğrenci: {cls.format_price_tr(disc_conv['genc_ogrenci'])} {curr_symbol} (TCDD Ekranında Seçilebilir)",
                 "official_name": "TCDD Taşımacılık",
                 "official_link": tcdd_link,
