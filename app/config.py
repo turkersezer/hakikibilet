@@ -8,7 +8,7 @@ class Settings:
     APP_NAME: str = "Hakiki Bilet"
     APP_SLOGAN: str = "Hakiki Fiyat, Hakiki Bilet"
     APP_DOMAIN: str = "hakikibilet.com"
-    APP_VERSION: str = "1.0.0"
+    APP_VERSION: str = "2.5.1"
     DEBUG: bool = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
     PORT: int = int(os.getenv("PORT", "8143"))
     HOST: str = os.getenv("HOST", "127.0.0.1")
