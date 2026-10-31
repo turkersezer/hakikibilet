@@ -376,6 +376,8 @@ async def search_tickets(req: SearchRequest, request: Request):
             SearchService.search_all_tickets,
             origin_city=req.origin,
             dest_city=req.destination,
+            raw_origin=getattr(req, "raw_origin", None),
+            raw_destination=getattr(req, "raw_destination", None),
             departure_date=req.departure_date,
             return_date=req.return_date,
             passengers=total_pax,

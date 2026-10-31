@@ -6,6 +6,8 @@ import re
 class SearchRequest(BaseModel):
     origin: str
     destination: str
+    raw_origin: Optional[str] = None
+    raw_destination: Optional[str] = None
     departure_date: str
     return_date: Optional[str] = None
     trip_type: str = "one_way"  # 'one_way' or 'round_trip'

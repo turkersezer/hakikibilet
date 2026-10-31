@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadCitiesForTransport('flight', currentFlightScope); // Varsayılan uçuş havalimanları
     setupEventListeners();
     renderEvents();
+    if (typeof updateRecentSearchesCountBadge === 'function') updateRecentSearchesCountBadge();
+    if (typeof renderQuickPopularRoutes === 'function') renderQuickPopularRoutes();
 });
 
 // Dinamik Tarih Kurulumu (Bugünden 14 gün sonrası gidiş, 17 gün sonrası dönüş)
@@ -231,9 +233,12 @@ function setFlightTripType(tripType) {
             retInput.classList.remove("hidden");
             retInput.disabled = false;
             retInput.required = true;
-            if (!retInput.value) {
-                const depVal = document.getElementById("transDepDate")?.value;
-                if (depVal) retInput.value = getNextDaysDate(depVal, 3);
+            const depVal = document.getElementById("transDepDate")?.value;
+            if (depVal) {
+                retInput.min = depVal;
+                if (!retInput.value || retInput.value < depVal) {
+                    retInput.value = getNextDaysDate(depVal, 3);
+                }
             }
         }
     }
@@ -262,12 +267,15 @@ function swapOriginDest(e) {
     const tempRaw = originInput.dataset.rawUserQuery || "";
     const tempRes = originInput.dataset.resolvedValue || "";
     const tempMode = originInput.dataset.resolvedForMode || "";
+    const tempOrigPlace = originInput.dataset.originalPlaceName || "";
     originInput.dataset.rawUserQuery = destInput.dataset.rawUserQuery || "";
     originInput.dataset.resolvedValue = destInput.dataset.resolvedValue || "";
     originInput.dataset.resolvedForMode = destInput.dataset.resolvedForMode || "";
+    originInput.dataset.originalPlaceName = destInput.dataset.originalPlaceName || "";
     destInput.dataset.rawUserQuery = tempRaw;
     destInput.dataset.resolvedValue = tempRes;
     destInput.dataset.resolvedForMode = tempMode;
+    destInput.dataset.originalPlaceName = tempOrigPlace;
 
     originInput.dispatchEvent(new Event("input", { bubbles: true }));
     destInput.dispatchEvent(new Event("input", { bubbles: true }));
@@ -2196,6 +2204,7 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
                     : (clean === normKey || (clean.length >= 3 && normKey.startsWith(clean)));
 
                 if (match) {
+                    inputEl.dataset.originalPlaceName = item.label || raw;
                     inputEl.value = item.target;
                     if (item.note) {
                         inputEl.dataset.districtNotice = item.note;
@@ -2221,6 +2230,7 @@ function resolveLocationInput(inputEl, mode = null, onlyExactMatch = false) {
                         : (clean === normName || clean === normSlug || (clean.length >= 3 && (normName.startsWith(clean) || normSlug.startsWith(clean))));
 
                     if (match) {
+                        inputEl.dataset.originalPlaceName = c.name;
                         if (c.iata) {
                             inputEl.value = `${c.name} (${c.iata})`;
                         } else {
@@ -3064,6 +3074,7 @@ function populateDatalists(transportMode, scope) {
 
     populateHotelDatalist(currentHotelScope);
     updateAirportHints();
+    if (typeof renderQuickPopularRoutes === 'function') renderQuickPopularRoutes();
 }
 
 // Otel Kapsam Değişimi: Yurtdışı (Booking) vs Yurtiçi (Enuygun/Otelz)
@@ -3399,6 +3410,7 @@ async function switchTransportSubTab(subTab) {
     }
 
     updateAirportHints();
+    if (typeof renderQuickPopularRoutes === 'function') renderQuickPopularRoutes();
 }
 
 
@@ -3709,9 +3721,14 @@ async function executeTransportSearch(e) {
         window._activeTransportAbort = abortCtrl;
         const searchSeq = (window._activeTransportSearchSeq = (window._activeTransportSearchSeq || 0) + 1);
 
+        const rawOrigin = (oInp && (oInp.dataset.originalPlaceName || oInp.dataset.rawUserQuery)) || extractCleanBaseLocation(oInp) || origin;
+        const rawDestination = (dInp && (dInp.dataset.originalPlaceName || dInp.dataset.rawUserQuery)) || extractCleanBaseLocation(dInp) || destination;
+
         const payload = {
             origin: origin,
             destination: destination,
+            raw_origin: rawOrigin,
+            raw_destination: rawDestination,
             departure_date: depDate,
             return_date: isRound ? retDate : null,
             passengers: totalPax,
@@ -3725,6 +3742,19 @@ async function executeTransportSearch(e) {
             include_hotel: false, // Kullanıcı talimatı: Şimdilik otel önerilerini kaldır
             currency: activeCurrency
         };
+
+        if (typeof saveRecentTransportSearch === 'function') {
+            saveRecentTransportSearch({
+                mode: payload.transport_type,
+                origin: rawOrigin || origin,
+                destination: rawDestination || destination,
+                resolvedOrigin: origin,
+                resolvedDestination: destination,
+                depDate: depDate,
+                retDate: isRound ? retDate : null,
+                tripType: isRound ? 'round' : 'one_way'
+            });
+        }
 
         const res = await fetch("/api/search", {
             method: "POST",
@@ -3768,7 +3798,8 @@ function renderTransportResults(data, searchReq) {
     } else if (window.lastTransportData) {
         data = Object.assign({}, window.lastTransportData, data);
     }
-    const tickets = data.tickets || [];
+    const isSameRegionShield = Boolean(data.smart_hub_analysis && data.smart_hub_analysis.verdict === 'same_region_ground_only');
+    const tickets = isSameRegionShield ? [] : (data.tickets || []);
     window.lastTransportResults = tickets;
     window.lastSearchReq = searchReq;
 
@@ -3871,44 +3902,48 @@ function renderTransportResults(data, searchReq) {
         `;
     }
 
-    // Popüler İlçe / Bölge / Pasif Havalimanı / İstasyon ➔ Otomatik Düzeltme & Yönlendirme Bilgilendirmesi (Uşak ➔ ADB, Tren SAW ➔ İstanbul YHT vb.)
-    const backendModeNotices = ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && Array.isArray(data.notices) && tickets.length > 0)
-        ? data.notices.filter(n => !n.includes("Güven ve Şeffaflık İlkesi"))
-        : [];
-    const combinedFlightNotices = [];
-    if ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && window._lastDistrictNotice) {
-        combinedFlightNotices.push(window._lastDistrictNotice);
-    }
-    backendModeNotices.forEach(bn => {
-        const cleanBn = String(bn).replace(/^ℹ️\s*/, '').replace(/^⚠️\s*/, '').trim();
-        if (cleanBn && !combinedFlightNotices.some(existing => existing.includes(cleanBn.slice(0, 25)) || cleanBn.includes(existing.slice(0, 25)))) {
-            combinedFlightNotices.push(cleanBn);
+    // 4 Kalkanlı Akıllı Bağlantı & Ters Yön Hakemi (smart_hub_analysis) VEYA Standart Otomatik Düzeltme Bandı
+    if (modeType === 'flight' && data.smart_hub_analysis && typeof buildSmartHubAnalysisHtml === 'function') {
+        html += buildSmartHubAnalysisHtml(data.smart_hub_analysis, data, searchReq, isEn);
+    } else {
+        const backendModeNotices = ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && Array.isArray(data.notices) && tickets.length > 0)
+            ? data.notices.filter(n => !n.includes("Güven ve Şeffaflık İlkesi"))
+            : [];
+        const combinedFlightNotices = [];
+        if ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && window._lastDistrictNotice) {
+            combinedFlightNotices.push(window._lastDistrictNotice);
         }
-    });
-    if ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && combinedFlightNotices.length > 0) {
-        const bannerIcon = modeType === 'train' ? 'fa-train' : (modeType === 'bus' ? 'fa-bus' : 'fa-plane-circle-exclamation');
-        const bannerBadgeText = modeType === 'train'
-            ? (isEn ? 'Station Auto-Correction & Notice' : 'İstasyon / Gar Otomatik Düzeltmesi')
-            : (modeType === 'bus'
-                ? (isEn ? 'Terminal Auto-Correction & Notice' : 'Otogar / Terminal Otomatik Düzeltmesi')
-                : (isEn ? 'Nearest Active Airport Redirection' : 'Yakın Havalimanı Yönlendirmesi'));
-        html += `
-            <div class="bg-gradient-to-r from-amber-50 via-amber-100/80 to-amber-50 border-2 border-amber-400 text-amber-950 rounded-2xl p-4 mb-3.5 shadow-sm flex items-start gap-3.5">
-                <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
-                    <i class="fa-solid ${bannerIcon}"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="px-2.5 py-0.5 rounded-md bg-amber-500 text-slate-950 text-[10.5px] font-black uppercase tracking-wider">
-                            📍 ${bannerBadgeText}
-                        </span>
+        backendModeNotices.forEach(bn => {
+            const cleanBn = String(bn).replace(/^ℹ️\s*/, '').replace(/^⚠️\s*/, '').trim();
+            if (cleanBn && !combinedFlightNotices.some(existing => existing.includes(cleanBn.slice(0, 25)) || cleanBn.includes(existing.slice(0, 25)))) {
+                combinedFlightNotices.push(cleanBn);
+            }
+        });
+        if ((modeType === 'flight' || modeType === 'train' || modeType === 'bus') && combinedFlightNotices.length > 0) {
+            const bannerIcon = modeType === 'train' ? 'fa-train' : (modeType === 'bus' ? 'fa-bus' : 'fa-plane-circle-exclamation');
+            const bannerBadgeText = modeType === 'train'
+                ? (isEn ? 'Station Auto-Correction & Notice' : 'İstasyon / Gar Otomatik Düzeltmesi')
+                : (modeType === 'bus'
+                    ? (isEn ? 'Terminal Auto-Correction & Notice' : 'Otogar / Terminal Otomatik Düzeltmesi')
+                    : (isEn ? 'Nearest Active Airport Redirection' : 'Yakın Havalimanı Yönlendirmesi'));
+            html += `
+                <div class="bg-gradient-to-r from-amber-50 via-amber-100/80 to-amber-50 border-2 border-amber-400 text-amber-950 rounded-2xl p-4 mb-3.5 shadow-sm flex items-start gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+                        <i class="fa-solid ${bannerIcon}"></i>
                     </div>
-                    <div class="text-xs sm:text-sm font-extrabold text-amber-950 leading-relaxed">
-                        ${combinedFlightNotices.map(n => escapeHtml(n)).join('<br>')}
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="px-2.5 py-0.5 rounded-md bg-amber-500 text-slate-950 text-[10.5px] font-black uppercase tracking-wider">
+                                📍 ${bannerBadgeText}
+                            </span>
+                        </div>
+                        <div class="text-xs sm:text-sm font-extrabold text-amber-950 leading-relaxed">
+                            ${combinedFlightNotices.map(n => escapeHtml(n)).join('<br>')}
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
     }
 
     // ==================== KOMPAKT 7 GÜNLÜK FİYAT ŞERİDİ + "HAKİKİ İPUCU" ====================
@@ -4412,6 +4447,8 @@ function renderTransportResults(data, searchReq) {
             `).join('');
             html += `</div>`;
         }
+    } else if (isSameRegionShield) {
+        // Kalkan 1 (Aynı İl / Komşu İlçe / Aynı Havalimanı) aktifse kendi özel kartı üstte gösterildiği için boş uçuş kutusu tekrar çizilmez
     } else if (tickets.length === 0) {
         const routeNotices = (data.notices || []).filter(n => !n.includes("Güven ve Şeffaflık İlkesi"));
         const primaryNotice = routeNotices.length > 0
@@ -5276,7 +5313,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
     const isEn = window.currentAppLang === 'en';
     const totalPaxText = `${searchReq.passengers || 1} ${isEn ? (searchReq.passengers > 1 ? 'Passengers' : 'Passenger') : 'Yolcu'}`;
 
-    return tickets.map(ticket => {
+    return tickets.map((ticket, tIdx) => {
+        const cardUid = escapeHtml(ticket.id || `tkt-${tIdx}-${Math.random().toString(36).slice(2, 6)}`);
         const isFlight = (ticket.transport_type === 'flight');
         const directLink = ticket.direct_link || ticket.booking_link || ticket.official_link || '#';
         const currSym = ticket.currency || '₺';
@@ -5419,6 +5457,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         </div>
                     </div>
                     ${hasReturn ? `<div class="mt-2 pt-2 border-t border-slate-100 text-[11px] font-bold text-indigo-800 flex items-center justify-between"><span>🔄 ${isEn ? 'Return' : 'Dönüş'}: ${retLeg.departure_time} ${escapeHtml(retLeg.origin)} ➔ ${retLeg.arrival_time} ${escapeHtml(retLeg.destination)}</span><span>${retLeg.flight_number || 'YHT'}</span></div>` : ''}
+                    ${typeof buildTicketStopsAndSideToggleHtml === 'function' ? buildTicketStopsAndSideToggleHtml(ticket, cardUid, isEn) : ''}
                     ${isIntlTrain && Array.isArray(ticket.providers) && ticket.providers.length > 1 ? `
                         <div class="mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-[11px]">
                             <span class="text-[10.5px] font-black text-slate-500 mr-0.5 select-none">
@@ -5516,6 +5555,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     </div>
 
                     ${hasReturn ? `<div class="mt-2 pt-2 border-t border-slate-100 text-[11px] font-bold text-emerald-800 flex items-center justify-between"><span>🔄 Dönüş: ${retLeg.departure_time} ${escapeHtml(retLeg.origin)} ➔ ${retLeg.arrival_time} ${escapeHtml(retLeg.destination)}</span><span>${escapeHtml(retLeg.carrier || ticket.carrier)}</span></div>` : ''}
+                    ${typeof buildTicketStopsAndSideToggleHtml === 'function' ? buildTicketStopsAndSideToggleHtml(ticket, cardUid, isEn) : ''}
 
                     <!-- Açılır/Kapanır Diğer Acenteler & Donanım Çekmecesi -->
                     <details class="group mt-2 pt-1.5 border-t border-slate-100 text-[11px]">
@@ -5865,6 +5905,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                 </div>
 
                 ${isRoundTrip && ticket.return_leg ? `<div class="mt-2 pt-2 border-t border-slate-100 text-[11px] font-bold text-blue-800 flex items-center justify-between"><span>🛬 Dönüş: ${ticket.return_leg.departure_time} (${escapeHtml(ticket.return_leg.from_code || toCode)}) ➔ ${ticket.return_leg.arrival_time} (${escapeHtml(ticket.return_leg.to_code || fromCode)})</span><span>${escapeHtml(ticket.return_leg.flight_number || 'Dönüş')}</span></div>` : ''}
+                ${typeof buildTicketStopsAndSideToggleHtml === 'function' ? buildTicketStopsAndSideToggleHtml(ticket, cardUid, isEn) : ''}
 
                 ${hasDrawer ? `
                     <div class="mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-[11px]">
@@ -7299,6 +7340,7 @@ function setupEventListeners() {
             const curTyped = (this.value || "").trim();
             if (curTyped !== (this.dataset.resolvedValue || "").trim()) {
                 this.dataset.rawUserQuery = curTyped;
+                delete this.dataset.originalPlaceName;
                 delete this.dataset.resolvedValue;
                 delete this.dataset.resolvedForMode;
             }
@@ -7778,3 +7820,701 @@ function quickOpenTransferPlanner() {
 
 window.switchCarSubMode = switchCarSubMode;
 window.quickOpenTransferPlanner = quickOpenTransferPlanner;
+
+// ==================== 1. 4 KALKANLI AKILLI MERKEZ (HUB) VE TERS YÖN HAKEMİ PANELİ ====================
+function switchToRawGroundRoute(mode, rawOrig, rawDest) {
+    const cleanOrig = String(rawOrig || '').trim();
+    const cleanDest = String(rawDest || '').trim();
+    const oInput = document.getElementById("transOrigin");
+    const dInput = document.getElementById("transDest");
+
+    if (mode === 'transfer') {
+        window.currentCarSubMode = 'transfer';
+        if (window.switchUnifiedTab) window.switchUnifiedTab('car');
+        else switchTransportSubTab('car');
+        if (typeof switchCarSubMode === 'function') switchCarSubMode('transfer');
+    } else if (window.switchUnifiedTab) {
+        window.switchUnifiedTab(mode);
+    } else {
+        switchTransportSubTab(mode);
+    }
+
+    setTimeout(() => {
+        if (oInput && cleanOrig) {
+            oInput.value = cleanOrig;
+            oInput.dataset.rawUserQuery = cleanOrig;
+            oInput.dataset.originalPlaceName = cleanOrig;
+        }
+        if (dInput && cleanDest) {
+            dInput.value = cleanDest;
+            dInput.dataset.rawUserQuery = cleanDest;
+            dInput.dataset.originalPlaceName = cleanDest;
+        }
+        executeTransportSearch();
+    }, 80);
+}
+window.switchToRawGroundRoute = switchToRawGroundRoute;
+
+function buildSmartHubAnalysisHtml(sha, data, searchReq, isEn) {
+    if (!sha || !sha.verdict) return '';
+    const v = sha.verdict;
+    const rawOrig = sha.true_origin || searchReq.raw_origin || searchReq.origin || '';
+    const rawDest = sha.true_destination || searchReq.raw_destination || searchReq.destination || '';
+    const safeOrigAttr = escapeHtml(rawOrig).replace(/'/g, "\\'");
+    const safeDestAttr = escapeHtml(rawDest).replace(/'/g, "\\'");
+    const titleTxt = (isEn ? sha.title_en : sha.title_tr) || sha.title || sha.headline || '';
+    const summaryTxt = (isEn ? sha.summary_en : sha.summary_tr) || sha.reason || '';
+    const badgeTxt = (isEn ? sha.shield_badge_en : sha.shield_badge_tr) || '';
+
+    // KALKAN 1: Aynı Bölge / Komşu İlçe / Ortak Havalimanı (<135 km) — Uçak Yok, Doğrudan Kara/Deniz/Transfer
+    if (v === 'same_region_ground_only') {
+        const opts = Array.isArray(sha.direct_ground_options) ? sha.direct_ground_options : [];
+        return `
+            <div class="mb-5 rounded-3xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 via-white to-orange-50/70 p-4 sm:p-5 shadow-md">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3.5 border-b border-amber-200/80">
+                    <div class="flex items-start gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl font-black shrink-0 shadow-xs">🛡️</div>
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-950 text-[10.5px] font-black uppercase tracking-wider mb-1">
+                                <i class="fa-solid fa-compass"></i>
+                                <span>${escapeHtml(badgeTxt || (isEn ? 'Smart Regional Route Shield' : 'Kısa Mesafe & Aynı Havalimanı Kalkanı'))} ${sha.distance_km ? `• ~${Math.round(sha.distance_km)} km` : ''}</span>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${escapeHtml(titleTxt)}</h3>
+                            <p class="text-xs font-semibold text-slate-600 mt-0.5">${escapeHtml(summaryTxt)}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    ${opts.map(opt => {
+                        const modeTarget = opt.mode === 'shuttle' ? 'transfer' : opt.mode;
+                        const optLabel = (isEn ? opt.label_en : opt.label_tr) || opt.label || 'Doğrudan Ulaşım';
+                        const optDur = opt.duration || opt.duration_str || '';
+                        const optProv = opt.provider || opt.carrier || '';
+                        const optUrl = opt.url || opt.link || '';
+                        const priceHtml = opt.min_price ? `${Number(opt.min_price).toLocaleString('tr-TR')} ${opt.currency || '₺'}` : (isEn ? 'Live Fares' : 'Canlı Tarife');
+                        return `
+                            <div class="bg-white rounded-2xl border border-amber-200/90 hover:border-amber-500 p-3.5 shadow-2xs hover:shadow-md transition flex flex-col justify-between gap-2.5">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xl">${opt.icon || '🚌'}</span>
+                                        <div>
+                                            <div class="font-black text-slate-900 text-xs sm:text-sm">${escapeHtml(optLabel)}</div>
+                                            <div class="text-[11px] font-semibold text-slate-500">${escapeHtml(optProv)}</div>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-black text-[11px] whitespace-nowrap">⏱️ ${escapeHtml(optDur)}</span>
+                                </div>
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                                    <div>
+                                        <span class="text-[10px] font-bold text-slate-400 block">${isEn ? 'Starting from' : 'Başlangıç'}</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-950">${priceHtml}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        ${opt.mode !== 'shuttle' ? `
+                                            <button type="button" onclick="switchToRawGroundRoute('${modeTarget}', '${safeOrigAttr}', '${safeDestAttr}')"
+                                                class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-amber-500 text-white hover:text-slate-950 font-black text-[11px] transition cursor-pointer">
+                                                ${isEn ? 'View Schedules →' : 'Seferleri Listele →'}
+                                            </button>
+                                        ` : ''}
+                                        ${optUrl ? `
+                                            <a href="${optUrl}" target="_blank" rel="noopener noreferrer"
+                                                class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[11px] transition">
+                                                ${isEn ? 'Book ↗' : 'Bileti Gör ↗'}
+                                            </a>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // KALKAN 3A: Ters Yön veya Doğrudan Kara Ulaşımı (Otobüs/Tren) Aktarmalı Uçuştan Daha Kısa ve Daha Ucuz! (Örn: Uşak ➔ Antalya, Edirne ➔ Sofya)
+    if (v === 'direct_ground_better') {
+        const bestGround = sha.best_direct_option || sha.best_direct_ground || {};
+        const bestGroundLabel = (isEn ? bestGround.label_en : bestGround.label_tr) || bestGround.label || 'Doğrudan Otobüs';
+        const bestGroundDur = bestGround.duration || bestGround.duration_str || '';
+        const bestGroundProv = bestGround.provider || bestGround.carrier || '';
+        const groundOpts = Array.isArray(sha.direct_ground_options) ? sha.direct_ground_options : [];
+        const flLeg = sha.flight_leg || {};
+        return `
+            <div class="mb-5 rounded-3xl border-2 border-emerald-400 bg-gradient-to-br from-emerald-50/95 via-white to-teal-50/80 p-4 sm:p-5 shadow-md">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 pb-3.5 border-b border-emerald-200/80">
+                    <div class="flex items-start gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl font-black shrink-0 shadow-xs">🧭</div>
+                        <div>
+                            <div class="inline-flex flex-wrap items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-200/80 text-emerald-950 text-[10.5px] font-black uppercase tracking-wider mb-1">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                                <span>${escapeHtml(badgeTxt || (sha.is_reverse_direction ? 'Ters Yön & Süre Hakemi Uyarısı' : 'Hakiki Süre & Maliyet Analizi'))}</span>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${escapeHtml(titleTxt)}</h3>
+                            <p class="text-xs font-semibold text-slate-700 mt-0.5">${escapeHtml(summaryTxt)}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        ${groundOpts.map(go => {
+                            const gDur = go.duration || go.duration_str || '';
+                            return `
+                                <button type="button" onclick="switchToRawGroundRoute('${go.mode}', '${safeOrigAttr}', '${safeDestAttr}')"
+                                    class="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-900 text-white font-black text-xs shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                                    <span>${go.icon || '🚌'}</span>
+                                    <span>${escapeHtml(rawOrig)} ➔ ${escapeHtml(rawDest)} ${go.mode === 'train' ? 'Trenlerini Aç' : 'Otobüslerini Aç'} (${escapeHtml(gDur)}) →</span>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <!-- Yan Yana Gerçekçi Süre & Maliyet Kıyaslaması -->
+                <div class="mt-3.5 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div class="rounded-2xl bg-white border-2 border-emerald-400 p-3.5 flex items-center justify-between gap-3 shadow-2xs">
+                        <div>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded mb-1">
+                                ✓ ${isEn ? 'Recommended Direct Route' : 'Önerilen Doğrudan Rota (Aktarmasız)'}
+                            </span>
+                            <div class="font-black text-slate-900 text-sm">${bestGround.icon || '🚌'} ${escapeHtml(rawOrig)} ➔ ${escapeHtml(rawDest)} (${escapeHtml(bestGroundLabel)})</div>
+                            <div class="text-[11px] font-semibold text-slate-500 mt-0.5">${escapeHtml(bestGroundProv)} • ${isEn ? 'No airport transfer wait' : 'Havalimanı beklemesi ve ters yön kaybı yok'}</div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="text-base font-black text-emerald-700">⏱️ ${escapeHtml(bestGroundDur)}</div>
+                            ${bestGround.min_price ? `<div class="text-sm font-black text-slate-900">${Number(bestGround.min_price).toLocaleString('tr-TR')} ${bestGround.currency || '₺'}</div>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl bg-slate-50/90 border border-slate-200 p-3.5 flex items-center justify-between gap-3 opacity-85">
+                        <div>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded mb-1">
+                                ⚠️ ${isEn ? 'Connected Flight Total' : 'Havalimanı Aktarmalı Uçuş Toplamı'}
+                            </span>
+                            <div class="font-bold text-slate-800 text-sm">✈️ ${escapeHtml(rawOrig)} ➔ ${escapeHtml(flLeg.from || sha.orig_hub_code || '')} ➔ ${escapeHtml(flLeg.to || rawDest)}</div>
+                            <div class="text-[11px] font-medium text-slate-500 mt-0.5">${isEn ? 'Includes ground transfer + 90m airport security buffer + flight' : 'Kara ulaşımı + 90 dk havalimanı güvenlik/bagaj süresi + uçuş dahil'}</div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="text-base font-black text-slate-700">⏱️ ${escapeHtml(sha.combo_total_duration || '')}</div>
+                            ${sha.combo_total_price ? `<div class="text-xs font-bold text-slate-500">~${Number(sha.combo_total_price).toLocaleString('tr-TR')} ₺</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // KALKAN 3B & 4: Akıllı Bağlantılı Rota Önerilir (Örn: Uşak ➔ İzmir ADB ➔ Trabzon / Zürih, Bursa ➔ SAW ➔ Zürih)
+    if (v === 'smart_combo_recommended') {
+        const origLeg = sha.origin_leg || null;
+        const flLeg = sha.flight_leg || {};
+        const destLeg = sha.dest_leg || null;
+        const leg1Opts = origLeg && Array.isArray(origLeg.options) ? origLeg.options : [];
+        const leg3Opts = destLeg && Array.isArray(destLeg.options) ? destLeg.options : [];
+        const bestGround = sha.best_direct_option || null;
+        const bestGroundLabel = bestGround ? ((isEn ? bestGround.label_en : bestGround.label_tr) || 'Doğrudan Otobüs') : '';
+        const hubOrigClean = origLeg ? String(origLeg.hub_city || '').split('(')[0].replace('Havalimanı', '').trim() : '';
+        const hubDestClean = destLeg ? String(destLeg.hub_city || '').split('(')[0].replace('Havalimanı', '').trim() : '';
+        const safeHubOrigAttr = escapeHtml(hubOrigClean).replace(/'/g, "\\'");
+        const safeHubDestAttr = escapeHtml(hubDestClean).replace(/'/g, "\\'");
+
+        return `
+            <div class="mb-5 rounded-3xl border-2 border-indigo-300 bg-gradient-to-br from-indigo-50/90 via-white to-amber-50/60 p-4 sm:p-5 shadow-md">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3.5 border-b border-indigo-200/70">
+                    <div class="flex items-start gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-indigo-900 text-amber-400 flex items-center justify-center text-xl font-black shrink-0 shadow-xs">🧭</div>
+                        <div>
+                            <div class="inline-flex flex-wrap items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-950 text-[10.5px] font-black uppercase tracking-wider mb-1">
+                                <i class="fa-solid fa-route text-indigo-600"></i>
+                                <span>${escapeHtml(badgeTxt || (isEn ? 'Smart Door-to-Airport Connected Route' : 'Akıllı Bağlantılı Rota Rehberi'))}</span>
+                                ${sha.combo_total_duration ? `<span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-black">⚡ Toplam ~${escapeHtml(sha.combo_total_duration)}</span>` : ''}
+                            </div>
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${escapeHtml(titleTxt)}</h3>
+                            <p class="text-xs font-semibold text-slate-600 mt-0.5">${escapeHtml(summaryTxt)}</p>
+                        </div>
+                    </div>
+                    ${bestGround ? `
+                        <div class="px-3 py-2 rounded-2xl bg-slate-100 border border-slate-200/90 text-[11px] font-bold text-slate-700 shrink-0">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-black">${isEn ? 'Alternative Direct Ground' : 'Alternatif Doğrudan Kara Yolu'}</div>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span>${bestGround.icon || '🚌'} ${escapeHtml(bestGroundLabel)}: <strong>${escapeHtml(bestGround.duration || '')}</strong></span>
+                                <button type="button" onclick="switchToRawGroundRoute('${bestGround.mode}', '${safeOrigAttr}', '${safeDestAttr}')"
+                                    class="text-indigo-700 hover:text-indigo-950 underline font-black cursor-pointer">Gör →</button>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Adım Adım Bağlantılı Ulaşım Kartları -->
+                <div class="mt-3.5 grid grid-cols-1 ${leg1Opts.length > 0 && leg3Opts.length > 0 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-3 text-xs">
+                    ${leg1Opts.length > 0 ? `
+                        <div class="rounded-2xl bg-white border border-indigo-200 p-3.5 shadow-2xs flex flex-col justify-between gap-2">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-1.5">
+                                    <span class="px-2 py-0.5 rounded-md bg-indigo-900 text-white font-black text-[10px] uppercase tracking-wider">1. Adım: Havalimanına Ulaşım</span>
+                                    <span class="text-[11px] font-black text-indigo-800">${escapeHtml(origLeg.from || rawOrig)} ➔ ${escapeHtml(origLeg.to || '')}</span>
+                                </div>
+                                <div class="space-y-1.5 mt-2">
+                                    ${leg1Opts.map(o => {
+                                        const oLbl = (isEn ? o.label_en : o.label_tr) || o.label || '';
+                                        const oDur = o.duration || o.duration_str || '';
+                                        const oProv = o.provider || o.carrier || '';
+                                        return `
+                                            <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                                                <div class="min-w-0">
+                                                    <div class="font-black text-slate-900 truncate">${o.icon || '🚌'} ${escapeHtml(oLbl)}</div>
+                                                    <div class="text-[10.5px] font-semibold text-slate-500 truncate">${escapeHtml(oProv)} • ⏱️ ${escapeHtml(oDur)}</div>
+                                                </div>
+                                                <div class="flex items-center gap-1.5 shrink-0">
+                                                    ${o.min_price ? `<span class="font-black text-slate-900 text-xs">${Number(o.min_price).toLocaleString('tr-TR')} ${o.currency || '₺'}</span>` : ''}
+                                                    <button type="button" onclick="switchToRawGroundRoute('${o.mode === 'shuttle' ? 'transfer' : o.mode}', '${safeOrigAttr}', '${safeHubOrigAttr}')"
+                                                        class="px-2 py-1 rounded-lg bg-indigo-100 hover:bg-indigo-900 text-indigo-950 hover:text-white font-black text-[10.5px] transition cursor-pointer">
+                                                        Bileti Gör ↗
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                            ${origLeg.safe_lead_hours_text ? `
+                                <div class="mt-1 pt-2 border-t border-dashed border-indigo-200 text-[10.5px] font-bold text-amber-900 flex items-center gap-1.5">
+                                    <span>⏱️ ${escapeHtml(origLeg.safe_lead_hours_text)}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+
+                    <div class="rounded-2xl bg-gradient-to-br from-amber-50/90 to-orange-50/70 border border-amber-300 p-3.5 shadow-2xs flex flex-col justify-between gap-2">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-1.5">
+                                <span class="px-2 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black text-[10px] uppercase tracking-wider">${leg1Opts.length > 0 ? '2. Adım: Ana Uçuş' : '1. Adım: Ana Uçuş'}</span>
+                                <span class="text-[11px] font-black text-amber-950">✈️ ${escapeHtml(flLeg.from || '')} ➔ ${escapeHtml(flLeg.to || '')}</span>
+                            </div>
+                            <p class="text-[11.5px] font-bold text-slate-700 mt-1">
+                                Aşağıdaki listede <strong>${escapeHtml(flLeg.from || '')} ➔ ${escapeHtml(flLeg.to || '')}</strong> hattındaki doğrulanmış canlı uçuşlar sıralanmaktadır.
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-amber-200/80 flex items-center justify-between text-[11px] font-black text-slate-900">
+                            <span>✈️ En Hızlı Uçuş: ${escapeHtml(flLeg.duration || '1 sa 15 dk')}</span>
+                            <span class="text-emerald-800">✓ Aşağıda Listeleniyor ↓</span>
+                        </div>
+                    </div>
+
+                    ${leg3Opts.length > 0 ? `
+                        <div class="rounded-2xl bg-white border border-indigo-200 p-3.5 shadow-2xs flex flex-col justify-between gap-2">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-1.5">
+                                    <span class="px-2 py-0.5 rounded-md bg-indigo-900 text-white font-black text-[10px] uppercase tracking-wider">${leg1Opts.length > 0 ? '3. Adım: Varış Noktasına Geçiş' : '2. Adım: Varış Noktasına Geçiş'}</span>
+                                    <span class="text-[11px] font-black text-indigo-800">${escapeHtml(destLeg.from || '')} ➔ ${escapeHtml(destLeg.to || rawDest)}</span>
+                                </div>
+                                <div class="space-y-1.5 mt-2">
+                                    ${leg3Opts.map(o => {
+                                        const oLbl = (isEn ? o.label_en : o.label_tr) || o.label || '';
+                                        const oDur = o.duration || o.duration_str || '';
+                                        const oProv = o.provider || o.carrier || '';
+                                        return `
+                                            <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                                                <div class="min-w-0">
+                                                    <div class="font-black text-slate-900 truncate">${o.icon || '🚌'} ${escapeHtml(oLbl)}</div>
+                                                    <div class="text-[10.5px] font-semibold text-slate-500 truncate">${escapeHtml(oProv)} • ⏱️ ${escapeHtml(oDur)}</div>
+                                                </div>
+                                                <div class="flex items-center gap-1.5 shrink-0">
+                                                    ${o.min_price ? `<span class="font-black text-slate-900 text-xs">${Number(o.min_price).toLocaleString('tr-TR')} ${o.currency || '₺'}</span>` : ''}
+                                                    <button type="button" onclick="switchToRawGroundRoute('${o.mode === 'shuttle' ? 'transfer' : o.mode}', '${safeHubDestAttr}', '${safeDestAttr}')"
+                                                        class="px-2 py-1 rounded-lg bg-indigo-100 hover:bg-indigo-900 text-indigo-950 hover:text-white font-black text-[10.5px] transition cursor-pointer">
+                                                        Bileti Gör ↗
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    return '';
+}
+window.buildSmartHubAnalysisHtml = buildSmartHubAnalysisHtml;
+
+// ==================== 2. BİLET KARTI İÇİ KOMPAKT [📍 DURAKLAR & YAKA ▾] ROZETİ ====================
+function toggleTicketStopInfo(cardUid) {
+    const panel = document.getElementById(`stopInfoPanel-${cardUid}`);
+    const chevron = document.getElementById(`stopInfoChevron-${cardUid}`);
+    if (!panel) return;
+    const isHidden = panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !isHidden);
+    if (chevron) {
+        chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+}
+window.toggleTicketStopInfo = toggleTicketStopInfo;
+
+function buildTicketStopsAndSideToggleHtml(ticket, cardUid, isEn) {
+    if (!ticket) return '';
+    const tType = ticket.transport_type || 'flight';
+    const orig = String(ticket.origin || '');
+    const dest = String(ticket.destination || '');
+    const fromCode = String(ticket.from_code || '').toUpperCase();
+    const toCode = String(ticket.to_code || '').toUpperCase();
+    const combined = `${orig} ${dest} ${fromCode} ${toCode}`.toLowerCase();
+
+    let badgeLabel = '';
+    let detailHtml = '';
+    let badgeTone = 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200';
+
+    if (tType === 'train') {
+        const isYht = (ticket.flight_number || '').toUpperCase().includes('YHT') || (ticket.carrier || '').toUpperCase().includes('YHT') || combined.includes('söğütlüçeşme') || combined.includes('pendik') || combined.includes('ankara') || combined.includes('eskişehir') || combined.includes('konya') || combined.includes('sivas');
+        if (isYht && (combined.includes('istanbul') || combined.includes('söğütlüçeşme') || combined.includes('halkalı') || combined.includes('pendik'))) {
+            badgeLabel = isEn ? '📍 YHT Stops & Istanbul Side' : '📍 YHT Durakları & Yaka Bilgisi';
+            badgeTone = 'bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border-indigo-200';
+            detailHtml = `
+                <div class="flex flex-wrap items-center gap-2 text-[11px]">
+                    <span class="px-2 py-0.5 rounded-md bg-white border border-indigo-200 font-black text-indigo-950">🌉 Anadolu Yakası: Söğütlüçeşme • Bostancı • Pendik</span>
+                    <span class="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-slate-700">🇪🇺 Avrupa Yakası: Bakırköy • Halkalı (Seçili Seferler)</span>
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 font-bold text-emerald-900">🚉 Ara Duraklar: Gebze • İzmit • Arifiye • Bilecik • Bozüyük</span>
+                </div>
+            `;
+        } else {
+            badgeLabel = isEn ? '📍 Station & Boarding Info' : '📍 İstasyon & Biniş Bilgisi';
+            badgeTone = 'bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border-indigo-200';
+            detailHtml = `
+                <div class="text-[11px] font-medium text-slate-700">
+                    🚉 <strong>Kalkış Garı:</strong> ${escapeHtml(orig)} ➔ <strong>Varış Garı:</strong> ${escapeHtml(dest)} • Lütfen tren kalkış saatinden en az 15 dk önce peronda olunuz.
+                </div>
+            `;
+        }
+    } else if (tType === 'bus') {
+        if (combined.includes('istanbul') || combined.includes('esenler') || combined.includes('alibeyköy') || combined.includes('harem') || combined.includes('dudullu')) {
+            badgeLabel = isEn ? '📍 Europe / Asia Terminals' : '📍 Avrupa & Anadolu Yakası Otogarları';
+            badgeTone = 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-200';
+            detailHtml = `
+                <div class="flex flex-wrap items-center gap-2 text-[11px]">
+                    <span class="px-2 py-0.5 rounded-md bg-white border border-emerald-200 font-black text-emerald-950">🇪🇺 Avrupa Yakası: Esenler Otogarı • Alibeyköy Cep Otogarı</span>
+                    <span class="px-2 py-0.5 rounded-md bg-white border border-teal-200 font-black text-teal-950">🌉 Anadolu Yakası: Dudullu • Harem • Samandıra Tesisleri</span>
+                </div>
+            `;
+        } else {
+            badgeLabel = isEn ? '📍 Terminal & Route Info' : '📍 Otogar & Güzergah Bilgisi';
+            badgeTone = 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200';
+            detailHtml = `
+                <div class="text-[11px] font-medium text-slate-700">
+                    🚌 <strong>Kalkış:</strong> ${escapeHtml(orig)} Şehirlerarası Otogarı ➔ <strong>Varış:</strong> ${escapeHtml(dest)} Otogarı • Koltuk seçimi ve ara dinlenme tesisi bilgisi ödeme adımında gösterilir.
+                </div>
+            `;
+        }
+    } else if (tType === 'flight') {
+        const hasSaw = fromCode === 'SAW' || toCode === 'SAW' || combined.includes('sabiha');
+        const hasIst = fromCode === 'IST' || toCode === 'IST' || combined.includes('istanbul havaliman');
+        const hasCov = fromCode === 'COV' || toCode === 'COV' || combined.includes('çukurova');
+        const hasRzv = fromCode === 'RZV' || toCode === 'RZV';
+        if (hasSaw || hasIst) {
+            badgeLabel = hasSaw
+                ? (isEn ? '📍 SAW (Asian Side • Pendik)' : '📍 SAW Anadolu Yakası (Pendik/Kadıköy M4 Metro)')
+                : (isEn ? '📍 IST (European Side • Arnavutköy)' : '📍 IST Avrupa Yakası (M11 Metro & Havaist)');
+            badgeTone = 'bg-amber-50 hover:bg-amber-100 text-amber-950 border-amber-200';
+            detailHtml = hasSaw
+                ? `<div class="text-[11px] font-semibold text-slate-700">✈️ <strong>Sabiha Gökçen Havalimanı (SAW - Anadolu Yakası):</strong> Kadıköy ➔ Sabiha Gökçen M4 Metrosu (50 dk) ve Havabüs (Taksim / Kadıköy / Yenisahra) ile doğrudan ulaşım mevcuttur.</div>`
+                : `<div class="text-[11px] font-semibold text-slate-700">✈️ <strong>İstanbul Havalimanı (IST - Avrupa Yakası):</strong> Gayrettepe ➔ Kağıthane ➔ IST M11 Metrosu (30 dk) ve Havaist (Beşiktaş, Taksim, Kadıköy, Aksaray, Otogar) ile 7/24 ulaşım mevcuttur.</div>`;
+        } else if (hasCov) {
+            badgeLabel = isEn ? '📍 COV Regional Hub (Adana & Mersin)' : '📍 Çukurova Havalimanı (COV • Adana & Mersin Ortak)';
+            badgeTone = 'bg-amber-50 hover:bg-amber-100 text-amber-950 border-amber-200';
+            detailHtml = `<div class="text-[11px] font-semibold text-slate-700">✈️ <strong>Çukurova Uluslararası Havalimanı (COV):</strong> Adana merkez (~35 dk) ve Mersin/Tarsus (~25-40 dk) bölgesine HAVAMAŞ servisleriyle doğrudan bağlıdır.</div>`;
+        } else if (hasRzv) {
+            badgeLabel = isEn ? '📍 RZV Hub (Rize, Hopa & Batumi)' : '📍 Rize-Artvin (RZV • Havaş ile Rize, Hopa & Sarp)';
+            badgeTone = 'bg-amber-50 hover:bg-amber-100 text-amber-950 border-amber-200';
+            detailHtml = `<div class="text-[11px] font-semibold text-slate-700">✈️ <strong>Rize-Artvin Havalimanı (RZV - Pazar):</strong> Rize merkeze 30 dk, Artvin Hopa ve Sarp Sınır Kapısı'na (Batum geçişi) Havaş ile doğrudan bağlantılıdır.</div>`;
+        } else {
+            return '';
+        }
+    } else {
+        return '';
+    }
+
+    return `
+        <div class="mt-2 pt-1.5 border-t border-slate-100">
+            <button type="button" onclick="toggleTicketStopInfo('${cardUid}')"
+                class="px-2.5 py-0.5 rounded-lg border text-[10.5px] font-bold transition inline-flex items-center gap-1.5 cursor-pointer ${badgeTone}">
+                <span>${badgeLabel}</span>
+                <i id="stopInfoChevron-${cardUid}" class="fa-solid fa-chevron-down text-[9px] transition-transform"></i>
+            </button>
+            <div id="stopInfoPanel-${cardUid}" class="hidden mt-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/90">
+                ${detailHtml}
+            </div>
+        </div>
+    `;
+}
+window.buildTicketStopsAndSideToggleHtml = buildTicketStopsAndSideToggleHtml;
+
+// ==================== 3. AÇILIR/KAPANIR [⚡ POPÜLER ROTALAR ▾] & [🕒 SON ARAMALAR ▾] ÇEKMECESİ ====================
+let activeQuickDrawerTab = null; // 'popular' | 'recent' | null
+
+function toggleQuickAccessDrawer(tabName) {
+    const drawer = document.getElementById("quickAccessDrawer");
+    const popPane = document.getElementById("quickDrawerPopularPane");
+    const recPane = document.getElementById("quickDrawerRecentPane");
+    const popChevron = document.getElementById("popularDrawerChevron");
+    const recChevron = document.getElementById("recentDrawerChevron");
+    if (!drawer || !popPane || !recPane) return;
+
+    if (activeQuickDrawerTab === tabName && !drawer.classList.contains("hidden")) {
+        activeQuickDrawerTab = null;
+        drawer.classList.add("hidden");
+        if (popChevron) popChevron.style.transform = "rotate(0deg)";
+        if (recChevron) recChevron.style.transform = "rotate(0deg)";
+        return;
+    }
+
+    activeQuickDrawerTab = tabName;
+    drawer.classList.remove("hidden");
+
+    if (tabName === 'popular') {
+        renderQuickPopularRoutes();
+        popPane.classList.remove("hidden");
+        recPane.classList.add("hidden");
+        if (popChevron) popChevron.style.transform = "rotate(180deg)";
+        if (recChevron) recChevron.style.transform = "rotate(0deg)";
+    } else {
+        renderRecentSearchesPane();
+        recPane.classList.remove("hidden");
+        popPane.classList.add("hidden");
+        if (recChevron) recChevron.style.transform = "rotate(180deg)";
+        if (popChevron) popChevron.style.transform = "rotate(0deg)";
+    }
+}
+window.toggleQuickAccessDrawer = toggleQuickAccessDrawer;
+
+function quickFillFlight(origin, dest, isIntl = false) {
+    if (window.switchUnifiedTab) {
+        window.switchUnifiedTab('flight');
+    } else {
+        switchTransportSubTab('flight');
+    }
+    switchFlightScope(isIntl ? 'international' : 'domestic').then(() => {
+        const oInput = document.getElementById("transOrigin");
+        const dInput = document.getElementById("transDest");
+        if (oInput) {
+            oInput.value = origin;
+            oInput.dataset.rawUserQuery = origin;
+            oInput.dataset.originalPlaceName = origin;
+        }
+        if (dInput) {
+            dInput.value = dest;
+            dInput.dataset.rawUserQuery = dest;
+            dInput.dataset.originalPlaceName = dest;
+        }
+        executeTransportSearch();
+    });
+}
+window.quickFillFlight = quickFillFlight;
+
+function renderQuickPopularRoutes() {
+    const container = document.getElementById("quickPopularRoutesContainer");
+    const modeLabel = document.getElementById("quickPopularModeLabel");
+    if (!container) return;
+
+    const mode = window.currentTransportSubTab || currentTransportSubTab || 'flight';
+    const isEn = window.currentAppLang === 'en';
+    let pillsHtml = '';
+
+    if (mode === 'bus') {
+        if (modeLabel) modeLabel.textContent = isEn ? '🚌 Popular Bus Corridors:' : '🚌 Popüler Otobüs Hatları:';
+        const routes = [
+            ['İstanbul', 'Ankara', '🚌 İstanbul ➔ Ankara'],
+            ['İstanbul', 'İzmir', '🚌 İstanbul ➔ İzmir'],
+            ['İstanbul', 'Bursa', '🚌 İstanbul ➔ Bursa'],
+            ['Ankara', 'Antalya', '🚌 Ankara ➔ Antalya'],
+            ['Uşak', 'Antalya', '🚌 Uşak ➔ Antalya (Direkt)'],
+            ['İstanbul', 'Sofya', '🌍 İstanbul ➔ Sofya (FlixBus)'],
+            ['İstanbul', 'Selanik', '🌍 İstanbul ➔ Selanik']
+        ];
+        pillsHtml = routes.map(([o, d, lbl]) => `
+            <button type="button" onclick="quickFillBus('${o}', '${d}')"
+                class="px-2.5 py-1 rounded-full bg-emerald-50 hover:bg-emerald-600 text-emerald-900 hover:text-white border border-emerald-200 font-bold text-[11px] transition cursor-pointer">
+                ${lbl}
+            </button>
+        `).join('');
+    } else if (mode === 'train') {
+        if (modeLabel) modeLabel.textContent = isEn ? '🚆 Popular YHT & Rail Lines:' : '🚆 Popüler YHT & Tren Hatları:';
+        const routes = [
+            ['İstanbul', 'Ankara', '🚄 İstanbul ➔ Ankara YHT'],
+            ['İstanbul', 'Eskişehir', '🚄 İstanbul ➔ Eskişehir YHT'],
+            ['Ankara', 'Konya', '🚄 Ankara ➔ Konya YHT'],
+            ['Ankara', 'Sivas', '🚄 Ankara ➔ Sivas YHT'],
+            ['Uşak', 'İzmir', '🚆 Uşak ➔ İzmir (Mavi Tren)'],
+            ['Ankara', 'Kars', '❄️ Doğu Ekspresi (Ankara ➔ Kars)']
+        ];
+        pillsHtml = routes.map(([o, d, lbl]) => `
+            <button type="button" onclick="quickFillTrain('${o}', '${d}')"
+                class="px-2.5 py-1 rounded-full bg-indigo-50 hover:bg-indigo-700 text-indigo-900 hover:text-white border border-indigo-200 font-bold text-[11px] transition cursor-pointer">
+                ${lbl}
+            </button>
+        `).join('');
+    } else if (mode === 'ferry') {
+        if (modeLabel) modeLabel.textContent = isEn ? '⛴️ Popular Ferry & Island Routes:' : '⛴️ Popüler Feribot & Ada Hatları:';
+        const routes = [
+            ['Çeşme', 'Sakız Adası', 'greek_islands', false, '🇬🇷 Çeşme ➔ Sakız Adası'],
+            ['Bodrum', 'Kos Adası', 'greek_islands', false, '🇬🇷 Bodrum ➔ Kos Adası'],
+            ['Marmaris', 'Rodos Adası', 'greek_islands', false, '🇬🇷 Marmaris ➔ Rodos'],
+            ['İstanbul', 'Bursa', 'domestic', true, '🚗 İstanbul ➔ Bursa (İDO/BUDO)'],
+            ['Taşucu', 'Girne', 'domestic', true, '🪪 Taşucu ➔ Girne (KKTC)']
+        ];
+        pillsHtml = routes.map(([o, d, cat, veh, lbl]) => `
+            <button type="button" onclick="quickFillFerry('${o}', '${d}', '${cat}', ${veh})"
+                class="px-2.5 py-1 rounded-full bg-sky-50 hover:bg-sky-700 text-sky-900 hover:text-white border border-sky-200 font-bold text-[11px] transition cursor-pointer">
+                ${lbl}
+            </button>
+        `).join('');
+    } else if (mode === 'car') {
+        if (modeLabel) modeLabel.textContent = isEn ? '🚗 Popular Airport Car & Transfer:' : '🚗 Popüler Havalimanı Araç & Transfer:';
+        const routes = [
+            ['Antalya Havalimanı (AYT)', '🏠 Antalya Havalimanı (AYT)'],
+            ['İstanbul Sabiha Gökçen (SAW)', '🏠 Sabiha Gökçen (SAW)'],
+            ['İzmir Adnan Menderes (ADB)', '🏠 İzmir Adnan Menderes (ADB)'],
+            ['Bodrum Milas (BJV)', '🏠 Bodrum Milas (BJV)'],
+            ['Dalaman Havalimanı (DLM)', '🏠 Dalaman (DLM)']
+        ];
+        pillsHtml = routes.map(([loc, lbl]) => `
+            <button type="button" onclick="quickFillCar('${loc}')"
+                class="px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-500 text-amber-950 border border-amber-200 font-bold text-[11px] transition cursor-pointer">
+                ${lbl}
+            </button>
+        `).join('');
+    } else {
+        if (modeLabel) modeLabel.textContent = isEn ? '✈️ Popular Flight & Smart Hub Routes:' : '✈️ Popüler Uçuş & Akıllı Bağlantılı Rotalar:';
+        const routes = [
+            ['İstanbul (SAW)', 'Antalya (AYT)', false, '✈️ İstanbul ➔ Antalya'],
+            ['İstanbul (IST)', 'İzmir (ADB)', false, '✈️ İstanbul ➔ İzmir'],
+            ['İstanbul (SAW)', 'Trabzon (TZX)', false, '✈️ İstanbul ➔ Trabzon'],
+            ['Uşak', 'Trabzon (TZX)', false, '🧭 Uşak ➔ Trabzon (Akıllı Rota)'],
+            ['Bursa', 'Zürih (ZRH)', true, '🌍 Bursa ➔ Zürih (Akıllı Hub)'],
+            ['İstanbul (IST)', 'Bakü (GYD)', true, '🪪 İstanbul ➔ Bakü (Kimlikle)'],
+            ['İstanbul (SAW)', 'Lefkoşa (ECN)', true, '🪪 İstanbul ➔ Kıbrıs (KKTC)']
+        ];
+        pillsHtml = routes.map(([o, d, isIntl, lbl]) => `
+            <button type="button" onclick="quickFillFlight('${o}', '${d}', ${isIntl})"
+                class="px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-500 text-amber-950 border border-amber-200 font-bold text-[11px] transition cursor-pointer">
+                ${lbl}
+            </button>
+        `).join('');
+    }
+
+    container.innerHTML = pillsHtml;
+}
+window.renderQuickPopularRoutes = renderQuickPopularRoutes;
+
+const RECENT_SEARCH_STORAGE_KEY = 'hakiki_recent_transport_searches_v1';
+
+function getRecentTransportSearches() {
+    try {
+        const raw = localStorage.getItem(RECENT_SEARCH_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        return [];
+    }
+}
+window.getRecentTransportSearches = getRecentTransportSearches;
+
+function updateRecentSearchesCountBadge() {
+    const badge = document.getElementById("recentSearchesCountBadge");
+    if (!badge) return;
+    const list = getRecentTransportSearches();
+    badge.textContent = String(list.length);
+}
+window.updateRecentSearchesCountBadge = updateRecentSearchesCountBadge;
+
+function saveRecentTransportSearch(entry) {
+    if (!entry || !entry.origin || !entry.destination) return;
+    try {
+        const list = getRecentTransportSearches();
+        const key = `${entry.mode}|${entry.origin.toLowerCase()}|${entry.destination.toLowerCase()}`;
+        const filtered = list.filter(item => `${item.mode}|${(item.origin || '').toLowerCase()}|${(item.destination || '').toLowerCase()}` !== key);
+        filtered.unshift({
+            mode: entry.mode || 'flight',
+            origin: entry.origin,
+            destination: entry.destination,
+            resolvedOrigin: entry.resolvedOrigin || entry.origin,
+            resolvedDest: entry.resolvedDest || entry.destination,
+            depDate: entry.depDate || '',
+            retDate: entry.retDate || '',
+            tripType: entry.tripType || 'one_way',
+            ts: Date.now()
+        });
+        const trimmed = filtered.slice(0, 6);
+        localStorage.setItem(RECENT_SEARCH_STORAGE_KEY, JSON.stringify(trimmed));
+        updateRecentSearchesCountBadge();
+        if (activeQuickDrawerTab === 'recent') {
+            renderRecentSearchesPane();
+        }
+    } catch (e) {}
+}
+window.saveRecentTransportSearch = saveRecentTransportSearch;
+
+function renderRecentSearchesPane() {
+    const container = document.getElementById("quickRecentSearchesContainer");
+    if (!container) return;
+    const list = getRecentTransportSearches();
+    const isEn = window.currentAppLang === 'en';
+    if (list.length === 0) {
+        container.innerHTML = `<span class="text-[11px] font-semibold text-slate-400 italic">${isEn ? 'No recent searches yet.' : 'Henüz kayıtlı arama geçmişiniz bulunmuyor.'}</span>`;
+        return;
+    }
+    const modeIcons = { flight: '✈️', bus: '🚌', train: '🚆', ferry: '⛴️', car: '🚗' };
+    container.innerHTML = list.map((item, idx) => `
+        <button type="button" onclick="applyRecentTransportSearch(${idx})"
+            class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-indigo-600 text-slate-800 hover:text-white border border-slate-200 font-bold text-[11px] transition inline-flex items-center gap-1.5 cursor-pointer">
+            <span>${modeIcons[item.mode] || '✈️'}</span>
+            <span>${escapeHtml(item.origin)} ➔ ${escapeHtml(item.destination)}</span>
+            ${item.depDate ? `<span class="text-[9.5px] opacity-75">(${escapeHtml(item.depDate.slice(5))})</span>` : ''}
+        </button>
+    `).join('');
+}
+window.renderRecentSearchesPane = renderRecentSearchesPane;
+
+function applyRecentTransportSearch(idx) {
+    const list = getRecentTransportSearches();
+    const item = list[idx];
+    if (!item) return;
+
+    const targetMode = item.mode || 'flight';
+    if (window.switchUnifiedTab) {
+        window.switchUnifiedTab(targetMode);
+    } else {
+        switchTransportSubTab(targetMode);
+    }
+
+    setTimeout(() => {
+        const oInput = document.getElementById("transOrigin");
+        const dInput = document.getElementById("transDest");
+        const depInput = document.getElementById("transDepDate");
+        if (oInput) {
+            oInput.value = item.origin;
+            oInput.dataset.rawUserQuery = item.origin;
+            oInput.dataset.originalPlaceName = item.origin;
+        }
+        if (dInput) {
+            dInput.value = item.destination;
+            dInput.dataset.rawUserQuery = item.destination;
+            dInput.dataset.originalPlaceName = item.destination;
+        }
+        if (depInput && item.depDate) {
+            depInput.value = item.depDate;
+        }
+        executeTransportSearch();
+    }, 80);
+}
+window.applyRecentTransportSearch = applyRecentTransportSearch;
+
+function clearRecentTransportSearches() {
+    try {
+        localStorage.removeItem(RECENT_SEARCH_STORAGE_KEY);
+    } catch (e) {}
+    updateRecentSearchesCountBadge();
+    renderRecentSearchesPane();
+}
+window.clearRecentTransportSearches = clearRecentTransportSearches;
+

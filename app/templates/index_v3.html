@@ -1032,6 +1032,32 @@
                 </div>
             </div>
 
+            <!-- 2F. Açılır/Kapanır Tek Satır [⚡ Popüler Rotalar ▾] & [🕒 Son Aramalar ▾] Şeridi (Sıfır Kalabalık) -->
+            <div id="quickRoutesAndHistoryBar" class="mb-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="inline-flex flex-wrap items-center gap-1.5">
+                        <button type="button" id="btnTogglePopularRoutes" onclick="toggleQuickAccessDrawer('popular')"
+                                class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-amber-950 border border-slate-200 text-[11px] font-extrabold transition cursor-pointer inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt text-amber-500 text-[10px]"></i>
+                            <span data-i18n="quickPopularBtn">Popüler Rotalar</span>
+                            <i id="iconTogglePopularRoutes" class="fa-solid fa-chevron-down text-[9px] text-slate-400 transition-transform"></i>
+                        </button>
+                        <button type="button" id="btnToggleRecentSearches" onclick="toggleQuickAccessDrawer('recent')"
+                                class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-100 text-slate-700 hover:text-sky-950 border border-slate-200 text-[11px] font-extrabold transition cursor-pointer inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock-rotate-left text-sky-600 text-[10px]"></i>
+                            <span data-i18n="quickRecentBtn">Son Aramalar</span>
+                            <span id="recentSearchesCountBadge" class="hidden px-1.5 py-0.2 rounded-full bg-sky-200 text-sky-950 text-[9.5px] font-black">0</span>
+                            <i id="iconToggleRecentSearches" class="fa-solid fa-chevron-down text-[9px] text-slate-400 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Açılır Çekmece (Varsayılan Gizli — Tıklanınca Tek Satır Açılır) -->
+                <div id="quickAccessDrawer" class="hidden mt-2 p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/90">
+                    <div id="quickAccessPopularPane" class="hidden flex-wrap items-center gap-1.5"></div>
+                    <div id="quickAccessRecentPane" class="hidden flex-wrap items-center justify-between gap-2"></div>
+                </div>
+            </div>
+
             <!-- ==================== ULAŞIM FORMU (UÇAK, OTOBÜS, TREN, FERİBOT) ==================== -->
             <div id="transFormWrapper">
                 <form id="transportSearchForm" onsubmit="if(event) event.preventDefault();">
@@ -2700,7 +2726,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261030_v40"></script>
+    <script src="/static/js/app_v3.js?v=20261031_v41"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">

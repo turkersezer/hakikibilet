@@ -1025,6 +1025,467 @@ class SearchService:
             "routes": routes
         }
 
+    @staticmethod
+    def _haversine_km(lat1: Optional[float], lng1: Optional[float], lat2: Optional[float], lng2: Optional[float]) -> Optional[float]:
+        if lat1 is None or lng1 is None or lat2 is None or lng2 is None:
+            return None
+        try:
+            import math
+            r = 6371.0
+            phi1, phi2 = math.radians(float(lat1)), math.radians(float(lat2))
+            dphi = math.radians(float(lat2) - float(lat1))
+            dlambda = math.radians(float(lng2) - float(lng1))
+            a = math.sin(dphi / 2.0) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2.0) ** 2
+            return round(2.0 * r * math.atan2(math.sqrt(a), math.sqrt(1.0 - a)), 1)
+        except Exception:
+            return None
+
+    @staticmethod
+    def _parse_duration_mins(dur_str: Optional[str]) -> int:
+        if not dur_str:
+            return 0
+        import re
+        s = str(dur_str).lower()
+        hrs = 0
+        mins = 0
+        m_hr = re.search(r"(\d+)\s*(?:sa|saat|h|hr)", s)
+        if m_hr:
+            hrs = int(m_hr.group(1))
+        m_mn = re.search(r"(\d+)\s*(?:dk|dakika|m|min)", s)
+        if m_mn:
+            mins = int(m_mn.group(1))
+        if hrs == 0 and mins == 0:
+            m_any = re.search(r"(\d+)", s)
+            if m_any:
+                hrs = int(m_any.group(1))
+        return hrs * 60 + mins
+
+    @staticmethod
+    def _format_mins_tr(total_mins: int) -> str:
+        if total_mins <= 0:
+            return "1 sa"
+        h = total_mins // 60
+        m = total_mins % 60
+        if h > 0 and m > 0:
+            return f"{h} sa {m} dk"
+        elif h > 0:
+            return f"{h} sa"
+        return f"{m} dk"
+
+    @classmethod
+    def build_smart_hub_analysis(
+        cls,
+        true_orig_obj: Optional[dict],
+        true_dest_obj: Optional[dict],
+        true_orig_name: str,
+        true_dest_name: str,
+        eff_orig_airport: Optional[dict],
+        eff_dest_airport: Optional[dict],
+        orig_redirected: bool,
+        dest_redirected: bool,
+        same_region_shield: bool,
+        dist_orig_dest_km: Optional[float],
+        flight_tickets: List[Dict[str, Any]],
+        departure_date: str,
+        passengers: int,
+        currency: str,
+        curr_symbol: str,
+        links: Dict[str, Any],
+    ) -> Optional[Dict[str, Any]]:
+        """
+        4 KALKANLI AKILLI BAĞLANTI & TERS YÖN HAKEMİ:
+        1) Kalkan 1 (Aynı İl / Komşu İlçe / Aynı Hub Kalkanı): <135 km veya aynı havalimanına (ADB->ADB, AYT->AYT)
+           bağlanan noktalarda uçak aramasını durdurup doğrudan otobüs/tren/transfer alternatiflerini sunar.
+        2) Kalkan 2 (Sıfır Hayali Sefer): Havalimanına ulaşımda (1. Adım / Son Adım) sadece gerçekten seferi olan
+           ulaşım modlarını (Otobüs / TCDD Tren / Feribot / Havaş) fiyat ve süresiyle listeler.
+        3) Kalkan 3 (Ters Yön & Süre/Maliyet Hakemi): (1. Adım + 90 dk Havalimanı Tamponu + Uçuş) toplam süresini
+           ve maliyetini doğrudan otobüs/tren ile karşılaştırır. Uşak -> Antalya veya Edirne -> Sofya gibi ters yön /
+           daha uzun süren rotalarda dürüstçe "Doğrudan Otobüs/Tren Daha Hızlı ve Ekonomik" uyarısı verir;
+           Uşak -> Trabzon / Zürih gibi uzak rotalarda "2 Adımlı Akıllı Bağlantılı Rota" kartını açar.
+        4) Kalkan 4 (Yurt Dışı Uçuş Hub Garantisi): Yurt dışı varışlarda küçük iç hat havalimanı yerine uluslararası
+           ana merkez (IST, SAW, ADB, ESB, AYT) üzerinden bağlantı kurar.
+        """
+        if not same_region_shield and not orig_redirected and not dest_redirected:
+            return None
+
+        from app.services.bus_service import BusService
+        from app.services.train_service import TrainService
+        from app.services.ferry_service import FerryService
+
+        def _clean_place_for_ground(p_name: str) -> str:
+            s = (p_name or "").strip()
+            if "istanbul" in s.lower() or "sabiha" in s.lower():
+                return "İstanbul"
+            s = s.split("(")[0].replace("Limanı", "").replace("İskelesi", "").strip()
+            return s or p_name
+
+        def _fmt_hub_label(c_name: str, iata_c: str) -> str:
+            c_clean = (c_name or "").strip()
+            if not iata_c:
+                return c_clean
+            if f"({iata_c})" in c_clean:
+                return c_clean
+            return f"{c_clean} ({iata_c})"
+
+        def _query_verified_ground_legs(from_place: str, to_place: str, place_obj: Optional[dict] = None, hub_iata: str = "") -> List[Dict[str, Any]]:
+            leg_opts: List[Dict[str, Any]] = []
+            fp_clean = _clean_place_for_ground(from_place)
+            tp_clean = _clean_place_for_ground(to_place)
+            # 1. Otobüs kontrolü
+            try:
+                b_list = BusService.search_buses(
+                    origin_name=fp_clean,
+                    dest_name=tp_clean,
+                    departure_date=departure_date,
+                    passengers=passengers,
+                    currency=currency,
+                    is_round=False,
+                )
+                b_prices = [float(b["price"]) for b in (b_list or []) if b.get("price")]
+                if b_list and b_prices:
+                    min_b = int(round(min(b_prices)))
+                    b_dur = b_list[0].get("duration") or "2 sa"
+                    b_mins = cls._parse_duration_mins(b_dur) or 120
+                    b_url = b_list[0].get("official_link") or BusService.get_obilet_deep_link(fp_clean, tp_clean, departure_date)
+                    leg_opts.append({
+                        "mode": "bus",
+                        "icon": "🚌",
+                        "label_tr": "Şehirlerarası Otobüs",
+                        "label_en": "Intercity Bus",
+                        "duration": b_dur,
+                        "duration_mins": b_mins,
+                        "min_price": min_b,
+                        "currency": curr_symbol,
+                        "provider": "Obilet / Kamil Koç",
+                        "url": b_url,
+                    })
+            except Exception:
+                pass
+
+            # 2. TCDD Tren kontrolü (Sadece gerçek tarife varsa döner)
+            try:
+                t_list = TrainService.search_trains(
+                    origin_name=fp_clean,
+                    dest_name=tp_clean,
+                    departure_date=departure_date,
+                    passengers=passengers,
+                    currency=currency,
+                    is_round=False,
+                )
+                t_prices = [float(t["price"]) for t in (t_list or []) if t.get("price")]
+                if t_list and t_prices:
+                    min_t = int(round(min(t_prices)))
+                    t_dur = t_list[0].get("duration") or "3 sa"
+                    t_mins = cls._parse_duration_mins(t_dur) or 180
+                    leg_opts.append({
+                        "mode": "train",
+                        "icon": "🚆",
+                        "label_tr": f"TCDD Tren ({t_list[0].get('carrier', 'YHT/Anahat')})",
+                        "label_en": "TCDD Rail",
+                        "duration": t_dur,
+                        "duration_mins": t_mins,
+                        "min_price": min_t,
+                        "currency": curr_symbol,
+                        "provider": "TCDD Taşımacılık",
+                        "url": "https://ebilet.tcddtasimacilik.gov.tr/",
+                    })
+            except Exception:
+                pass
+
+            # 3. Feribot kontrolü (Sadece gerçek deniz hattı varsa döner: örn. Bursa/Yalova/Bandırma -> İstanbul)
+            try:
+                f_routes = FerryService.find_matching_routes(fp_clean, tp_clean)
+                if f_routes:
+                    f_list = FerryService.search_ferries(
+                        origin_name=fp_clean,
+                        dest_name=tp_clean,
+                        departure_date=departure_date,
+                        passengers=passengers,
+                        is_round=False,
+                        currency=currency,
+                    )
+                    f_prices = [float(f["price"]) for f in (f_list or []) if f.get("price")]
+                    if f_list and f_prices:
+                        min_f = int(round(min(f_prices)))
+                        f_dur = f_list[0].get("duration") or "1 sa 15 dk"
+                        f_mins = cls._parse_duration_mins(f_dur) or 75
+                        f_url = f_list[0].get("official_link") or "https://www.ido.com.tr/"
+                        leg_opts.append({
+                            "mode": "ferry",
+                            "icon": "⛴️",
+                            "label_tr": "Hızlı Feribot / Deniz Otobüsü",
+                            "label_en": "Fast Ferry",
+                            "duration": f_dur,
+                            "duration_mins": f_mins,
+                            "min_price": min_f,
+                            "currency": curr_symbol,
+                            "provider": f_list[0].get("carrier", "İDO / BUDO"),
+                            "url": f_url,
+                        })
+            except Exception:
+                pass
+
+            # Eğer tatil ilçesi / yakın ilçe ise ve Havaş/Muttaş bilgisi varsa yedek olarak ekle
+            if not leg_opts:
+                hub_meta = (place_obj or {}).get("nearest_domestic_hub") or (place_obj or {}).get("nearest_intl_hub") or {}
+                est_dur = hub_meta.get("duration") or "1 sa 15 dk"
+                est_mins = cls._parse_duration_mins(est_dur) or 75
+                leg_opts.append({
+                    "mode": "shuttle",
+                    "icon": "🚌",
+                    "label_tr": "Havaş / Havalimanı Servisi & Otobüs",
+                    "label_en": "Airport Shuttle / Bus",
+                    "duration": est_dur,
+                    "duration_mins": est_mins,
+                    "min_price": None,
+                    "currency": curr_symbol,
+                    "provider": "Havaş / Obilet",
+                    "url": BusService.get_obilet_deep_link(from_place, to_place, departure_date),
+                })
+
+            leg_opts.sort(key=lambda x: (x["duration_mins"], x["min_price"] or 999999))
+            return leg_opts
+
+        # KALKAN 1: Aynı İl / Komşu İlçe / Aynı Havalimanı (<135 km veya aynı IATA)
+        if same_region_shield:
+            direct_opts = _query_verified_ground_legs(true_orig_name, true_dest_name, true_orig_obj)
+            best_opt = direct_opts[0] if direct_opts else None
+            best_dur = best_opt["duration"] if best_opt else "~1 sa 15 dk"
+            dist_txt = f" (~{int(round(dist_orig_dest_km))} km)" if dist_orig_dest_km else ""
+            shared_iata = (eff_orig_airport.get("iata") if eff_orig_airport else "") or ""
+            return {
+                "verdict": "same_region_ground_only",
+                "shield_badge_tr": "🛑 Kısa Mesafe & Aynı Havalimanı Kalkanı",
+                "shield_badge_en": "🛑 Short Distance & Shared Airport Shield",
+                "true_origin": true_orig_name,
+                "true_destination": true_dest_name,
+                "shared_airport_iata": shared_iata,
+                "orig_hub_code": shared_iata,
+                "dest_hub_code": shared_iata,
+                "distance_km": dist_orig_dest_km,
+                "title": f"{true_orig_name} ➔ {true_dest_name} Arasında Uçak Seferi Bulunmamaktadır",
+                "title_tr": f"{true_orig_name} ➔ {true_dest_name} Arasında Uçak Seferi Bulunmamaktadır",
+                "title_en": f"No Flights Between {true_orig_name} and {true_dest_name}",
+                "summary_tr": (
+                    f"{true_orig_name} ile {true_dest_name} aynı havalimanı ({shared_iata}) bölgesinde / yakın mesafede{dist_txt} yer almaktadır. "
+                    f"Bu güzergahta uçak yerine doğrudan karayolu/raylı sistem ile {best_dur} sürede ulaşabilirsiniz."
+                ),
+                "summary_en": (
+                    f"{true_orig_name} and {true_dest_name} share the same regional airport ({shared_iata}){dist_txt}. "
+                    f"Direct ground transport takes {best_dur}."
+                ),
+                "direct_ground_options": direct_opts,
+                "ground_modes": direct_opts,
+                "origin_leg": None,
+                "flight_leg": None,
+                "dest_leg": None,
+            }
+
+        hub_orig_city = (eff_orig_airport["name"].split("(")[0].strip() if eff_orig_airport else true_orig_name)
+        hub_orig_iata = (eff_orig_airport.get("iata") if eff_orig_airport else "") or "ADB"
+        hub_dest_city = (eff_dest_airport["name"].split("(")[0].strip() if eff_dest_airport else true_dest_name)
+        hub_dest_iata = (eff_dest_airport.get("iata") if eff_dest_airport else "") or "AYT"
+
+        origin_leg = None
+        leg1_mins = 0
+        leg1_min_price = 0
+        if orig_redirected:
+            orig_opts = _query_verified_ground_legs(true_orig_name, hub_orig_city, true_orig_obj, hub_orig_iata)
+            best_o = orig_opts[0] if orig_opts else None
+            leg1_mins = best_o["duration_mins"] if best_o else 120
+            leg1_min_price = best_o["min_price"] or 0 if best_o else 0
+            lead_hours = round(max(2.5, (leg1_mins + 100) / 60.0) * 2) / 2
+            lead_str = f"{int(lead_hours)}" if lead_hours == int(lead_hours) else f"{lead_hours}".replace(".", ",")
+            origin_leg = {
+                "from": true_orig_name,
+                "to": _fmt_hub_label(f"{hub_orig_city} Havalimanı" if "Havalimanı" not in hub_orig_city else hub_orig_city, hub_orig_iata),
+                "hub_city": hub_orig_city,
+                "hub_iata": hub_orig_iata,
+                "best_duration": best_o["duration"] if best_o else "2 sa",
+                "best_price": best_o["min_price"] if best_o else None,
+                "currency": curr_symbol,
+                "safe_lead_hours_text": f"Uçuş saatinizden en az {lead_str} saat önce {true_orig_name} noktasından hareket eden seferi seçiniz.",
+                "options": orig_opts,
+            }
+
+        dest_leg = None
+        leg3_mins = 0
+        leg3_min_price = 0
+        if dest_redirected:
+            dest_opts = _query_verified_ground_legs(hub_dest_city, true_dest_name, true_dest_obj, hub_dest_iata)
+            best_d = dest_opts[0] if dest_opts else None
+            leg3_mins = best_d["duration_mins"] if best_d else 90
+            leg3_min_price = best_d["min_price"] or 0 if best_d else 0
+            dest_leg = {
+                "from": _fmt_hub_label(f"{hub_dest_city} Havalimanı" if "Havalimanı" not in hub_dest_city else hub_dest_city, hub_dest_iata),
+                "to": true_dest_name,
+                "hub_city": hub_dest_city,
+                "hub_iata": hub_dest_iata,
+                "best_duration": best_d["duration"] if best_d else "1 sa 30 dk",
+                "best_price": best_d["min_price"] if best_d else None,
+                "currency": curr_symbol,
+                "options": dest_opts,
+            }
+
+        # Uçuş ayağı istatistikleri
+        valid_fl_prices = [float(f["price"]) for f in (flight_tickets or []) if f.get("price") is not None and float(f["price"]) > 0]
+        min_flight_price = int(round(min(valid_fl_prices))) if valid_fl_prices else None
+        fl_durs = [cls._parse_duration_mins(f.get("duration")) for f in (flight_tickets or []) if f.get("duration")]
+        fl_durs = [d for d in fl_durs if d > 0]
+        flight_mins = min(fl_durs) if fl_durs else 75
+        flight_dur_str = cls._format_mins_tr(flight_mins)
+
+        airport_buffer_mins = 90  # Havalimanı güvenlik + bagaj + terminal geçiş tamponu
+        combo_total_mins = leg1_mins + airport_buffer_mins + flight_mins + leg3_mins
+        combo_total_dur_str = cls._format_mins_tr(combo_total_mins)
+        combo_total_price = (leg1_min_price + min_flight_price + leg3_min_price) if min_flight_price else None
+
+        flight_leg = {
+            "from": _fmt_hub_label(hub_orig_city, hub_orig_iata),
+            "to": _fmt_hub_label(hub_dest_city, hub_dest_iata),
+            "from_iata": hub_orig_iata,
+            "to_iata": hub_dest_iata,
+            "duration": flight_dur_str,
+            "duration_mins": flight_mins,
+            "min_price": min_flight_price,
+            "currency": curr_symbol,
+            "flights_count": len(flight_tickets or []),
+        }
+
+        # KALKAN 3: Doğrudan Otobüs/Tren ile Ters Yön ve Süre/Maliyet Karşılaştırması
+        is_dest_intl = bool(true_dest_obj and true_dest_obj.get("is_international"))
+        is_orig_intl = bool(true_orig_obj and true_orig_obj.get("is_international"))
+        is_overland = bool((true_dest_obj and true_dest_obj.get("is_overland_neighbor")) or (true_orig_obj and true_orig_obj.get("is_overland_neighbor")))
+
+        direct_ground_options: List[Dict[str, Any]] = []
+        if (not is_dest_intl and not is_orig_intl) or is_overland:
+            direct_ground_options = _query_verified_ground_legs(true_orig_name, true_dest_name, true_orig_obj)
+            # Sadece gerçek otobüs/tren/feribot olanları tut (shuttle tahminini doğrudan şehirlerarası karşılaştırmaya sokma)
+            direct_ground_options = [o for o in direct_ground_options if o["mode"] in ("bus", "train", "ferry") and (o.get("min_price") is not None or is_overland)]
+
+        best_direct = direct_ground_options[0] if direct_ground_options else None
+        direct_mins = best_direct["duration_mins"] if best_direct else None
+        direct_price = best_direct["min_price"] if best_direct else None
+
+        # Coğrafi Ters Yön Tespiti: Havalimanı varış noktasına asıl kalkış noktasından daha uzaksa!
+        dist_hub_dest_km = None
+        if orig_redirected and eff_orig_airport and true_dest_obj:
+            dist_hub_dest_km = cls._haversine_km(
+                eff_orig_airport.get("lat"), eff_orig_airport.get("lng"),
+                true_dest_obj.get("lat"), true_dest_obj.get("lng")
+            )
+        is_reverse_direction = bool(
+            dist_orig_dest_km is not None
+            and dist_hub_dest_km is not None
+            and (dist_hub_dest_km > dist_orig_dest_km + 35)
+        )
+        # Sınır komşusu ters yön (Örn: Edirne -> Sofya/Selanik için doğuya İstanbul'a geri gitmek)
+        if is_overland and orig_redirected and true_orig_obj and true_orig_obj.get("slug") in ("edirne", "kirklareli", "artvin", "rize"):
+            is_reverse_direction = True
+            if not best_direct:
+                best_direct = {
+                    "mode": "bus",
+                    "icon": "🚌",
+                    "label_tr": "Uluslararası Doğrudan Otobüs",
+                    "label_en": "Direct International Bus",
+                    "duration": "3 sa 15 dk",
+                    "duration_mins": 195,
+                    "min_price": None,
+                    "currency": curr_symbol,
+                    "provider": "Kamil Koç / FlixBus / Obilet",
+                    "url": BusService.get_kamilkoc_deep_link(true_orig_name, true_dest_name, departure_date, passengers=passengers),
+                }
+                direct_ground_options = [best_direct]
+                direct_mins = 195
+
+        # KARAR (VERDICT):
+        # 1) Doğrudan otobüs/tren toplam uçuş+aktarma süresinden daha kısaysa (veya en fazla 45 dk fark varsa)
+        #    VEYA havalimanı ters yöndeyse ve doğrudan karayolu <= 6 saat (360 dk) ise -> "direct_ground_better"
+        if best_direct and direct_mins and (
+            direct_mins <= combo_total_mins + 45
+            or (is_reverse_direction and direct_mins <= 360)
+        ):
+            time_diff_mins = max(0, combo_total_mins - direct_mins)
+            time_saved_txt = f" ({cls._format_mins_tr(time_diff_mins)} daha hızlı)" if time_diff_mins >= 15 else ""
+            rev_txt = f" {hub_orig_city} ({hub_orig_iata}) havalimanı ters yönde kaldığından," if is_reverse_direction else ""
+            d_price_txt = f" (~{direct_price:,} {curr_symbol})".replace(",", ".") if direct_price else ""
+            c_price_txt = f" (~{combo_total_price:,} {curr_symbol})".replace(",", ".") if combo_total_price else ""
+
+            return {
+                "verdict": "direct_ground_better",
+                "is_reverse_direction": is_reverse_direction,
+                "shield_badge_tr": "⚠️ Ters Yön & Süre Hakemi Uyarısı" if is_reverse_direction else "💡 Hakiki Süre & Maliyet Analizi",
+                "shield_badge_en": "⚠️ Reverse Direction & Time Alert" if is_reverse_direction else "💡 Smart Time & Cost Analysis",
+                "true_origin": true_orig_name,
+                "true_destination": true_dest_name,
+                "orig_hub_code": hub_orig_iata,
+                "dest_hub_code": hub_dest_iata,
+                "title": f"Doğrudan {best_direct['label_tr']} ({best_direct['duration']}), Aktarmalı Uçuştan ({combo_total_dur_str}) Daha Avantajlı!",
+                "title_tr": f"Doğrudan {best_direct['label_tr']} ({best_direct['duration']}), Aktarmalı Uçuştan ({combo_total_dur_str}) Daha Avantajlı!",
+                "title_en": f"Direct {best_direct['label_en']} ({best_direct['duration']}) Beats Connecting Flight ({combo_total_dur_str})!",
+                "summary_tr": (
+                    f"{true_orig_name} şehrinde aktif havalimanı bulunmamaktadır.{rev_txt} "
+                    f"{hub_orig_city} ({hub_orig_iata}) üzerinden uçmak; karayolu transferi ({origin_leg['best_duration'] if origin_leg else '1 sa 30 dk'}), "
+                    f"havalimanı beklemesi (1 sa 30 dk) ve uçuş ({flight_dur_str}) ile toplam {combo_total_dur_str}{c_price_txt} sürmektedir. "
+                    f"Oysa doğrudan {true_orig_name} ➔ {true_dest_name} {best_direct['label_tr'].lower()} seferi yalnızca {best_direct['duration']}{d_price_txt} sürer{time_saved_txt}."
+                ),
+                "summary_en": (
+                    f"Flying via {hub_orig_city} ({hub_orig_iata}) takes {combo_total_dur_str} total including ground transfer and airport buffer, "
+                    f"whereas direct {best_direct['label_en'].lower()} takes only {best_direct['duration']}{d_price_txt}."
+                ),
+                "combo_total_duration": combo_total_dur_str,
+                "combo_total_mins": combo_total_mins,
+                "combo_total_price": combo_total_price,
+                "best_direct_option": best_direct,
+                "direct_ground_options": direct_ground_options,
+                "ground_modes": direct_ground_options,
+                "origin_leg": origin_leg,
+                "flight_leg": flight_leg,
+                "dest_leg": dest_leg,
+            }
+
+        # 2) Uçmak gerçekten zaman kazandırıyorsa -> "smart_combo_recommended" (2/3 Adımlı Akıllı Bağlantılı Rota)
+        saved_mins = (direct_mins - combo_total_mins) if (direct_mins and direct_mins > combo_total_mins) else None
+        saved_badge_tr = f"⚡ Karayoluna Göre ~{cls._format_mins_tr(saved_mins)} Zaman Kazandırır" if (saved_mins and saved_mins >= 90) else "🧭 En Hızlı Havalimanı Bağlantılı Plan"
+        route_chain = []
+        if orig_redirected:
+            route_chain.append(true_orig_name)
+        route_chain.append(f"{hub_orig_city} ({hub_orig_iata})")
+        route_chain.append(f"{hub_dest_city} ({hub_dest_iata})")
+        if dest_redirected:
+            route_chain.append(true_dest_name)
+
+        return {
+            "verdict": "smart_combo_recommended",
+            "is_reverse_direction": False,
+            "shield_badge_tr": saved_badge_tr,
+            "shield_badge_en": "🧭 Smart Connected Route Plan",
+            "true_origin": true_orig_name,
+            "true_destination": true_dest_name,
+            "orig_hub_code": hub_orig_iata,
+            "dest_hub_code": hub_dest_iata,
+            "route_chain_text": " ➔ ".join(route_chain),
+            "title": f"Akıllı Bağlantılı Rota: {' ➔ '.join(route_chain)}",
+            "title_tr": f"Akıllı Bağlantılı Rota: {' ➔ '.join(route_chain)}",
+            "title_en": f"Smart Connected Route: {' ➔ '.join(route_chain)}",
+            "summary_tr": (
+                f"{true_orig_name if orig_redirected else true_dest_name} noktasında doğrudan uçuş bulunmadığından en hızlı ulaşım "
+                f"toplam ~{combo_total_dur_str} süren aşağıdaki adım adım bağlantılı plan ile sağlanmaktadır:"
+            ),
+            "summary_en": (
+                f"Step-by-step connected itinerary via {hub_orig_city} ({hub_orig_iata}) with an estimated total travel time of ~{combo_total_dur_str}:"
+            ),
+            "combo_total_duration": combo_total_dur_str,
+            "combo_total_mins": combo_total_mins,
+            "combo_total_price": combo_total_price,
+            "best_direct_option": best_direct,
+            "direct_ground_options": direct_ground_options,
+            "ground_modes": direct_ground_options,
+            "origin_leg": origin_leg,
+            "flight_leg": flight_leg,
+            "dest_leg": dest_leg,
+        }
+
     @classmethod
     def search_all_tickets(
         cls, origin_city: str, dest_city: str, departure_date: str, 
@@ -1034,7 +1495,8 @@ class SearchService:
         location_type: str = "city", ferry_vehicle_type: str = "passenger",
         currency: str = "TRY", search_mode: str = "fast",
         include_hotel: bool = False, hotel_nights: Optional[int] = None,
-        adults: int = 1, children: int = 0, infants: int = 0
+        adults: int = 1, children: int = 0, infants: int = 0,
+        raw_origin: Optional[str] = None, raw_destination: Optional[str] = None,
     ):
         # Yolcu sayılarını normalize et
         children = max(0, int(children or 0))
@@ -1063,10 +1525,43 @@ class SearchService:
         origin_name = origin["name"] if origin else origin_city
         dest_name = dest["name"] if dest else dest_city
 
-        # 1.1 Aynı Kalkış ve Varış Noktası Erken Koruması (Kiralık Araç, Havalimanı Transferi ve Konaklama hariç)
+        # Kullanıcının ilk yazdığı şehir/ilçe bilgisini (örn. Uşak, Çeşme, Edirne, Bursa) tespit et
+        _AIRPORT_SHORTHANDS = {
+            "saw", "ist", "ahl", "esb", "adb", "ayt", "ksy", "tzx", "bjv", "dlm", "cov", "ada", "gzp",
+            "asr", "gzt", "diy", "erz", "erc", "van", "szf", "mqm", "rzv", "nav", "vas", "kya", "aoe",
+            "mlx", "ezs", "bal", "dnz", "edo", "usq", "kzr", "afy", "ise", "onq", "kco", "teq", "yei",
+            "ckz", "sxz", "mzh", "tjk", "nop", "kfs", "ogu", "hty", "gny", "adf", "aji", "igd", "yko",
+            "nkt", "bgg", "msr", "sabiha", "sabiha gokcen", "esenboga", "adnan menderes", "cukurova",
+        }
+        raw_orig_clean = (raw_origin or "").strip()
+        raw_dest_clean = (raw_destination or "").strip()
+        true_orig_obj = (
+            find_city(raw_orig_clean)
+            if (raw_orig_clean and raw_orig_clean.lower() not in _AIRPORT_SHORTHANDS)
+            else origin
+        ) or origin
+        true_dest_obj = (
+            find_city(raw_dest_clean)
+            if (raw_dest_clean and raw_dest_clean.lower() not in _AIRPORT_SHORTHANDS)
+            else dest
+        ) or dest
+        true_orig_name = (
+            raw_orig_clean
+            if (raw_orig_clean and true_orig_obj and ("Limanı" in true_orig_obj.get("name", "") or "İskelesi" in true_orig_obj.get("name", "")) and transport_type != "ferry")
+            else (true_orig_obj["name"].split("(")[0].strip() if true_orig_obj else (raw_orig_clean or origin_name))
+        )
+        true_dest_name = (
+            raw_dest_clean
+            if (raw_dest_clean and true_dest_obj and ("Limanı" in true_dest_obj.get("name", "") or "İskelesi" in true_dest_obj.get("name", "")) and transport_type != "ferry")
+            else (true_dest_obj["name"].split("(")[0].strip() if true_dest_obj else (raw_dest_clean or dest_name))
+        )
+        true_orig_slug = true_orig_obj.get("slug") if true_orig_obj else true_orig_name.lower().replace(" ", "-")
+        true_dest_slug = true_dest_obj.get("slug") if true_dest_obj else true_dest_name.lower().replace(" ", "-")
+
+        # 1.1 Aynı Kalkış ve Varış Noktası Erken Koruması (Sadece kullanıcının asıl kalkış ve varış yeri birebir aynıysa)
         orig_slug = origin["slug"] if origin else origin_city.lower().replace(" ", "-")
         dest_slug = dest["slug"] if dest else dest_city.lower().replace(" ", "-")
-        if transport_type != "car" and (orig_slug == dest_slug or origin_city.strip().lower() == dest_city.strip().lower()):
+        if transport_type != "car" and (true_orig_slug == true_dest_slug or true_orig_name.strip().lower() == true_dest_name.strip().lower()):
             currency_norm = (currency or "TRY").upper()
             curr_sym = CurrencyService.get_symbol(currency_norm)
             links = cls.generate_deep_links(
@@ -1109,10 +1604,44 @@ class SearchService:
                 "hotel_info": same_city_hotel_info,
                 "price_calendar": {"days": [], "days_count": 0, "range_type": calendar_range, "tip": ""}
             }
-        
-        eff_orig_airport, orig_nearby_airport = resolve_nearest_airport_city(origin or origin_name)
-        eff_dest_airport, dest_nearby_airport = resolve_nearest_airport_city(dest or dest_name)
-        if not (bool(origin and origin.get("is_international")) or bool(dest and dest.get("is_international"))):
+
+        eff_orig_airport, orig_nearby_airport = resolve_nearest_airport_city(true_orig_obj or origin or origin_name)
+        eff_dest_airport, dest_nearby_airport = resolve_nearest_airport_city(true_dest_obj or dest or dest_name)
+
+        is_any_intl = bool(
+            (true_orig_obj and true_orig_obj.get("is_international"))
+            or (true_dest_obj and true_dest_obj.get("is_international"))
+            or (origin and origin.get("is_international"))
+            or (dest and dest.get("is_international"))
+        )
+
+        # KALKAN 4: Yurt dışı uçuşlarda küçük iç hat havalimanı yerine uluslararası ana merkezi (nearest_intl_hub / FALLBACK_MAJOR_HUB_BY_IATA) baz al
+        if is_any_intl and transport_type in ("flight", "all"):
+            if true_orig_obj and not true_orig_obj.get("is_international"):
+                intl_o = true_orig_obj.get("nearest_intl_hub")
+                fb_intl_o = find_city(intl_o.get("iata") or intl_o.get("city", "")) if intl_o else None
+                if not fb_intl_o:
+                    cur_o_iata = (eff_orig_airport.get("iata") if eff_orig_airport else "") or (true_orig_obj.get("iata") or "")
+                    fb_chk_o = FALLBACK_MAJOR_HUB_BY_IATA.get(cur_o_iata.upper())
+                    if fb_chk_o:
+                        fb_intl_o = find_city(fb_chk_o["hub_slug"])
+                if fb_intl_o:
+                    eff_orig_airport = fb_intl_o
+                    origin = fb_intl_o
+                    origin_name = fb_intl_o["name"]
+            if true_dest_obj and not true_dest_obj.get("is_international"):
+                intl_d = true_dest_obj.get("nearest_intl_hub")
+                fb_intl_d = find_city(intl_d.get("iata") or intl_d.get("city", "")) if intl_d else None
+                if not fb_intl_d:
+                    cur_d_iata = (eff_dest_airport.get("iata") if eff_dest_airport else "") or (true_dest_obj.get("iata") or "")
+                    fb_chk_d = FALLBACK_MAJOR_HUB_BY_IATA.get(cur_d_iata.upper())
+                    if fb_chk_d:
+                        fb_intl_d = find_city(fb_chk_d["hub_slug"])
+                if fb_intl_d:
+                    eff_dest_airport = fb_intl_d
+                    dest = fb_intl_d
+                    dest_name = fb_intl_d["name"]
+        elif not is_any_intl:
             orig_fb_chk = FALLBACK_MAJOR_HUB_BY_IATA.get((eff_orig_airport.get("iata") if eff_orig_airport else "") or "")
             if orig_fb_chk and orig_fb_chk.get("domestic_inactive"):
                 fb_c = find_city(orig_fb_chk["hub_slug"])
@@ -1123,12 +1652,75 @@ class SearchService:
                 fb_c = find_city(dest_fb_chk["hub_slug"])
                 if fb_c:
                     eff_dest_airport = fb_c
-        origin_has_airport = bool(eff_orig_airport and eff_orig_airport.get("has_airport"))
+
+        # KALKAN 1: Aynı İl / Komşu İlçe / Aynı Havalimanı (<135 km veya aynı IATA) tespiti
+        dist_orig_dest_km = cls._haversine_km(
+            true_orig_obj.get("lat") if true_orig_obj else None,
+            true_orig_obj.get("lng") if true_orig_obj else None,
+            true_dest_obj.get("lat") if true_dest_obj else None,
+            true_dest_obj.get("lng") if true_dest_obj else None,
+        )
+        same_airport_iata = bool(
+            eff_orig_airport
+            and eff_dest_airport
+            and eff_orig_airport.get("iata")
+            and eff_orig_airport.get("iata") == eff_dest_airport.get("iata")
+        )
+        same_region_shield = bool(
+            transport_type == "flight"
+            and (
+                same_airport_iata
+                or (dist_orig_dest_km is not None and dist_orig_dest_km < 135.0 and not is_any_intl)
+            )
+        )
+
+        _JOINT_HUB_SLUGS = {
+            ("adana", "mersin"), ("mersin", "adana"),
+            ("rize", "artvin"), ("artvin", "rize"),
+            ("ordu", "giresun"), ("giresun", "ordu"),
+            ("istanbul", "istanbul-sabiha-gokcen"), ("istanbul", "istanbul-havalimani"),
+        }
+        orig_redirected = bool(
+            transport_type == "flight"
+            and not same_region_shield
+            and true_orig_obj
+            and eff_orig_airport
+            and true_orig_obj.get("slug") != eff_orig_airport.get("slug")
+            and (true_orig_obj.get("slug"), eff_orig_airport.get("slug")) not in _JOINT_HUB_SLUGS
+            and (
+                not true_orig_obj.get("has_airport")
+                or true_orig_obj.get("is_district")
+                or (true_orig_obj.get("iata") or "") != (eff_orig_airport.get("iata") or "")
+            )
+        )
+        dest_redirected = bool(
+            transport_type == "flight"
+            and not same_region_shield
+            and true_dest_obj
+            and eff_dest_airport
+            and true_dest_obj.get("slug") != eff_dest_airport.get("slug")
+            and (true_dest_obj.get("slug"), eff_dest_airport.get("slug")) not in _JOINT_HUB_SLUGS
+            and (
+                not true_dest_obj.get("has_airport")
+                or true_dest_obj.get("is_district")
+                or (true_dest_obj.get("iata") or "") != (eff_dest_airport.get("iata") or "")
+            )
+        )
+
+        # Eğer uçak modunda havalimanı olmayan bir il/ilçe girilmişse uçuş sorgusunu çözümlenmiş hub üzerinden yap
+        if transport_type == "flight":
+            if orig_redirected and eff_orig_airport:
+                origin_name = eff_orig_airport["name"]
+            if dest_redirected and eff_dest_airport:
+                dest_name = eff_dest_airport["name"]
+
+        origin_has_airport = bool(eff_orig_airport and eff_orig_airport.get("has_airport") and not same_region_shield)
         dest_has_airport = bool(
             eff_dest_airport
             and eff_dest_airport.get("has_airport")
             and eff_orig_airport
             and eff_orig_airport.get("iata") != eff_dest_airport.get("iata")
+            and not same_region_shield
         )
         origin_has_train = bool(origin and origin.get("has_train"))
         dest_has_train = bool(dest and dest.get("has_train"))
@@ -1137,7 +1729,9 @@ class SearchService:
         curr_symbol = CurrencyService.get_symbol(currency)
 
         links = cls.generate_deep_links(
-            origin_name, dest_name, departure_date, return_date, total_pax, trip_type, 
+            true_orig_name if transport_type != "flight" else origin_name,
+            true_dest_name if transport_type != "flight" else dest_name,
+            departure_date, return_date, total_pax, trip_type, 
             cabin_class=cabin_class, currency=currency,
             adults=adults, children=children, infants=infants
         )
@@ -1146,8 +1740,7 @@ class SearchService:
 
         is_round = (trip_type == "round_trip" and return_date)
 
-        # Alternatif ulaşım rozetlerini (Örn: Otobüs ararken Uçak + Tren fiyatlarını)
-        # veya Konaklama (Otel) aramasını ana aramayla EŞ ZAMANLI (paralel) başlat!
+        # Alternatif ulaşım rozetlerini kullanıcının asıl kalkış/varış noktası (örn. Uşak -> Antalya) üzerinden paralel başlat!
         _alt_executor = None
         _alt_badges_future = None
         _hotel_executor = None
@@ -1156,24 +1749,29 @@ class SearchService:
             _hotel_executor = ThreadPoolExecutor(max_workers=1)
             _hotel_future = _hotel_executor.submit(
                 HotelService.get_hotel_recommendation,
-                dest_city=dest_city or dest_name,
+                dest_city=true_dest_name or dest_city or dest_name,
                 checkin_date=departure_date,
                 checkout_date=return_date,
                 guests=total_pax,
                 currency=currency,
             )
         else:
+            _alt_links = cls.generate_deep_links(
+                true_orig_name, true_dest_name, departure_date, return_date, total_pax, trip_type,
+                cabin_class=cabin_class, currency=currency,
+                adults=adults, children=children, infants=infants
+            ) if (orig_redirected or dest_redirected or same_region_shield) else links
             _alt_executor = ThreadPoolExecutor(max_workers=1)
             _alt_badges_future = _alt_executor.submit(
                 cls.build_alternative_mode_badges,
-                origin_name=origin_name,
-                dest_name=dest_name,
+                origin_name=true_orig_name,
+                dest_name=true_dest_name,
                 departure_date=departure_date,
                 current_mode=transport_type,
                 passengers=total_pax,
                 currency=currency,
                 curr_symbol=curr_symbol,
-                links=links,
+                links=_alt_links,
                 summary={},
             )
 
@@ -1598,6 +2196,54 @@ class SearchService:
             transport_type=transport_type
         )
 
+        smart_hub_analysis = None
+        if transport_type == "flight" and flight_tickets and not same_region_shield:
+            # Eğer canlı uçuş servisi kısıtlı havalimanından (örn. YEI, KZR, TEQ) ana hub'a (SAW, IST, ESB) otomatik geçiş yaptıysa yakala
+            first_fl = flight_tickets[0]
+            fl_from_code = (first_fl.get("from_code") or "").upper()
+            fl_to_code = (first_fl.get("to_code") or "").upper()
+            orig_true_iatas = {
+                (true_orig_obj.get("iata") or "").upper(),
+                (true_orig_obj.get("alt_iata") or "").upper(),
+            } - {""}
+            dest_true_iatas = {
+                (true_dest_obj.get("iata") or "").upper(),
+                (true_dest_obj.get("alt_iata") or "").upper(),
+            } - {""}
+            if fl_from_code and orig_true_iatas and fl_from_code not in orig_true_iatas:
+                resolved_fl_orig = find_city(fl_from_code)
+                if resolved_fl_orig and (true_orig_obj.get("slug"), resolved_fl_orig.get("slug")) not in _JOINT_HUB_SLUGS:
+                    eff_orig_airport = resolved_fl_orig
+                    orig_redirected = True
+            if fl_to_code and dest_true_iatas and fl_to_code not in dest_true_iatas:
+                resolved_fl_dest = find_city(fl_to_code)
+                if resolved_fl_dest and (true_dest_obj.get("slug"), resolved_fl_dest.get("slug")) not in _JOINT_HUB_SLUGS:
+                    eff_dest_airport = resolved_fl_dest
+                    dest_redirected = True
+
+        if transport_type == "flight" and (same_region_shield or orig_redirected or dest_redirected):
+            try:
+                smart_hub_analysis = cls.build_smart_hub_analysis(
+                    true_orig_obj=true_orig_obj,
+                    true_dest_obj=true_dest_obj,
+                    true_orig_name=true_orig_name,
+                    true_dest_name=true_dest_name,
+                    eff_orig_airport=eff_orig_airport,
+                    eff_dest_airport=eff_dest_airport,
+                    orig_redirected=orig_redirected,
+                    dest_redirected=dest_redirected,
+                    same_region_shield=same_region_shield,
+                    dist_orig_dest_km=dist_orig_dest_km,
+                    flight_tickets=flight_tickets,
+                    departure_date=departure_date,
+                    passengers=total_pax,
+                    currency=currency,
+                    curr_symbol=curr_symbol,
+                    links=links,
+                )
+            except Exception as sha_err:
+                print(f"Smart hub analysis error: {sha_err}")
+
         is_intl_search = bool((origin and origin.get("is_international")) or (dest and dest.get("is_international")))
         travel_context = {
             "origin_name": origin_name,
@@ -1619,6 +2265,8 @@ class SearchService:
         return {
             "origin": origin_name,
             "destination": dest_name,
+            "raw_origin": true_orig_name,
+            "raw_destination": true_dest_name,
             "date": departure_date,
             "return_date": return_date,
             "trip_type": trip_type,
@@ -1635,6 +2283,7 @@ class SearchService:
             "currency_code": currency.upper(),
             "summary": summary,
             "smart_multimodal_plan": smart_multimodal_plan,
+            "smart_hub_analysis": smart_hub_analysis,
             "hotel_info": hotel_info,
             "cross_modal_hint": cross_modal_hint,
             "price_calendar": price_calendar,
