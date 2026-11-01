@@ -1060,6 +1060,471 @@ class HotelService:
         except Exception as e:
             logger.debug(f"Batch Enuygun/Etstur direct slug resolve warning: {e}")
 
+    _HOTEL_INDICATOR_KEYWORDS = (
+        "otel", "hotel", "resort", "palace", "palazzo", "suites", "suite", "spa", "villa",
+        "konak", "konağı", "pension", "pansiyon", "bungalov", "bungalow", "residence", "rezidans",
+        "rixos", "titanic", "concorde", "hilton", "radisson", "sheraton", "swandor", "delphin",
+        "barut", "voyage", "maxx", "regnum", "cullinan", "granada", "limak", "acapulco",
+        "kaya", "dedeman", "divan", "marmara", "swissotel", "kempinski", "mandarin", "ciragan",
+        "çırağan", "cvk", "wyndham", "ramada", "marriott", "hyatt", "intercontinental",
+        "novotel", "ibis", "mercure", "doubletree", "hampton", "crowne", "holiday inn",
+        "nirvana", "sueno", "cornelia", "ela excellence", "calista", "bellis", "selectum",
+        "alvadonna", "alva donna", "dobedan", "rubi", "haydarpasha", "kremlin", "topkapi",
+        "royal", "imperial", "grand", "luxury", "de luxe", "deluxe", "prive", "beach",
+        "thermal", "termal", "cave", "stone", "boutique", "butik", "han", "köşk",
+    )
+
+    @classmethod
+    def autocomplete_hotels_and_regions(cls, query: str) -> List[Dict[str, Any]]:
+        """
+        Kullanıcı Konaklama arama kutusuna şehir veya otel adı yazdığında:
+        Enuygun Otel Autocomplete + Trip.com Keyword API kaynaklarını paralel sorgulayarak
+        hem '📍 Bölge / Şehir' hem de '🏨 Doğrudan Otel' önerilerini döndürür.
+        """
+        q = str(query or "").strip()
+        if len(q) < 2:
+            return []
+
+        def _fetch_enuygun_ac() -> List[Dict[str, Any]]:
+            url = f"https://hot-autocomplete-api.enuygun.com/api/v1/autocomplete?q={urllib.parse.quote(q)}"
+            try:
+                raw = cls._http_get_text(
+                    url,
+                    headers={"Accept": "application/json", "Referer": "https://www.enuygun.com/otel/"},
+                    timeout=2.6,
+                )
+                payload = json.loads(raw)
+                return (payload.get("data") or {}).get("items") or []
+            except Exception as err:
+                logger.debug(f"Enuygun hotel autocomplete warning ({q}): {err}")
+                return []
+
+        def _fetch_trip_ac() -> List[Dict[str, Any]]:
+            try:
+                trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
+                trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
+                body_bytes = json.dumps({
+                    "queryInfo": {"keyword": q, "actionType": "destination"},
+                    "head": {
+                        "platform": "PC",
+                        "cver": "0",
+                        "bu": "IBU",
+                        "group": "trip",
+                        "aid": trip_aid,
+                        "sid": trip_sid,
+                        "locale": "tr-TR",
+                        "region": "TR",
+                        "timezone": "3",
+                        "currency": "TRY",
+                        "isSSR": False,
+                    },
+                }).encode("utf-8")
+                client = cls._create_primp_client(timeout=2.6)
+                resp = client.post(
+                    "https://tr.trip.com/restapi/soa2/34951/getHotelKeywords",
+                    content=body_bytes,
+                    headers={"Content-Type": "application/json"},
+                )
+                if resp.status_code == 200 and resp.text:
+                    rdata = json.loads(resp.text)
+                    return ((rdata.get("data") or {}).get("mainKeywordList") or {}).get("keywords") or []
+            except Exception as err:
+                logger.debug(f"Trip hotel autocomplete warning ({q}): {err}")
+            return []
+
+        en_items: List[Dict[str, Any]] = []
+        tr_items: List[Dict[str, Any]] = []
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            f_en = pool.submit(_fetch_enuygun_ac)
+            f_tr = pool.submit(_fetch_trip_ac)
+            try:
+                en_items = f_en.result(timeout=3.0) or []
+            except Exception:
+                en_items = []
+            try:
+                tr_items = f_tr.result(timeout=3.0) or []
+            except Exception:
+                tr_items = []
+
+        results: List[Dict[str, Any]] = []
+        seen_keys: Dict[str, Dict[str, Any]] = {}
+
+        # 1. Enuygun sonuçlarını işle
+        for x in en_items:
+            if not isinstance(x, dict):
+                continue
+            item_type = str(x.get("type") or "").lower()
+            name = str(x.get("name") or "").strip()
+            path = str(x.get("path") or "").strip()
+            extra = x.get("extra") or {}
+            if not name:
+                continue
+
+            if item_type == "hotel":
+                slug = str(x.get("slug") or "").strip().strip("/")
+                url_path = str(x.get("url") or "").strip()
+                if not slug and url_path.startswith("/otel/detay/"):
+                    slug = url_path.replace("/otel/detay/", "").strip("/")
+                city_name = str(extra.get("city") or (path.split(",")[-1].strip() if path else "") or "Antalya").strip()
+                town_name = str(extra.get("town") or "").strip()
+                subtown_name = str(extra.get("subtown") or "").strip()
+                star = int(extra.get("star") or 0)
+                score = extra.get("score")
+                reviews = int(extra.get("reviews") or 0)
+                norm_k = f"hotel:{cls.normalize_hotel_match_key(name, city_name)}"
+                sub_parts = [p for p in [path or city_name, f"{'★' * star}" if star else "", f"{round(float(score), 1)}/10" if score else ""] if p]
+                entry = {
+                    "type": "hotel",
+                    "name": name,
+                    "search_value": name,
+                    "city": city_name,
+                    "city_name": city_name,
+                    "town": town_name,
+                    "subtown": subtown_name,
+                    "sublabel": " • ".join(sub_parts),
+                    "subtext": " • ".join(sub_parts),
+                    "badge": "🏨 Doğrudan Otel",
+                    "enuygun_slug": slug,
+                    "star": star,
+                    "score": float(score) if score else None,
+                    "reviews": reviews,
+                    "trip_hotel_id": None,
+                    "trip_city_id": None,
+                    "country": str(x.get("country_code") or "TR"),
+                }
+                seen_keys[norm_k] = entry
+                results.append(entry)
+            else:
+                city_clean = name.split(",")[0].strip()
+                norm_k = f"region:{cls.slugify_hotel_name(city_clean)}"
+                if norm_k not in seen_keys:
+                    entry = {
+                        "type": "region",
+                        "name": name,
+                        "search_value": city_clean,
+                        "city": city_clean,
+                        "city_name": city_clean,
+                        "sublabel": path or "Bölge / Şehir",
+                        "subtext": path or "Bölge / Şehir",
+                        "badge": "📍 Bölge / Şehir",
+                    }
+                    seen_keys[norm_k] = entry
+                    results.append(entry)
+
+        # 2. Trip.com sonuçlarını birleştir (hem eksik trip_hotel_id'leri tamamla hem de yurt dışı otelleri ekle)
+        for kw_entry in tr_items:
+            if not isinstance(kw_entry, dict):
+                continue
+            kw_obj = kw_entry.get("keyword") or {}
+            kinfo = kw_obj.get("keywordContentInfo") or {}
+            hotel_info = kw_obj.get("hotelInfo") or {}
+            reg_info = (kw_entry.get("controlInfo") or {}).get("regionInfo") or {}
+            disp_city = reg_info.get("displayCityModel") or {}
+            basic_city = reg_info.get("basicCityModel") or {}
+
+            trip_hotel_id = str(hotel_info.get("hotelId") or "").strip()
+            trip_type = str(kinfo.get("tripType") or "").upper()
+            title = str(kinfo.get("keyword") or "").strip()
+            city_name = str(disp_city.get("cityName") or "").strip()
+            country_name = str(disp_city.get("countryName") or "").strip()
+            trip_city_id = basic_city.get("cityId")
+            if not title:
+                continue
+
+            if trip_hotel_id or trip_type == "H":
+                clean_title = re.sub(
+                    r"\s*[-–|]\s*(Prive\s+|Ultra\s+|All\s+Inclusive.*|All-Inclusive.*|Her\s+Şey\s+Dahil.*)$",
+                    "",
+                    title,
+                    flags=re.I,
+                ).strip() or title
+                norm_k = f"hotel:{cls.normalize_hotel_match_key(clean_title, city_name)}"
+                existing = seen_keys.get(norm_k)
+                if not existing:
+                    # İlk kelimeleri eşleşen mevcut otel var mı kontrol et
+                    target_toks = [t for t in norm_k.replace("hotel:", "").split("-") if t]
+                    for sk, sv in seen_keys.items():
+                        if not sk.startswith("hotel:"):
+                            continue
+                        cand_toks = [t for t in sk.replace("hotel:", "").split("-") if t]
+                        if cand_toks and target_toks and cand_toks[0] == target_toks[0] and (set(cand_toks) <= set(target_toks) or set(target_toks) <= set(cand_toks)):
+                            existing = sv
+                            break
+                if existing:
+                    if trip_hotel_id and not existing.get("trip_hotel_id"):
+                        existing["trip_hotel_id"] = trip_hotel_id
+                    if trip_city_id and not existing.get("trip_city_id"):
+                        existing["trip_city_id"] = int(trip_city_id)
+                else:
+                    sub_loc = ", ".join(p for p in [city_name, country_name] if p)
+                    entry = {
+                        "type": "hotel",
+                        "name": clean_title,
+                        "search_value": clean_title,
+                        "city": city_name or clean_title,
+                        "city_name": city_name or clean_title,
+                        "sublabel": sub_loc or "Global Otel",
+                        "subtext": sub_loc or "Global Otel",
+                        "badge": "🏨 Doğrudan Otel",
+                        "enuygun_slug": None,
+                        "trip_hotel_id": trip_hotel_id or str(kinfo.get("keywordId") or ""),
+                        "trip_city_id": int(trip_city_id) if trip_city_id else None,
+                        "country": country_name,
+                    }
+                    seen_keys[norm_k] = entry
+                    results.append(entry)
+            else:
+                city_clean = title.split(",")[0].strip()
+                norm_k = f"region:{cls.slugify_hotel_name(city_clean)}"
+                if norm_k not in seen_keys and kinfo.get("keywordId"):
+                    entry = {
+                        "type": "region",
+                        "name": city_clean,
+                        "search_value": city_clean,
+                        "city": city_clean,
+                        "city_name": city_clean,
+                        "sublabel": ", ".join(p for p in [city_name, country_name] if p) or "Bölge / Şehir",
+                        "subtext": ", ".join(p for p in [city_name, country_name] if p) or "Bölge / Şehir",
+                        "badge": "📍 Bölge / Şehir",
+                    }
+                    seen_keys[norm_k] = entry
+                    results.append(entry)
+
+        return results[:10]
+
+    @classmethod
+    def resolve_specific_hotel_candidate(cls, raw_query: str) -> Optional[Dict[str, Any]]:
+        """
+        Kullanıcının girdiği arama metninin bir şehir/bölge mi yoksa spesifik bir otel adı mı olduğunu tespit eder.
+        Spesifik bir otel ise Enuygun slug, Trip.com hotelId ve bağlı olduğu ana şehir/bölge bilgisini döndürür.
+        """
+        raw = str(raw_query or "").strip()
+        if len(raw) < 3:
+            return None
+
+        raw_lower = raw.lower()
+        city_clean = cls.sanitize_hotel_city_name(raw)
+        city_slug = cls.slugify_hotel_name(city_clean)
+
+        from app.cities import find_city
+        is_known_city = (
+            city_slug in cls.TRIP_CITY_ID_MAP
+            or city_slug in getattr(cls, "DEST_ID_MAP", {})
+            or find_city(raw) is not None
+            or find_city(city_clean) is not None
+        )
+        has_hotel_keyword = any(kw in raw_lower for kw in cls._HOTEL_INDICATOR_KEYWORDS)
+
+        # Bilinen saf şehir/bölge adıysa ve otel kelimesi içermiyorsa doğrudan şehir aramasıdır
+        if is_known_city and not has_hotel_keyword and len(raw.split()) <= 2:
+            return None
+
+        ac_items = cls.autocomplete_hotels_and_regions(raw)
+        if not ac_items:
+            return None
+
+        hotel_candidates = [it for it in ac_items if it.get("type") == "hotel"]
+        if not hotel_candidates:
+            return None
+
+        # İlk sıra doğrudan otel ise veya otel anahtar kelimesi varsa en güçlü eşleşmeyi seç
+        chosen = hotel_candidates[0]
+        if not has_hotel_keyword and ac_items[0].get("type") == "region" and is_known_city:
+            return None
+
+        # Eğer Enuygun slug henüz çözülmediyse ve yurt içi otelse doğrudan çözmeyi dene
+        c_city = str(chosen.get("city") or "Antalya").strip()
+        c_slug = cls.slugify_hotel_name(c_city)
+        if not chosen.get("enuygun_slug"):
+            resolved_en = cls.resolve_enuygun_direct_hotel_slug(chosen["name"], c_city, c_slug)
+            if resolved_en:
+                chosen["enuygun_slug"] = resolved_en
+
+        return chosen
+
+    @classmethod
+    def fetch_specific_hotel_live_items(
+        cls,
+        candidate: Dict[str, Any],
+        city_clean: str,
+        cin: str,
+        cout: str,
+        enuygun_cin: str,
+        enuygun_cout: str,
+        nights: int,
+        guests: int,
+        currency: str,
+        is_international: bool,
+    ) -> tuple:
+        """
+        Kullanıcının doğrudan ismini yazarak aradığı spesifik otelin:
+        1. Enuygun /otel/detay/{slug}/ sayfasından canlı fiyatını ve HD fotoğraflarını,
+        2. Trip.com /hotels/detail/?hotelId={id} sayfasından canlı fiyatını ve puanını
+        paralel çekerek merge_and_score_live_hotels şemasına uygun (eh_item, th_item) döndürür.
+        """
+        h_name = str(candidate.get("name") or "").strip()
+        en_slug = candidate.get("enuygun_slug")
+        trip_hid = candidate.get("trip_hotel_id")
+        trip_cid = candidate.get("trip_city_id")
+        trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
+        trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
+
+        def _fetch_en_detail() -> Optional[Dict[str, Any]]:
+            if not en_slug or is_international:
+                return None
+            detail_url = (
+                f"https://www.enuygun.com/otel/detay/{en_slug}/?"
+                f"checkInDate={enuygun_cin}&checkOutDate={enuygun_cout}&rooms={guests}"
+                f"&utm_source=hakikibilet&utm_medium=affiliate"
+            )
+            try:
+                raw = cls._http_get_text(detail_url, timeout=4.8)
+                price_try = None
+                m_dp = re.search(r'"displayPrice"\s*:\s*([0-9]+(?:\.[0-9]+)?)', raw)
+                if m_dp:
+                    price_try = float(m_dp.group(1))
+                if not price_try:
+                    m_sp = re.search(r'"startPricePublic"\s*:\s*([0-9]+(?:\.[0-9]+)?)', raw)
+                    if m_sp:
+                        price_try = float(m_sp.group(1))
+                if not price_try:
+                    m_pr = re.search(r'"priceRange"\s*:\s*"([0-9.]+)\s*TL', raw)
+                    if m_pr:
+                        price_try = float(m_pr.group(1).replace(".", ""))
+
+                if not price_try or price_try <= 0:
+                    return None
+
+                nightly_val = CurrencyService.convert(price_try, "TRY", currency) if currency != "TRY" else price_try
+                imgs = re.findall(
+                    r"https://cdn[0-9]*\.enuygun\.com/media/lib/(?:1x720/)?uploads/image/[a-zA-Z0-9._-]+\.(?:jpg|jpeg|webp)",
+                    raw,
+                )
+                clean_imgs = list(dict.fromkeys(imgs))[:6]
+                loc_parts = [p for p in [candidate.get("subtown"), candidate.get("town"), city_clean] if p]
+                return {
+                    "source": "enuygun",
+                    "is_searched_hotel": True,
+                    "enuygun_id": en_slug,
+                    "enuygun_slug": en_slug,
+                    "name": h_name,
+                    "stars": int(candidate.get("star") or 5),
+                    "score": float(candidate.get("score") or 9.0),
+                    "score_word": "Mükemmel" if float(candidate.get("score") or 9.0) >= 9.0 else "Çok İyi",
+                    "review_count": max(15, int(candidate.get("reviews") or 40)),
+                    "photo": clean_imgs[0] if clean_imgs else "",
+                    "photos": clean_imgs,
+                    "address": ", ".join(loc_parts) or city_clean,
+                    "location_label": ", ".join(loc_parts[:2]) or city_clean,
+                    "distance_center_km": None,
+                    "concept_code": "UAI" if ("ultra" in h_name.lower() or "resort" in h_name.lower()) else "BB",
+                    "concept_name": "Ultra Her Şey Dahil" if ("ultra" in h_name.lower() or "resort" in h_name.lower()) else "Oda / Kahvaltı",
+                    "room_name": "Standart Oda",
+                    "free_cancellation": True,
+                    "facilities": [],
+                    "review_tags": [],
+                    "nightly_price": round(nightly_val, 2),
+                    "total_price": round(nightly_val * max(1, nights), 2),
+                    "old_nightly_price": None,
+                    "enuygun_price": round(nightly_val, 2),
+                    "enuygun_total_price": round(nightly_val * max(1, nights), 2),
+                    "enuygun_hotel_url": detail_url,
+                }
+            except Exception as err:
+                logger.debug(f"Specific Enuygun hotel detail fetch warning ({en_slug}): {err}")
+                return None
+
+        def _fetch_tr_detail() -> Optional[Dict[str, Any]]:
+            if not trip_hid:
+                return None
+            trip_domain = "www.trip.com" if is_international else "tr.trip.com"
+            locale = "en-US" if is_international else "tr-TR"
+            cid_param = f"cityId={trip_cid}&" if trip_cid else ""
+            detail_url = (
+                f"https://{trip_domain}/hotels/detail/?"
+                f"{cid_param}hotelId={trip_hid}&checkIn={cin}&checkOut={cout}"
+                f"&adult={guests}&crn=1&curr=TRY&locale={locale}"
+                f"&Allianceid={trip_aid}&SID={trip_sid}"
+            )
+            try:
+                raw = cls._http_get_text(detail_url, timeout=4.8)
+                price_try = None
+                m_pr = re.search(r'priceRange\\?"\s*:\s*\\?"[^"]*?([0-9]{1,3}(?:[.,][0-9]{3})+|[0-9]{3,6})\s*(?:TL|TRY|₺)', raw)
+                if m_pr:
+                    raw_num = m_pr.group(1).replace(".", "").replace(",", "")
+                    price_try = float(raw_num)
+                if not price_try or price_try <= 0:
+                    return None
+
+                nightly_val = CurrencyService.convert(price_try, "TRY", currency) if currency != "TRY" else price_try
+                imgs = re.findall(
+                    r"https://ak-d\.tripcdn\.com/images/[a-zA-Z0-9./_-]+\.(?:jpg|jpeg|webp)",
+                    raw,
+                )
+                clean_imgs = list(dict.fromkeys(imgs))[:6]
+                score_val = float(candidate.get("score") or 9.0)
+                m_sc = re.search(r'ratingValue\\?"\s*:\s*\\?"([0-9.]+)\\?"', raw)
+                if m_sc:
+                    try:
+                        sv = float(m_sc.group(1))
+                        if 1.0 <= sv <= 5.0:
+                            sv = sv * 2.0
+                        score_val = sv
+                    except Exception:
+                        pass
+                rev_cnt = int(candidate.get("reviews") or 50)
+                m_rc = re.search(r'reviewCount\\?"\s*:\s*\\?"([0-9]+)\\?"', raw)
+                if m_rc:
+                    try:
+                        rev_cnt = int(m_rc.group(1))
+                    except Exception:
+                        pass
+
+                return {
+                    "source": "trip",
+                    "is_searched_hotel": True,
+                    "trip_id": str(trip_hid),
+                    "name": h_name,
+                    "stars": int(candidate.get("star") or 5),
+                    "score": round(score_val, 1),
+                    "score_word": "Mükemmel" if score_val >= 9.0 else "Çok İyi",
+                    "review_count": max(15, rev_cnt),
+                    "photo": clean_imgs[0] if clean_imgs else "",
+                    "photos": clean_imgs,
+                    "address": candidate.get("sublabel") or city_clean,
+                    "location_label": city_clean,
+                    "distance_center_km": None,
+                    "concept_code": "UAI" if ("ultra" in h_name.lower() or "resort" in h_name.lower()) else "BB",
+                    "concept_name": "Ultra Her Şey Dahil" if ("ultra" in h_name.lower() or "resort" in h_name.lower()) else "Oda / Kahvaltı",
+                    "room_name": "Standart Oda",
+                    "free_cancellation": True,
+                    "facilities": [],
+                    "review_tags": [],
+                    "nightly_price": round(nightly_val, 2),
+                    "total_price": round(nightly_val * max(1, nights), 2),
+                    "old_nightly_price": None,
+                    "trip_price": round(nightly_val, 2),
+                    "trip_total_price": round(nightly_val * max(1, nights), 2),
+                    "trip_hotel_url": detail_url,
+                }
+            except Exception as err:
+                logger.debug(f"Specific Trip.com hotel detail fetch warning ({trip_hid}): {err}")
+                return None
+
+        eh_res, th_res = None, None
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            fe = pool.submit(_fetch_en_detail)
+            ft = pool.submit(_fetch_tr_detail)
+            try:
+                eh_res = fe.result(timeout=5.2)
+            except Exception:
+                eh_res = None
+            try:
+                th_res = ft.result(timeout=5.2)
+            except Exception:
+                th_res = None
+        return eh_res, th_res
+
     @staticmethod
     def _extract_balanced_json_array(text: str, bracket_start: int) -> Optional[str]:
         if bracket_start < 0 or bracket_start >= len(text) or text[bracket_start] != "[":
@@ -1551,15 +2016,31 @@ class HotelService:
 
         for eh in enuygun_hotels:
             mkey = cls.normalize_hotel_match_key(eh["name"], city_clean)
-            item = dict(eh)
-            if mkey:
-                merged_map[mkey] = item
-            ordered_items.append(item)
+            existing_eh = merged_map.get(mkey) if mkey else None
+            if existing_eh:
+                if eh.get("is_searched_hotel"):
+                    existing_eh["is_searched_hotel"] = True
+                if eh.get("enuygun_hotel_url") and not existing_eh.get("enuygun_hotel_url"):
+                    existing_eh["enuygun_hotel_url"] = eh["enuygun_hotel_url"]
+                if eh.get("enuygun_slug") and not existing_eh.get("enuygun_slug"):
+                    existing_eh["enuygun_slug"] = eh["enuygun_slug"]
+                for ph in eh.get("photos") or []:
+                    if ph and ph not in existing_eh["photos"] and len(existing_eh["photos"]) < 6:
+                        existing_eh["photos"].append(ph)
+                if not existing_eh.get("photo") and eh.get("photo"):
+                    existing_eh["photo"] = eh["photo"]
+            else:
+                item = dict(eh)
+                if mkey:
+                    merged_map[mkey] = item
+                ordered_items.append(item)
 
         for th in trip_hotels:
             mkey = cls.normalize_hotel_match_key(th["name"], city_clean)
             existing = merged_map.get(mkey) if mkey else None
             if existing:
+                if th.get("is_searched_hotel"):
+                    existing["is_searched_hotel"] = True
                 existing["trip_id"] = th.get("trip_id")
                 existing["trip_price"] = th.get("trip_price")
                 existing["trip_total_price"] = th.get("trip_total_price")
@@ -1807,23 +2288,29 @@ class HotelService:
                 booking_hotel_direct = None
 
             # Birincil kazanan kanal ve buton (Yalnızca doğrulanmış doğrudan otel detay sayfası olan kanallar)
+            # ANAYASA KURALI: En düşük doğrulanmış canlı fiyat kazanır; fiyat eşitliğinde aktif yüksek komisyonlu ortak (Trip.com) kazanır.
             ep = h.get("enuygun_price")
             tp = h.get("trip_price")
             if ep and tp and enuygun_hotel_direct and trip_hotel_direct:
-                if ep <= tp:
+                if ep < tp:
                     primary_url = enuygun_hotel_direct
                     primary_provider = "Enuygun Otel"
                 else:
                     primary_url = trip_hotel_direct
                     primary_provider = "Trip.com"
-            elif enuygun_hotel_direct and (ep or not trip_hotel_direct):
-                primary_url = enuygun_hotel_direct
-                primary_provider = "Enuygun Otel"
-            elif trip_hotel_direct:
+            elif trip_hotel_direct and (tp or not enuygun_hotel_direct):
                 primary_url = trip_hotel_direct
                 primary_provider = "Trip.com"
+            elif enuygun_hotel_direct:
+                primary_url = enuygun_hotel_direct
+                primary_provider = "Enuygun Otel"
             else:
                 continue
+
+            is_searched_flag = bool(h.get("is_searched_hotel"))
+            if is_searched_flag:
+                fp_badge_tr = f"🎯 ARADIĞINIZ OTEL • {fp_score}/100"
+                fp_badge_en = f"🎯 SEARCHED HOTEL • {fp_score}/100"
 
             nightly_num = float(h.get("nightly_price") or 0)
             total_num = float(h.get("total_price") or (nightly_num * max(1, nights)))
@@ -1853,6 +2340,7 @@ class HotelService:
 
             enriched_list.append({
                 "id": f"htl-{idx}-{cls.slugify_hotel_name(name)[:24]}",
+                "is_searched_hotel": is_searched_flag,
                 "name": name,
                 "stars": stars,
                 "stay_sub_type": stay_sub_type,
@@ -1902,8 +2390,11 @@ class HotelService:
                 "is_domestic_tr": not is_international,
             })
 
-        # Varsayılan sıralama: Hakiki F/P Şampiyonu (fp_score azalan, eşitlikte bayes_score azalan)
-        enriched_list.sort(key=lambda x: (x.get("fp_score", 0), x.get("bayes_score", 0)), reverse=True)
+        # Varsayılan sıralama: Aranan spesifik otel #1, ardından Hakiki F/P Şampiyonu (fp_score azalan, eşitlikte bayes_score azalan)
+        enriched_list.sort(
+            key=lambda x: (1 if x.get("is_searched_hotel") else 0, x.get("fp_score", 0), x.get("bayes_score", 0)),
+            reverse=True,
+        )
         return enriched_list
 
     @staticmethod
@@ -2119,7 +2610,11 @@ class HotelService:
         2. Yurt dışı/adalarda Enuygun linkini kaldırıp Booking ve Agoda'ya kusursuz yönlendirir.
         """
         cin, cout, nights = cls.calculate_dates(checkin_date, checkout_date)
-        city_clean = cls.sanitize_hotel_city_name(dest_city)
+        specific_candidate = cls.resolve_specific_hotel_candidate(dest_city)
+        if specific_candidate and specific_candidate.get("city"):
+            city_clean = cls.sanitize_hotel_city_name(specific_candidate["city"])
+        else:
+            city_clean = cls.sanitize_hotel_city_name(dest_city)
         city_slug = (
             city_clean.replace("İ", "i")
             .replace("I", "i")
@@ -2278,8 +2773,9 @@ class HotelService:
             primary_city_url = trip_hotel_url
             primary_provider = "Trip.com"
 
-        # 4. CANLI MULTI-SOURCE OTEL MOTORU (Enuygun SSR + Trip.com SSR + Hakiki F/P Algoritması)
-        live_cache_key = f"faz1_v4_live_{city_slug}_{cin}_{cout}_{guests}_{currency}_{int(is_international)}"
+        # 4. CANLI MULTI-SOURCE OTEL MOTORU (Enuygun SSR + Trip.com SSR + Spesifik Otel Çözümleyici + Hakiki F/P Algoritması)
+        spec_cache_suffix = f"_spec_{cls.slugify_hotel_name(specific_candidate['name'])}" if specific_candidate else ""
+        live_cache_key = f"faz1_v5_live_{city_slug}_{cin}_{cout}_{guests}_{currency}_{int(is_international)}{spec_cache_suffix}"
         now_ts = time.time()
         live_hotels: List[Dict[str, Any]] = []
 
@@ -2291,7 +2787,26 @@ class HotelService:
         if not live_hotels:
             en_list: List[Dict[str, Any]] = []
             tr_list: List[Dict[str, Any]] = []
-            with ThreadPoolExecutor(max_workers=2) as pool:
+            spec_eh = None
+            spec_th = None
+            with ThreadPoolExecutor(max_workers=3) as pool:
+                fut_spec = (
+                    pool.submit(
+                        cls.fetch_specific_hotel_live_items,
+                        specific_candidate,
+                        city_clean,
+                        cin,
+                        cout,
+                        enuygun_cin,
+                        enuygun_cout,
+                        nights,
+                        guests,
+                        currency,
+                        is_international,
+                    )
+                    if specific_candidate
+                    else None
+                )
                 fut_en = (
                     pool.submit(
                         cls.fetch_live_enuygun_hotels,
@@ -2325,6 +2840,11 @@ class HotelService:
                     if trip_city_id
                     else None
                 )
+                if fut_spec:
+                    try:
+                        spec_eh, spec_th = fut_spec.result(timeout=6.0)
+                    except Exception as e:
+                        logger.warning(f"Specific hotel detail future warning: {e}")
                 if fut_en:
                     try:
                         en_list = fut_en.result(timeout=7.5) or []
@@ -2335,6 +2855,19 @@ class HotelService:
                         tr_list = fut_tr.result(timeout=7.5) or []
                     except Exception as e:
                         logger.warning(f"Trip.com future timeout/error ({city_slug}): {e}")
+
+            if specific_candidate:
+                spec_mkey = cls.normalize_hotel_match_key(specific_candidate.get("name") or "", city_clean)
+                for item_e in en_list:
+                    if cls.normalize_hotel_match_key(item_e.get("name") or "", city_clean) == spec_mkey:
+                        item_e["is_searched_hotel"] = True
+                for item_t in tr_list:
+                    if cls.normalize_hotel_match_key(item_t.get("name") or "", city_clean) == spec_mkey:
+                        item_t["is_searched_hotel"] = True
+                if spec_eh:
+                    en_list.insert(0, spec_eh)
+                if spec_th:
+                    tr_list.insert(0, spec_th)
 
             if en_list or tr_list:
                 live_hotels = cls.merge_and_score_live_hotels(
@@ -2424,6 +2957,7 @@ class HotelService:
 
         return {
             "destination": city_clean,
+            "searched_hotel_name": specific_candidate.get("name") if specific_candidate else None,
             "city_slug": city_slug,
             "trip_city_id": trip_city_id,
             "destination_context": dest_context,

@@ -1290,18 +1290,19 @@
             <div id="hotelFormWrapper" class="hidden">
                 <form id="hotelSearchForm">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-                        <!-- Şehir / Bölge -->
-                        <div class="lg:col-span-5">
+                        <!-- Şehir / Bölge / Doğrudan Otel Adı -->
+                        <div class="lg:col-span-5 relative">
                             <div class="input-box">
                                 <label class="input-label">
-                                    <i class="fa-solid fa-city text-amber-500"></i>
-                                    <span data-i18n="hotelWhere">Nereye Gidiyorsunuz?</span>
+                                    <i class="fa-solid fa-hotel text-amber-500"></i>
+                                    <span data-i18n="hotelWhere">Şehir, Bölge veya Otel Adı</span>
                                 </label>
-                                <input type="text" id="hotelCity" list="hotelCitiesList" placeholder="Şehir, Ada veya Bölge (Örn: Nice, Antalya, Paris)" required
+                                <input type="text" id="hotelCity" autocomplete="off" placeholder="Şehir, Bölge veya Otel Adı (Örn: Antalya, Rixos, Concorde)" required
                                        data-i18n-ph="hotelCityPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="hotelCitiesList"></datalist>
                             </div>
+                            <div id="hotelAutocompleteDropdown" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 max-h-80 overflow-y-auto"></div>
                         </div>
 
                         <!-- Check-in -->
@@ -2146,16 +2147,25 @@
                         <h4 class="font-black text-sm text-slate-900 leading-snug">${evt.title}</h4>
                         <p class="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">${evt.desc || ''}</p>
                     </div>
-                    <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
                         <button type="button" onclick="openEventInSmartRoute('${(evt.city || 'Antalya').replace(/'/g, '')}', '${(evt.title || '').replace(/'/g, '')}', '${evt.transport_mode || 'flight'}')"
                                 class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
                             <span>Akıllı Rota ile Oluştur</span>
                         </button>
-                        <button type="button" onclick="planEventTrip('${(evt.city || 'Antalya').replace(/'/g, '')}', '${evt.dep_date || '2026-07-15'}', '${evt.ret_date || '2026-07-18'}', '${evt.transport_mode || 'flight'}')"
-                                class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer">
-                            Seferleri Gör →
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            ${evt.tiqets_url ? `
+                            <a href="${evt.tiqets_url}" target="_blank" rel="noopener noreferrer"
+                               onclick="trackRedirectClick('tiqets', 'event', '${(evt.city || '').replace(/'/g, '')}', '${(evt.title || '').replace(/'/g, '')}', 0)"
+                               class="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 font-bold text-[11px] transition flex items-center gap-1">
+                                <i class="fa-solid fa-ticket text-purple-600"></i>
+                                <span>Tiqets Gezi ↗</span>
+                            </a>` : ''}
+                            <button type="button" onclick="planEventTrip('${(evt.city || 'Antalya').replace(/'/g, '')}', '${evt.dep_date || '2026-07-15'}', '${evt.ret_date || '2026-07-18'}', '${evt.transport_mode || 'flight'}')"
+                                    class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer">
+                                Seferleri Gör →
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -2450,8 +2460,8 @@
                 liveComparisonNetworkTitle: "Canlı Karşılaştırma Ağı",
                 popularRoutesLabel: "Popüler:",
                 popularHotelsLabel: "🔥 Popüler Destinasyonlar:",
-                hotelWhere: "Nereye Gidiyorsunuz?",
-                hotelCityPh: "Şehir, Ada veya Bölge (Örn: Antalya, İstanbul, Paris, Roma)",
+                hotelWhere: "Şehir, Bölge veya Otel Adı",
+                hotelCityPh: "Şehir, Bölge veya Otel Adı (Örn: Antalya, Rixos, Concorde)",
                 checkinDate: "Giriş Tarihi",
                 checkoutDate: "Çıkış Tarihi",
                 guestsAndRooms: "Misafir & Oda",
@@ -2560,8 +2570,8 @@
                 liveComparisonNetworkTitle: "Live Comparison Network",
                 popularRoutesLabel: "Popular:",
                 popularHotelsLabel: "🔥 Popular Destinations:",
-                hotelWhere: "Where Are You Going?",
-                hotelCityPh: "City, Island or Region (e.g. Antalya, Istanbul, Paris, Rome)",
+                hotelWhere: "City, Region or Hotel Name",
+                hotelCityPh: "City, Region or Hotel Name (e.g. Antalya, Rixos, Concorde)",
                 checkinDate: "Check-in Date",
                 checkoutDate: "Check-out Date",
                 guestsAndRooms: "Guests & Rooms",

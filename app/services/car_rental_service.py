@@ -894,6 +894,19 @@ class CarRentalService:
         # 6. Avis: Doğrudan ilgili şehir kiralama sayfası (avis.com.tr/arac-kiralama/{sehir})
         avis_url = f"https://www.avis.com.tr/arac-kiralama/{city_slug}"
 
+        # 7. Localrent (Travelpayouts %10 Komisyon — Kredi Kartsız / Depozitosuz Yerel Filo, HTTP 200)
+        valid_localrent_slugs = {
+            "antalya", "istanbul", "izmir", "ankara", "bodrum", "dalaman",
+            "fethiye", "marmaris", "alanya", "kemer", "side", "belek",
+            "kas", "kusadasi", "trabzon", "kayseri",
+        }
+        lr_slug = city_slug if city_slug in valid_localrent_slugs else ("bodrum" if iata == "BJV" else ("dalaman" if iata == "DLM" else ("kayseri" if iata == "NAV" else "")))
+        localrent_raw_url = f"https://www.localrent.com/tr/turkey/{lr_slug}/" if lr_slug else "https://www.localrent.com/tr/turkey/"
+
+        # 8. EconomyBookings (Travelpayouts %7 Komisyon — Global Havalimanı Ağı)
+        eb_continent = "europe" if city_slug in ("istanbul", "edirne", "tekirdag", "kirklareli") else "asia"
+        economybookings_raw_url = f"https://www.economybookings.com/tr/car-rental/{eb_continent}/turkey/{city_slug}"
+
         from app.services.revenue_service import RevenueService
         y360_eco = f"{yolcu360_base}&c=economy" if "?" in yolcu360_base else yolcu360_base
         y360_mid = f"{yolcu360_base}&c=mid" if "?" in yolcu360_base else yolcu360_base
@@ -907,6 +920,8 @@ class CarRentalService:
             "yolcu360_suv": RevenueService.enrich_deep_link("yolcu360", y360_suv, "car_rental"),
             "yolcu360_luxury": RevenueService.enrich_deep_link("yolcu360", y360_lux, "car_rental"),
             "enuygun": RevenueService.enrich_deep_link("enuygun", enuygun_car_url, "car_rental"),
+            "localrent": RevenueService.enrich_deep_link("localrent", localrent_raw_url, "car_rental"),
+            "economybookings": RevenueService.enrich_deep_link("economybookings", economybookings_raw_url, "car_rental"),
             "biletcom": RevenueService.enrich_deep_link("biletcom", bilet_car_url, "car_rental"),
             "obilet": RevenueService.enrich_deep_link("obilet", obilet_car_url, "car_rental"),
             "rentalcars": RevenueService.enrich_deep_link("rentalcars", rentalcars_url, "car_rental"),
@@ -961,6 +976,26 @@ class CarRentalService:
                 "commission_rank": 95,
                 "badge": "Anlık Karşılaştırma" if en_daily else "Canlı Filo Sorgula",
                 "btn_class": "bg-sky-600 hover:bg-sky-700 text-white",
+            },
+            {
+                "id": "localrent",
+                "name": "Localrent",
+                "url": links.get("localrent") or links["yolcu360"],
+                "daily_price": None,
+                "total_price": None,
+                "commission_rank": 94,
+                "badge": "Kredi Kartsız / Depozitosuz Filo",
+                "btn_class": "bg-violet-600 hover:bg-violet-700 text-white",
+            },
+            {
+                "id": "economybookings",
+                "name": "EconomyBookings",
+                "url": links.get("economybookings") or links["rentalcars"],
+                "daily_price": None,
+                "total_price": None,
+                "commission_rank": 89,
+                "badge": "Global Havalimanı Filosu",
+                "btn_class": "bg-cyan-600 hover:bg-cyan-700 text-white",
             },
             {
                 "id": "biletcom",

@@ -1,3 +1,4 @@
+import logging
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
@@ -6,6 +7,9 @@ from app.cities import find_city, resolve_nearest_airport_city, TURKEY_CITIES, F
 from app.config import settings
 from app.services.currency_service import CurrencyService
 from app.services.hotel_service import HotelService
+from app.services.revenue_service import RevenueService
+
+logger = logging.getLogger(__name__)
 
 class SearchService:
     @staticmethod
@@ -761,6 +765,12 @@ class SearchService:
         today = datetime.now().date()
         valid_events = []
         for evt in events:
+            # Tiqets Müze & Etkinlik Affiliate Deep Link (Travelpayouts %8 Komisyon - campaign_id=89, p=2074)
+            evt_city_clean = str(evt.get("city") or evt.get("dest") or "").split("(")[0].strip()
+            if evt_city_clean and not evt.get("tiqets_url"):
+                raw_tiqets = f"https://www.tiqets.com/en/search?q={urllib.parse.quote(evt_city_clean)}"
+                evt["tiqets_url"] = RevenueService.enrich_deep_link("tiqets", raw_tiqets, "event")
+
             # Aklınızda Bulunsun / Hafta Sonu Kaçamak Rotaları (Yapay Tarih ve Sayaç Yoktur)
             if evt.get("is_escape"):
                 # Kullanıcı arama yaptığında en yakın Cuma - Pazar gününü arama kutusuna hazırla
@@ -1558,6 +1568,23 @@ class SearchService:
         true_orig_slug = true_orig_obj.get("slug") if true_orig_obj else true_orig_name.lower().replace(" ", "-")
         true_dest_slug = true_dest_obj.get("slug") if true_dest_obj else true_dest_name.lower().replace(" ", "-")
 
+        # 1.05 Doğrudan Otel Adı Araması: Kullanıcının ham otel sorgusunu koru, ulaşım bacakları için üst şehri çöz
+        hotel_query_target = (raw_dest_clean or dest_city or true_dest_name or dest_name).strip()
+        if (include_hotel or search_mode == "smart_route") and hotel_query_target:
+            try:
+                spec_cand = HotelService.resolve_specific_hotel_candidate(hotel_query_target)
+                cand_city = (spec_cand.get("city") or spec_cand.get("city_name")) if spec_cand else None
+                if cand_city:
+                    parent_city_obj = find_city(cand_city)
+                    if parent_city_obj:
+                        dest = parent_city_obj
+                        dest_name = parent_city_obj["name"]
+                        true_dest_obj = parent_city_obj
+                        true_dest_name = parent_city_obj["name"].split("(")[0].strip()
+                        true_dest_slug = parent_city_obj.get("slug") or true_dest_name.lower().replace(" ", "-")
+            except Exception as _hce:
+                logger.warning(f"Specific hotel parent city resolution warning: {_hce}")
+
         # 1.1 Aynı Kalkış ve Varış Noktası Erken Koruması (Sadece kullanıcının asıl kalkış ve varış yeri birebir aynıysa)
         orig_slug = origin["slug"] if origin else origin_city.lower().replace(" ", "-")
         dest_slug = dest["slug"] if dest else dest_city.lower().replace(" ", "-")
@@ -1573,7 +1600,7 @@ class SearchService:
             if include_hotel or search_mode == "smart_route":
                 try:
                     same_city_hotel_info = HotelService.get_hotel_recommendation(
-                        dest_city=dest_city or dest_name,
+                        dest_city=hotel_query_target or dest_city or dest_name,
                         checkin_date=departure_date,
                         checkout_date=return_date,
                         guests=total_pax,
@@ -1749,7 +1776,7 @@ class SearchService:
             _hotel_executor = ThreadPoolExecutor(max_workers=1)
             _hotel_future = _hotel_executor.submit(
                 HotelService.get_hotel_recommendation,
-                dest_city=true_dest_name or dest_city or dest_name,
+                dest_city=hotel_query_target or true_dest_name or dest_city or dest_name,
                 checkin_date=departure_date,
                 checkout_date=return_date,
                 guests=total_pax,
@@ -2085,7 +2112,7 @@ class SearchService:
         hotel_info = None
         if _hotel_future is not None:
             try:
-                hotel_info = _hotel_future.result(timeout=14.0)
+                hotel_info = _hotel_future.result(timeout=18.0)
             except Exception as he:
                 logger.warning(f"Parallel hotel recommendation warning: {he}")
                 hotel_info = None
@@ -2094,7 +2121,7 @@ class SearchService:
                     _hotel_executor.shutdown(wait=False)
         elif include_hotel or search_mode == "smart_route":
             hotel_info = HotelService.get_hotel_recommendation(
-                dest_city=dest_city or dest_name,
+                dest_city=hotel_query_target or dest_city or dest_name,
                 checkin_date=departure_date,
                 checkout_date=return_date,
                 guests=total_pax,
@@ -2889,6 +2916,10 @@ class SearchService:
             passengers=passengers
         )
 
+        # Tiqets Müze & Etkinlik Affiliate Deep Link (Travelpayouts %8 Komisyon - campaign_id=89, p=2074)
+        raw_tiqets_dest = f"https://www.tiqets.com/en/search?q={urllib.parse.quote(dest_clean)}"
+        tiqets_url = RevenueService.enrich_deep_link("tiqets", raw_tiqets_dest, "event")
+
         return {
             "city": dest_clean,
             "origin": origin_name.split("(")[0].strip(),
@@ -2898,6 +2929,7 @@ class SearchService:
             "matched_event": matched_events[0] if matched_events else None,
             "highlights": highlight_data,
             "hotel_deep_link": hotel_deep_link,
+            "tiqets_url": tiqets_url,
             "transfer": transfer_meta,
         }
 

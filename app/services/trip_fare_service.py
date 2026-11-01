@@ -593,8 +593,9 @@ def fetch_kayak_live_offers(
 
     all_offers: Dict[str, Dict[str, Any]] = {}
     now_ts = time.time()
-    default_probe = "false" if os.getenv("RENDER") else "true"
-    allow_probe = os.getenv("ENABLE_TRIP_BROWSER_PROBE", default_probe).lower() in ("true", "1", "yes")
+    allow_probe = os.getenv("ENABLE_TRIP_BROWSER_PROBE", "false").lower() in ("true", "1", "yes")
+    if not allow_probe:
+        return {}
     probed_once = False
 
     for orig_raw in orig_codes:
@@ -614,9 +615,10 @@ def fetch_kayak_live_offers(
                 try:
                     with open(cache_file, "r", encoding="utf-8") as f:
                         disk_entry = json.load(f)
+                    disk_ts = float(disk_entry.get("ts", 0))
                     cached_disk = disk_entry.get("offers", {})
-                    if cached_disk:
-                        _TRIP_MEMORY_CACHE[cache_key] = {"ts": disk_entry.get("ts", now_ts), "data": cached_disk}
+                    if cached_disk and (now_ts - disk_ts < CACHE_TTL_SECONDS):
+                        _TRIP_MEMORY_CACHE[cache_key] = {"ts": disk_ts, "data": cached_disk}
                         all_offers.update(cached_disk)
                         continue
                 except Exception:

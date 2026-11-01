@@ -557,6 +557,36 @@ class TransferService:
             "airport_transfer",
         )
 
+        # 2b. Kiwitaxi (%9-%11 Komisyon) & GetTransfer (%8-%10 Komisyon) Havalimanı VIP Transfer Derin Linkleri (HTTP 200)
+        kt_city_map = {
+            "IST": "istanbul+airport",
+            "SAW": "sabiha+gokcen+airport",
+            "AYT": "antalya+airport",
+            "GZP": "gazipasa+airport",
+            "ADB": "izmir+airport",
+            "BJV": "bodrum+airport",
+            "DLM": "dalaman+airport",
+            "ESB": "ankara+airport",
+            "TZX": "trabzon+airport",
+        }
+        gt_city_map = {
+            "IST": "istanbul",
+            "SAW": "istanbul",
+            "AYT": "antalya",
+            "GZP": "alanya",
+            "ADB": "izmir",
+            "BJV": "bodrum",
+            "DLM": "dalaman",
+            "ESB": "ankara",
+            "TZX": "trabzon",
+        }
+        kt_slug = kt_city_map.get(iata or "", "")
+        gt_slug = gt_city_map.get(iata or "", _to_ascii_slug(target_info.get("alis_sehir") or city_name))
+        kiwitaxi_raw_url = f"https://kiwitaxi.com/en/turkey/{kt_slug}" if kt_slug else "https://kiwitaxi.com/en/turkey"
+        gettransfer_raw_url = f"https://gettransfer.com/tr/directions/turkey/{gt_slug}" if gt_slug else "https://gettransfer.com/tr/directions/turkey"
+        kiwitaxi_url = RevenueService.enrich_deep_link("kiwitaxi", kiwitaxi_raw_url, "airport_transfer")
+        gettransfer_url = RevenueService.enrich_deep_link("gettransfer", gettransfer_raw_url, "airport_transfer")
+
         # 3. Resmi Havalimanı Shuttle (HAVAİST / HAVABUS / HAVAŞ / MUTTAŞ) Sefer Saatleri Sayfası (HTTP 200)
         shuttle_url = RevenueService.enrich_deep_link(
             "official",
@@ -577,8 +607,8 @@ class TransferService:
             "rail_info": target_info.get("rail_info", ""),
             "biletcom_url": biletcom_transfer_url,
             "welcomepickups_url": welcomepickups_url,
-            "kiwitaxi_url": welcomepickups_url,
-            "gettransfer_url": shuttle_url,
+            "kiwitaxi_url": kiwitaxi_url,
+            "gettransfer_url": gettransfer_url,
             "live_shuttle_try": live_prices.get("shuttle_try"),
             "live_minivan_try": live_prices.get("minivan_try"),
             "live_vito_try": live_prices.get("vito_try"),

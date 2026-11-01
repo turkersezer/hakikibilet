@@ -207,7 +207,7 @@ def fetch_kiwi_live_offers(
                         "passengers": {"adults": int(adults), "children": int(children), "infants": int(infants)},
                         "cabinClass": {"cabinClass": cabin_str, "applyMixedClasses": False},
                     },
-                    "filter": {"limit": 70},
+                    "filter": {"limit": 100},
                     "options": {"currency": "TRY", "locale": "tr", "partner": "skypicker"},
                 },
             }
@@ -258,12 +258,12 @@ def fetch_kiwi_live_offers(
                         "passengers": {"adults": int(adults), "children": int(children), "infants": int(infants)},
                         "cabinClass": {"cabinClass": cabin_str, "applyMixedClasses": False},
                     },
-                    "filter": {"limit": 70},
+                    "filter": {"limit": 100},
                     "options": {"currency": "TRY", "locale": "tr", "partner": "skypicker"},
                 },
             }
 
-        resp = requests.post(KIWI_GRAPHQL_URL, json=query_payload, timeout=3.5)
+        resp = requests.post(KIWI_GRAPHQL_URL, json=query_payload, timeout=5.5)
         if resp.status_code != 200:
             return offers_map
 
@@ -394,6 +394,7 @@ def fetch_kiwi_live_offers(
                 if dep_hhmm and src_code and dst_code:
                     time_key = f"TIME:{src_code}:{dst_code}:{dep_hhmm}:{carrier_code}"
                     _merge_offer(offers_map, time_key, "kiwi", offer_item)
+                    _merge_offer(offers_map, f"SHORT:{dep_hhmm}:{carrier_code}", "kiwi", offer_item)
             else:
                 # Aktarmalı uçuşlarda kalkış + varış saati bazlı eşleştirme anahtarı (CONN:MLX:AYT:08:05:12:55:VF)
                 if dep_hhmm and arr_hhmm and src_code and dst_code:

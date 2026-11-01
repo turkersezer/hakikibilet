@@ -70,6 +70,39 @@ class RevenueService:
         """enrich_deep_link için kolay çağrım takma adı (alias)."""
         return cls.enrich_deep_link(provider_key=provider, raw_url=raw_url, vertical=vertical)
 
+    # Travelpayouts Onaylı Program Tablosu (campaign_id, p_id)
+    # Marker: 789884 | TRS (Project ID): 585474
+    TRAVELPAYOUTS_PROGRAMS = {
+        "kiwi": (111, 4136),
+        "aviasales": (100, 4114),
+        "welcomepickups": (627, 8919),
+        "kiwitaxi": (1, 647),
+        "gettransfer": (147, 4439),
+        "localrent": (87, 2043),
+        "economybookings": (10, 2018),
+        "tiqets": (89, 2074),
+        "yesim": (224, 5998),
+        "airhelp": (120, 9139),
+    }
+
+    @classmethod
+    def build_tp_link(cls, raw_url: str, campaign_id: int, p_id: int) -> str:
+        """
+        Doğrulanmış hedef derin linki (Seviye 2 / Seviye 3) resmi Travelpayouts
+        tp.media/r yönlendiricisi ile sarmalar. Çift sarmalamayı otomatik önler.
+        """
+        if not raw_url or not raw_url.startswith("http"):
+            return raw_url
+        if "tp.media/r" in raw_url.lower():
+            return raw_url
+        marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
+        trs = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_TRS", "585474")
+        return (
+            f"https://tp.media/r?campaign_id={campaign_id}"
+            f"&marker={marker}&p={p_id}&trs={trs}"
+            f"&u={urllib.parse.quote(raw_url, safe='')}"
+        )
+
     @classmethod
     def enrich_deep_link(
         cls,
@@ -85,6 +118,9 @@ class RevenueService:
             return raw_url
 
         low_url = raw_url.lower()
+        if "tp.media/r" in low_url:
+            return raw_url
+
         for strict_dom in cls.STRICT_PASSTHROUGH_DOMAINS:
             if strict_dom in low_url:
                 return raw_url
@@ -193,7 +229,6 @@ class RevenueService:
         # 8. Welcome Pickups (Global Havalimanı Karşılama & Transfer — Travelpayouts campaign_id=627, p=8919)
         if pkey == "welcomepickups" or "welcomepickups.com" in low_url:
             marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
-            trs = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_TRS", "585474")
             clean_target = cls._append_safe_params(
                 raw_url,
                 {
@@ -202,7 +237,25 @@ class RevenueService:
                     "tap_s": marker,
                 },
             )
-            return f"https://tp.media/r?campaign_id=627&marker={marker}&p=8919&trs={trs}&u={urllib.parse.quote(clean_target, safe='')}"
+            return cls.build_tp_link(clean_target, 627, 8919)
+
+        # 8b. Diğer Travelpayouts Onaylı Aktif Programlar (Kiwi, Kiwitaxi, GetTransfer, Localrent, EconomyBookings, Tiqets, Yesim, AirHelp)
+        if pkey == "kiwi" or "kiwi.com" in low_url:
+            return cls.build_tp_link(raw_url, 111, 4136)
+        if pkey == "kiwitaxi" or "kiwitaxi.com" in low_url:
+            return cls.build_tp_link(raw_url, 1, 647)
+        if pkey == "gettransfer" or "gettransfer.com" in low_url:
+            return cls.build_tp_link(raw_url, 147, 4439)
+        if pkey == "localrent" or "localrent.com" in low_url:
+            return cls.build_tp_link(raw_url, 87, 2043)
+        if pkey == "economybookings" or "economybookings.com" in low_url:
+            return cls.build_tp_link(raw_url, 10, 2018)
+        if pkey == "tiqets" or "tiqets.com" in low_url:
+            return cls.build_tp_link(raw_url, 89, 2074)
+        if pkey == "yesim" or "yesim.app" in low_url:
+            return cls.build_tp_link(raw_url, 224, 5998)
+        if pkey == "airhelp" or "airhelp.com" in low_url:
+            return cls.build_tp_link(raw_url, 120, 9139)
 
         # 9. Ferryhopper (Yunan Adaları & Akdeniz Feribot)
         if pkey == "ferryhopper" or "ferryhopper.com" in low_url:

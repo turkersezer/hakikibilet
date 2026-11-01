@@ -276,17 +276,18 @@ def _build_fallback_sorted_raw_from_ota(
     for key, channels in multi_ota_map.items():
         if not key or key.startswith("TIME:") or key.startswith("SHORT:") or key.startswith("CONN:") or not isinstance(channels, dict):
             continue
-        # Tüm aktif kanallardan (Skyscanner, Booking, Trip, Kiwi) en zengin meta veriyi ve en düşük doğrulanmış fiyatı seç
+        # Tüm aktif kanallardan (Trip, Kiwi, Booking, Skyscanner) en zengin meta veriyi ve doğrulanmış fiyatı seç
         cand_offs = [
             channels.get(ch)
-            for ch in ("skyscanner", "booking", "trip", "kiwi")
+            for ch in ("trip", "kiwi", "booking", "skyscanner")
             if isinstance(channels.get(ch), dict) and float(channels[ch].get("price") or 0) > 0
         ]
         if not cand_offs:
             continue
         meta_off = next((o for o in cand_offs if o.get("from_code") and o.get("dep_time")), cand_offs[0])
-        min_ota_price = min(float(o["price"]) for o in cand_offs)
-        non_kiwi_prices = [float(o["price"]) for o in cand_offs if o.get("channel") != "kiwi"]
+        verified_offs = [o for o in cand_offs if o.get("channel") in ("trip", "kiwi")]
+        min_ota_price = min(float(o["price"]) for o in (verified_offs or cand_offs))
+        non_kiwi_prices = [float(o["price"]) for o in cand_offs if o.get("channel") == "trip"]
         official_base_price = min(non_kiwi_prices) if non_kiwi_prices else None
 
         price = min_ota_price
@@ -464,7 +465,7 @@ def fetch_live_flights_from_google(
 
     # 1. Önbellek (Cache) Kontrolü (10 Dakika TTL • RAM + Disk Korumalı)
     # ÖNEMLİ: include_multi_ota=False (esnek takvim şeridi) asla ana arama (include_multi_ota=True) önbelleğini ezemez!
-    base_cache_key = f"{orig_slug}:{dest_slug}:{departure_date}:{return_date or ''}:{'rt' if is_round else 'ow'}:{seat_mode}:{adults}:{children}:{infants}"
+    base_cache_key = f"{orig_slug}:{dest_slug}:{departure_date}:{return_date or ''}:{'rt' if is_round else 'ow'}:{seat_mode}:{adults}:{children}:{infants}:v3"
     cache_key = base_cache_key if include_multi_ota else f"{base_cache_key}:fast"
     now_ts = time.time()
     with _FLIGHT_CACHE_LOCK:
@@ -786,6 +787,16 @@ def fetch_live_flights_from_google(
             trip_airline_param = f"&airline={carrier_code}&airlineCode={carrier_code}" if carrier_code else ""
             trip_flight_link = f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{from_code.lower()}-{to_code.lower()}?flighttype={trip_flighttype}&dcity={from_code.lower()}&acity={to_code.lower()}&ddate={departure_date}{trip_ret_param}&curr=TRY{trip_airline_param}{trip_aff_param}"
 
+            # Kiwi.com Canlı Uçak Arama & Biletleme Derin Linki (Travelpayouts campaign_id=111, p=4136)
+            tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
+            tp_trs = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_TRS", "585474")
+            kiwi_ret_seg = return_date if (is_round and return_date) else "no-return"
+            raw_kiwi_search_url = (
+                f"https://www.kiwi.com/tr/search/results/{from_code.lower()}/{to_code.lower()}/{departure_date}/{kiwi_ret_seg}"
+                f"?adults={adults}&children={children}&infants={infants}&affilid=travelpayouts&marker={tp_marker}&trs={tp_trs}"
+            )
+            kiwi_flight_link = f"https://tp.media/r?campaign_id=111&marker={tp_marker}&p=4136&trs={tp_trs}&u={urllib.parse.quote(raw_kiwi_search_url, safe='')}"
+
             # Booking.com Varış Şehri Canlı Otel Linki (Travelpayouts AID: 585474)
             booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
             try:
@@ -972,11 +983,12 @@ def fetch_live_flights_from_google(
             ]
 
             # Kiwi.com'dan bu sefer için doğrulanmış canlı fiyat ve doğrudan ödeme ekranı linki geldiyse yarışmaya ekle
+            kiwi_resolved_url = (kiwi_live.get("url") if kiwi_live else None) or kiwi_flight_link
             if kiwi_live and kiwi_live.get("price") and float(kiwi_live["price"]) > 0:
                 raw_providers.append(
                     {
                         "name": "Kiwi.com",
-                        "url": kiwi_live.get("url") or trip_flight_link,
+                        "url": kiwi_resolved_url,
                         "price": float(kiwi_live["price"]),
                         "channel": "kiwi",
                     }
@@ -993,8 +1005,16 @@ def fetch_live_flights_from_google(
                     }
                 )
 
-            # Booking.com Flights (Booking Holdings resmi Türkiye platformu: Kayak.com.tr)
-            if booking_live and booking_live.get("price") and float(booking_live["price"]) > 0:
+            # Booking.com Flights / Kayak.com.tr & Skyscanner:
+            # ANAYASA KURALI: Komisyon anlaşması aktif olmayan veya rota-kovası (meta bucket) fiyatı dönen
+            # karşılaştırma kanalları ana butonu (winner) ve doğrulanmış sefer fiyatını (final_ticket_price)
+            # ASLA ezemez; alt şeritte ikincil karşılaştırma bağlantısı olarak sunulur.
+            kayak_flights_active = os.getenv("COMM_KAYAK_FLIGHTS_ACTIVE", "false").lower() in ("true", "1", "yes")
+            skyscanner_active = bool(
+                (getattr(settings, "PARTNER_COMMISSION_RULES", {}).get("skyscanner") or {}).get("active_affiliate", False)
+            )
+
+            if kayak_flights_active and booking_live and booking_live.get("price") and float(booking_live["price"]) > 0:
                 base_b_price = float(booking_live["price"])
                 booking_price = round(base_b_price * 2, 2) if (is_round and not booking_live.get("is_round")) else round(base_b_price, 2)
                 cand_b_url = str(booking_live.get("url") or "")
@@ -1012,8 +1032,7 @@ def fetch_live_flights_from_google(
                 }
             )
 
-            # Skyscanner (sky-scrapper API & Metasearch referansı)
-            if skyscanner_live and skyscanner_live.get("price") and float(skyscanner_live["price"]) > 0:
+            if skyscanner_active and skyscanner_live and skyscanner_live.get("price") and float(skyscanner_live["price"]) > 0:
                 base_s_price = float(skyscanner_live["price"])
                 skyscanner_price = round(base_s_price * 2, 2) if (is_round and not skyscanner_live.get("is_round")) else round(base_s_price, 2)
                 s_url = skyscanner_live.get("url") or skyscanner_flight_link
@@ -1150,8 +1169,11 @@ def fetch_live_flights_from_google(
                 "winner_button_text": winner_button_tr,
                 "winner_button_text_en": winner_button_en,
                 "trip_link": trip_url,
+                "kiwi_link": kiwi_resolved_url,
+                "skyscanner_link": skyscanner_flight_link,
                 "travelpayouts_link": trip_flight_link,
                 "hotel_link": dest_hotel_link,
+                "is_international": is_intl_route,
                 "providers": providers_list
             })
         except Exception as err:

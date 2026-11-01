@@ -348,6 +348,16 @@ async def get_cities(transport_type: str = Query("all"), scope: str = Query("all
     filtered = get_cities_by_transport(transport_type, scope=scope)
     return {"cities": filtered, "mode": transport_type, "scope": scope, "count": len(filtered)}
 
+@app.get("/api/hotel-autocomplete")
+async def hotel_autocomplete(q: str = Query("", min_length=0)):
+    """Canlı Otel Adı + Şehir/Bölge Hibrit Autocomplete (Enuygun & Etstur Canlı Öneri Motoru)"""
+    from app.services.hotel_service import HotelService
+    q_clean = (q or "").strip()
+    if len(q_clean) < 2:
+        return {"query": q_clean, "suggestions": [], "count": 0}
+    suggestions = await asyncio.to_thread(HotelService.autocomplete_hotels_and_regions, q_clean)
+    return {"query": q_clean, "suggestions": suggestions, "count": len(suggestions)}
+
 @app.get("/api/system/slots")
 async def get_extension_slots():
     """Tek Beyin, Üç Ekran (Web, Mobil Uygulama, WhatsApp Botu) için aktif priz/modül şalter durumu"""
