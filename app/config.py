@@ -37,10 +37,12 @@ class Settings:
     AFFILIATE_BILETCOM_SUBID: str = os.getenv("AFFILIATE_BILETCOM_SUBID", "hakikibilet")
     AFFILIATE_GARENTA_SUBID: str = os.getenv("AFFILIATE_GARENTA_SUBID", "hakikibilet")
     AFFILIATE_AVIS_SUBID: str = os.getenv("AFFILIATE_AVIS_SUBID", "hakikibilet")
-    AFFILIATE_TRAVELPAYOUTS_MARKER: str = os.getenv("AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
+    _raw_tp_marker: str = os.getenv("AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
+    AFFILIATE_TRAVELPAYOUTS_MARKER: str = "789884" if _raw_tp_marker in ("", "585474") else _raw_tp_marker
     AFFILIATE_TRAVELPAYOUTS_TRS: str = os.getenv("AFFILIATE_TRAVELPAYOUTS_TRS", "585474")
     AFFILIATE_FERRY_SUBID: str = os.getenv("AFFILIATE_FERRY_SUBID", "hakikibilet")
-    AFFILIATE_BOOKING_AID: str = os.getenv("AFFILIATE_BOOKING_AID", "789884")
+    _raw_booking_aid: str = os.getenv("AFFILIATE_BOOKING_AID", "789884")
+    AFFILIATE_BOOKING_AID: str = "789884" if _raw_booking_aid in ("", "585474") else _raw_booking_aid
     AFFILIATE_AGODA_CID: str = os.getenv("AFFILIATE_AGODA_CID", "hakikibilet")
     AFFILIATE_TRIP_ALLIANCE_ID: str = os.getenv("AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
     AFFILIATE_TRIP_SID: str = os.getenv("AFFILIATE_TRIP_SID", "333747492")
