@@ -6372,7 +6372,8 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     const etsturUrl = isIntl ? null : (hotelInfo.etstur_url || (hotelInfo.deep_links && hotelInfo.deep_links.etstur));
     const agodaUrl = isIntl ? (hotelInfo.agoda_url || `https://www.agoda.com/tr-tr/search?city=${encodeURIComponent(city)}&checkIn=${cin}&checkOut=${cout}&rooms=1&adults=${guests}&cid=1924128`) : null;
     const liveHotels = hotelInfo.live_hotels || [];
-    const topHotel = liveHotels.length > 0 ? liveHotels[0] : null;
+    const searchedHotel = liveHotels.find(h => h.is_searched_hotel) || null;
+    const topHotel = liveHotels.find(h => Number(h.nightly_price || h.price || 0) > 0) || (liveHotels.length > 0 ? liveHotels[0] : null);
 
     const tickets = (data && data.tickets) ? data.tickets : [];
     const deepLinks = (data && data.deep_links) ? data.deep_links : {};
@@ -6415,7 +6416,270 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
 
     const bookingCityLink = isIntl ? (hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=789884&label=hakikibilet_kombine`) : tripHotelUrl;
 
+    // 🎯 DOĞRUDAN OTEL ARAMASI VİTRİNİ (EN ÜSTTE OTEL KARTI + ALTINDA CANLI ACENTE FİYAT KARŞILAŞTIRMASI)
+    let searchedHotelHeroHtml = '';
+    if (searchedHotel) {
+        const shPhotos = Array.isArray(searchedHotel.photos) && searchedHotel.photos.length > 0
+            ? searchedHotel.photos
+            : [searchedHotel.photo_url || searchedHotel.photo || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'];
+        const shMainPhoto = shPhotos[0];
+        const shStars = '★'.repeat(Math.max(3, Math.min(5, Number(searchedHotel.stars) || 5)));
+        const shConcept = isEn ? (searchedHotel.concept_en || 'All-Inclusive / Standard') : (searchedHotel.concept_tr || 'Standart Oda');
+        const shPills = Array.from(new Set(isEn ? (searchedHotel.highlight_pills_en || []) : (searchedHotel.highlight_pills_tr || [])));
+        const shAdvisor = isEn ? (searchedHotel.advisor_note_en || '') : (searchedHotel.advisor_note_tr || '');
+        const shHasNumericPrice = Number(searchedHotel.nightly_price || 0) > 0;
+        const shEnPrice = Number(searchedHotel.enuygun_price || 0);
+        const shTrPrice = Number(searchedHotel.trip_price || 0);
+        const isEnCheapest = shEnPrice > 0 && (shTrPrice <= 0 || shEnPrice <= shTrPrice);
+        const isTrCheapest = shTrPrice > 0 && (shEnPrice <= 0 || shTrPrice < shEnPrice);
+
+        let shTripUrl = searchedHotel.trip_url || tripHotelUrl;
+        if (isEn && shTripUrl) {
+            shTripUrl = shTripUrl.replace('https://tr.trip.com/', 'https://www.trip.com/').replace('locale=tr-TR', 'locale=en-US');
+        }
+
+        searchedHotelHeroHtml = `
+            <div class="mb-6 rounded-3xl border-2 border-amber-500 ring-4 ring-amber-400/20 bg-white shadow-xl overflow-hidden">
+                <!-- Üst Vurgu Şeridi -->
+                <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white px-5 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/40">
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black uppercase tracking-wider shadow-xs">
+                            🎯 ${isEn ? 'YOUR SEARCHED HOTEL' : 'ARADIĞINIZ OTEL'}
+                        </span>
+                        <span class="text-xs sm:text-sm font-black text-amber-300">
+                            ${isEn ? 'Direct Hotel Card & Live Agency Rate Comparison' : 'Doğrudan Otel Kartı & Canlı Acente Fiyat Karşılaştırması'}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-300">
+                        <span>📅 ${escapeHtml(cin)} — ${escapeHtml(cout)} (${hotelInfo.nights || 2} ${isEn ? 'Nights' : 'Gece'} • ${escapeHtml(guests)} ${isEn ? 'Guests' : 'Misafir'})</span>
+                    </div>
+                </div>
+
+                <!-- Otel Ana Kart Gövdesi (Sol: HD Fotoğraf Galerisi, Sağ: Tesis Bilgileri & En Düşük Doğrulanmış Fiyat) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 border-b border-slate-200">
+                    <div class="lg:col-span-5 relative min-h-[240px] sm:min-h-[280px] bg-slate-100 overflow-hidden group">
+                        <img id="htlImg-hero-searched" src="${escapeHtml(shMainPhoto)}" alt="${escapeHtml(searchedHotel.name)}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/25 pointer-events-none"></div>
+                        <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-xl text-xs font-black bg-amber-400 text-slate-950 shadow-md">
+                            🏆 ${isEn ? `Hakiki Score • ${searchedHotel.fp_score || 94}/100` : `Hakiki F/P • ${searchedHotel.fp_score || 94}/100`}
+                        </span>
+                        ${searchedHotel.score ? `
+                            <span class="absolute top-3.5 right-3.5 px-3 py-1 bg-blue-600/95 text-white font-black text-xs rounded-xl shadow-md flex items-center gap-1">
+                                <span>⭐ ${searchedHotel.score}/10</span>
+                                <span class="text-[10px] opacity-90">(${searchedHotel.review_count || 40})</span>
+                            </span>
+                        ` : ''}
+                        <div class="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between gap-2">
+                            <span class="px-3 py-1 bg-slate-900/90 text-amber-300 font-black text-xs rounded-lg shadow-xs truncate">
+                                ${shStars} • ${escapeHtml(shConcept)}
+                            </span>
+                            ${shPhotos.length > 1 ? `
+                                <div id="htlDots-hero-searched" class="flex items-center gap-1.5 bg-slate-950/70 px-2.5 py-1.5 rounded-full">
+                                    ${shPhotos.slice(0, 6).map((pUrl, pIdx) => `
+                                        <button type="button"
+                                                onclick="event.stopPropagation(); switchHotelCardPhoto('hero-searched', '${escapeHtml(pUrl)}', ${pIdx})"
+                                                class="${pIdx === 0 ? 'w-4 h-1.5 rounded-full bg-amber-400 transition-all cursor-pointer' : 'w-1.5 h-1.5 rounded-full bg-white/70 hover:bg-white transition-all cursor-pointer'}"
+                                                title="${isEn ? 'Photo' : 'Fotoğraf'} ${pIdx + 1}"></button>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7 p-5 sm:p-6 flex flex-col justify-between bg-gradient-to-br from-white via-white to-amber-50/30">
+                        <div>
+                            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                                <div>
+                                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 leading-tight">${escapeHtml(searchedHotel.name)}</h2>
+                                    <div class="text-xs sm:text-sm text-slate-600 font-semibold mt-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-location-dot text-amber-500"></i>
+                                        <span>${escapeHtml(searchedHotel.location_label || searchedHotel.address || safeCity)}</span>
+                                    </div>
+                                </div>
+                                <div class="sm:text-right bg-emerald-50/90 border border-emerald-200 rounded-2xl px-4 py-2.5 shrink-0">
+                                    <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">
+                                        ${shHasNumericPrice ? (isEn ? 'Lowest Verified Nightly Rate' : 'En Düşük Doğrulanmış Gecelik Fiyat') : (isEn ? 'Live Room Status' : 'Canlı Oda & Sezon Durumu')}
+                                    </div>
+                                    <div class="text-2xl font-black text-slate-900 mt-0.5">
+                                        ${escapeHtml(searchedHotel.price_formatted || (isEn ? 'Check Availability' : 'Müsaitlik Kontrolü'))}
+                                    </div>
+                                    ${searchedHotel.total_price_formatted ? `
+                                        <div class="text-xs font-extrabold text-emerald-700">
+                                            ${hotelInfo.nights || 2} ${isEn ? 'Nights Total:' : 'Gece Toplam:'} ${escapeHtml(searchedHotel.total_price_formatted)}
+                                        </div>
+                                    ` : `
+                                        <div class="text-[11px] font-bold text-slate-500">
+                                            ${isEn ? 'Select agency below for live room types' : 'Oda tipleri için aşağıdaki acenteyi seçin'}
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+
+                            ${shPills.length > 0 ? `
+                                <div class="flex flex-wrap items-center gap-1.5 mt-3.5">
+                                    ${shPills.map(pl => `
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 font-bold text-xs">
+                                            ✓ ${escapeHtml(pl)}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+
+                            ${shAdvisor ? `
+                                <div class="mt-3.5 p-3 rounded-2xl bg-amber-50/80 border border-amber-200/90 text-xs text-slate-700 leading-relaxed font-medium">
+                                    <span class="font-black text-amber-900">💡 ${isEn ? 'Hakiki Value Analysis:' : 'Hakiki Değer Analizi:'}</span>
+                                    <span> ${escapeHtml(shAdvisor)}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="mt-4 pt-3.5 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
+                            <div class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                                <i class="fa-solid fa-bolt text-amber-500"></i>
+                                <span>${isEn ? 'All links open the exact hotel page with dates & guests pre-filled.' : 'Tüm butonlar tarih ve kişi sayısı dolu olarak doğrudan bu otelin kendi sayfasına iner.'}</span>
+                            </div>
+                            <a href="${searchedHotel.url || searchedHotel.direct_url || shTripUrl}" target="_blank" rel="noopener noreferrer"
+                               class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-md transition inline-flex items-center gap-2">
+                                <span>🏆 ${shHasNumericPrice
+                                    ? (isEn ? `Go to Best Offer (${escapeHtml(searchedHotel.provider)}) ↗` : `En Uygun Teklife Git (${escapeHtml(searchedHotel.provider)}) ↗`)
+                                    : (isEn ? `Open ${escapeHtml(searchedHotel.name)} Rooms ↗` : `${escapeHtml(searchedHotel.name)} Odalarını Aç ↗`)}</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 📊 OTELİN ALTINDA CANLI ACENTE FİYAT KARŞILAŞTIRMA LİSTESİ (UÇAK BİLETİ KARŞILAŞTIRMASI MANTIĞI) -->
+                <div class="p-4 sm:p-5 bg-slate-50/90">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <div class="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-emerald-600"></i>
+                            <span>${isEn ? `Live Agency Price Comparison for ${escapeHtml(searchedHotel.name)}` : `${escapeHtml(searchedHotel.name)} — Acente Fiyat & Oda Karşılaştırması`}</span>
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-500">${hotelInfo.nights || 2} ${isEn ? 'Nights' : 'Gece'} • ${escapeHtml(guests)} ${isEn ? 'Adults' : 'Yetişkin'}</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        ${!isIntl && searchedHotel.enuygun_url ? `
+                            <div class="p-3.5 rounded-2xl bg-white ${isEnCheapest ? 'border-2 border-emerald-500 shadow-md' : 'border border-slate-200'} flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between gap-1.5 mb-1.5">
+                                        <span class="font-black text-xs text-emerald-800 flex items-center gap-1.5">
+                                            ${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}
+                                            <span>Enuygun Otel</span>
+                                        </span>
+                                        ${isEnCheapest ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[9.5px] font-black uppercase">${isEn ? '🏆 Best Rate' : '🏆 En Uygun'}</span>` : `<span class="text-[10px] font-bold text-slate-400">${isEn ? 'Direct Hotel' : 'Doğrudan Otel'}</span>`}
+                                    </div>
+                                    <div class="text-lg font-black text-slate-900">
+                                        ${searchedHotel.enuygun_price_formatted ? `${escapeHtml(searchedHotel.enuygun_price_formatted)} <span class="text-[11px] font-bold text-slate-500">/ ${isEn ? 'night' : 'gece'}</span>` : (isEn ? 'Live Room Check' : 'Canlı Oda & Fiyat')}
+                                    </div>
+                                    <div class="text-[11px] font-bold text-emerald-700 mt-0.5">
+                                        ${searchedHotel.enuygun_total_formatted ? `${hotelInfo.nights || 2} ${isEn ? 'Nights Total:' : 'Gece Toplam:'} ${escapeHtml(searchedHotel.enuygun_total_formatted)}` : (isEn ? 'Pre-filled direct hotel detail page' : 'Tarih dolu doğrudan otel detay sayfası')}
+                                    </div>
+                                </div>
+                                <a href="${searchedHotel.enuygun_url}" target="_blank" rel="noopener noreferrer"
+                                   class="mt-3 w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>${isEn ? 'Select on Enuygun ↗' : "Enuygun'da Odayı Seç ↗"}</span>
+                                </a>
+                            </div>
+                        ` : ''}
+
+                        ${shTripUrl ? `
+                            <div class="p-3.5 rounded-2xl bg-white ${isTrCheapest ? 'border-2 border-blue-600 shadow-md' : 'border border-slate-200'} flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between gap-1.5 mb-1.5">
+                                        <span class="font-black text-xs text-blue-800 flex items-center gap-1.5">
+                                            ${getBrandLogoHtml('Trip.com', '🌐', 'w-4 h-4')}
+                                            <span>Trip.com</span>
+                                        </span>
+                                        ${isTrCheapest ? `<span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 text-[9.5px] font-black uppercase">${isEn ? '🏆 Best Rate' : '🏆 En Uygun'}</span>` : `<span class="text-[10px] font-bold text-slate-400">${isEn ? 'Global Partner' : 'Resmi Partner'}</span>`}
+                                    </div>
+                                    <div class="text-lg font-black text-slate-900">
+                                        ${searchedHotel.trip_price_formatted ? `${escapeHtml(searchedHotel.trip_price_formatted)} <span class="text-[11px] font-bold text-slate-500">/ ${isEn ? 'night' : 'gece'}</span>` : (isEn ? 'Live Room Check' : 'Canlı Oda & Fiyat')}
+                                    </div>
+                                    <div class="text-[11px] font-bold text-blue-700 mt-0.5">
+                                        ${searchedHotel.trip_total_formatted ? `${hotelInfo.nights || 2} ${isEn ? 'Nights Total:' : 'Gece Toplam:'} ${escapeHtml(searchedHotel.trip_total_formatted)}` : (isEn ? 'Pre-filled direct hotel detail page' : 'Tarih dolu doğrudan otel detay sayfası')}
+                                    </div>
+                                </div>
+                                <a href="${shTripUrl}" target="_blank" rel="noopener noreferrer"
+                                   class="mt-3 w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>${isEn ? 'Select on Trip.com ↗' : "Trip.com'da Odayı Seç ↗"}</span>
+                                </a>
+                            </div>
+                        ` : ''}
+
+                        ${!isIntl && searchedHotel.etstur_url ? `
+                            <div class="p-3.5 rounded-2xl bg-white border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between gap-1.5 mb-1.5">
+                                        <span class="font-black text-xs text-sky-800 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-umbrella-beach text-sky-600"></i>
+                                            <span>Etstur</span>
+                                        </span>
+                                        <span class="text-[10px] font-bold text-slate-400">${isEn ? 'Official Direct' : 'Doğrudan Tesis'}</span>
+                                    </div>
+                                    <div class="text-base font-black text-slate-900">
+                                        ${isEn ? 'Campaign & Installment' : 'Sezon & Taksit Fiyatı'}
+                                    </div>
+                                    <div class="text-[11px] font-bold text-sky-700 mt-0.5">
+                                        ${isEn ? 'Opens hotel page on Etstur' : "Etstur'da doğrudan otelin sayfasını açar"}
+                                    </div>
+                                </div>
+                                <a href="${searchedHotel.etstur_url}" target="_blank" rel="noopener noreferrer"
+                                   class="mt-3 w-full py-2.5 px-3 bg-sky-700 hover:bg-sky-800 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>${isEn ? 'View on Etstur ↗' : "Etstur'da Odayı Gör ↗"}</span>
+                                </a>
+                            </div>
+                        ` : (isIntl && searchedHotel.booking_url ? `
+                            <div class="p-3.5 rounded-2xl bg-white border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between gap-1.5 mb-1.5">
+                                        <span class="font-black text-xs text-[#003580] flex items-center gap-1.5">
+                                            ${getBrandLogoHtml('Booking.com', '🏨', 'w-4 h-4')}
+                                            <span>Booking.com</span>
+                                        </span>
+                                        <span class="text-[10px] font-bold text-slate-400">Global</span>
+                                    </div>
+                                    <div class="text-base font-black text-slate-900">${isEn ? 'Live Room Rates' : 'Canlı Oda Fiyatları'}</div>
+                                    <div class="text-[11px] font-bold text-slate-500 mt-0.5">${isEn ? 'Pre-filled property search' : 'Tarih dolu doğrudan tesis araması'}</div>
+                                </div>
+                                <a href="${searchedHotel.booking_url}" target="_blank" rel="noopener noreferrer"
+                                   class="mt-3 w-full py-2.5 px-3 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>${isEn ? 'Open Booking.com ↗' : "Booking.com'da Aç ↗"}</span>
+                                </a>
+                            </div>
+                        ` : '')}
+
+                        ${searchedHotel.agoda_url ? `
+                            <div class="p-3.5 rounded-2xl bg-white border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between gap-1.5 mb-1.5">
+                                        <span class="font-black text-xs text-indigo-900 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-suitcase text-indigo-600"></i>
+                                            <span>Agoda</span>
+                                        </span>
+                                        <span class="text-[10px] font-bold text-slate-400">${isEn ? 'Alternative OTA' : 'Alternatif Acente'}</span>
+                                    </div>
+                                    <div class="text-base font-black text-slate-900">
+                                        ${isEn ? 'Member Deal Check' : 'Ekstra İndirim Kontrolü'}
+                                    </div>
+                                    <div class="text-[11px] font-bold text-indigo-700 mt-0.5">
+                                        ${isEn ? 'Compare room packages on Agoda' : "Agoda'da oda ve iptal seçeneklerini gör"}
+                                    </div>
+                                </div>
+                                <a href="${searchedHotel.agoda_url}" target="_blank" rel="noopener noreferrer"
+                                   class="mt-3 w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                    <span>${isEn ? 'Compare on Agoda ↗' : "Agoda'da Fiyatı Gör ↗"}</span>
+                                </a>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     let html = `
+        ${searchedHotelHeroHtml}
         <!-- 🧭 MULTI-MODAL ULAŞIM ALTERNATİFLERİ BANDI (ÇİFT YÖNLÜ ÇAPRAZ SATIŞ) -->
         <div class="mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/80 rounded-3xl p-5 sm:p-6 text-white shadow-xl">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-700/80 pb-4 mb-4">
@@ -6538,7 +6802,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
         </div>
 
         <!-- 🎒 KOMBİNE SEYAHAT SEPETİ (Ulaşım + Otel) -->
-        ${(bestTransport && topHotel) ? `
+        ${(bestTransport && topHotel && hotelNightly > 0) ? `
         <div class="mb-6 bg-gradient-to-b from-white to-amber-50/25 border-2 border-amber-300/80 rounded-3xl p-5 sm:p-6 shadow-md relative overflow-hidden">
             <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-4 border-b border-amber-100">
                 <div>
@@ -6548,7 +6812,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         </span>
                         <span class="text-xs text-slate-500 font-bold">${safeCity} (${hotelInfo.nights || 2} ${isEn ? 'Nights' : 'Gece'} • ${escapeHtml(guests)} ${isEn ? 'Guests' : 'Kişi'})</span>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-black text-slate-900 leading-snug">${isEn ? 'Transport + Top Value Hotel Bundle' : 'Ulaşım + F/P Şampiyonu Otel Birlikte'}</h3>
+                    <h3 class="text-lg sm:text-xl font-black text-slate-900 leading-snug">${topHotel.is_searched_hotel ? (isEn ? `Transport + ${escapeHtml(topHotel.name)} Bundle` : `Ulaşım + ${escapeHtml(topHotel.name)} Birlikte`) : (isEn ? 'Transport + Top Value Hotel Bundle' : 'Ulaşım + F/P Şampiyonu Otel Birlikte')}</h3>
                     <div class="flex flex-wrap items-center gap-2 text-xs text-slate-700 mt-2 font-medium">
                         <span class="inline-flex items-center gap-1.5 bg-white px-3 py-1 rounded-xl border border-slate-200 shadow-2xs">
                             ${bestTransport.transport_type === 'flight' ? '✈️' : (bestTransport.transport_type === 'train' ? '🚆' : (bestTransport.transport_type === 'bus' ? '🚌' : '⛴️'))} 
@@ -6594,7 +6858,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         </span>
                         <span class="text-xs text-slate-400 font-bold" id="hotelActiveCountBadge">(${liveHotels.length} ${isEn ? 'verified stays' : 'doğrulanmış tesis'})</span>
                     </div>
-                    <h3 class="font-black text-xl text-slate-900">${escapeHtml(hotelInfo.destination)} ${isEn ? 'Hotels & Accommodation Options' : 'Otel & Konaklama Seçenekleri'}</h3>
+                    <h3 class="font-black text-xl text-slate-900">${searchedHotel ? (isEn ? `Other Top-Value Hotels in ${escapeHtml(hotelInfo.destination)}` : `${escapeHtml(hotelInfo.destination)} Bölgesindeki Diğer Fiyat/Performans Otelleri`) : `${escapeHtml(hotelInfo.destination)} ${isEn ? 'Hotels & Accommodation Options' : 'Otel & Konaklama Seçenekleri'}`}</h3>
                     <div class="text-xs text-slate-500 mt-0.5 font-medium">${cin} — ${cout} (${hotelInfo.nights} ${isEn ? 'Nights' : 'Gece'}) • ${guests} ${isEn ? 'Guests • Pre-filled Direct Room Links' : 'Misafir • Tarih ve Kişi Sayısı Dolu Doğrudan Otel Sayfaları'}</div>
                 </div>
                 <div class="flex flex-wrap items-center gap-1.5">
@@ -6844,8 +7108,8 @@ function renderFilteredHotelCards() {
         filtered.sort((a, b) => (Number(b.fp_score) || 0) - (Number(a.fp_score) || 0) || (Number(b.bayes_score) || 0) - (Number(a.bayes_score) || 0));
     }
 
-    if (pinnedSearchedHotel) {
-        filtered = [pinnedSearchedHotel, ...filtered];
+    if (pinnedSearchedHotel && filtered.length === 0) {
+        filtered = [pinnedSearchedHotel];
     }
 
     if (countBadgeEl) {
