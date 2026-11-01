@@ -827,7 +827,7 @@ class CarRentalService:
         pid = y360_pid or meta.get("y360_pid") or ""
         pp = y360_pp or meta.get("y360_pp") or ""
 
-        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
 
         # 1. Yolcu360: Doğrudan tarihli & en ucuz sıralı /arac-kiralama/search ekranına iner!
         clean_pid = (pid or "").split("\\")[0]

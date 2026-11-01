@@ -3304,7 +3304,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
             <div class="bg-white p-10 rounded-3xl border border-slate-200 text-center shadow-xs">
                 <div class="font-black text-lg text-slate-800">${safeCity} için resmi arama linki hazırlandı.</div>
                 <div class="mt-4">
-                    <a href="https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&aid=585474" target="_blank" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
+                    <a href="https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&aid=789884" target="_blank" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
                         <span>Booking.com'da Canlı Odaları Aç</span>
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
@@ -3315,7 +3315,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     }
 
     const isIntl = hotelInfo.is_international;
-    const bookingUrl = hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&aid=585474`;
+    const bookingUrl = hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&aid=789884`;
     const enuygunUrl = isIntl ? null : hotelInfo.enuygun_url;
     const liveHotels = hotelInfo.live_hotels || [];
     const topHotel = liveHotels.length > 0 ? liveHotels[0] : null;
@@ -3359,7 +3359,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     let hotelTotal = topHotel && topHotel.total_price ? Number(topHotel.total_price) : (hotelNightly * (hotelInfo.nights || 2));
     let combinedTotal = transportPrice + hotelTotal;
 
-    const bookingCityLink = hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=585474&label=hakikibilet_kombine`;
+    const bookingCityLink = hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=789884&label=hakikibilet_kombine`;
 
     let html = `
         <!-- 🧭 MULTI-MODAL ULAŞIM ALTERNATİFLERİ BANDI (ÇİFT YÖNLÜ ÇAPRAZ SATIŞ) -->

@@ -188,7 +188,7 @@ class SearchService:
 
             enuygun_route = f"{flight_orig_slug}-{flight_dest_slug}-{origin_iata.lower()}a-{dest_iata.lower()}a"
             # Travelpayouts / Aviasales Uçak Arama Deep Linki (Marker: 585474)
-            tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+            tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
             try:
                 dep_dt_obj = datetime.strptime(departure_date, "%Y-%m-%d")
                 dep_d = dep_dt_obj.strftime("%d")
@@ -1861,7 +1861,7 @@ class SearchService:
                         dest_slug=fl_dest_slug,
                     )
 
-                    booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+                    booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
                     try:
                         dep_dt_calc = datetime.strptime(departure_date, "%Y-%m-%d")
                         hotel_ret_calc = return_date if (is_round and return_date) else (dep_dt_calc + timedelta(days=2)).strftime("%Y-%m-%d")
@@ -2863,7 +2863,7 @@ class SearchService:
         dest_loc = find_city(dest_clean)
         is_intl_dest = bool(dest_loc and dest_loc.get("is_international", False))
         if is_intl_dest:
-            booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+            booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
             hotel_deep_link = (
                 f"https://www.booking.com/searchresults.html?"
                 f"ss={urllib.parse.quote(dest_clean)}"

@@ -20,6 +20,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import re
 import time
 import logging
+import urllib.parse
 import requests
 from datetime import datetime
 from app.config import settings
@@ -151,7 +152,8 @@ def fetch_kiwi_live_offers(
     cabin_str = "BUSINESS" if seat_mode == "business" else "ECONOMY"
     is_round = bool(return_date)
     affil_id = getattr(settings, "KIWI_AFFILIATE_ID", "travelpayouts")
-    tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+    tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
+    tp_trs = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_TRS", "585474")
 
     try:
         if is_round and return_date:
@@ -323,15 +325,16 @@ def fetch_kiwi_live_offers(
                 continue
 
             price_val = round(float(raw_amount), 2)
-            kiwi_affil_params = f"affilid={affil_id}&marker={tp_marker}"
+            kiwi_affil_params = f"affilid={affil_id}&marker={tp_marker}&trs={tp_trs}"
             if booking_path.startswith("/"):
                 sep = "&" if "?" in booking_path else "?"
-                direct_url = f"https://www.kiwi.com{booking_path}{sep}{kiwi_affil_params}"
+                raw_kiwi_url = f"https://www.kiwi.com{booking_path}{sep}{kiwi_affil_params}"
             elif booking_path.startswith("http"):
                 sep = "&" if "?" in booking_path else "?"
-                direct_url = f"{booking_path}{sep}{kiwi_affil_params}"
+                raw_kiwi_url = f"{booking_path}{sep}{kiwi_affil_params}"
             else:
-                direct_url = f"https://www.kiwi.com/tr/search/results/{orig_codes[0]}/{dest_codes[0]}/{departure_date}?{kiwi_affil_params}"
+                raw_kiwi_url = f"https://www.kiwi.com/tr/search/results/{orig_codes[0]}/{dest_codes[0]}/{departure_date}?{kiwi_affil_params}"
+            direct_url = f"https://tp.media/r?campaign_id=111&marker={tp_marker}&p=4136&trs={tp_trs}&u={urllib.parse.quote(raw_kiwi_url, safe='')}"
 
             local_time = str(((first_seg.get("source") or {}).get("localTime")) or "")
             arr_local_time = str(((last_seg.get("destination") or {}).get("localTime")) or "")
@@ -748,7 +751,7 @@ def fetch_rapidapi_booking_offers(
     try:
         from_id = "IST.CITY" if o_code in ("IST", "SAW", "ISTA") else f"{o_code}.AIRPORT"
         to_id = "IST.CITY" if d_code in ("IST", "SAW", "ISTA") else f"{d_code}.AIRPORT"
-        booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+        booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
 
         params = {
             "fromId": from_id,

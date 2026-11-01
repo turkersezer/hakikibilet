@@ -5953,7 +5953,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Trip.com) ↗' : 'Otelleri (Trip.com) ↗'}</span>
                         </a>
                         ${isInternationalCityOrRoute(toCity, toCode) ? `
-                            <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(toCity)}&aid=585474"
+                            <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(toCity)}&aid=789884"
                                target="_blank" rel="noopener noreferrer"
                                class="text-[11px] font-bold text-sky-700 hover:text-sky-900 inline-flex items-center gap-1">
                                 <span>🏨 ${escapeHtml(toCity)} ${isEn ? 'Hotels (Booking) ↗' : 'Otelleri (Booking) ↗'}</span>
@@ -6274,7 +6274,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                     ${fbIsIntl ? `
-                    <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&aid=585474" target="_blank" class="px-6 py-3 bg-[#003580] text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
+                    <a href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${encodeURIComponent(cin)}&checkout=${encodeURIComponent(cout)}&aid=789884" target="_blank" class="px-6 py-3 bg-[#003580] text-white font-black rounded-xl inline-flex items-center gap-2 shadow-md">
                         <span>${isEn ? 'Open Live Rooms on Booking.com' : "Booking.com'da Canlı Odaları Aç"}</span>
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
@@ -6299,7 +6299,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     if (isEn && tripHotelUrl) {
         tripHotelUrl = tripHotelUrl.replace('https://tr.trip.com/', 'https://www.trip.com/').replace('locale=tr-TR', 'locale=en-US');
     }
-    const bookingUrl = isIntl ? (hotelInfo.booking_url || `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&sb=1&aid=585474`) : null;
+    const bookingUrl = isIntl ? (hotelInfo.booking_url || `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&sb=1&aid=789884`) : null;
     const enuygunUrl = isIntl ? null : (hotelInfo.enuygun_url || buildFlightEnuygunHotelCrossSellUrl(city, { departure_date: cin, return_date: cout, passengers: guests }));
     const obiletHotelUrl = isIntl ? null : (hotelInfo.obilet_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.obilet) || `https://www.obilet.com/otel/${toAsciiSlug(city)}-otelleri`);
     const biletHotelUrl = isIntl ? null : (hotelInfo.bilet_hotel_url || (hotelInfo.deep_links && hotelInfo.deep_links.bilet));
@@ -6347,7 +6347,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     let hotelTotal = topHotel && topHotel.total_price ? Number(topHotel.total_price) : (hotelNightly * (hotelInfo.nights || 2));
     let combinedTotal = transportPrice + hotelTotal;
 
-    const bookingCityLink = isIntl ? (hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=585474&label=hakikibilet_kombine`) : tripHotelUrl;
+    const bookingCityLink = isIntl ? (hotelInfo.booking_url || `https://www.booking.com/searchresults.tr.html?ss=${encodeURIComponent(city)}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=789884&label=hakikibilet_kombine`) : tripHotelUrl;
 
     let html = `
         <!-- 🧭 MULTI-MODAL ULAŞIM ALTERNATİFLERİ BANDI (ÇİFT YÖNLÜ ÇAPRAZ SATIŞ) -->
@@ -6805,7 +6805,7 @@ function renderFilteredHotelCards() {
         : `https://${tripDomain}/hotels/list?flexType=1&searchWord=${qFilteredCity}&keyword=${qFilteredCity}&checkin=${cin}&checkout=${cout}&crn=1&adult=${guests}&curr=TRY&locale=${tripLocale}&Allianceid=11051531&SID=333747492`;
     const filteredEnuygunUrl = !isIntl ? (hotelInfo.enuygun_url || `https://www.enuygun.com/otel/`) : null;
     const filteredEtsturUrl = !isIntl ? (hotelInfo.etstur_url || null) : null;
-    const filteredBookingUrl = isIntl ? `https://www.booking.com/searchresults.html?ss=${qFilteredCity}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=585474` : null;
+    const filteredBookingUrl = isIntl ? `https://www.booking.com/searchresults.html?ss=${qFilteredCity}&checkin=${cin}&checkout=${cout}&group_adults=${guests}&no_rooms=1&aid=789884` : null;
 
     let cardsHtml = '';
 

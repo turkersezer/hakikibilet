@@ -1539,7 +1539,7 @@ class HotelService:
         ile puanlayarak sıralar.
         """
         curr_sym = CurrencyService.get_symbol(currency)
-        aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+        aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
         agoda_cid = getattr(settings, "AFFILIATE_AGODA_CID", "1924128")
         trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
         trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
@@ -2005,7 +2005,7 @@ class HotelService:
                         nightly_target = CurrencyService.convert(min_tot / 2, "EUR", currency) if min_tot else 0
                         total_target = CurrencyService.convert(min_tot, "EUR", currency) if min_tot else 0
 
-                    aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+                    aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
                     agoda_cid = getattr(settings, "AFFILIATE_AGODA_CID", "1924128")
                     trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
                     trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
@@ -2160,7 +2160,7 @@ class HotelService:
 
         currency = (currency or "TRY").upper()
         curr_sym = CurrencyService.get_symbol(currency)
-        aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+        aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
         agoda_cid = getattr(settings, "AFFILIATE_AGODA_CID", "1924128")
         trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
         trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")

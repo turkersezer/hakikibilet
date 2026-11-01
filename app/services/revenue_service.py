@@ -106,7 +106,7 @@ class RevenueService:
             return cls._append_safe_params(
                 raw_url,
                 {
-                    "aid": getattr(settings, "AFFILIATE_BOOKING_AID", "585474"),
+                    "aid": getattr(settings, "AFFILIATE_BOOKING_AID", "789884"),
                     "label": f"hakikibilet-{vertical}",
                 },
             )
@@ -190,10 +190,11 @@ class RevenueService:
                 return f"{wrapper}{urllib.parse.quote(enriched, safe='')}"
             return enriched
 
-        # 8. Welcome Pickups (Global Havalimanı Karşılama & Transfer)
+        # 8. Welcome Pickups (Global Havalimanı Karşılama & Transfer — Travelpayouts campaign_id=627, p=8919)
         if pkey == "welcomepickups" or "welcomepickups.com" in low_url:
-            marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
-            return cls._append_safe_params(
+            marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
+            trs = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_TRS", "585474")
+            clean_target = cls._append_safe_params(
                 raw_url,
                 {
                     "utm_source": "hakikibilet",
@@ -201,6 +202,7 @@ class RevenueService:
                     "tap_s": marker,
                 },
             )
+            return f"https://tp.media/r?campaign_id=627&marker={marker}&p=8919&trs={trs}&u={urllib.parse.quote(clean_target, safe='')}"
 
         # 9. Ferryhopper (Yunan Adaları & Akdeniz Feribot)
         if pkey == "ferryhopper" or "ferryhopper.com" in low_url:

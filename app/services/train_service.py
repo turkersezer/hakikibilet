@@ -1489,7 +1489,7 @@ class TrainService:
     def get_trainline_deep_link(cls, origin_slug: str, dest_slug: str, departure_date: str) -> str:
         """Trainline Avrupa hızlı tren biletleme ekranına Travelpayouts Marker ile yönlendirir."""
         from app.config import settings
-        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
         t_url = "https://www.thetrainline.com/en-us"
         encoded = urllib.parse.quote(t_url, safe="")
         return f"https://tp.media/r?marker={tp_marker}&p=4523&u={encoded}"
@@ -1514,7 +1514,7 @@ class TrainService:
     def get_omio_deep_link(cls, origin_slug: str, dest_slug: str, departure_date: str) -> str:
         """Omio Avrupa hızlı tren ve çok modlu biletleme ekranına Travelpayouts Marker ile yönlendirir."""
         from app.config import settings
-        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
         en_orig = cls._INTL_EN_CITIES.get(origin_slug, origin_slug).lower().replace(" ", "-")
         en_dest = cls._INTL_EN_CITIES.get(dest_slug, dest_slug).lower().replace(" ", "-")
         omio_target = f"https://www.omio.com/trains/{en_orig}/{en_dest}?departure_date={departure_date}"

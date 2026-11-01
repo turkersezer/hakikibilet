@@ -1141,7 +1141,7 @@ class BusService:
         en_orig = cls._OMIO_EN_SLUGS.get(orig_slug, orig_slug)
         en_dest = cls._OMIO_EN_SLUGS.get(dest_slug, dest_slug)
         from app.config import settings
-        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "585474")
+        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
         omio_target = f"https://www.omio.com/buses/{en_orig}/{en_dest}?departure_date={departure_date}"
         encoded = urllib.parse.quote(omio_target, safe="")
         return f"https://tp.media/r?marker={tp_marker}&p=4083&u={encoded}"

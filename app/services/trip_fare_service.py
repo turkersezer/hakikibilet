@@ -454,7 +454,7 @@ def parse_kayak_dom_text(
     """
     lines = [l.strip() for l in body_text.splitlines() if l.strip()]
     offers: Dict[str, Dict[str, Any]] = {}
-    booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+    booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
 
     for i, line in enumerate(lines):
         m_time = re.match(r"^([0-2][0-9]:[0-5][0-9])\s*[–\-]\s*([0-2][0-9]:[0-5][0-9])", line)
@@ -550,7 +550,7 @@ def probe_kayak_fares_via_browser(
     try:
         from playwright.sync_api import sync_playwright
 
-        booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "585474")
+        booking_aid = getattr(settings, "AFFILIATE_BOOKING_AID", "789884")
         if ret_date:
             url = f"https://www.kayak.com.tr/flights/{orig_code.upper()}-{dest_code.upper()}/{dep_date}/{ret_date}?sort=bestflight_a&aid={booking_aid}"
         else:
