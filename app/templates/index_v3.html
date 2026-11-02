@@ -1145,6 +1145,9 @@
                                     <span data-i18n="depDate">Gidiş Tarihi</span>
                                 </label>
                                 <input type="date" id="transDepDate" required
+                                       oninput="if(window.syncTransportDateConstraints) window.syncTransportDateConstraints(false);"
+                                       onchange="if(window.syncTransportDateConstraints) window.syncTransportDateConstraints(true);"
+                                       onfocus="if(window.syncTransportDateConstraints) window.syncTransportDateConstraints(false);"
                                        class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none cursor-pointer">
                             </div>
                         </div>
@@ -1161,6 +1164,8 @@
                                     <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">Tek Yön</span>
                                 </div>
                                 <input type="date" id="transRetDate" disabled
+                                       onfocus="if(window.syncTransportDateConstraints) window.syncTransportDateConstraints(false);"
+                                       onchange="if(window.syncTransportDateConstraints) window.syncTransportDateConstraints(true);"
                                        class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none cursor-pointer hidden">
                             </div>
                         </div>
@@ -1313,6 +1318,9 @@
                                     <span data-i18n="checkinDate">Giriş Tarihi</span>
                                 </label>
                                 <input type="date" id="hotelCheckin" required
+                                       oninput="if(window.syncHotelDateConstraints) window.syncHotelDateConstraints(false);"
+                                       onchange="if(window.syncHotelDateConstraints) window.syncHotelDateConstraints(true);"
+                                       onfocus="if(window.syncHotelDateConstraints) window.syncHotelDateConstraints(false);"
                                        class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none cursor-pointer">
                             </div>
                         </div>
@@ -1325,6 +1333,8 @@
                                     <span data-i18n="checkoutDate">Çıkış Tarihi</span>
                                 </label>
                                 <input type="date" id="hotelCheckout" required
+                                       onfocus="if(window.syncHotelDateConstraints) window.syncHotelDateConstraints(false);"
+                                       onchange="if(window.syncHotelDateConstraints) window.syncHotelDateConstraints(true);"
                                        class="w-full bg-transparent font-bold text-xs sm:text-sm text-slate-900 focus:outline-none cursor-pointer">
                             </div>
                         </div>
@@ -1803,6 +1813,7 @@
             if (pillar === 'events') {
                 renderPillarEvents(window.currentPillarEventCat || 'all');
             }
+            if (typeof window.syncAllDateConstraints === 'function') window.syncAllDateConstraints(true);
         }
         window.switchMainPillar = switchMainPillar;
 
@@ -1889,6 +1900,9 @@
                                 hCout.value = d.toISOString().split('T')[0];
                             } catch (_) {}
                         }
+                    }
+                    if (typeof window.syncAllDateConstraints === 'function') {
+                        window.syncAllDateConstraints(true);
                     }
                     if (hc && !hc.value) hc.focus();
                 }, 80);
@@ -2745,7 +2759,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261102_v43"></script>
+    <script src="/static/js/app_v3.js?v=20261102_v44"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">

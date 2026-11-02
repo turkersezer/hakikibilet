@@ -55,21 +55,104 @@ let allCuratedEvents = [];
 document.addEventListener("DOMContentLoaded", async () => {
     setupDynamicDates();
     setFlightTripType('one_way');
-    await loadCitiesForTransport('flight', currentFlightScope); // Varsayılan uçuş havalimanları
     setupEventListeners();
+    await loadCitiesForTransport('flight', currentFlightScope); // Varsayılan uçuş havalimanları
     renderEvents();
     if (typeof updateRecentSearchesCountBadge === 'function') updateRecentSearchesCountBadge();
     if (typeof renderQuickPopularRoutes === 'function') renderQuickPopularRoutes();
 });
 
+function formatLocalDateStr(d) {
+    const dt = (d instanceof Date && !isNaN(d.getTime())) ? d : new Date();
+    const yyyy = dt.getFullYear();
+    const mm = String(dt.getMonth() + 1).padStart(2, '0');
+    const dd = String(dt.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+window.formatLocalDateStr = formatLocalDateStr;
+
+function isCompleteValidDateStr(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return false;
+    const m = dateStr.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return false;
+    const y = Number(m[1]), mo = Number(m[2]), da = Number(m[3]);
+    return y >= 2024 && y <= 2100 && mo >= 1 && mo <= 12 && da >= 1 && da <= 31;
+}
+window.isCompleteValidDateStr = isCompleteValidDateStr;
+
+function syncTransportDateConstraints(forceValueSnap = true) {
+    const todayStr = formatLocalDateStr(new Date());
+    const transDep = document.getElementById("transDepDate");
+    const transRet = document.getElementById("transRetDate");
+
+    if (transDep) {
+        transDep.min = todayStr;
+        if (forceValueSnap) {
+            if (!isCompleteValidDateStr(transDep.value) || transDep.value < todayStr) {
+                transDep.value = todayStr;
+            }
+        }
+    }
+
+    const depIsReady = !!(transDep && isCompleteValidDateStr(transDep.value) && transDep.value >= todayStr);
+    const activeDepStr = depIsReady ? transDep.value : todayStr;
+
+    if (transRet) {
+        // Dönüş tarihi takviminde gidiş tarihinden önceki tüm günler otomatik olarak kapalı (disabled) gelir
+        transRet.min = activeDepStr;
+        const canSnapRet = forceValueSnap || (depIsReady && document.activeElement !== transRet);
+        if (canSnapRet) {
+            if (!isCompleteValidDateStr(transRet.value) || transRet.value < activeDepStr) {
+                transRet.value = getNextDaysDate(activeDepStr, 3);
+            }
+        }
+    }
+}
+window.syncTransportDateConstraints = syncTransportDateConstraints;
+
+function syncHotelDateConstraints(forceValueSnap = true) {
+    const todayStr = formatLocalDateStr(new Date());
+    const hotelCin = document.getElementById("hotelCheckin");
+    const hotelCout = document.getElementById("hotelCheckout");
+
+    if (hotelCin) {
+        hotelCin.min = todayStr;
+        if (forceValueSnap) {
+            if (!isCompleteValidDateStr(hotelCin.value) || hotelCin.value < todayStr) {
+                hotelCin.value = todayStr;
+            }
+        }
+    }
+
+    const cinIsReady = !!(hotelCin && isCompleteValidDateStr(hotelCin.value) && hotelCin.value >= todayStr);
+    const activeCinStr = cinIsReady ? hotelCin.value : todayStr;
+    // Konaklamada çıkış tarihi en az giriş tarihinden 1 gün sonrası (min 1 gece) olmalı;
+    // giriş tarihi ve öncesindeki tüm günler çıkış takviminde otomatik kapalı (disabled) gelir.
+    const minCoutStr = getNextDaysDate(activeCinStr, 1);
+
+    if (hotelCout) {
+        hotelCout.min = minCoutStr;
+        const canSnapCout = forceValueSnap || (cinIsReady && document.activeElement !== hotelCout);
+        if (canSnapCout) {
+            if (!isCompleteValidDateStr(hotelCout.value) || hotelCout.value < minCoutStr) {
+                hotelCout.value = getNextDaysDate(activeCinStr, 3);
+            }
+        }
+    }
+}
+window.syncHotelDateConstraints = syncHotelDateConstraints;
+
+function syncAllDateConstraints(forceValueSnap = true) {
+    syncTransportDateConstraints(forceValueSnap);
+    syncHotelDateConstraints(forceValueSnap);
+}
+window.syncAllDateConstraints = syncAllDateConstraints;
+
 // Dinamik Tarih Kurulumu (Bugünden 14 gün sonrası gidiş, 17 gün sonrası dönüş)
 function setupDynamicDates() {
-    const today = new Date();
-    const dep = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-    const ret = new Date(today.getTime() + 17 * 24 * 60 * 60 * 1000);
-
-    const depStr = dep.toISOString().split('T')[0];
-    const retStr = ret.toISOString().split('T')[0];
+    const todayStr = formatLocalDateStr(new Date());
+    const depStr = getNextDaysDate(todayStr, 14);
+    const retStr = getNextDaysDate(todayStr, 17);
 
     const transDep = document.getElementById("transDepDate");
     const transRet = document.getElementById("transRetDate");
@@ -81,12 +164,8 @@ function setupDynamicDates() {
     if (hotelCin && !hotelCin.value) hotelCin.value = depStr;
     if (hotelCout && !hotelCout.value) hotelCout.value = retStr;
 
-    // Minimum seçim bugünden önce olamaz
-    const todayStr = today.toISOString().split('T')[0];
-    if (transDep) transDep.min = todayStr;
-    if (transRet) transRet.min = todayStr;
-    if (hotelCin) hotelCin.min = todayStr;
-    if (hotelCout) hotelCout.min = todayStr;
+    // Tüm tarih kutularının min sınırlarını ve geçerliliğini senkronize et
+    syncAllDateConstraints(true);
 
     // Embedded curated events
     if (window.INITIAL_EVENTS && window.INITIAL_EVENTS.length > 0) {
@@ -3442,6 +3521,9 @@ async function executeTransportSearch(e) {
 
     let origin = oInp ? oInp.value.trim() : "";
     let destination = dInp ? dInp.value.trim() : "";
+    if (typeof syncTransportDateConstraints === 'function') {
+        syncTransportDateConstraints(true);
+    }
     const depDate = document.getElementById("transDepDate").value;
     const retDate = document.getElementById("transRetDate").value;
     const isRound = (currentFlightTripType === 'round');
@@ -4788,6 +4870,9 @@ function switchSearchDate(newDepDate) {
             }
         }
     }
+    if (typeof syncTransportDateConstraints === 'function') {
+        syncTransportDateConstraints(true);
+    }
     executeTransportSearch();
 }
 window.switchSearchDate = switchSearchDate;
@@ -4802,6 +4887,9 @@ function triggerCrossSellStay(city, staySubType, checkinDate, checkoutDate) {
     if (cInput && city) cInput.value = city;
     if (cinInput && checkinDate) cinInput.value = checkinDate;
     if (coutInput && checkoutDate) coutInput.value = checkoutDate;
+    if (typeof syncHotelDateConstraints === 'function') {
+        syncHotelDateConstraints(true);
+    }
     if (typeof executeHotelSearch === 'function') {
         executeHotelSearch();
     }
@@ -4815,9 +4903,14 @@ function triggerCrossSellCar(city, pickupDate, dropoffDate) {
     const oInput = document.getElementById("transOrigin");
     const dInput = document.getElementById("transDest");
     const depInput = document.getElementById("transDepDate");
+    const retInput = document.getElementById("transRetDate");
     if (oInput && city) oInput.value = city;
     if (dInput && city) dInput.value = city;
     if (depInput && pickupDate) depInput.value = pickupDate;
+    if (retInput && dropoffDate) retInput.value = dropoffDate;
+    if (typeof syncTransportDateConstraints === 'function') {
+        syncTransportDateConstraints(true);
+    }
     executeTransportSearch();
 }
 window.triggerCrossSellCar = triggerCrossSellCar;
@@ -6245,6 +6338,9 @@ async function executeHotelSearch(e) {
     if (hotelCityEl && city && hotelCityEl.value.trim() !== city) {
         hotelCityEl.value = city;
     }
+    if (typeof syncHotelDateConstraints === 'function') {
+        syncHotelDateConstraints(true);
+    }
     const cin = document.getElementById("hotelCheckin").value;
     const cout = document.getElementById("hotelCheckout").value;
     const guests = document.getElementById("hotelGuests").value;
@@ -7479,16 +7575,15 @@ function quickSearchHotelCity(cityName) {
     const hCin = document.getElementById("hotelCheckin");
     const hCout = document.getElementById("hotelCheckout");
     if (hc) hc.value = cityName;
-    const now = new Date();
+    const todayStr = formatLocalDateStr(new Date());
     if (hCin && !hCin.value) {
-        const d1 = new Date(now);
-        d1.setDate(d1.getDate() + 7);
-        hCin.value = d1.toISOString().split('T')[0];
+        hCin.value = getNextDaysDate(todayStr, 7);
     }
     if (hCout && !hCout.value) {
-        const d2 = new Date(now);
-        d2.setDate(d2.getDate() + 10);
-        hCout.value = d2.toISOString().split('T')[0];
+        hCout.value = getNextDaysDate((hCin && hCin.value) ? hCin.value : todayStr, 3);
+    }
+    if (typeof syncHotelDateConstraints === 'function') {
+        syncHotelDateConstraints(true);
     }
     if (typeof executeHotelSearch === 'function') {
         executeHotelSearch();
@@ -7653,6 +7748,9 @@ function planEventTrip(destCity, depDate, retDate, preferredMode) {
     if (depDateInput) depDateInput.value = depDate;
     if (retDateInput) retDateInput.value = retDate;
     if (tripTypeSelect) tripTypeSelect.value = 'round';
+    if (typeof syncTransportDateConstraints === 'function') {
+        syncTransportDateConstraints(true);
+    }
 
     executeTransportSearch();
 }
@@ -7663,18 +7761,28 @@ function prefillTransportAndSwitch(origin, dest, depDate, retDate) {
     document.getElementById("transDest").value = dest;
     document.getElementById("transDepDate").value = depDate;
     document.getElementById("transRetDate").value = retDate;
+    if (typeof syncTransportDateConstraints === 'function') {
+        syncTransportDateConstraints(true);
+    }
     executeTransportSearch();
 }
 
 function getNextDaysDate(dateStr, days) {
     try {
+        const parts = String(dateStr || '').split('-').map(Number);
+        if (parts.length === 3 && parts[0] > 1970 && parts[1] >= 1 && parts[2] >= 1) {
+            const d = new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0);
+            d.setDate(d.getDate() + Number(days || 0));
+            return formatLocalDateStr(d);
+        }
         const d = new Date(dateStr);
-        d.setDate(d.getDate() + days);
-        return d.toISOString().split('T')[0];
+        d.setDate(d.getDate() + Number(days || 0));
+        return formatLocalDateStr(d);
     } catch {
         return dateStr;
     }
 }
+window.getNextDaysDate = getNextDaysDate;
 
 function setupEventListeners() {
     const transForm = document.getElementById("transportSearchForm");
@@ -7843,16 +7951,36 @@ function setupEventListeners() {
     const paxBtn = document.getElementById("paxTriggerBtn");
     if (paxBtn) paxBtn.addEventListener("click", togglePaxDropdown);
 
-    // Gidiş tarihi değişince dönüş tarihi minimumunu otomatik güncelle
+    // Ulaşım: Gidiş tarihi değişince dönüş tarihi minimumunu otomatik kilitle (önceki tarihler kapalı gelir)
     const transDep = document.getElementById("transDepDate");
     const transRet = document.getElementById("transRetDate");
-    if (transDep && transRet) {
-        transDep.addEventListener("change", () => {
-            transRet.min = transDep.value;
-            if (transRet.value && transRet.value < transDep.value) {
-                transRet.value = getNextDaysDate(transDep.value, 3);
-            }
+    if (transDep) {
+        transDep.addEventListener("input", () => syncTransportDateConstraints(false));
+        transDep.addEventListener("change", () => syncTransportDateConstraints(true));
+        transDep.addEventListener("blur", () => syncTransportDateConstraints(true));
+    }
+    if (transRet) {
+        ["focus", "click", "mousedown"].forEach(evName => {
+            transRet.addEventListener(evName, () => syncTransportDateConstraints(false));
         });
+        transRet.addEventListener("change", () => syncTransportDateConstraints(true));
+        transRet.addEventListener("blur", () => syncTransportDateConstraints(true));
+    }
+
+    // Konaklama: Giriş tarihi değişince çıkış tarihi minimumunu (en az +1 gün) otomatik kilitle (önceki tarihler kapalı gelir)
+    const hotelCin = document.getElementById("hotelCheckin");
+    const hotelCout = document.getElementById("hotelCheckout");
+    if (hotelCin) {
+        hotelCin.addEventListener("input", () => syncHotelDateConstraints(false));
+        hotelCin.addEventListener("change", () => syncHotelDateConstraints(true));
+        hotelCin.addEventListener("blur", () => syncHotelDateConstraints(true));
+    }
+    if (hotelCout) {
+        ["focus", "click", "mousedown"].forEach(evName => {
+            hotelCout.addEventListener(evName, () => syncHotelDateConstraints(false));
+        });
+        hotelCout.addEventListener("change", () => syncHotelDateConstraints(true));
+        hotelCout.addEventListener("blur", () => syncHotelDateConstraints(true));
     }
 
     // Yolcu popover menüsü dışına tıklandığında kapat
@@ -8983,6 +9111,9 @@ function applyRecentTransportSearch(idx) {
         }
         if (depInput && item.depDate) {
             depInput.value = item.depDate;
+        }
+        if (typeof syncTransportDateConstraints === 'function') {
+            syncTransportDateConstraints(true);
         }
         executeTransportSearch();
     }, 80);
