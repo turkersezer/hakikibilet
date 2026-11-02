@@ -3806,6 +3806,7 @@ async function executeTransportSearch(e) {
         const rawOrigin = (oInp && (oInp.dataset.originalPlaceName || oInp.dataset.rawUserQuery)) || extractCleanBaseLocation(oInp) || origin;
         const rawDestination = (dInp && (dInp.dataset.originalPlaceName || dInp.dataset.rawUserQuery)) || extractCleanBaseLocation(dInp) || destination;
 
+        const trapEl = document.getElementById("hbTransportWebsiteTrap");
         const payload = {
             origin: origin,
             destination: destination,
@@ -3822,7 +3823,8 @@ async function executeTransportSearch(e) {
             ferry_vehicle_type: currentFerryVehicleType,
             trip_type: isRound ? 'round_trip' : 'one_way',
             include_hotel: false, // Kullanıcı talimatı: Şimdilik otel önerilerini kaldır
-            currency: activeCurrency
+            currency: activeCurrency,
+            website_url: trapEl ? trapEl.value : ""
         };
 
         if (typeof saveRecentTransportSearch === 'function') {
@@ -3840,13 +3842,16 @@ async function executeTransportSearch(e) {
 
         const res = await fetch("/api/search", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "X-Hakiki-Client": "web-v3"
+            },
             body: JSON.stringify(payload),
             signal: abortCtrl.signal
         });
 
         if (searchSeq !== window._activeTransportSearchSeq) return;
-        if (!res.ok) throw new Error("Arama sunucusundan yanıt alınamadı.");
+        if (!res.ok && res.status !== 429) throw new Error("Arama sunucusundan yanıt alınamadı.");
         const data = await res.json();
         if (searchSeq !== window._activeTransportSearchSeq) return;
         clearInterval(progressInterval);
@@ -6377,6 +6382,7 @@ async function executeHotelSearch(e) {
             dynamicOrigin = cleanDestToken.includes("ankara") ? "İstanbul" : "Ankara";
         }
 
+        const hotelTrapEl = document.getElementById("hbHotelWebsiteTrap");
         const payload = {
             origin: dynamicOrigin,
             destination: city,
@@ -6387,12 +6393,16 @@ async function executeHotelSearch(e) {
             transport_type: "all", // Tüm ulaşım modlarını (uçak, tren, otobüs, feribot) aynı anda sorgula
             trip_type: "round_trip",
             include_hotel: true,
-            currency: activeCurrency
+            currency: activeCurrency,
+            website_url: hotelTrapEl ? hotelTrapEl.value : ""
         };
 
         const res = await fetch("/api/search", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "X-Hakiki-Client": "web-v3"
+            },
             body: JSON.stringify(payload),
             signal: abortCtrl.signal
         });

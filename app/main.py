@@ -17,9 +17,52 @@ from collections import defaultdict
 
 # Basit IP Bazlı Hız Sınırlayıcı (Rate Limiter - Bot ve Spam Koruması)
 _RATE_LIMIT_BUCKETS = defaultdict(list)
+_LAST_BUCKET_CLEANUP = 0.0
+
+# Otomasyon / Kazıyıcı Bot İmza Listesi (Gerçek tarayıcıları asla etkilemez)
+_SCRAPER_BOT_SIGNATURES = (
+    "python-requests", "python-httpx", "aiohttp/", "scrapy", "urllib/", "pycurl",
+    "go-http-client", "java/", "libwww-perl", "wget/", "masscan", "zgrab",
+    "nikto", "sqlmap", "nmap", "headlesschrome", "phantomjs"
+)
+
+
+def _get_real_client_ip(request: Request) -> str:
+    """Render, Cloudflare ve Nginx ters vekil (Reverse Proxy) arkasındaki gerçek kullanıcı IP'sini çözer."""
+    if not request:
+        return "unknown"
+    for header_name in ("cf-connecting-ip", "true-client-ip", "x-real-ip"):
+        val = (request.headers.get(header_name) or "").strip()
+        if val:
+            return val.split(",")[0].strip()[:64]
+    xff = (request.headers.get("x-forwarded-for") or "").strip()
+    if xff:
+        first_ip = xff.split(",")[0].strip()
+        if first_ip:
+            return first_ip[:64]
+    return (request.client.host if request.client and request.client.host else "unknown")[:64]
+
+
+def _cleanup_stale_rate_limit_buckets(now: float, max_idle_sec: int = 300) -> None:
+    """Bellek şişmesini (Memory Leak) önlemek için süresi dolmuş IP kovalarını periyodik temizler."""
+    global _LAST_BUCKET_CLEANUP
+    if (now - _LAST_BUCKET_CLEANUP) < 180 and len(_RATE_LIMIT_BUCKETS) < 2000:
+        return
+    _LAST_BUCKET_CLEANUP = now
+    stale_keys = []
+    for k, ts_list in list(_RATE_LIMIT_BUCKETS.items()):
+        fresh = [t for t in ts_list if (now - t) < max_idle_sec]
+        if fresh:
+            _RATE_LIMIT_BUCKETS[k] = fresh
+        else:
+            stale_keys.append(k)
+    for k in stale_keys:
+        _RATE_LIMIT_BUCKETS.pop(k, None)
+
 
 def _check_rate_limit(ip: str, bucket: str, max_requests: int = 5, window_sec: int = 60) -> bool:
     now = time.time()
+    _cleanup_stale_rate_limit_buckets(now, max_idle_sec=max(300, window_sec * 2))
     key = f"{bucket}:{ip or 'unknown'}"
     timestamps = [t for t in _RATE_LIMIT_BUCKETS[key] if now - t < window_sec]
     if len(timestamps) >= max_requests:
@@ -28,6 +71,25 @@ def _check_rate_limit(ip: str, bucket: str, max_requests: int = 5, window_sec: i
     timestamps.append(now)
     _RATE_LIMIT_BUCKETS[key] = timestamps
     return True
+
+
+def _is_automated_scraper_bot(request: Request, honeypot_val: str = "") -> bool:
+    """
+    Görünmez Bot & Kazıyıcı Tespiti:
+    - Honeypot (bal küpü) alanı doldurulmuşsa anında bot olarak işaretler.
+    - Bilinen agresif kazıyıcı kütüphaneleri (Scrapy, python-requests, sqlmap vb.) yakalar.
+    - Gerçek kullanıcı tarayıcılarını (Chrome, Safari, Firefox, Edge, Mobil WebView) asla engellemez.
+    """
+    if honeypot_val and str(honeypot_val).strip():
+        return True
+    if not request:
+        return False
+    ua = (request.headers.get("user-agent") or "").strip().lower()
+    if not ua or len(ua) < 4:
+        return True
+    if any(sig in ua for sig in _SCRAPER_BOT_SIGNATURES):
+        return True
+    return False
 
 def _is_valid_admin_key(val: str) -> bool:
     if not val:
@@ -167,11 +229,14 @@ async def maintenance_middleware(request: Request, call_next):
     response = await call_next(request)
     if path == "/":
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     return response
 
 @app.post("/admin/unlock")
 async def admin_unlock(request: Request):
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = _get_real_client_ip(request)
     if not _check_rate_limit(client_ip, "admin_unlock", max_requests=15, window_sec=60):
         return JSONResponse(content={"success": False, "message": "Çok fazla deneme yapıldı. Lütfen 1 dakika bekleyiniz."}, status_code=429)
     try:
@@ -345,19 +410,25 @@ async def dashboard_page(request: Request):
 # ==================== API ENDPOINT'LERİ ====================
 
 @app.get("/api/cities")
-async def get_cities(transport_type: str = Query("all"), scope: str = Query("all")):
+async def get_cities(request: Request, transport_type: str = Query("all"), scope: str = Query("all")):
     """Türkiye ve dünya şehirler listesi (seyahat moduna ve kapsama göre filtrelenebilir)"""
+    client_ip = _get_real_client_ip(request)
+    if not _check_rate_limit(client_ip, "public_cities", max_requests=120, window_sec=60):
+        return JSONResponse(status_code=429, content={"cities": [], "mode": transport_type, "scope": scope, "count": 0, "rate_limited": True})
     from app.cities import get_cities_by_transport
     filtered = get_cities_by_transport(transport_type, scope=scope)
     return {"cities": filtered, "mode": transport_type, "scope": scope, "count": len(filtered)}
 
 @app.get("/api/hotel-autocomplete")
-async def hotel_autocomplete(q: str = Query("", min_length=0)):
+async def hotel_autocomplete(request: Request, q: str = Query("", min_length=0)):
     """Canlı Otel Adı + Şehir/Bölge Hibrit Autocomplete (Enuygun & Etstur Canlı Öneri Motoru)"""
     from app.services.hotel_service import HotelService
-    q_clean = (q or "").strip()
+    q_clean = (q or "").strip()[:80]
     if len(q_clean) < 2:
         return {"query": q_clean, "suggestions": [], "count": 0}
+    client_ip = _get_real_client_ip(request)
+    if _is_automated_scraper_bot(request) or not _check_rate_limit(client_ip, "hotel_autocomplete", max_requests=60, window_sec=60):
+        return {"query": q_clean, "suggestions": [], "count": 0, "rate_limited": True}
     suggestions = await asyncio.to_thread(HotelService.autocomplete_hotels_and_regions, q_clean)
     return {"query": q_clean, "suggestions": suggestions, "count": len(suggestions)}
 
@@ -370,6 +441,60 @@ async def get_extension_slots():
         "extension_slots": getattr(settings, "EXTENSION_SLOTS", {}),
     }
 
+
+def _build_safe_fallback_search_payload(
+    req: SearchRequest,
+    adults: int,
+    children: int,
+    infants: int,
+    total_pax: int,
+    notice_message: str,
+) -> dict:
+    """Yoğunluk, hata veya hız sınırı anında dış kazıma yapmadan 0.01s içinde güvenli resmi derin linkleri üretir."""
+    try:
+        links = SearchService.generate_deep_links(
+            req.origin, req.destination, req.departure_date, req.return_date,
+            total_pax, req.trip_type, cabin_class=req.cabin_class,
+            adults=adults, children=children, infants=infants
+        )
+    except Exception:
+        links = {}
+    fallback_hotel_info = None
+    if getattr(req, "include_hotel", False):
+        try:
+            from app.services.hotel_service import HotelService
+            fallback_hotel_info = HotelService.get_hotel_recommendation(
+                dest_city=req.destination,
+                checkin_date=req.departure_date,
+                checkout_date=req.return_date,
+                guests=total_pax,
+                currency=getattr(req, "currency", "TRY") or "TRY",
+            )
+        except Exception:
+            fallback_hotel_info = None
+    return {
+        "origin": req.origin,
+        "destination": req.destination,
+        "date": req.departure_date,
+        "return_date": req.return_date,
+        "trip_type": req.trip_type,
+        "passengers": total_pax,
+        "adults": adults,
+        "children": children,
+        "infants": infants,
+        "cabin_class": req.cabin_class,
+        "transport_type": req.transport_type,
+        "currency": "₺",
+        "currency_code": "TRY",
+        "hotel_info": fallback_hotel_info,
+        "deep_links": links,
+        "extension_slots": getattr(settings, "EXTENSION_SLOTS", {}),
+        "notices": [notice_message],
+        "results_count": 0,
+        "tickets": []
+    }
+
+
 @app.post("/api/search")
 async def search_tickets(req: SearchRequest, request: Request):
     """
@@ -380,9 +505,26 @@ async def search_tickets(req: SearchRequest, request: Request):
     children = req.children if req.children is not None else 0
     infants = req.infants if req.infants is not None else 0
     total_pax = max(1, adults + children + infants)
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = _get_real_client_ip(request)
     ua = request.headers.get("user-agent", "")
     ref = request.headers.get("referer", "")
+
+    # KATMAN 1: Görünmez Bot (Scraper / Honeypot) & Aşırı Saldırı (Flood > 80/dk) Kalkanı
+    is_bot = _is_automated_scraper_bot(request, getattr(req, "website_url", "") or "")
+    if is_bot or not _check_rate_limit(client_ip, "search_hard_flood", max_requests=80, window_sec=60):
+        safe_payload = _build_safe_fallback_search_payload(
+            req, adults, children, infants, total_pax,
+            "🛡️ Güvenlik Kalkanı: Otomatik bot/kazıyıcı veya aşırı istek tespit edildi. Doğrudan resmi acente bağlantıları hazırlandı."
+        )
+        safe_payload["rate_limited"] = True
+        return JSONResponse(status_code=429, content=safe_payload)
+
+    # KATMAN 2: Kırılmaz "Yumuşak Hız Sınırı" (Dakikada 30 Canlı Arama Üzerinde 200 OK + Resmi Derin Linkler)
+    if not _check_rate_limit(client_ip, "search_live_scrape", max_requests=30, window_sec=60):
+        return _build_safe_fallback_search_payload(
+            req, adults, children, infants, total_pax,
+            "🛡️ Anlık yüksek sorgu yoğunluğu nedeniyle sunucu hızını korumak adına doğrudan resmi acente bağlantıları hazırlandı."
+        )
 
     try:
         result = await asyncio.to_thread(
@@ -441,48 +583,10 @@ async def search_tickets(req: SearchRequest, request: Request):
             ))
         except Exception:
             pass
-        try:
-            links = SearchService.generate_deep_links(
-                req.origin, req.destination, req.departure_date, req.return_date,
-                total_pax, req.trip_type, cabin_class=req.cabin_class,
-                adults=adults, children=children, infants=infants
-            )
-        except Exception:
-            links = {}
-        fallback_hotel_info = None
-        if getattr(req, "include_hotel", False):
-            try:
-                from app.services.hotel_service import HotelService
-                fallback_hotel_info = HotelService.get_hotel_recommendation(
-                    dest_city=req.destination,
-                    checkin_date=req.departure_date,
-                    checkout_date=req.return_date,
-                    guests=total_pax,
-                    currency=getattr(req, "currency", "TRY") or "TRY",
-                )
-            except Exception:
-                fallback_hotel_info = None
-        return {
-            "origin": req.origin,
-            "destination": req.destination,
-            "date": req.departure_date,
-            "return_date": req.return_date,
-            "trip_type": req.trip_type,
-            "passengers": total_pax,
-            "adults": adults,
-            "children": children,
-            "infants": infants,
-            "cabin_class": req.cabin_class,
-            "transport_type": req.transport_type,
-            "currency": "₺",
-            "currency_code": "TRY",
-            "hotel_info": fallback_hotel_info,
-            "deep_links": links,
-            "extension_slots": getattr(settings, "EXTENSION_SLOTS", {}),
-            "notices": ["🛡️ Anlık yoğunluk nedeniyle doğrudan resmi acente bağlantıları hazırlandı."],
-            "results_count": 0,
-            "tickets": []
-        }
+        return _build_safe_fallback_search_payload(
+            req, adults, children, infants, total_pax,
+            "🛡️ Anlık yoğunluk nedeniyle doğrudan resmi acente bağlantıları hazırlandı."
+        )
 
 
 @app.get("/api/currency/rates")
@@ -509,6 +613,9 @@ async def get_deals(
 @app.post("/api/cars/search")
 async def search_car_rentals(req: CarSearchRequest, request: Request):
     """MODÜL 6: Araç Kiralama Çoklu Karşılaştırma Modülü (Yolcu360, Enuygun, Obilet, Avis, Garenta)"""
+    client_ip = _get_real_client_ip(request)
+    if _is_automated_scraper_bot(request, getattr(req, "website_url", "") or "") or not _check_rate_limit(client_ip, "car_search", max_requests=40, window_sec=60):
+        return JSONResponse(status_code=429, content={"cars": [], "vehicles": [], "providers": [], "rate_limited": True})
     from app.services.car_rental_service import CarRentalService
     res = CarRentalService.search_cars(
         location=req.location,
@@ -519,7 +626,6 @@ async def search_car_rentals(req: CarSearchRequest, request: Request):
     )
     try:
         from app.services.analytics_service import AnalyticsService
-        client_ip = request.client.host if request.client else "unknown"
         ua = request.headers.get("user-agent", "")
         ref = request.headers.get("referer", "")
         asyncio.create_task(AnalyticsService.log_event(
@@ -537,8 +643,11 @@ async def search_car_rentals(req: CarSearchRequest, request: Request):
     return res
 
 @app.post("/api/trackers")
-async def create_tracker(req: TrackRouteRequest):
+async def create_tracker(req: TrackRouteRequest, request: Request):
     """MODÜL 2: Bu rotayı takibe al"""
+    client_ip = _get_real_client_ip(request)
+    if _is_automated_scraper_bot(request, getattr(req, "website_url", "") or "") or not _check_rate_limit(client_ip, "trackers_write", max_requests=15, window_sec=60):
+        return JSONResponse(status_code=429, content={"success": False, "message": "Çok fazla işlem yapıldı. Lütfen 1 dakika sonra tekrar deneyiniz."})
     user_id = "demo-user-1"
     
     # Kullanıcı e-posta / telegram bilgisini güncelle
@@ -632,8 +741,8 @@ async def trigger_cron_now(request: Request):
 @app.post("/api/erken-kayit")
 async def register_early_access(payload: EarlyAccessRequest, request: Request, db=Depends(get_db_dep)):
     """Ziyaretçiyi erken erişim bültenine kaydeder"""
-    client_ip = request.client.host if request.client else "unknown"
-    if not _check_rate_limit(client_ip, "early_access", max_requests=5, window_sec=60):
+    client_ip = _get_real_client_ip(request)
+    if _is_automated_scraper_bot(request) or not _check_rate_limit(client_ip, "early_access", max_requests=5, window_sec=60):
         return JSONResponse(
             status_code=429,
             content={"success": False, "message": "Çok fazla kayıt denemesi yapıldı. Lütfen 1 dakika sonra tekrar deneyiniz."}
@@ -654,7 +763,6 @@ async def register_early_access(payload: EarlyAccessRequest, request: Request, d
             content={"success": False, "message": "Lütfen KVKK Aydınlatma Metni'ni onaylayınız."}
         )
         
-    client_ip = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent", "")[:255]
     
     try:
@@ -774,10 +882,7 @@ async def unsubscribe_post(request: Request, email: str = Form(""), db=Depends(g
 @app.get("/api/admin/erken-kayit-listesi")
 async def get_early_access_subscribers(request: Request, db=Depends(get_db_dep)):
     """Yönetici için erken kayıt listesini JSON olarak listeler"""
-    cookie = request.cookies.get("hakiki_preview_access")
-    param = request.query_params.get("onizleme") or request.query_params.get("preview")
-    if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
-        raise HTTPException(status_code=403, detail="Bu listeyi görüntülemek için yetkiniz bulunmamaktadır.")
+    _require_admin_access(request)
         
     cursor = await db.execute("SELECT id, email, is_active, unsubscribed_at, created_at, ip_address FROM prelaunch_subscribers ORDER BY created_at DESC")
     rows = await cursor.fetchall()
@@ -842,10 +947,7 @@ async def export_early_access_csv(request: Request, db=Depends(get_db_dep)):
 @app.post("/api/admin/toplu-lansman-duyurusu")
 async def trigger_launch_announcement(request: Request, db=Depends(get_db_dep)):
     """Lansman günü SADECE aktif (ayrılmamış) erken kayıtlı kullanıcılara açılış e-postasını gönderir"""
-    cookie = request.cookies.get("hakiki_preview_access")
-    param = request.query_params.get("onizleme") or request.query_params.get("preview")
-    if cookie != settings.MAINTENANCE_BYPASS_KEY and param != settings.MAINTENANCE_BYPASS_KEY:
-        raise HTTPException(status_code=403, detail="Yetkiniz bulunmamaktadır.")
+    _require_admin_access(request)
         
     cursor = await db.execute("SELECT email FROM prelaunch_subscribers WHERE is_active = 1")
     rows = await cursor.fetchall()
@@ -922,7 +1024,7 @@ async def admin_analytics_page(request: Request):
 @app.post("/api/analytics/event")
 async def record_analytics_event(request: Request):
     """Kullanıcı etkileşimlerini (sayfa görüntüleme, mail dönüşü, acente tıklaması, özellik talebi, uyarı) kaydeder"""
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = _get_real_client_ip(request)
     if not _check_rate_limit(client_ip, "analytics_event", max_requests=90, window_sec=60):
         return JSONResponse(content={"ok": False, "reason": "rate_limited"}, status_code=200)
     try:

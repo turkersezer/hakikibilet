@@ -26,9 +26,18 @@ class SearchRequest(BaseModel):
     search_mode: Optional[str] = "fast"  # 'fast' (Hızlı Bilet) or 'smart_route' (Akıllı Rota & Seyahat Planı)
     include_hotel: Optional[bool] = False  # Akıllı Rota Planında Otel Dahil Edilsin mi?
     hotel_nights: Optional[int] = None  # Konaklama gece sayısı
+    website_url: Optional[str] = None  # Görünmez Bot Tuzak Alanı (Honeypot)
 
     @model_validator(mode="after")
     def validate_and_sanitize_search(self):
+        # 0. Aşırı uzun metin (Payload Flood / Injection) koruması
+        self.origin = str(self.origin or "").strip()[:120]
+        self.destination = str(self.destination or "").strip()[:120]
+        if self.raw_origin is not None:
+            self.raw_origin = str(self.raw_origin).strip()[:120]
+        if self.raw_destination is not None:
+            self.raw_destination = str(self.raw_destination).strip()[:120]
+
         # 1. Tarih formatı ve geçmiş tarih kontrolü (Bozuk format veya geçmiş tarih gelirse güvenli geleceğe normalize et)
         try:
             dep_dt = datetime.strptime(str(self.departure_date).strip(), "%Y-%m-%d")
@@ -65,6 +74,7 @@ class CarSearchRequest(BaseModel):
     location_type: str = "city"  # 'city' (Şehir Merkezi), 'airport' (Havalimanı), 'station' (Gar/Otogar)
     driver_age: int = 25
     currency: Optional[str] = "TRY"
+    website_url: Optional[str] = None  # Görünmez Bot Tuzak Alanı (Honeypot)
 
 class TrackRouteRequest(BaseModel):
     origin_city: str
@@ -76,6 +86,7 @@ class TrackRouteRequest(BaseModel):
     channels: List[str] = ["email", "push", "telegram"]
     user_email: Optional[str] = "demo@ucuzbilet.com"
     telegram_chat_id: Optional[str] = None
+    website_url: Optional[str] = None  # Görünmez Bot Tuzak Alanı (Honeypot)
 
 class UserRegisterRequest(BaseModel):
     email: str

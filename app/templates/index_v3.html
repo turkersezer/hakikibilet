@@ -1070,6 +1070,7 @@
             <!-- ==================== ULAŞIM FORMU (UÇAK, OTOBÜS, TREN, FERİBOT) ==================== -->
             <div id="transFormWrapper">
                 <form id="transportSearchForm" onsubmit="if(event) event.preventDefault();">
+                    <input type="text" id="hbTransportWebsiteTrap" name="website_url" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
                         
                         <!-- Kalkış (Nereden) -->
@@ -1294,6 +1295,7 @@
             <!-- ==================== OTEL ARAMA FORMU (OTEL SEKMESİ AKTİFKEN) ==================== -->
             <div id="hotelFormWrapper" class="hidden">
                 <form id="hotelSearchForm">
+                    <input type="text" id="hbHotelWebsiteTrap" name="website_url" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
                         <!-- Şehir / Bölge / Doğrudan Otel Adı -->
                         <div class="lg:col-span-5 relative">
@@ -2759,7 +2761,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261102_v44"></script>
+    <script src="/static/js/app_v3.js?v=20261102_v45"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">
