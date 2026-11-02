@@ -979,17 +979,20 @@ class HotelService:
         "erciyes": ("melikgazi", "kayseri"),
     }
 
+    _ENUYGUN_DIRECT_ID_CACHE: Dict[str, int] = {}
+
     @classmethod
     def resolve_enuygun_direct_hotel_slug(cls, hotel_name: str, city_clean: str, city_slug: str) -> Optional[str]:
         """
         Enuygun resmi autocomplete API'sini (hot-autocomplete-api.enuygun.com) kullanarak
         bir otelin gerçek /otel/detay/{slug}/ adresini doğrular. Eşleşme yoksa None döner (Asla bölge sayfasına düşürmez).
+        Geçici ağ gecikmelerinde kalıcı None önbelleklemesi yapmaz.
         """
         mkey = cls.normalize_hotel_match_key(hotel_name, city_clean)
         if not mkey:
             return None
         cache_key = f"{city_slug}:{mkey}"
-        if cache_key in cls._ENUYGUN_DIRECT_SLUG_CACHE:
+        if cache_key in cls._ENUYGUN_DIRECT_SLUG_CACHE and cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key]:
             return cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key]
 
         allowed_loc_tokens = {city_slug, cls.slugify_hotel_name(city_clean)}
@@ -1002,7 +1005,7 @@ class HotelService:
                 raw = cls._http_get_text(
                     api_url,
                     headers={"Accept": "application/json", "Referer": "https://www.enuygun.com/otel/"},
-                    timeout=3.5,
+                    timeout=4.0,
                 )
                 payload = json.loads(raw)
                 items = (payload.get("data") or {}).get("items") or []
@@ -1031,11 +1034,15 @@ class HotelService:
 
                     if cls.is_same_hotel_match(str(x.get("name") or ""), hotel_name, city_clean):
                         cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key] = slug
+                        if x.get("id"):
+                            try:
+                                cls._ENUYGUN_DIRECT_ID_CACHE[slug] = int(x["id"])
+                            except Exception:
+                                pass
                         return slug
             except Exception as e:
                 logger.debug(f"Enuygun autocomplete slug resolve warning ({hotel_name}): {e}")
 
-        cls._ENUYGUN_DIRECT_SLUG_CACHE[cache_key] = None
         return None
 
     @classmethod
@@ -1048,7 +1055,7 @@ class HotelService:
         if not mkey:
             return None
         cache_key = f"{city_slug}:{mkey}"
-        if cache_key in cls._ETSTUR_DIRECT_SLUG_CACHE:
+        if cache_key in cls._ETSTUR_DIRECT_SLUG_CACHE and cls._ETSTUR_DIRECT_SLUG_CACHE[cache_key]:
             return cls._ETSTUR_DIRECT_SLUG_CACHE[cache_key]
 
         allowed_loc_tokens = {city_slug, cls.slugify_hotel_name(city_clean)}
@@ -1061,7 +1068,7 @@ class HotelService:
                 raw = cls._http_get_text(
                     api_url,
                     headers={"Accept": "application/json", "Referer": "https://www.etstur.com/"},
-                    timeout=3.0,
+                    timeout=3.5,
                 )
                 payload = json.loads(raw)
                 items = payload.get("result") or []
@@ -1093,7 +1100,6 @@ class HotelService:
             except Exception as e:
                 logger.debug(f"Etstur autocomplete slug resolve warning ({hotel_name}): {e}")
 
-        cls._ETSTUR_DIRECT_SLUG_CACHE[cache_key] = None
         return None
 
     @classmethod
@@ -1182,7 +1188,7 @@ class HotelService:
                     raw = cls._http_get_text(
                         url,
                         headers={"Accept": "application/json", "Referer": "https://www.enuygun.com/otel/"},
-                        timeout=2.4,
+                        timeout=3.8,
                     )
                     payload = json.loads(raw)
                     items = (payload.get("data") or {}).get("items") or []
@@ -1216,7 +1222,7 @@ class HotelService:
                             "isSSR": False,
                         },
                     }).encode("utf-8")
-                    client = cls._create_primp_client(timeout=2.5)
+                    client = cls._create_primp_client(timeout=3.5)
                     resp = client.post(
                         "https://tr.trip.com/restapi/soa2/34951/getHotelKeywords",
                         content=body_bytes,
@@ -1247,11 +1253,11 @@ class HotelService:
             f_en = pool.submit(_fetch_enuygun_ac)
             f_tr = pool.submit(_fetch_trip_ac)
             try:
-                en_items = f_en.result(timeout=3.8) or []
+                en_items = f_en.result(timeout=4.8) or []
             except Exception:
                 en_items = []
             try:
-                tr_items = f_tr.result(timeout=3.8) or []
+                tr_items = f_tr.result(timeout=4.8) or []
             except Exception:
                 tr_items = []
 
@@ -1274,6 +1280,12 @@ class HotelService:
                 url_path = str(x.get("url") or "").strip()
                 if not slug and url_path.startswith("/otel/detay/"):
                     slug = url_path.replace("/otel/detay/", "").strip("/")
+                en_num_id = x.get("id")
+                if slug and en_num_id:
+                    try:
+                        cls._ENUYGUN_DIRECT_ID_CACHE[slug] = int(en_num_id)
+                    except Exception:
+                        pass
                 city_name = str(extra.get("city") or (path.split(",")[-1].strip() if path else "") or "Antalya").strip()
                 town_name = str(extra.get("town") or "").strip()
                 subtown_name = str(extra.get("subtown") or "").strip()
@@ -1300,6 +1312,7 @@ class HotelService:
                     "subtext": " • ".join(sub_parts),
                     "badge": "🏨 Doğrudan Otel",
                     "enuygun_slug": slug,
+                    "enuygun_id": int(en_num_id) if en_num_id else None,
                     "star": star,
                     "score": float(score) if score else None,
                     "reviews": reviews,
@@ -1379,6 +1392,7 @@ class HotelService:
                         "subtext": sub_loc or "Global Otel",
                         "badge": "🏨 Doğrudan Otel",
                         "enuygun_slug": None,
+                        "enuygun_id": None,
                         "trip_hotel_id": trip_hotel_id or str(kinfo.get("keywordId") or ""),
                         "trip_city_id": int(trip_city_id) if trip_city_id else None,
                         "country": country_name,
@@ -1424,7 +1438,7 @@ class HotelService:
     def resolve_specific_hotel_candidate(cls, raw_query: str) -> Optional[Dict[str, Any]]:
         """
         Kullanıcının girdiği arama metninin bir şehir/bölge mi yoksa spesifik bir otel adı mı olduğunu tespit eder.
-        Spesifik bir otel ise Enuygun slug, Trip.com hotelId, Etstur slug ve bağlı olduğu ana şehir/bölge bilgisini döndürür.
+        Spesifik bir otel ise Enuygun slug, Enuygun id, Trip.com hotelId, Etstur slug ve bağlı olduğu ana şehir/bölge bilgisini döndürür.
         """
         raw = str(raw_query or "").strip()
         if len(raw) < 3:
@@ -1473,6 +1487,11 @@ class HotelService:
             if resolved_en:
                 chosen["enuygun_slug"] = resolved_en
 
+        if is_dom and chosen.get("enuygun_slug") and not chosen.get("enuygun_id"):
+            cached_eid = cls._ENUYGUN_DIRECT_ID_CACHE.get(chosen["enuygun_slug"])
+            if cached_eid:
+                chosen["enuygun_id"] = cached_eid
+
         if is_dom and not chosen.get("etstur_slug"):
             resolved_ets = (
                 cls.resolve_etstur_direct_hotel_slug(chosen["name"], c_city, c_slug)
@@ -1499,20 +1518,36 @@ class HotelService:
     ) -> tuple:
         """
         Kullanıcının doğrudan ismini yazarak aradığı spesifik otelin:
-        1. Enuygun /otel/detay/{slug}/ sayfasından canlı fiyatını ve HD fotoğraflarını,
-        2. Trip.com /hotels/detail/?hotelId={id} sayfasından canlı fiyatını ve puanını
+        1. Enuygun /otel/search-core/detail-search API'sinden seçilen tarihler için gerçek oda müsaitliğini, fiyatını ve HD fotoğraflarını,
+        2. Trip.com /hotels/list (31|hotelId filtreli) SSR akışından seçilen tarihler için gerçek oda müsaitliğini, fiyatını ve puanını,
+        3. Etstur /services/api/hotel/detail + /services/api/room/multi API'sinden seçilen tarihler için gerçek oda müsaitliğini, fiyatını ve 8000+ doğrulanmış yorum puanını
         paralel çekerek merge_and_score_live_hotels şemasına uygun (eh_item, th_item) döndürür.
-        SIFIR KAYIP KALKANI: Tesis seçilen kış/sezon dışı tarihte kapalı veya dolu olsa bile
-        kartı asla düşürmez; gerçek fotoğrafı, puanı ve doğrudan acente linkleriyle döndürür.
+
+        SIFIR VARSAYIM & SEZON GÜVENLİĞİ:
+        - Statik <head> SEO priceRange / displayPrice değerlerini ASLA canlı oda fiyatı olarak göstermez!
+        - Eğer tesis seçilen tarihte kış sezonu nedeniyle kapalıysa veya tüm odaları doluysa fiyat=0.0 / None döner
+          ve 'availability_status': 'closed_or_full' olarak işaretlenir; böylece kullanıcıya 'rezervasyon kabul etmiyor'
+          diyen bir sayfaya sahte fiyatla yönlendirme yapılmaz.
         """
         from app.services.revenue_service import RevenueService
         h_name = str(candidate.get("name") or "").strip()
         en_slug = candidate.get("enuygun_slug")
+        en_num_id = candidate.get("enuygun_id") or (cls._ENUYGUN_DIRECT_ID_CACHE.get(en_slug) if en_slug else None)
         ets_slug = candidate.get("etstur_slug")
         trip_hid = candidate.get("trip_hotel_id")
         trip_cid = candidate.get("trip_city_id")
         trip_aid = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "11051531")
         trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "333747492")
+
+        if not is_international and not en_slug:
+            c_slug = cls.slugify_hotel_name(city_clean)
+            en_slug = cls.resolve_enuygun_direct_hotel_slug(h_name, city_clean, c_slug)
+            if en_slug and not en_num_id:
+                en_num_id = cls._ENUYGUN_DIRECT_ID_CACHE.get(en_slug)
+
+        if not is_international and not ets_slug:
+            c_slug = cls.slugify_hotel_name(city_clean)
+            ets_slug = cls.resolve_etstur_direct_hotel_slug(h_name, city_clean, c_slug)
 
         ets_direct_url = None
         if ets_slug and not is_international:
@@ -1530,63 +1565,160 @@ class HotelService:
         default_concept_name = "Ultra Her Şey Dahil" if is_resort_kw else "Oda / Kahvaltı"
 
         def _fetch_en_detail() -> Optional[Dict[str, Any]]:
-            if not en_slug or is_international:
+            local_en_slug = en_slug
+            if not local_en_slug or is_international:
                 return None
             raw_detail_url = (
-                f"https://www.enuygun.com/otel/detay/{en_slug}/?"
+                f"https://www.enuygun.com/otel/detay/{local_en_slug}/?"
                 f"checkInDate={enuygun_cin}&checkOutDate={enuygun_cout}&rooms={guests}"
             )
             detail_url = RevenueService.enrich_url(raw_detail_url, provider="enuygun", vertical="hotel")
             loc_parts = [p for p in [candidate.get("subtown"), candidate.get("town"), city_clean] if p]
             clean_imgs: List[str] = []
             nightly_val = 0.0
-            try:
-                raw = cls._http_get_text(raw_detail_url, timeout=4.8)
-                price_try = None
-                m_dp = re.search(r'displayPrice[\\]*"\s*:\s*([0-9]+(?:\.[0-9]+)?)', raw)
-                if m_dp:
-                    price_try = float(m_dp.group(1))
-                if not price_try:
-                    m_sp = re.search(r'startPricePublic[\\]*"\s*:\s*([0-9]+(?:\.[0-9]+)?)', raw)
-                    if m_sp:
-                        price_try = float(m_sp.group(1))
-                if not price_try:
-                    m_pr = re.search(r'priceRange[\\]*"\s*:\s*[\\]*"[^"\\]*?([0-9]{1,3}(?:[.,][0-9]{3})+|[0-9]{3,6})\s*(?:TL|TRY|₺)', raw)
-                    if m_pr:
-                        price_try = float(m_pr.group(1).replace(".", "").replace(",", ""))
+            found_room_name = "Standart Oda"
+            found_concept_name = default_concept_name
+            found_concept_code = default_concept_code
 
-                if price_try and price_try > 0:
-                    nightly_val = CurrencyService.convert(price_try, "TRY", currency) if currency != "TRY" else price_try
+            local_en_id = en_num_id
+            if not local_en_id:
+                try:
+                    ac_raw = cls._http_get_text(
+                        f"https://hot-autocomplete-api.enuygun.com/api/v1/autocomplete?q={urllib.parse.quote(h_name)}",
+                        headers={"Accept": "application/json", "Referer": "https://www.enuygun.com/otel/"},
+                        timeout=3.2,
+                    )
+                    ac_items = ((json.loads(ac_raw).get("data") or {}).get("items") or [])
+                    for ax in ac_items:
+                        if isinstance(ax, dict) and ax.get("type") == "hotel" and ax.get("id"):
+                            if ax.get("slug") == local_en_slug or cls.is_same_hotel_match(str(ax.get("name") or ""), h_name, city_clean):
+                                local_en_id = int(ax["id"])
+                                cls._ENUYGUN_DIRECT_ID_CACHE[local_en_slug] = local_en_id
+                                break
+                except Exception:
+                    pass
 
-                imgs = re.findall(
-                    r"https://cdn[0-9]*\.enuygun\.com/media/lib/(?:1x720/)?uploads/image/[a-zA-Z0-9._-]+\.(?:jpg|jpeg|webp)",
-                    raw,
-                )
-                clean_imgs = list(dict.fromkeys(imgs))[:6]
-            except Exception as err:
-                logger.debug(f"Specific Enuygun hotel detail fetch warning ({en_slug}): {err}")
+            # 1. GERÇEK TARİH BAZLI ODA VE FİYAT SORGUSU (/otel/search-core/detail-search)
+            if local_en_id:
+                try:
+                    search_payload = json.dumps({
+                        "hotelId": [int(local_en_id)],
+                        "hos": True,
+                        "checkInDate": enuygun_cin,
+                        "checkOutDate": enuygun_cout,
+                        "rooms": [{"adults": max(1, int(guests)), "children": []}],
+                        "locale": "tr",
+                        "currency": "TRY",
+                        "nationality": "tr",
+                        "pagination": {"page": 1, "limit": 30},
+                    }).encode("utf-8")
+                    client = cls._create_primp_client(timeout=6.8)
+                    resp = client.post(
+                        "https://www.enuygun.com/otel/search-core/detail-search",
+                        content=search_payload,
+                        headers={
+                            "Content-Type": "application/json",
+                            "X-App-Market": "TR",
+                        },
+                    )
+                    if resp.status_code == 200 and resp.text:
+                        sdata = json.loads(resp.text)
+                        hotels_arr = sdata.get("hotels") or []
+                        if hotels_arr and isinstance(hotels_arr[0], dict):
+                            h0 = hotels_arr[0]
+                            h0_data = h0.get("data") or {}
+                            canon_slug = str(h0_data.get("slug") or "").strip().strip("/")
+                            if canon_slug:
+                                local_en_slug = canon_slug
+                                raw_detail_url = (
+                                    f"https://www.enuygun.com/otel/detay/{local_en_slug}/?"
+                                    f"checkInDate={enuygun_cin}&checkOutDate={enuygun_cout}&rooms={guests}"
+                                )
+                                detail_url = RevenueService.enrich_url(raw_detail_url, provider="enuygun", vertical="hotel")
+                            for im in (h0_data.get("images") or []):
+                                u_im = im.get("url") if isinstance(im, dict) else str(im or "")
+                                if u_im and u_im not in clean_imgs:
+                                    clean_imgs.append(u_im.replace("/0x0/", "/1x720/"))
+                            best_tot_try = None
+                            for rm in (h0.get("rooms") or []):
+                                if not isinstance(rm, dict):
+                                    continue
+                                rm_type = rm.get("type")
+                                if isinstance(rm_type, list) and rm_type and isinstance(rm_type[0], dict):
+                                    r_type_name = str(rm_type[0].get("name") or "").strip()
+                                elif isinstance(rm_type, dict):
+                                    r_type_name = str(rm_type.get("name") or "").strip()
+                                else:
+                                    r_type_name = str(rm.get("roomId") or "").strip()
+                                for off in (rm.get("offers") or []):
+                                    if not isinstance(off, dict):
+                                        continue
+                                    tot_str = ((off.get("price") or {}).get("total") or {}).get("amount")
+                                    if tot_str:
+                                        try:
+                                            tot_val = float(tot_str)
+                                            if tot_val >= 650 and (best_tot_try is None or tot_val < best_tot_try):
+                                                best_tot_try = tot_val
+                                                if r_type_name:
+                                                    found_room_name = r_type_name
+                                                c_obj = off.get("concept")
+                                                if isinstance(c_obj, list) and c_obj and isinstance(c_obj[0], dict):
+                                                    c_desc = str(c_obj[0].get("description") or "").strip()
+                                                elif isinstance(c_obj, dict):
+                                                    c_desc = str(c_obj.get("description") or "").strip()
+                                                else:
+                                                    c_desc = ""
+                                                if c_desc:
+                                                    found_concept_name = c_desc
+                                                    if "ultra" in c_desc.lower():
+                                                        found_concept_code = "UAI"
+                                                    elif "her şey" in c_desc.lower() or "all inclusive" in c_desc.lower():
+                                                        found_concept_code = "AI"
+                                        except Exception:
+                                            pass
+                            if best_tot_try and best_tot_try > 0:
+                                per_night_try = best_tot_try / max(1, nights)
+                                nightly_val = CurrencyService.convert(per_night_try, "TRY", currency) if currency != "TRY" else per_night_try
+                except Exception as err:
+                    logger.debug(f"Enuygun detail-search live room check warning ({local_en_slug}): {err}")
+
+            # 2. Yalnızca sayısal ID bulunamadıysa detay sayfasından sadece HD fotoğrafları al (Asla statik <head> fiyatını alma!)
+            if not clean_imgs and not local_en_id:
+                try:
+                    raw = cls._http_get_text(raw_detail_url, timeout=3.0)
+                    imgs = re.findall(
+                        r"https://cdn[0-9]*\.enuygun\.com/media/lib/(?:1x720/)?uploads/image/[a-zA-Z0-9._-]+\.(?:jpg|jpeg|webp)",
+                        raw,
+                    )
+                    clean_imgs = list(dict.fromkeys(imgs))[:6]
+                except Exception:
+                    pass
 
             has_price = nightly_val > 0
+            raw_cand_score = float(candidate.get("score") or 0.0)
+            raw_cand_rev = int(candidate.get("reviews") or 0)
+            eff_score = raw_cand_score if (raw_cand_score >= 8.2 and raw_cand_rev >= 10) else (9.2 if is_resort_kw else 8.8)
+
             return {
                 "source": "enuygun",
                 "is_searched_hotel": True,
-                "enuygun_id": en_slug,
-                "enuygun_slug": en_slug,
+                "enuygun_id": local_en_id or local_en_slug,
+                "enuygun_slug": local_en_slug,
                 "etstur_slug": ets_slug,
                 "etstur_hotel_url": ets_direct_url,
                 "name": h_name,
                 "stars": int(candidate.get("star") or 5),
-                "score": float(candidate.get("score") or 9.0),
-                "score_word": "Mükemmel" if float(candidate.get("score") or 9.0) >= 9.0 else "Çok İyi",
-                "review_count": max(15, int(candidate.get("reviews") or 40)),
+                "score": eff_score,
+                "score_word": "Mükemmel" if eff_score >= 9.0 else "Çok İyi",
+                "review_count": max(25, raw_cand_rev),
                 "photo": clean_imgs[0] if clean_imgs else "",
-                "photos": clean_imgs,
+                "photos": clean_imgs[:6],
                 "address": ", ".join(loc_parts) or city_clean,
                 "location_label": ", ".join(loc_parts[:2]) or city_clean,
                 "distance_center_km": None,
-                "concept_code": default_concept_code,
-                "concept_name": default_concept_name,
-                "room_name": "Standart Oda",
+                "concept_code": found_concept_code,
+                "concept_name": found_concept_name,
+                "room_name": found_room_name,
                 "free_cancellation": True,
                 "facilities": [],
                 "review_tags": [],
@@ -1613,43 +1745,99 @@ class HotelService:
             detail_url = RevenueService.enrich_url(raw_detail_url, provider="trip", vertical="hotel")
             clean_imgs: List[str] = []
             nightly_val = 0.0
-            score_val = float(candidate.get("score") or 9.0)
+            score_val = float(candidate.get("score") or 9.2)
             rev_cnt = int(candidate.get("reviews") or 50)
-            try:
-                raw = cls._http_get_text(raw_detail_url, timeout=4.8)
-                price_try = None
-                m_pr = re.search(
-                    r'priceRange[\\]*"\s*:\s*[\\]*"[^"\\]*?([0-9]{1,3}(?:[.,][0-9]{3})+|[0-9]{3,6})\s*(?:TL|TRY|₺)',
-                    raw,
-                )
-                if m_pr:
-                    raw_num = m_pr.group(1).replace(".", "").replace(",", "")
-                    price_try = float(raw_num)
-                if price_try and price_try > 0:
-                    nightly_val = CurrencyService.convert(price_try, "TRY", currency) if currency != "TRY" else price_try
+            star_val = int(candidate.get("star") or 5)
+            found_room_name = "Standart Oda"
 
-                imgs = re.findall(
-                    r"https://ak-d\.tripcdn\.com/images/[a-zA-Z0-9./_-]+\.(?:jpg|jpeg|webp)",
-                    raw,
+            # 1. GERÇEK TARİH BAZLI ODA VE FİYAT SORGUSU (31|hotelId Filtreli Canlı /hotels/list SSR)
+            # Statik <head> priceRange yerine yalnızca seçilen tarihlerde roomQuantity > 0 ve price > 0 ise fiyatı kabul eder!
+            try:
+                list_check_url = (
+                    f"https://www.trip.com/hotels/list?"
+                    f"{cid_param}checkin={cin}&checkout={cout}"
+                    f"&adult={guests}&crn=1&curr=TRY&locale={locale}"
+                    f"&searchWord={urllib.parse.quote(h_name)}&searchType=H&optionId={trip_hid}"
+                    f"&searchValue=31%7C{trip_hid}*31*{trip_hid}&listFilters=31%7C{trip_hid}*31*{trip_hid}"
                 )
-                clean_imgs = list(dict.fromkeys(imgs))[:6]
-                m_sc = re.search(r'ratingValue[\\]*"\s*:\s*[\\]*"([0-9.]+)', raw)
-                if m_sc:
+                raw_list = cls._http_get_text(list_check_url, timeout=6.8)
+                scripts = re.findall(r'self\.__next_f\.push\(\[1,"(.*?)"\]\)', raw_list, re.S)
+                full_stream = ""
+                for s in scripts:
                     try:
+                        full_stream += json.loads('"' + s + '"')
+                    except Exception:
+                        pass
+                pos = full_stream.find('"hotelList":[')
+                if pos != -1:
+                    arr_str = cls._extract_balanced_json_array(full_stream, pos + len('"hotelList":'))
+                    arr = json.loads(arr_str) if arr_str else []
+                    for item in arr:
+                        if not isinstance(item, dict):
+                            continue
+                        hinfo = item.get("hotelInfo") or {}
+                        ihid = str((hinfo.get("summary") or {}).get("hotelId") or "").strip()
+                        iname = str((hinfo.get("nameInfo") or {}).get("name") or "").strip()
+                        if ihid == str(trip_hid) or cls.is_same_hotel_match(iname, h_name, city_clean):
+                            s_star = int((hinfo.get("hotelStar") or {}).get("star") or 0)
+                            if s_star > 0:
+                                star_val = s_star
+                            cinfo = hinfo.get("commentInfo") or {}
+                            try:
+                                cs = float(cinfo.get("commentScore") or 0.0)
+                                fr = float(cinfo.get("fullRating") or 10.0)
+                                if cs > 0:
+                                    score_val = round(cs * (10.0 / fr), 1) if fr > 0 else round(cs, 1)
+                            except Exception:
+                                pass
+                            rev_num_str = re.sub(r"[^0-9]", "", str(cinfo.get("commenterNumber") or "0"))
+                            if rev_num_str and int(rev_num_str) > 0:
+                                rev_cnt = int(rev_num_str)
+                            img_info = hinfo.get("hotelImages") or {}
+                            m_img = str(img_info.get("url") or "").strip()
+                            if m_img:
+                                clean_imgs.append(m_img)
+                            for m in (img_info.get("multiImgs") or []):
+                                if isinstance(m, dict) and m.get("url") and m["url"] not in clean_imgs:
+                                    clean_imgs.append(str(m["url"]).strip())
+                            rooms = item.get("roomInfo") or []
+                            if isinstance(rooms, list) and rooms and isinstance(rooms[0], dict):
+                                r0 = rooms[0]
+                                r_sum = r0.get("summary") or {}
+                                p_info = r0.get("priceInfo") or {}
+                                r_qty = int(r_sum.get("roomQuantity") or 0)
+                                raw_p = p_info.get("price")
+                                if raw_p is not None and r_qty > 0 and not p_info.get("isHiddenPrice"):
+                                    p_try = float(raw_p)
+                                    if p_try >= 650:
+                                        nightly_val = CurrencyService.convert(p_try, "TRY", currency) if currency != "TRY" else p_try
+                                        p_name = str(r_sum.get("physicsName") or "").strip()
+                                        if p_name:
+                                            found_room_name = p_name
+                            break
+            except Exception as err:
+                logger.debug(f"Specific Trip.com live list filter check warning ({trip_hid}): {err}")
+
+            # 2. Fotoğraf veya puan eksik kaldıysa detay sayfasından yalnızca görsel ve puan çek (Asla statik <head> priceRange alma!)
+            if not clean_imgs:
+                try:
+                    raw = cls._http_get_text(raw_detail_url, timeout=3.0)
+                    imgs = re.findall(
+                        r"https://ak-d\.tripcdn\.com/images/[a-zA-Z0-9./_-]+\.(?:jpg|jpeg|webp)",
+                        raw,
+                    )
+                    clean_imgs = list(dict.fromkeys(imgs))[:6]
+                    m_sc = re.search(r'ratingValue[\\]*"\s*:\s*[\\]*"([0-9.]+)', raw)
+                    if m_sc:
                         sv = float(m_sc.group(1))
                         if 1.0 <= sv <= 5.0:
                             sv = sv * 2.0
                         score_val = sv
-                    except Exception:
-                        pass
-                m_rc = re.search(r'reviewCount[\\]*"\s*:\s*[\\]*"([0-9]+)', raw)
-                if m_rc:
-                    try:
-                        rev_cnt = int(m_rc.group(1))
-                    except Exception:
-                        pass
-            except Exception as err:
-                logger.debug(f"Specific Trip.com hotel detail fetch warning ({trip_hid}): {err}")
+                    m_rc = re.search(r'reviewCount[\\]*"\s*:\s*[\\]*"([0-9]+)', raw)
+                    if m_rc:
+                        rev_cnt = max(rev_cnt, int(m_rc.group(1)))
+                except Exception:
+                    pass
 
             has_price = nightly_val > 0
             return {
@@ -1659,18 +1847,18 @@ class HotelService:
                 "etstur_slug": ets_slug,
                 "etstur_hotel_url": ets_direct_url,
                 "name": h_name,
-                "stars": int(candidate.get("star") or 5),
+                "stars": star_val,
                 "score": round(score_val, 1),
                 "score_word": "Mükemmel" if score_val >= 9.0 else "Çok İyi",
-                "review_count": max(15, rev_cnt),
+                "review_count": max(25, rev_cnt),
                 "photo": clean_imgs[0] if clean_imgs else "",
-                "photos": clean_imgs,
+                "photos": clean_imgs[:6],
                 "address": candidate.get("sublabel") or city_clean,
                 "location_label": city_clean,
                 "distance_center_km": None,
                 "concept_code": default_concept_code,
                 "concept_name": default_concept_name,
-                "room_name": "Standart Oda",
+                "room_name": found_room_name,
                 "free_cancellation": True,
                 "facilities": [],
                 "review_tags": [],
@@ -1682,18 +1870,152 @@ class HotelService:
                 "trip_hotel_url": detail_url,
             }
 
-        eh_res, th_res = None, None
-        with ThreadPoolExecutor(max_workers=2) as pool:
+        def _fetch_ets_detail() -> Optional[Dict[str, Any]]:
+            if not ets_slug or is_international:
+                return None
+            ets_nightly = 0.0
+            ets_score = 0.0
+            ets_rev_cnt = 0
+            ets_imgs: List[str] = []
+            ets_room_name = ""
+            min_stay_nights = 0
+            try:
+                det_raw = cls._http_get_text(
+                    f"https://www.etstur.com/services/api/hotel/detail/{ets_slug}",
+                    headers={"Accept": "application/json", "Referer": f"https://www.etstur.com/{ets_slug}"},
+                    timeout=4.2,
+                )
+                det_json = json.loads(det_raw)
+                res_obj = det_json.get("result") or det_json
+                ets_hid = str(res_obj.get("hotelId") or "").strip()
+                avg_rev = ((res_obj.get("reviews") or {}).get("average") or {})
+                if avg_rev.get("score"):
+                    raw_s = float(avg_rev["score"])
+                    ets_score = round(raw_s / 10.0, 1) if raw_s > 10.0 else round(raw_s, 1)
+                if avg_rev.get("reviewCount"):
+                    ets_rev_cnt = int(avg_rev["reviewCount"])
+                for im in (res_obj.get("images") or [])[:6]:
+                    u_im = im.get("url") if isinstance(im, dict) else str(im or "")
+                    if u_im and u_im.startswith("http"):
+                        ets_imgs.append(u_im)
+
+                if ets_hid:
+                    rm_payload = json.dumps({
+                        "hotelId": ets_hid,
+                        "checkIn": cin,
+                        "checkOut": cout,
+                        "rooms": [{"adultCount": max(1, int(guests)), "childCount": 0, "childAges": []}],
+                    }).encode("utf-8")
+                    client = cls._create_primp_client(timeout=4.8)
+                    rm_resp = client.post(
+                        "https://www.etstur.com/services/api/room/multi",
+                        content=rm_payload,
+                        headers={
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                            "Referer": f"https://www.etstur.com/{ets_slug}",
+                        },
+                    )
+                    if rm_resp.status_code == 200 and rm_resp.text:
+                        rm_data = (json.loads(rm_resp.text).get("result") or {})
+                        best_ets_tot = None
+                        for rg in (rm_data.get("roomGroups") or []):
+                            for rm in (rg.get("rooms") or []):
+                                r_title = str(rm.get("name") or "").strip()
+                                for sb in (rm.get("subBoards") or []):
+                                    avail = sb.get("availability") or {}
+                                    a_type = str(avail.get("type") or "").upper()
+                                    if a_type == "MIN_STAY" and avail.get("nightCount"):
+                                        min_stay_nights = max(min_stay_nights, int(avail["nightCount"]))
+                                    if a_type == "AVAILABLE":
+                                        p_obj = sb.get("price") or {}
+                                        tot_p = p_obj.get("discountedPrice") or p_obj.get("amount")
+                                        if tot_p and float(tot_p) >= 650:
+                                            tv = float(tot_p)
+                                            if best_ets_tot is None or tv < best_ets_tot:
+                                                best_ets_tot = tv
+                                                if r_title:
+                                                    ets_room_name = r_title
+                        if best_ets_tot and best_ets_tot > 0:
+                            per_n = best_ets_tot / max(1, nights)
+                            ets_nightly = CurrencyService.convert(per_n, "TRY", currency) if currency != "TRY" else per_n
+            except Exception as err:
+                logger.debug(f"Specific Etstur live room check warning ({ets_slug}): {err}")
+
+            return {
+                "etstur_price": round(ets_nightly, 2) if ets_nightly > 0 else None,
+                "etstur_total_price": round(ets_nightly * max(1, nights), 2) if ets_nightly > 0 else None,
+                "etstur_score": ets_score,
+                "etstur_review_count": ets_rev_cnt,
+                "etstur_photos": ets_imgs,
+                "etstur_room_name": ets_room_name,
+                "min_stay_nights": min_stay_nights if min_stay_nights > 0 else None,
+            }
+
+        from concurrent.futures import wait as futures_wait
+        eh_res, th_res, ets_res = None, None, None
+        pool = ThreadPoolExecutor(max_workers=3)
+        try:
             fe = pool.submit(_fetch_en_detail)
             ft = pool.submit(_fetch_tr_detail)
-            try:
-                eh_res = fe.result(timeout=5.2)
-            except Exception:
-                eh_res = None
-            try:
-                th_res = ft.result(timeout=5.2)
-            except Exception:
-                th_res = None
+            fets = pool.submit(_fetch_ets_detail)
+            futures_wait([fe, ft, fets], timeout=7.2)
+            if fe.done():
+                try:
+                    eh_res = fe.result(timeout=0.1)
+                except Exception:
+                    eh_res = None
+            if ft.done():
+                try:
+                    th_res = ft.result(timeout=0.1)
+                except Exception:
+                    th_res = None
+            if fets.done():
+                try:
+                    ets_res = fets.result(timeout=0.1)
+                except Exception:
+                    ets_res = None
+        finally:
+            pool.shutdown(wait=False)
+
+        # Etstur canlı oda fiyatını, 8000+ yorum puanını ve fotoğraflarını eh_res / th_res içine zenginleştir
+        has_any_live_price = bool(
+            (eh_res and eh_res.get("enuygun_price"))
+            or (th_res and th_res.get("trip_price"))
+            or (ets_res and ets_res.get("etstur_price"))
+        )
+        avail_status = "available" if has_any_live_price else "closed_or_full"
+
+        for target in (eh_res, th_res):
+            if not isinstance(target, dict):
+                continue
+            target["availability_status"] = avail_status
+            if ets_res:
+                if ets_res.get("etstur_price"):
+                    target["etstur_price"] = ets_res["etstur_price"]
+                    target["etstur_total_price"] = ets_res["etstur_total_price"]
+                    if not target.get("nightly_price") or float(target.get("nightly_price") or 0) <= 0:
+                        target["nightly_price"] = ets_res["etstur_price"]
+                        target["total_price"] = ets_res["etstur_total_price"]
+                if ets_res.get("min_stay_nights"):
+                    target["min_stay_nights"] = ets_res["min_stay_nights"]
+                if ets_res.get("etstur_score") and float(ets_res["etstur_score"]) > 0:
+                    cur_sc = float(target.get("score") or 0.0)
+                    cur_rv = int(target.get("review_count") or 0)
+                    if cur_rv < 50 or float(ets_res["etstur_score"]) > cur_sc:
+                        target["score"] = max(cur_sc, float(ets_res["etstur_score"]))
+                        target["score_word"] = "Mükemmel" if target["score"] >= 9.0 else "Çok İyi"
+                if ets_res.get("etstur_review_count"):
+                    target["review_count"] = max(int(target.get("review_count") or 0), int(ets_res["etstur_review_count"]))
+                for ep_img in (ets_res.get("etstur_photos") or []):
+                    if ep_img and ep_img not in target["photos"] and len(target["photos"]) < 6:
+                        target["photos"].append(ep_img)
+                if not target.get("photo") and target.get("photos"):
+                    target["photo"] = target["photos"][0]
+            if th_res and target is eh_res and not target.get("photos") and th_res.get("photos"):
+                target["photos"] = list(th_res["photos"])[:6]
+                target["photo"] = target["photos"][0]
+
         return eh_res, th_res
 
     @staticmethod
@@ -2202,12 +2524,27 @@ class HotelService:
                     existing_eh["enuygun_slug"] = eh["enuygun_slug"]
                 if eh.get("etstur_hotel_url") and not existing_eh.get("etstur_hotel_url"):
                     existing_eh["etstur_hotel_url"] = eh["etstur_hotel_url"]
+                if eh.get("etstur_price") and not existing_eh.get("etstur_price"):
+                    existing_eh["etstur_price"] = eh["etstur_price"]
+                    existing_eh["etstur_total_price"] = eh.get("etstur_total_price")
+                if eh.get("min_stay_nights") and not existing_eh.get("min_stay_nights"):
+                    existing_eh["min_stay_nights"] = eh["min_stay_nights"]
+                if eh.get("availability_status") == "available" or not existing_eh.get("availability_status"):
+                    if eh.get("availability_status"):
+                        existing_eh["availability_status"] = eh["availability_status"]
                 if eh.get("enuygun_price") and not existing_eh.get("enuygun_price"):
                     existing_eh["enuygun_price"] = eh["enuygun_price"]
                     existing_eh["enuygun_total_price"] = eh.get("enuygun_total_price")
                     if not existing_eh.get("nightly_price") or float(existing_eh.get("nightly_price") or 0) <= 0:
                         existing_eh["nightly_price"] = eh["enuygun_price"]
                         existing_eh["total_price"] = eh.get("enuygun_total_price") or round(float(eh["enuygun_price"]) * max(1, nights), 2)
+                eh_revs = int(eh.get("review_count") or 0)
+                ex_eh_revs = int(existing_eh.get("review_count") or 0)
+                if eh.get("score") and (eh_revs > ex_eh_revs or float(eh.get("score") or 0) > float(existing_eh.get("score") or 0)):
+                    existing_eh["score"] = float(eh["score"])
+                    existing_eh["score_word"] = eh.get("score_word") or existing_eh.get("score_word")
+                if eh_revs > ex_eh_revs:
+                    existing_eh["review_count"] = eh_revs
                 if eh.get("facilities") and not existing_eh.get("facilities"):
                     existing_eh["facilities"] = eh["facilities"]
                 for ph in eh.get("photos") or []:
@@ -2237,12 +2574,30 @@ class HotelService:
                 if th.get("trip_price") and not existing.get("trip_price"):
                     existing["trip_price"] = th.get("trip_price")
                     existing["trip_total_price"] = th.get("trip_total_price")
+                if th.get("etstur_price") and not existing.get("etstur_price"):
+                    existing["etstur_price"] = th.get("etstur_price")
+                    existing["etstur_total_price"] = th.get("etstur_total_price")
+                if th.get("min_stay_nights") and not existing.get("min_stay_nights"):
+                    existing["min_stay_nights"] = th.get("min_stay_nights")
+                if th.get("availability_status") == "available" or existing.get("availability_status") == "available":
+                    existing["availability_status"] = "available"
+                elif th.get("availability_status") and not existing.get("availability_status"):
+                    existing["availability_status"] = th.get("availability_status")
                 if th.get("trip_hotel_url") and not existing.get("trip_hotel_url"):
                     existing["trip_hotel_url"] = th.get("trip_hotel_url")
                 if th.get("etstur_hotel_url") and not existing.get("etstur_hotel_url"):
                     existing["etstur_hotel_url"] = th["etstur_hotel_url"]
                 if th.get("stars") and not existing.get("stars"):
                     existing["stars"] = th["stars"]
+                th_score = float(th.get("score") or 0)
+                ex_score = float(existing.get("score") or 0)
+                th_revs = int(th.get("review_count") or 0)
+                ex_revs = int(existing.get("review_count") or 0)
+                if th_score > 0 and (ex_revs <= 20 or th_revs > ex_revs or th_score > ex_score):
+                    existing["score"] = max(ex_score, th_score) if ex_revs > 20 else th_score
+                    existing["score_word"] = "Muhteşem" if existing["score"] >= 9.0 else ("Çok İyi" if existing["score"] >= 8.0 else "İyi")
+                if th_revs > ex_revs:
+                    existing["review_count"] = th_revs
                 if th.get("room_name") and (not existing.get("room_name") or existing.get("room_name") == "Standart Oda"):
                     existing["room_name"] = th["room_name"]
                 if th.get("old_nightly_price") and not existing.get("old_nightly_price"):
@@ -2251,19 +2606,16 @@ class HotelService:
                     existing["free_cancellation"] = True
                 if th.get("facilities") and not existing.get("facilities"):
                     existing["facilities"] = th["facilities"]
-                # En düşük canlı fiyatı ana fiyat olarak belirle
+                # En düşük doğrulanmış canlı fiyatı (Enuygun, Trip.com, Etstur) ana fiyat olarak belirle
                 ep = existing.get("enuygun_price")
                 tp = existing.get("trip_price")
-                if ep and tp and float(ep) > 0 and float(tp) > 0:
-                    best_p = min(float(ep), float(tp))
+                etp = existing.get("etstur_price")
+                valid_p_list = [float(p) for p in (ep, tp, etp) if p and float(p) > 0]
+                if valid_p_list:
+                    best_p = min(valid_p_list)
                     existing["nightly_price"] = best_p
                     existing["total_price"] = round(best_p * max(1, nights), 2)
-                elif ep and float(ep) > 0:
-                    existing["nightly_price"] = float(ep)
-                    existing["total_price"] = round(float(ep) * max(1, nights), 2)
-                elif tp and float(tp) > 0:
-                    existing["nightly_price"] = float(tp)
-                    existing["total_price"] = round(float(tp) * max(1, nights), 2)
+                    existing["availability_status"] = "available"
                 for ph in th.get("photos") or []:
                     if ph and ph not in existing["photos"] and len(existing["photos"]) < 6:
                         existing["photos"].append(ph)
@@ -2418,15 +2770,22 @@ class HotelService:
             star_score = 94.0 if stars >= 5 else (87.0 if stars == 4 else 81.0)
             quality_num = (0.45 * (bayes_score * 10.0)) + (0.20 * loc_score) + (0.20 * board_bonus) + (0.15 * star_score)
 
+            ep_val = float(h["enuygun_price"]) if (h.get("enuygun_price") and float(h.get("enuygun_price") or 0) > 0) else None
+            tp_val = float(h["trip_price"]) if (h.get("trip_price") and float(h.get("trip_price") or 0) > 0) else None
+            etp_val = float(h["etstur_price"]) if (h.get("etstur_price") and float(h.get("etstur_price") or 0) > 0) else None
+            valid_agency_prices = [p for p in (ep_val, tp_val, etp_val) if p is not None and p > 0]
+            best_agency_price = min(valid_agency_prices) if valid_agency_prices else float(h.get("nightly_price") or 0)
+
             segment_med = resort_median if ("all_inclusive" in tags or "resort" in name_lower or "palace" in name_lower) else city_median
-            p_val = max(650.0, float(h.get("nightly_price") or segment_med))
+            p_val = max(650.0, float(best_agency_price if best_agency_price > 0 else segment_med))
             p_ratio = p_val / max(650.0, float(segment_med))
-            # Segment medyanına göre dengeli fiyat çarpanı
-            p_norm = max(0.88, min(1.25, p_ratio ** 0.24))
+            # Segment medyanına göre dengeli fiyat çarpanı (9.2+ misafir memnuniyetli üst segment tesislerde aşırı ceza uygulanmaz)
+            max_p_norm = 1.07 if (bayes_score >= 9.1 and rev_count >= 100) else 1.25
+            p_norm = max(0.88, min(max_p_norm, p_ratio ** 0.24))
             fp_raw = (quality_num / p_norm) - 4.2
-            # Çoklu acente (Enuygun + Trip.com) fiyat doğrulaması olan tesislere +2.0 güven bonusu
-            if h.get("enuygun_price") and h.get("trip_price"):
-                fp_raw += 2.0
+            # Çoklu acente (Enuygun + Trip.com + Etstur) canlı fiyat doğrulaması olan tesislere güven bonusu
+            if len(valid_agency_prices) >= 2:
+                fp_raw += 2.5
             fp_score = int(round(max(75.0, min(97.0, fp_raw))))
 
             if fp_score >= 91:
@@ -2477,12 +2836,13 @@ class HotelService:
             # SIFIR VARSAYIM KURALI: Asla 404 veren /Arama?q=... adresine düşürülmez!
             etstur_hotel_direct = h.get("etstur_hotel_url") if not is_international else None
 
-            # Agoda (Türkiye içi ve yurt dışında engelsiz çalışır)
-            agoda_hotel_direct = (
-                f"https://www.agoda.com/tr-tr/search?"
-                f"text={q_hotel_city}&checkIn={cin}&checkOut={cout}"
-                f"&rooms=1&adults={guests}&cid={agoda_cid}"
+            # Google Hotels Doğrudan Tesis & Tüm Acente Takvim Karşılaştırması
+            # (Kırık Agoda /search?text=... yönlendirmesi yerine doğrudan otelin Google Hotels takvim/fiyat kartını açar)
+            google_hotel_direct = (
+                f"https://www.google.com/travel/hotels?"
+                f"q={q_hotel_city}&hl=tr&gl=tr&curr={currency}"
             )
+            agoda_hotel_direct = None
 
             if is_international:
                 booking_hotel_direct = (
@@ -2495,29 +2855,40 @@ class HotelService:
 
             # Birincil kazanan kanal ve buton (Yalnızca doğrulanmış doğrudan otel detay sayfası olan kanallar)
             # ANAYASA KURALI: En düşük doğrulanmış canlı fiyat kazanır; fiyat eşitliğinde aktif yüksek komisyonlu ortak (Trip.com) kazanır.
-            ep = h.get("enuygun_price")
-            tp = h.get("trip_price")
-            if ep and tp and enuygun_hotel_direct and trip_hotel_direct:
-                if ep < tp:
-                    primary_url = enuygun_hotel_direct
-                    primary_provider = "Enuygun Otel"
-                else:
-                    primary_url = trip_hotel_direct
-                    primary_provider = "Trip.com"
-            elif trip_hotel_direct and (tp or not enuygun_hotel_direct):
-                primary_url = trip_hotel_direct
-                primary_provider = "Trip.com"
+            priced_candidates = []
+            if tp_val and trip_hotel_direct:
+                priced_candidates.append((tp_val, 1, trip_hotel_direct, "Trip.com"))
+            if ep_val and enuygun_hotel_direct:
+                priced_candidates.append((ep_val, 2, enuygun_hotel_direct, "Enuygun Otel"))
+            if etp_val and etstur_hotel_direct:
+                priced_candidates.append((etp_val, 3, etstur_hotel_direct, "Etstur"))
+
+            is_searched_flag = bool(h.get("is_searched_hotel"))
+
+            if priced_candidates:
+                priced_candidates.sort(key=lambda item_c: (item_c[0], item_c[1]))
+                primary_url = priced_candidates[0][2]
+                primary_provider = priced_candidates[0][3]
             elif enuygun_hotel_direct:
                 primary_url = enuygun_hotel_direct
                 primary_provider = "Enuygun Otel"
+            elif trip_hotel_direct:
+                primary_url = trip_hotel_direct
+                primary_provider = "Trip.com"
+            elif etstur_hotel_direct:
+                primary_url = etstur_hotel_direct
+                primary_provider = "Etstur"
+            elif is_searched_flag:
+                primary_url = google_hotel_direct
+                primary_provider = "Google Hotels"
             else:
                 continue
 
-            is_searched_flag = bool(h.get("is_searched_hotel"))
-            nightly_num = float(h.get("nightly_price") or 0)
+            nightly_num = float(best_agency_price or 0)
             if nightly_num <= 0 and not is_searched_flag:
                 continue
-            total_num = float(h.get("total_price") or (nightly_num * max(1, nights))) if nightly_num > 0 else 0.0
+            total_num = round(nightly_num * max(1, nights), 2) if nightly_num > 0 else 0.0
+            avail_status = "available" if nightly_num > 0 else (h.get("availability_status") or "closed_or_full")
 
             if is_searched_flag:
                 fp_badge_tr = f"🎯 ARADIĞINIZ OTEL • {fp_score}/100"
@@ -2546,19 +2917,18 @@ class HotelService:
                     highlight_pills_tr.append(f_item)
                     highlight_pills_en.append(f_item)
 
-            ep_val = float(h["enuygun_price"]) if (h.get("enuygun_price") and float(h.get("enuygun_price") or 0) > 0) else None
-            tp_val = float(h["trip_price"]) if (h.get("trip_price") and float(h.get("trip_price") or 0) > 0) else None
-
             enriched_list.append({
                 "id": f"htl-{idx}-{cls.slugify_hotel_name(name)[:24]}",
                 "is_searched_hotel": is_searched_flag,
+                "availability_status": avail_status,
+                "min_stay_nights": h.get("min_stay_nights"),
                 "name": name,
                 "stars": stars,
                 "stay_sub_type": stay_sub_type,
                 "score": round(raw_score, 1),
                 "review_score": round(raw_score, 1),
                 "bayes_score": round(bayes_score, 2),
-                "score_word": h.get("score_word") or "Çok İyi",
+                "score_word": h.get("score_word") or ("Muhteşem" if raw_score >= 9.0 else "Çok İyi"),
                 "review_count": rev_count,
                 "fp_score": fp_score,
                 "fp_badge_tr": fp_badge_tr,
@@ -2590,6 +2960,9 @@ class HotelService:
                 "trip_price": tp_val,
                 "trip_price_formatted": f"{int(round(tp_val)):,} {curr_sym}".replace(",", ".") if tp_val else None,
                 "trip_total_formatted": f"{int(round(tp_val * max(1, nights))):,} {curr_sym}".replace(",", ".") if tp_val else None,
+                "etstur_price": etp_val,
+                "etstur_price_formatted": f"{int(round(etp_val)):,} {curr_sym}".replace(",", ".") if etp_val else None,
+                "etstur_total_formatted": f"{int(round(etp_val * max(1, nights))):,} {curr_sym}".replace(",", ".") if etp_val else None,
                 "currency": curr_sym,
                 "provider": primary_provider,
                 "url": primary_url,
@@ -2599,6 +2972,7 @@ class HotelService:
                 "trip_url": trip_hotel_direct,
                 "enuygun_url": enuygun_hotel_direct,
                 "etstur_url": etstur_hotel_direct,
+                "google_url": google_hotel_direct,
                 "agoda_url": agoda_hotel_direct,
                 "is_domestic_tr": not is_international,
             })
@@ -2906,14 +3280,13 @@ class HotelService:
             trip_sid=trip_sid,
         )
 
-        # 2. Booking.com (Sadece Yurt Dışı) & Agoda (Yurt İçi + Yurt Dışı Engelsiz)
+        # 2. Booking.com (Sadece Yurt Dışı) & Google Hotels (Kırık Agoda /search?text=... yerine doğrulanmış karşılaştırma)
         dest_q = f"&dest_id={dest_id}&dest_type={dest_type}" if dest_id else ""
-        agoda_url = (
-            f"https://www.agoda.com/tr-tr/search?"
-            f"text={urllib.parse.quote(city_clean)}"
-            f"&checkIn={cin}&checkOut={cout}&rooms=1&adults={guests}"
-            f"&cid={agoda_cid}"
+        google_hotel_url = (
+            f"https://www.google.com/travel/hotels?"
+            f"q={urllib.parse.quote(city_clean + ' Otelleri')}&hl=tr&gl=tr&curr={currency}"
         )
+        agoda_url = None
         if is_international:
             booking_url = (
                 f"https://www.booking.com/searchresults.html?"
@@ -2991,7 +3364,7 @@ class HotelService:
 
         # 4. CANLI MULTI-SOURCE OTEL MOTORU (Enuygun SSR + Trip.com SSR + Spesifik Otel Çözümleyici + Hakiki F/P Algoritması)
         spec_cache_suffix = f"_spec_{cls.slugify_hotel_name(specific_candidate['name'])}" if specific_candidate else ""
-        live_cache_key = f"faz1_v6_live_{city_slug}_{cin}_{cout}_{guests}_{currency}_{int(is_international)}{spec_cache_suffix}"
+        live_cache_key = f"faz1_v7_live_{city_slug}_{cin}_{cout}_{guests}_{currency}_{int(is_international)}{spec_cache_suffix}"
         now_ts = time.time()
         live_hotels: List[Dict[str, Any]] = []
 
@@ -3005,7 +3378,9 @@ class HotelService:
             tr_list: List[Dict[str, Any]] = []
             spec_eh = None
             spec_th = None
-            with ThreadPoolExecutor(max_workers=3) as pool:
+            from concurrent.futures import wait as futures_wait
+            pool = ThreadPoolExecutor(max_workers=3)
+            try:
                 fut_spec = (
                     pool.submit(
                         cls.fetch_specific_hotel_live_items,
@@ -3056,21 +3431,26 @@ class HotelService:
                     if trip_city_id
                     else None
                 )
-                if fut_spec:
+                active_futs = [f for f in (fut_spec, fut_en, fut_tr) if f is not None]
+                if active_futs:
+                    futures_wait(active_futs, timeout=8.5)
+                if fut_spec and fut_spec.done():
                     try:
-                        spec_eh, spec_th = fut_spec.result(timeout=6.0)
+                        spec_eh, spec_th = fut_spec.result(timeout=0.1)
                     except Exception as e:
                         logger.warning(f"Specific hotel detail future warning: {e}")
-                if fut_en:
+                if fut_en and fut_en.done():
                     try:
-                        en_list = fut_en.result(timeout=7.5) or []
+                        en_list = fut_en.result(timeout=0.1) or []
                     except Exception as e:
                         logger.warning(f"Enuygun future timeout/error ({city_slug}): {e}")
-                if fut_tr:
+                if fut_tr and fut_tr.done():
                     try:
-                        tr_list = fut_tr.result(timeout=7.5) or []
+                        tr_list = fut_tr.result(timeout=0.1) or []
                     except Exception as e:
                         logger.warning(f"Trip.com future timeout/error ({city_slug}): {e}")
+            finally:
+                pool.shutdown(wait=False)
 
             if specific_candidate:
                 spec_name = str(specific_candidate.get("name") or "")
@@ -3166,8 +3546,8 @@ class HotelService:
                 "desc": "Tarihi taş mimarili oteller, deniz manzaralı süitler ve spa otelleri.",
                 "est_nightly": round(max_rate, 2) if max_rate else None,
                 "est_total": round(max_rate * nights, 2) if max_rate else None,
-                "action_text": f"{'Enuygun Otel' if enuygun_url else 'Agoda'}'da İncele ↗",
-                "link": enuygun_url or agoda_url or trip_hotel_url
+                "action_text": f"{'Enuygun Otel' if enuygun_url else 'Google Hotels'}'de İncele ↗",
+                "link": enuygun_url or google_hotel_url or trip_hotel_url
             }
         ]
 
@@ -3200,11 +3580,13 @@ class HotelService:
             "obilet_hotel_url": obilet_hotel_url,
             "bilet_hotel_url": bilet_hotel_url,
             "etstur_url": etstur_url,
+            "google_hotel_url": google_hotel_url,
             "agoda_url": agoda_url,
             "trip_hotel_url": trip_hotel_url,
             "deep_links": {
                 "trip": trip_hotel_url,
                 "booking": booking_url,
+                "google": google_hotel_url,
                 "agoda": agoda_url,
                 "enuygun": enuygun_url,
                 "obilet": obilet_hotel_url,

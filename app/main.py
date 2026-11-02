@@ -121,7 +121,10 @@ async def maintenance_middleware(request: Request, call_next):
     query_key = request.query_params.get("onizleme") or request.query_params.get("preview")
     if _is_valid_admin_key(query_key):
         if path.startswith("/api"):
-            return await call_next(request)
+            response = await call_next(request)
+    if path == "/":
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
         clean_url = str(request.url.remove_query_params(["onizleme", "preview"]))
         response = RedirectResponse(url=clean_url)
         response.set_cookie(
@@ -135,9 +138,15 @@ async def maintenance_middleware(request: Request, call_next):
 
     # Admin kilit açma / kapama yolları serbest
     if path == "/admin/unlock" and request.method == "POST":
-        return await call_next(request)
+        response = await call_next(request)
+    if path == "/":
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
     if path == "/admin/lock":
-        return await call_next(request)
+        response = await call_next(request)
+    if path == "/":
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
 
     # Sağlık kontrolü (Render uykusunu önleyen UptimeRobot / Keep-alive ping'i için 200 döner)
     if path in ("/api/health", "/health"):
@@ -164,7 +173,10 @@ async def maintenance_middleware(request: Request, call_next):
                     status_code=503
                 )
 
-    return await call_next(request)
+    response = await call_next(request)
+    if path == "/":
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
 
 @app.post("/admin/unlock")
 async def admin_unlock(request: Request):
