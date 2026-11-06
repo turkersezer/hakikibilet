@@ -60,6 +60,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderEvents();
     if (typeof updateRecentSearchesCountBadge === 'function') updateRecentSearchesCountBadge();
     if (typeof renderQuickPopularRoutes === 'function') renderQuickPopularRoutes();
+    if (typeof applyUrlSearchParametersOnLoad === 'function') {
+        setTimeout(() => applyUrlSearchParametersOnLoad(), 120);
+    }
 });
 
 function formatLocalDateStr(d) {
@@ -650,6 +653,31 @@ window.selectCruiseCabin = selectCruiseCabin;
 let currentCarCategoryFilter = 'all'; // 'all', 'Ekonomi', 'SUV', 'Konfor', 'Premium'
 let currentCarTransmissionFilter = 'all'; // 'all', 'Otomatik', 'Manuel'
 let currentCarDifferentDropoff = false;
+window.currentCarPickupTime = '10:00';
+window.currentCarDropoffTime = '10:00';
+
+function onCarRentalTimeChange() {
+    const pEl = document.getElementById('carPickupTime');
+    const dEl = document.getElementById('carDropoffTime');
+    if (pEl && pEl.value) window.currentCarPickupTime = pEl.value;
+    if (dEl && dEl.value) window.currentCarDropoffTime = dEl.value;
+    if (window.lastTransportData && window.lastTransportData.car_rental) {
+        renderTransportResults(window.lastTransportData, window.lastSearchReq || { transport_type: 'car' });
+    }
+}
+window.onCarRentalTimeChange = onCarRentalTimeChange;
+
+function applyCarRentalTimesToUrl(rawUrl, overridePickupTime, overrideDropoffTime) {
+    if (!rawUrl || typeof rawUrl !== 'string') return rawUrl;
+    const pTime = overridePickupTime || window.currentCarPickupTime || (document.getElementById('carPickupTime') && document.getElementById('carPickupTime').value) || '10:00';
+    const dTime = overrideDropoffTime || window.currentCarDropoffTime || (document.getElementById('carDropoffTime') && document.getElementById('carDropoffTime').value) || pTime || '10:00';
+    return rawUrl
+        .replace(/([?&]p_t=)10(?::|%3A)00/gi, `$1${encodeURIComponent(pTime)}`)
+        .replace(/([?&]d_t=)10(?::|%3A)00/gi, `$1${encodeURIComponent(dTime)}`)
+        .replace(/([?&]pickupTime=)10(?::|%3A)00/gi, `$1${encodeURIComponent(pTime)}`)
+        .replace(/([?&]dropoffTime=)10(?::|%3A)00/gi, `$1${encodeURIComponent(dTime)}`);
+}
+window.applyCarRentalTimesToUrl = applyCarRentalTimesToUrl;
 
 function setCarCategoryFilter(cat) {
     currentCarCategoryFilter = cat;
@@ -753,26 +781,58 @@ function closePaxDropdown(e) {
     }
 }
 
+let _paxRuleNoticeTimer = null;
+function showPaxRuleNotice(msg) {
+    const box = document.getElementById("paxRuleNotice");
+    if (!box) return;
+    box.innerHTML = `<i class="fa-solid fa-circle-info text-amber-600 mr-1"></i><span>${escapeHtml(msg)}</span>`;
+    box.classList.remove("hidden");
+    if (_paxRuleNoticeTimer) clearTimeout(_paxRuleNoticeTimer);
+    _paxRuleNoticeTimer = setTimeout(() => {
+        box.classList.add("hidden");
+    }, 4000);
+}
+
 function modifyPax(type, delta, e) {
     if (e) {
         e.preventDefault();
         e.stopPropagation();
     }
+    const isEn = window.currentAppLang === 'en';
+    const currentTotal = flightPax.adults + flightPax.children + flightPax.infants;
+
+    if (delta > 0 && currentTotal >= 9) {
+        showPaxRuleNotice(isEn
+            ? "Maximum 9 passengers allowed per booking."
+            : "Havayolu ve acente kuralları gereği tek aramada en fazla 9 yolcu seçilebilir.");
+        return;
+    }
+
     if (type === 'adults') {
-        flightPax.adults = Math.max(1, Math.min(9, flightPax.adults + delta));
+        const nextAdults = Math.max(1, Math.min(9 - flightPax.children - flightPax.infants, flightPax.adults + delta));
+        flightPax.adults = nextAdults;
         if (flightPax.infants > flightPax.adults) {
             flightPax.infants = flightPax.adults;
             const infSpan = document.getElementById("paxValInfants");
             if (infSpan) infSpan.textContent = flightPax.infants;
+            showPaxRuleNotice(isEn
+                ? "Infant count adjusted: max 1 lap infant per adult."
+                : "Her 1 yetişkin en fazla 1 bebekle uçabildiği için bebek sayısı güncellendi.");
         }
         const span = document.getElementById("paxValAdults");
         if (span) span.textContent = flightPax.adults;
     } else if (type === 'children') {
-        flightPax.children = Math.max(0, Math.min(9, flightPax.children + delta));
+        flightPax.children = Math.max(0, Math.min(9 - flightPax.adults - flightPax.infants, flightPax.children + delta));
         const span = document.getElementById("paxValChildren");
         if (span) span.textContent = flightPax.children;
     } else if (type === 'infants') {
-        flightPax.infants = Math.max(0, Math.min(flightPax.adults, flightPax.infants + delta));
+        if (delta > 0 && flightPax.infants >= flightPax.adults) {
+            showPaxRuleNotice(isEn
+                ? "Aviation safety rules allow max 1 lap infant (0-2 yrs) per adult."
+                : "Havacılık kuralları gereği her 1 yetişkin en fazla 1 bebekle (kucakta) seyahat edebilir.");
+            return;
+        }
+        flightPax.infants = Math.max(0, Math.min(flightPax.adults, 9 - flightPax.adults - flightPax.children, flightPax.infants + delta));
         const span = document.getElementById("paxValInfants");
         if (span) span.textContent = flightPax.infants;
     }
@@ -3501,6 +3561,196 @@ function ensureObiletPriceSort(url) {
     return url + sep + 'sorting=price&sort=price';
 }
 
+function highlightMissingTransportField(inputEl, message) {
+    if (!inputEl) return;
+    showFieldWarningNotice(inputEl, message);
+    const box = inputEl.closest('.input-box') || inputEl.parentElement;
+    if (box) {
+        box.classList.add('ring-2', 'ring-rose-500', 'bg-rose-50/40');
+        setTimeout(() => {
+            box.classList.remove('ring-2', 'ring-rose-500', 'bg-rose-50/40');
+        }, 2800);
+    }
+    try {
+        inputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => inputEl.focus(), 120);
+    } catch (_) {
+        try { inputEl.focus(); } catch (__) {}
+    }
+    const clearOnce = () => {
+        clearFieldWarningNotice(inputEl);
+        if (box) box.classList.remove('ring-2', 'ring-rose-500', 'bg-rose-50/40');
+        inputEl.removeEventListener('input', clearOnce);
+    };
+    inputEl.addEventListener('input', clearOnce);
+}
+window.highlightMissingTransportField = highlightMissingTransportField;
+
+function syncTransportSearchUrl(paramsObj) {
+    try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('mode', paramsObj.mode || 'flight');
+        url.searchParams.set('from', paramsObj.from || '');
+        url.searchParams.set('to', paramsObj.to || '');
+        url.searchParams.set('dep', paramsObj.dep || '');
+        if (paramsObj.ret) url.searchParams.set('ret', paramsObj.ret);
+        else url.searchParams.delete('ret');
+        url.searchParams.set('trip', paramsObj.trip || 'one_way');
+        if (Number(paramsObj.adults) > 1) url.searchParams.set('adults', String(paramsObj.adults));
+        else url.searchParams.delete('adults');
+        if (Number(paramsObj.children) > 0) url.searchParams.set('children', String(paramsObj.children));
+        else url.searchParams.delete('children');
+        if (Number(paramsObj.infants) > 0) url.searchParams.set('infants', String(paramsObj.infants));
+        else url.searchParams.delete('infants');
+        window.history.replaceState({}, '', url.toString());
+    } catch (_) {}
+}
+window.syncTransportSearchUrl = syncTransportSearchUrl;
+
+async function applyUrlSearchParametersOnLoad() {
+    try {
+        const sp = new URLSearchParams(window.location.search);
+        const mode = sp.get('mode') || sp.get('tab');
+        const fromVal = sp.get('from') || sp.get('origin');
+        const toVal = sp.get('to') || sp.get('dest') || sp.get('destination');
+        const depVal = sp.get('dep') || sp.get('date');
+        const retVal = sp.get('ret');
+        const tripVal = sp.get('trip');
+        if (!mode && !fromVal && !toVal) return;
+
+        const validMode = ['flight', 'bus', 'train', 'ferry', 'car'].includes(mode) ? mode : 'flight';
+        if (typeof window.openFromBento === 'function') {
+            window.openFromBento('travel', validMode);
+        } else if (typeof window.switchUnifiedTab === 'function') {
+            await window.switchUnifiedTab(validMode);
+        }
+        const oInp = document.getElementById('transOrigin');
+        const dInp = document.getElementById('transDest');
+        const depInp = document.getElementById('transDepDate');
+        const retInp = document.getElementById('transRetDate');
+        if (fromVal && oInp) oInp.value = fromVal;
+        if (toVal && dInp) dInp.value = toVal;
+        if (depVal && depInp && isCompleteValidDateStr(depVal)) depInp.value = depVal;
+        if (tripVal === 'round' || retVal) {
+            setFlightTripType('round');
+            if (retVal && retInp && isCompleteValidDateStr(retVal)) retInp.value = retVal;
+        }
+        const ad = parseInt(sp.get('adults') || '1', 10);
+        const ch = parseInt(sp.get('children') || '0', 10);
+        const inf = parseInt(sp.get('infants') || '0', 10);
+        if (!isNaN(ad) && ad >= 1 && ad <= 9) flightPax.adults = ad;
+        if (!isNaN(ch) && ch >= 0 && ch <= 8) flightPax.children = Math.min(9 - flightPax.adults, ch);
+        if (!isNaN(inf) && inf >= 0) flightPax.infants = Math.min(flightPax.adults, 9 - flightPax.adults - flightPax.children, inf);
+        const sAd = document.getElementById("paxValAdults");
+        const sCh = document.getElementById("paxValChildren");
+        const sInf = document.getElementById("paxValInfants");
+        if (sAd) sAd.textContent = flightPax.adults;
+        if (sCh) sCh.textContent = flightPax.children;
+        if (sInf) sInf.textContent = flightPax.infants;
+        updatePaxSummaryDisplay();
+        if (fromVal && toVal) {
+            setTimeout(() => executeTransportSearch(), 180);
+        }
+    } catch (_) {}
+}
+window.applyUrlSearchParametersOnLoad = applyUrlSearchParametersOnLoad;
+
+function shareCurrentTransportSearch(channel, btnEl) {
+    const req = window.lastSearchReq || {};
+    const tickets = window.lastTransportResults || [];
+    const origin = req.origin || document.getElementById('transOrigin')?.value || '';
+    const dest = req.destination || document.getElementById('transDest')?.value || '';
+    const dep = req.departure_date || document.getElementById('transDepDate')?.value || '';
+    const shareUrl = window.location.href;
+    const priced = tickets.filter(t => t.price && Number(t.price) > 0);
+    const minTicket = priced.length > 0 ? priced.reduce((a, b) => (Number(a.price) < Number(b.price) ? a : b), priced[0]) : null;
+    const pricePart = minTicket ? ` • En Uygun: ${Number(minTicket.price).toLocaleString('tr-TR')} ${minTicket.currency || '₺'} (${minTicket.carrier || 'Canlı'})` : '';
+    const text = `✈️ ${origin} ➔ ${dest} (${dep})${pricePart} — Hakiki Bilet'te Karşılaştır: ${shareUrl}`;
+
+    if (channel === 'whatsapp') {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    } else {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const btn = btnEl || document.getElementById('btnCopySearchUrl');
+                if (btn) {
+                    const origHtml = btn.innerHTML;
+                    btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span>Kopyalandı</span>`;
+                    setTimeout(() => { btn.innerHTML = origHtml; }, 2200);
+                }
+            }).catch(() => {});
+        }
+    }
+}
+window.shareCurrentTransportSearch = shareCurrentTransportSearch;
+
+function getInternationalTravelComplianceHtml(searchReq, isIntlRoute, isEn) {
+    const destRaw = String((searchReq && (searchReq.raw_destination || searchReq.destination)) || '').toLocaleLowerCase('tr-TR');
+    const origRaw = String((searchReq && (searchReq.raw_origin || searchReq.origin)) || '').toLocaleLowerCase('tr-TR');
+    const combo = `${origRaw} ${destRaw}`;
+
+    // 1. Çipli T.C. Kimlik Kartı ile Pasaportsuz & Vizesiz Giriş Ülkeleri
+    const chipIdKeywords = ['lefkoşa', 'lefkosa', 'ercan', 'ecn', 'girne', 'kıbrıs', 'kibris', 'gazimağusa', 'gazimagusa', 'batum', 'bus', 'tiflis', 'tbs', 'gürcistan', 'gurcistan', 'bakü', 'baku', 'gyd', 'azerbaycan'];
+    if (chipIdKeywords.some(k => combo.includes(k))) {
+        return `
+            <div class="bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-xl px-3.5 py-2 mb-3 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-black uppercase">🛂 ${isEn ? 'ID CARD ENTRY (NO PASSPORT)' : 'ÇİPLİ KİMLİKLE & VİZESİZ GİRİŞ'}</span>
+                    <span>${isEn
+                        ? 'Turkish citizens can enter with a new-generation Chip ID Card (no passport or visa required).'
+                        : 'T.C. vatandaşları pasaport veya vize olmadan, fotoğraflı <strong>Yeni Tip Çipli Kimlik Kartı</strong> ile doğrudan giriş yapabilir.'}</span>
+                </div>
+                <span class="text-[11px] font-extrabold text-emerald-800">✓ ${isEn ? '18-Year Under: Parental Consent Rules Apply' : '18 Yaş Altı İçin Anne/Baba Muvafakatnamesi Kuralına Dikkat'}</span>
+            </div>
+        `;
+    }
+
+    // 2. Yunan Adaları Kapıda Ekspres Vize veya Schengen
+    const greekIslands = ['sakız', 'sakiz', 'chios', 'jkd', 'kos', 'istanköy', 'rodos', 'rhodes', 'rho', 'midilli', 'lesvos', 'mjt', 'samos', 'sisam', 'smi', 'simi', 'symi', 'meis', 'kastellorizo'];
+    if (greekIslands.some(k => combo.includes(k))) {
+        return `
+            <div class="bg-sky-50 border border-sky-300 text-sky-950 rounded-xl px-3.5 py-2 mb-3 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-md bg-sky-700 text-white text-[10px] font-black uppercase">🔵 ${isEn ? 'GATE VISA / SCHENGEN' : 'KAPIDA EKSPRES VİZE / SCHENGEN'}</span>
+                    <span>${isEn
+                        ? 'Requires a valid Schengen Visa, Green Passport, or 7-Day Greek Island Gate Visa (apply at least 5 business days prior) + Passport valid for 6+ months.'
+                        : 'Geçerli <strong>Schengen Vizesi</strong>, <strong>Yeşil Pasaport</strong> veya <strong>7 Günlük Kapıda Ekspres Vize</strong> (en az 5 iş günü önceden başvuru) ve en az 6 ay geçerli pasaport gereklidir.'}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    // 3. Vizesiz (Sadece Pasaportla Giriş) Balkan & Asya Destinasyonları
+    const visaFreeKeywords = ['belgrad', 'beg', 'sırbistan', 'saraybosna', 'sjj', 'bosna', 'üsküp', 'uskup', 'skp', 'makedonya', 'ohrid', 'tiran', 'tia', 'arnavutluk', 'podgorica', 'tgd', 'tivat', 'karadağ', 'karadag', 'priştine', 'pristine', 'kosova', 'tokyo', 'japonya', 'bangkok', 'tayland', 'singapur', 'seul', 'kore', 'doha', 'katar'];
+    if (visaFreeKeywords.some(k => combo.includes(k))) {
+        return `
+            <div class="bg-teal-50 border border-teal-300 text-teal-950 rounded-xl px-3.5 py-2 mb-3 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-md bg-teal-700 text-white text-[10px] font-black uppercase">🟢 ${isEn ? 'VISA-FREE ENTRY' : 'VİZESİZ SEYAHAT (PASAPORTLA)'}</span>
+                    <span>${isEn
+                        ? 'Visa-free entry for Turkish citizens. Ensure your passport is valid for at least 6 months from arrival.'
+                        : 'T.C. vatandaşları için <strong>Vizesiz</strong> rotadır; pasaportunuzun seyahat bitiş tarihinden itibaren <strong>en az 6 ay geçerli</strong> olması yeterlidir.'}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    if (!isIntlRoute) return '';
+
+    // 4. Schengen / UK / ABD / BAE Vize & Pasaport Bilgilendirmesi
+    return `
+        <div class="bg-amber-50 border border-amber-300 text-amber-950 rounded-xl px-3.5 py-2 mb-3 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md bg-amber-500 text-slate-950 text-[10px] font-black uppercase">🟡 ${isEn ? 'VISA & PASSPORT CHECK' : 'VİZE & PASAPORT KONTROLÜ'}</span>
+                <span>${isEn
+                    ? 'International route: Please verify destination visa requirements (Schengen / UK / National Visa) and ensure 6+ months passport validity.'
+                    : 'Yurt dışı seyahat kuralı: Bordo pasaport sahipleri için <strong>Schengen / Ülke Vizesi</strong> (Yeşil pasaporta Avrupa Schengen vizesiz) ve <strong>en az 6 ay geçerli pasaport</strong> gereklidir.'}</span>
+            </div>
+        </div>
+    `;
+}
+window.getInternationalTravelComplianceHtml = getInternationalTravelComplianceHtml;
+
 // 4. ULAŞIM ARAMASI ÇALIŞTIRMA (Uçak Odaklı, Kusursuz Yolcu & Kapsam Desteği)
 async function executeTransportSearch(e) {
     if (e) e.preventDefault();
@@ -3536,13 +3786,37 @@ async function executeTransportSearch(e) {
         if (dInput) dInput.value = origin;
     }
 
-    if (!origin || !destination || !depDate) {
-        alert("Lütfen kalkış noktası, varış noktası ve seyahat tarihini seçiniz.");
+    if (!origin) {
+        highlightMissingTransportField(oInp, window.currentAppLang === 'en' ? "Please enter a departure city or airport." : "Lütfen kalkış noktasını (Nereden) yazınız veya listeden seçiniz.");
+        return;
+    }
+    if (!destination) {
+        highlightMissingTransportField(dInp, window.currentAppLang === 'en' ? "Please enter a destination city or airport." : "Lütfen varış noktasını (Nereye) yazınız veya listeden seçiniz.");
+        return;
+    }
+    if (!depDate) {
+        const depEl = document.getElementById("transDepDate");
+        highlightMissingTransportField(depEl, window.currentAppLang === 'en' ? "Please select a departure date." : "Lütfen gidiş tarihini seçiniz.");
         return;
     }
     if (currentTransportSubTab === 'flight' && isRound && !retDate) {
-        alert("Lütfen dönüş tarihini seçiniz veya 'Tek Yön' seçeneğini işaretleyiniz.");
+        const retEl = document.getElementById("transRetDate");
+        highlightMissingTransportField(retEl, window.currentAppLang === 'en' ? "Please select a return date or switch to One-Way." : "Lütfen dönüş tarihini seçiniz veya 'Tek Yön' seçeneğini işaretleyiniz.");
         return;
+    }
+
+    if (typeof syncTransportSearchUrl === 'function') {
+        syncTransportSearchUrl({
+            mode: currentTransportSubTab,
+            from: origin,
+            to: destination,
+            dep: depDate,
+            ret: isRound ? retDate : '',
+            trip: isRound ? 'round' : 'one_way',
+            adults: flightPax.adults,
+            children: flightPax.children,
+            infants: flightPax.infants
+        });
     }
 
     const resultsArea = document.getElementById("transportResultsArea");
@@ -3959,12 +4233,31 @@ function renderTransportResults(data, searchReq) {
                 </h3>
                 <span class="text-xs text-slate-300 font-semibold hidden sm:inline">• ${tripTypeText}</span>
             </div>
-            <div class="flex items-center gap-2 text-xs font-bold text-amber-300">
-                <i class="fa-solid fa-user-group text-[11px]"></i>
-                <span>${paxSummaryText}</span>
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-amber-300 mr-1">
+                    <i class="fa-solid fa-user-group text-[11px]"></i>
+                    <span>${paxSummaryText}</span>
+                </div>
+                <button type="button" onclick="shareCurrentTransportSearch('whatsapp', this)"
+                        title="${isEn ? 'Share results on WhatsApp' : 'Bu aramayı WhatsApp ile paylaş'}"
+                        class="px-2.5 py-1 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 text-white text-[11px] font-extrabold transition cursor-pointer inline-flex items-center gap-1 shadow-2xs">
+                    <i class="fa-brands fa-whatsapp text-xs"></i>
+                    <span>WhatsApp</span>
+                </button>
+                <button type="button" onclick="shareCurrentTransportSearch('copy', this)"
+                        title="${isEn ? 'Copy direct search link' : 'Arama bağlantısını kopyala'}"
+                        class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-bold transition cursor-pointer inline-flex items-center gap-1">
+                    <i class="fa-solid fa-link text-[10px] text-amber-400"></i>
+                    <span>${isEn ? 'Share' : 'Paylaş'}</span>
+                </button>
             </div>
         </div>
     `;
+
+    // Uluslararası Vize, Çipli Kimlik & Pasaport Uyumluluk Rehberi (#39 Baş Hukuk Müşaviri & #1 CEO)
+    if (typeof getInternationalTravelComplianceHtml === 'function') {
+        html += getInternationalTravelComplianceHtml(searchReq, isIntlRoute, isEn);
+    }
 
     // Adana / Mersin Ortak Bölgesel Havalimanı (Çukurova - COV) Bilgilendirme Bandı
     const rawSearchCombo = `${searchReq.origin || ''} ${searchReq.destination || ''}`.toLowerCase();
@@ -4132,6 +4425,7 @@ function renderTransportResults(data, searchReq) {
         window.currentFlightSort = 'cheapest';
         window.currentFlightTimeFilter = 'all';
         window.currentFlightAirportFilter = 'all';
+        window.currentFlightDirectOnly = false;
 
         const ports = new Set();
         tickets.forEach(t => {
@@ -4155,6 +4449,9 @@ function renderTransportResults(data, searchReq) {
                         <button type="button" onclick="setFlightSort('cheapest')" id="fltSort-cheapest" class="flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-black bg-slate-900 text-white transition cursor-pointer">
                             ${isEn ? '💰 Cheapest' : '💰 En Ucuz'}
                         </button>
+                        <button type="button" onclick="setFlightSort('best')" id="fltSort-best" class="flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" title="${isEn ? 'Optimal balance of price, flight duration and direct route' : 'Fiyat, uçuş süresi ve aktarmasız rota dengesi (Hakiki F/P)'}">
+                            ${isEn ? '🏆 Best (Value)' : '🏆 En İyi (F/P)'}
+                        </button>
                         <button type="button" onclick="setFlightSort('fastest')" id="fltSort-fastest" class="flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
                             ${isEn ? '⚡ Fastest' : '⚡ En Hızlı'}
                         </button>
@@ -4164,6 +4461,11 @@ function renderTransportResults(data, searchReq) {
                         <button type="button" onclick="setFlightSort('latest')" id="fltSort-latest" class="flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
                             ${isEn ? '🛬 Latest' : '🛬 En Geç'}
                         </button>
+                        ${currentTransportSubTab === 'flight' ? `
+                        <button type="button" onclick="toggleFlightDirectOnly()" id="fltDirectOnlyBtn" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer inline-flex items-center gap-1">
+                            <span>✈️ ${isEn ? 'Direct Only' : 'Sadece Direkt'}</span>
+                        </button>
+                        ` : ''}
                     </div>
 
                     <div class="flex flex-wrap items-center gap-1">
@@ -4397,7 +4699,7 @@ function renderTransportResults(data, searchReq) {
                             ${escapeHtml(cr.location)} • ${escapeHtml(cr.location_type_label || 'Havalimanı / Merkez Ofisleri')}
                         </div>
                         <div class="text-xs font-semibold text-slate-600 mt-0.5 flex flex-wrap items-center gap-2">
-                            <span>📅 <strong>${escapeHtml(cr.pickup_date)}</strong> ➔ <strong>${escapeHtml(cr.dropoff_date)}</strong></span>
+                            <span>📅 <strong>${escapeHtml(cr.pickup_date)} (${escapeHtml(window.currentCarPickupTime || '10:00')})</strong> ➔ <strong>${escapeHtml(cr.dropoff_date)} (${escapeHtml(window.currentCarDropoffTime || '10:00')})</strong></span>
                             <span>•</span>
                             <span class="text-amber-900 font-black">⏱️ ${cr.days_count} Günlük Kiralama</span>
                             <span>•</span>
@@ -4489,8 +4791,9 @@ function renderTransportResults(data, searchReq) {
                                 <span class="text-[10px] font-black uppercase text-slate-400">Canlı Kiralama Kanalları:</span>
                                 ${(v.providers || []).map(p => {
                                     const pHasPrice = p.daily_price !== null && p.daily_price !== undefined && Number(p.daily_price) > 0;
+                                    const pTimedUrl = typeof applyCarRentalTimesToUrl === 'function' ? applyCarRentalTimesToUrl(p.url) : p.url;
                                     return `
-                                    <a href="${p.url}" target="_blank" rel="noopener noreferrer"
+                                    <a href="${pTimedUrl}" target="_blank" rel="noopener noreferrer"
                                        class="px-2.5 py-1 rounded-xl text-xs font-bold border ${p.is_cheapest && pHasPrice ? 'bg-amber-50 border-amber-400 text-amber-950 font-black shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'} transition inline-flex items-center gap-1.5">
                                         ${getBrandLogoHtml(p.name, '🚗', 'w-4 h-4')}
                                         <span>${escapeHtml(p.name)}:</span>
@@ -4536,7 +4839,7 @@ function renderTransportResults(data, searchReq) {
                             </div>
 
                             <div class="w-full mt-4">
-                                <a href="${v.official_link || (v.providers && v.providers[0] ? v.providers[0].url : '#')}" target="_blank" rel="noopener noreferrer"
+                                <a href="${typeof applyCarRentalTimesToUrl === 'function' ? applyCarRentalTimesToUrl(v.official_link || (v.providers && v.providers[0] ? v.providers[0].url : '#')) : (v.official_link || (v.providers && v.providers[0] ? v.providers[0].url : '#'))}" target="_blank" rel="noopener noreferrer"
                                    class="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 group">
                                     <span>${escapeHtml(v.cheapest_provider_name || 'Yolcu360')} ile Kirala</span>
                                     <i class="fa-solid fa-arrow-up-right-from-square text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
@@ -5349,9 +5652,31 @@ function buildFlightEnuygunHotelCrossSellUrl(toCity, searchReq) {
     return `https://www.enuygun.com/otel/bolge/${enSlug}/?checkInDate=${toDot(cinRaw)}&checkOutDate=${toDot(coutRaw)}&rooms=${pax}&utm_source=hakikibilet&utm_medium=affiliate`;
 }
 
-function buildFlightTransferCrossSellUrl(toCity, toCode, searchReq) {
+function computeArrivalPlusBufferTime(arrivalTimeStr, bufferMins = 30) {
+    if (!arrivalTimeStr || typeof arrivalTimeStr !== 'string' || !arrivalTimeStr.includes(':')) {
+        return '10:00';
+    }
+    const parts = arrivalTimeStr.trim().split(':');
+    const h = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10);
+    if (isNaN(h) || isNaN(m)) return '10:00';
+    let totalMins = (h * 60 + m + bufferMins) % (24 * 60);
+    // Yuvarlama: 15 dakikalık dilimlere yuvarla (kiralama ve transfer sistemleri için uyumlu)
+    totalMins = Math.ceil(totalMins / 15) * 15;
+    if (totalMins >= 24 * 60) totalMins = 0;
+    const nh = String(Math.floor(totalMins / 60)).padStart(2, '0');
+    const nm = String(totalMins % 60).padStart(2, '0');
+    return `${nh}:${nm}`;
+}
+
+function buildFlightTransferCrossSellUrl(toCity, toCode, searchReq, arrivalTime) {
+    const syncedTime = arrivalTime ? computeArrivalPlusBufferTime(arrivalTime, 30) : '10:00';
     if (window.lastTransportData && window.lastTransportData.destination_cross_sell && window.lastTransportData.destination_cross_sell.transfer && window.lastTransportData.destination_cross_sell.transfer.biletcom_url) {
-        return window.lastTransportData.destination_cross_sell.transfer.biletcom_url;
+        let baseUrl = window.lastTransportData.destination_cross_sell.transfer.biletcom_url;
+        if (arrivalTime) {
+            baseUrl = baseUrl.replace(/alisSaati=[0-9]{2}(?::|%3A)[0-9]{2}/i, `alisSaati=${encodeURIComponent(syncedTime)}`);
+        }
+        return baseUrl;
     }
     const code = (toCode || '').toUpperCase();
     const slug = toAsciiSlug(toCity || '');
@@ -5397,7 +5722,7 @@ function buildFlightTransferCrossSellUrl(toCity, toCode, searchReq) {
         birakis_ilce: t.birakis_ilce,
         birakis_sehir: t.birakis_sehir,
         alisTarihi: dotDate,
-        alisSaati: '10:00',
+        alisSaati: syncedTime,
         yetiskin: String(pax),
         utm_source: 'hakikibilet',
         utm_medium: 'affiliate',
@@ -5406,11 +5731,13 @@ function buildFlightTransferCrossSellUrl(toCity, toCode, searchReq) {
     return `https://www.bilet.com/transfer/ara?${params.toString()}`;
 }
 
-function buildFlightCarCrossSellUrl(toCity, toCode, searchReq) {
+function buildFlightCarCrossSellUrl(toCity, toCode, searchReq, arrivalTime) {
     const code = (toCode || '').toUpperCase();
     const slug = toAsciiSlug(toCity || '');
     const pDate = (searchReq && searchReq.departure_date) ? String(searchReq.departure_date) : new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
     const dDate = (searchReq && searchReq.return_date) ? String(searchReq.return_date) : getNextDaysDate(pDate, 3);
+    const pTime = arrivalTime ? computeArrivalPlusBufferTime(arrivalTime, 30) : (window.currentCarPickupTime || '10:00');
+    const dTime = window.currentCarDropoffTime || pTime || '10:00';
 
     const yolcuPidMap = {
         'IST': { pid: 'ChIJqZW8Cvb_n0ARBuUkyCzgDDg', pp: '41.259656501755316,28.74417437428462' },
@@ -5453,7 +5780,7 @@ function buildFlightCarCrossSellUrl(toCity, toCode, searchReq) {
         else m = yolcuPidMap['IST'];
     }
 
-    return `https://yolcu360.com/arac-kiralama/search?p_d=${encodeURIComponent(pDate)}&d_d=${encodeURIComponent(dDate)}&p_t=10:00&d_t=10:00&a=30-65&sb=lowest_price_first&p_p=${m.pp}&pid=${m.pid}&utm_source=hakikibilet&utm_medium=affiliate&subid=hakikibilet`;
+    return `https://yolcu360.com/arac-kiralama/search?p_d=${encodeURIComponent(pDate)}&d_d=${encodeURIComponent(dDate)}&p_t=${encodeURIComponent(pTime)}&d_t=${encodeURIComponent(dTime)}&a=30-65&sb=lowest_price_first&p_p=${m.pp}&pid=${m.pid}&utm_source=hakikibilet&utm_medium=affiliate&subid=hakikibilet`;
 }
 
 function generateTicketCardsHtml(tickets, searchReq) {
@@ -6087,16 +6414,18 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <span class="text-[10.5px] font-black text-slate-500 flex items-center gap-1">
                             <i class="fa-solid fa-sparkles text-amber-500"></i> ${isEn ? `On Arrival in ${escapeHtml(toCity)}:` : `${escapeHtml(toCity)} Varışında:`}
                         </span>
-                        <a href="${buildFlightTransferCrossSellUrl(toCity, toCode, searchReq)}"
+                        <a href="${buildFlightTransferCrossSellUrl(toCity, toCode, searchReq, ticket.arrival_time)}"
                            target="_blank" rel="noopener noreferrer"
+                           title="${isEn ? 'Synced with your flight arrival time + 30 min baggage buffer' : 'Uçuş varış saatiniz + 30 dk bagaj çıkış süresine göre otomatik ayarlandı'}"
                            class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-extrabold text-[11px] inline-flex items-center gap-1.5 transition shadow-2xs hover:scale-102">
-                            <span>🚕 ${isEn ? `${escapeHtml(toCity)} Airport VIP Transfer (Bilet.com) ↗` : `${escapeHtml(toCity)} Havalimanı ➔ Otel VIP Transfer (Bilet.com) ↗`}</span>
+                            <span>🚕 ${isEn ? `${escapeHtml(toCity)} VIP Transfer (${computeArrivalPlusBufferTime(ticket.arrival_time, 30)}) ↗` : `${escapeHtml(toCity)} VIP Transfer (${computeArrivalPlusBufferTime(ticket.arrival_time, 30)} Karşılama) ↗`}</span>
                         </a>
                         ${buildFlightFerryCrossSellHtml(toCity, toCode, searchReq)}
-                        <a href="${buildFlightCarCrossSellUrl(toCity, toCode, searchReq)}"
+                        <a href="${buildFlightCarCrossSellUrl(toCity, toCode, searchReq, ticket.arrival_time)}"
                            target="_blank" rel="noopener noreferrer"
+                           title="${isEn ? 'Car pickup time synced with flight arrival' : 'Araç teslim saati uçuş varışınıza göre senkronize edildi'}"
                            class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold text-[11px] inline-flex items-center gap-1.5 transition">
-                            <span>🚗 ${isEn ? 'Airport Car Rental (Yolcu360) ↗' : 'Havalimanı Teslim Araç (Yolcu360) ↗'}</span>
+                            <span>🚗 ${isEn ? `Airport Car (${computeArrivalPlusBufferTime(ticket.arrival_time, 30)}) ↗` : `Havalimanı Teslim Araç (${computeArrivalPlusBufferTime(ticket.arrival_time, 30)}) ↗`}</span>
                         </a>
                         ${(ticket.is_international || isInternationalCityOrRoute(toCity, toCode)) ? `
                         <a href="https://tp.media/r?campaign_id=224&marker=789884&p=5998&trs=585474&u=https%3A%2F%2Fyesim.app%2F"
@@ -6139,10 +6468,11 @@ function generateTicketCardsHtml(tickets, searchReq) {
 ).join("");
 }
 
-// Hızlı Uçuş Sıralama ve Filtreleme Sistemi (En Ucuz | En Hızlı | En Erken Kalkış | En Geç Kalkış + Sabah / Öğle / Akşam)
+// Hızlı Uçuş Sıralama ve Filtreleme Sistemi (En Ucuz | En İyi F/P | En Hızlı | En Erken Kalkış | En Geç Kalkış + Sadece Direkt + Sabah / Öğle / Akşam)
 window.currentFlightSort = 'cheapest';
 window.currentFlightTimeFilter = 'all';
 window.currentFlightAirportFilter = 'all';
+window.currentFlightDirectOnly = false;
 
 function setFlightSort(sortKey) {
     window.currentFlightSort = sortKey;
@@ -6159,8 +6489,13 @@ function setFlightAirportFilter(portKey) {
     applyFlightSortAndFilter();
 }
 
+function toggleFlightDirectOnly() {
+    window.currentFlightDirectOnly = !window.currentFlightDirectOnly;
+    applyFlightSortAndFilter();
+}
+
 function sortFlightTickets(criterion) {
-    if (['cheapest', 'fastest', 'earliest', 'latest'].includes(criterion)) {
+    if (['cheapest', 'best', 'fastest', 'earliest', 'latest'].includes(criterion)) {
         setFlightSort(criterion);
     } else if (['all', 'morning', 'noon', 'evening'].includes(criterion)) {
         setFlightTimeFilter(criterion);
@@ -6170,6 +6505,16 @@ function sortFlightTickets(criterion) {
 function applyFlightSortAndFilter() {
     if (!window.lastTransportResults) return;
     let list = [...window.lastTransportResults];
+
+    // 0-A. Sadece Direkt (Aktarmasız) Filtresi
+    if (window.currentFlightDirectOnly) {
+        list = list.filter(t => {
+            if (t.is_direct === false) return false;
+            const st = String(t.stops_text || t.badge || '').toLowerCase();
+            if (st.includes('aktarma') && !st.includes('aktarmasız')) return false;
+            return true;
+        });
+    }
 
     // 0. Havalimanı Filtresi (SAW vs IST)
     if (window.currentFlightAirportFilter === 'SAW') {
@@ -6211,7 +6556,7 @@ function applyFlightSortAndFilter() {
         });
     }
 
-    // 2. Sıralama Uygula (En Ucuz, En Hızlı, En Erken Kalkış, En Geç Kalkış)
+    // 2. Sıralama Uygula (En Ucuz, En İyi F/P, En Hızlı, En Erken Kalkış, En Geç Kalkış)
     const parseMins = (timeStr) => {
         if (!timeStr) return 0;
         const parts = timeStr.split(':');
@@ -6241,6 +6586,16 @@ function applyFlightSortAndFilter() {
             if (sDiff !== 0) return sDiff;
             return parseMins(a.departure_time) - parseMins(b.departure_time);
         });
+    } else if (window.currentFlightSort === 'best') {
+        // 🏆 En İyi (Hakiki F/P): Fiyat + Süre + Aktarmasız + Marka Puanı bileşik skoru (düşük skor daha iyi)
+        const computeFpScore = (t) => {
+            const p = (t.price !== null && t.price !== undefined && Number(t.price) > 0) ? Number(t.price) : 999999;
+            const dur = getDurMins(t.duration);
+            const isIndirect = (t.is_direct === false) || (String(t.stops_text || '').toLowerCase().includes('aktarma') && !String(t.stops_text || '').toLowerCase().includes('aktarmasız'));
+            const cScore = Number(t.carrier_score) || 0;
+            return p + (dur * 4.5) + (isIndirect ? 450 : 0) - (cScore * 15);
+        };
+        list.sort((a, b) => computeFpScore(a) - computeFpScore(b));
     } else if (window.currentFlightSort === 'fastest') {
         list.sort((a, b) => {
             const dDiff = getDurMins(a.duration) - getDurMins(b.duration);
@@ -6271,11 +6626,19 @@ function applyFlightSortAndFilter() {
 
     // 3. Sıralama Buton Stillerini Güncelle
     document.querySelectorAll(".flt-sort-btn").forEach(b => {
-        b.className = "flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer";
+        b.className = "flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer";
     });
     const activeSortBtn = document.getElementById(`fltSort-${window.currentFlightSort}`);
     if (activeSortBtn) {
-        activeSortBtn.className = "flt-sort-btn px-3 py-1.5 rounded-xl text-xs font-black bg-slate-900 text-white shadow-xs transition cursor-pointer";
+        activeSortBtn.className = "flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-black bg-slate-900 text-white shadow-xs transition cursor-pointer";
+    }
+
+    // 3-B. Sadece Direkt Buton Stilini Güncelle
+    const directBtn = document.getElementById("fltDirectOnlyBtn");
+    if (directBtn) {
+        directBtn.className = window.currentFlightDirectOnly
+            ? "px-2.5 py-1 rounded-lg text-[11px] font-black text-white bg-emerald-700 border border-emerald-800 shadow-xs transition cursor-pointer inline-flex items-center gap-1"
+            : "px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer inline-flex items-center gap-1";
     }
 
     // 4. Zaman Filtre Buton Stillerini Güncelle
