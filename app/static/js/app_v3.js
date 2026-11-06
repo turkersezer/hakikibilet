@@ -350,17 +350,21 @@ function swapOriginDest(e) {
     const tempRes = originInput.dataset.resolvedValue || "";
     const tempMode = originInput.dataset.resolvedForMode || "";
     const tempOrigPlace = originInput.dataset.originalPlaceName || "";
+    const tempNotice = originInput.dataset.districtNotice || "";
     originInput.dataset.rawUserQuery = destInput.dataset.rawUserQuery || "";
     originInput.dataset.resolvedValue = destInput.dataset.resolvedValue || "";
     originInput.dataset.resolvedForMode = destInput.dataset.resolvedForMode || "";
     originInput.dataset.originalPlaceName = destInput.dataset.originalPlaceName || "";
+    originInput.dataset.districtNotice = destInput.dataset.districtNotice || "";
     destInput.dataset.rawUserQuery = tempRaw;
     destInput.dataset.resolvedValue = tempRes;
     destInput.dataset.resolvedForMode = tempMode;
     destInput.dataset.originalPlaceName = tempOrigPlace;
+    destInput.dataset.districtNotice = tempNotice;
 
-    originInput.dispatchEvent(new Event("input", { bubbles: true }));
-    destInput.dispatchEvent(new Event("input", { bubbles: true }));
+    if (typeof hideTransportAutocompleteDropdown === 'function') {
+        hideTransportAutocompleteDropdown();
+    }
     updateAirportHints();
 
     if (swapBtn) {
@@ -3754,6 +3758,9 @@ window.getInternationalTravelComplianceHtml = getInternationalTravelComplianceHt
 // 4. ULAŞIM ARAMASI ÇALIŞTIRMA (Uçak Odaklı, Kusursuz Yolcu & Kapsam Desteği)
 async function executeTransportSearch(e) {
     if (e) e.preventDefault();
+    if (typeof hideTransportAutocompleteDropdown === 'function') {
+        hideTransportAutocompleteDropdown();
+    }
 
     window._lastDistrictNotice = null;
     const oInp = document.getElementById("transOrigin");
@@ -8264,33 +8271,346 @@ function setupEventListeners() {
         });
     }
 
-    [originInput, destInput].forEach(inp => {
+    // ==================== ÖNCELİK 4: ZENGİN ÖZEL ULAŞIM AUTOCOMPLETE MOTORU (Nereden / Nereye) ====================
+    const _transAutoState = {
+        origin: { items: [], activeIndex: -1 },
+        dest: { items: [], activeIndex: -1 }
+    };
+
+    function getTransportAutoDropdownEl(fieldType) {
+        return document.getElementById(fieldType === 'origin' ? 'originAutocompleteDropdown' : 'destAutocompleteDropdown');
+    }
+
+    function hideTransportAutocompleteDropdown(fieldType) {
+        if (!fieldType) {
+            hideTransportAutocompleteDropdown('origin');
+            hideTransportAutocompleteDropdown('dest');
+            return;
+        }
+        const drop = getTransportAutoDropdownEl(fieldType);
+        if (drop) drop.classList.add('hidden');
+        if (_transAutoState[fieldType]) {
+            _transAutoState[fieldType].activeIndex = -1;
+        }
+    }
+    window.hideTransportAutocompleteDropdown = hideTransportAutocompleteDropdown;
+
+    function buildTransportAutocompleteItems(fieldType, queryStr, showPopularDefault = false) {
+        const mode = window.currentTransportSubTab || currentTransportSubTab || 'flight';
+        const isEn = window.currentAppLang === 'en';
+        const datalistEl = document.getElementById(fieldType === 'origin' ? 'originCitiesList' : 'destCitiesList');
+        const qRaw = showPopularDefault ? '' : String(queryStr || '').trim();
+        const qNorm = normalizeTurkish(qRaw);
+
+        const baseOptions = [];
+        const seenValues = new Set();
+
+        if (datalistEl) {
+            const opts = datalistEl.querySelectorAll('option');
+            opts.forEach((opt, idx) => {
+                const val = (opt.getAttribute('value') || '').trim();
+                const fullText = (opt.textContent || val).trim();
+                if (!val) return;
+                const dedupKey = normalizeTurkish(val);
+                if (seenValues.has(dedupKey)) return;
+                seenValues.add(dedupKey);
+
+                let icon = mode === 'bus' ? '🚌' : (mode === 'train' ? '🚆' : (mode === 'ferry' ? '⛴️' : (mode === 'car' ? '🚗' : '✈️')));
+                let cleanLabel = fullText;
+                const emojiMatch = fullText.match(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic}|[\u2600-\u27BF]|🇹🇷|🇬🇷)\s*/u);
+                if (emojiMatch) {
+                    icon = emojiMatch[1];
+                    cleanLabel = fullText.slice(emojiMatch[0].length).trim();
+                }
+
+                // IATA veya Parantez Kodu Ayrıştırma
+                const iataMatch = val.match(/\(([A-Z]{3})\)/) || cleanLabel.match(/\(([A-Z]{3})\)/);
+                const iataCode = iataMatch ? iataMatch[1] : '';
+
+                // Başlık ve Alt Metin Ayrıştırma
+                let title = cleanLabel;
+                let subtext = '';
+                if (cleanLabel.includes('•')) {
+                    const parts = cleanLabel.split('•');
+                    title = parts[0].trim();
+                    subtext = parts.slice(1).join(' • ').trim();
+                } else if (cleanLabel.includes(' - ')) {
+                    const parts = cleanLabel.split(' - ');
+                    title = parts[0].trim();
+                    subtext = parts.slice(1).join(' • ').trim();
+                }
+
+                let badgeText = '';
+                let badgeCls = 'bg-slate-100 text-slate-700 border-slate-200';
+                if (mode === 'flight') {
+                    if (val === 'İstanbul') {
+                        badgeText = isEn ? '🏙️ All (IST+SAW)' : '🏙️ Tüm Havalimanları';
+                        badgeCls = 'bg-amber-100 text-amber-950 border-amber-300';
+                        if (!subtext) subtext = isEn ? 'Istanbul Airport (IST) & Sabiha Gökçen (SAW)' : 'İstanbul Havalimanı (IST) ve Sabiha Gökçen (SAW)';
+                    } else if (iataCode) {
+                        badgeText = `✈️ ${iataCode}`;
+                        badgeCls = 'bg-slate-900 text-amber-300 border-slate-800';
+                    } else {
+                        badgeText = isEn ? '✈️ Airport' : '✈️ Havalimanı';
+                        badgeCls = 'bg-sky-50 text-sky-900 border-sky-200';
+                    }
+                } else if (mode === 'train') {
+                    const isYht = fullText.includes('YHT');
+                    badgeText = isYht ? '🚄 YHT Garı' : (icon === '🌍' ? '🌍 Avrupa Tren' : '🚆 Tren Garı');
+                    badgeCls = isYht ? 'bg-indigo-100 text-indigo-950 border-indigo-300' : 'bg-indigo-50 text-indigo-900 border-indigo-200';
+                } else if (mode === 'bus') {
+                    badgeText = icon === '🌍' ? '🌍 Uluslararası' : '🚌 Otogar';
+                    badgeCls = 'bg-emerald-50 text-emerald-900 border-emerald-200';
+                } else if (mode === 'ferry') {
+                    const isGateVisa = fullText.includes('Kapıda Vize');
+                    badgeText = isGateVisa ? '🇬🇷 Kapıda Vize' : '⛴️ Liman / Ada';
+                    badgeCls = isGateVisa ? 'bg-sky-100 text-sky-950 border-sky-300' : 'bg-sky-50 text-sky-900 border-sky-200';
+                } else if (mode === 'car') {
+                    const isCityOffice = fullText.includes('Şehir İçi') || icon === '🏙️';
+                    badgeText = isCityOffice ? '🏙️ Şehir Ofisi' : '🚗 Havalimanı';
+                    badgeCls = 'bg-amber-50 text-amber-950 border-amber-200';
+                }
+
+                baseOptions.push({
+                    selectValue: val,
+                    icon,
+                    title: title || val,
+                    subtext: subtext || (mode === 'flight' ? (isEn ? 'Direct Airport Flights' : 'Doğrudan Havalimanı Seferleri') : ''),
+                    badgeText,
+                    badgeCls,
+                    iataCode,
+                    normVal: normalizeTurkish(val),
+                    normTitle: normalizeTurkish(title),
+                    normBlob: normalizeTurkish(`${val} ${fullText} ${iataCode}`),
+                    orderIdx: idx,
+                    isDistrictRedirect: false
+                });
+            });
+        }
+
+        // Uçak modunda Turistik İlçe & Havalimanı Olmayan Şehir Çözümlemelerini (DISTRICT_TO_AIRPORT_MAP) ekle
+        if (mode === 'flight' && qNorm.length >= 2 && typeof DISTRICT_TO_AIRPORT_MAP === 'object') {
+            const seenDistrictLabels = new Set();
+            for (const [dKey, dInfo] of Object.entries(DISTRICT_TO_AIRPORT_MAP)) {
+                if (!dInfo || !dInfo.target || !dInfo.label) continue;
+                const normKey = normalizeTurkish(dKey);
+                const normLbl = normalizeTurkish(dInfo.label);
+                if (!normKey.includes(qNorm) && !normLbl.includes(qNorm)) continue;
+
+                const dDedup = `${normLbl}->${normalizeTurkish(dInfo.target)}`;
+                if (seenDistrictLabels.has(dDedup)) continue;
+                seenDistrictLabels.add(dDedup);
+
+                // Eğer doğrudan havalimanı olan bir ana ilse ve özel yönlendirme notu yoksa tekrar etme
+                if (!dInfo.note && seenValues.has(normLbl)) continue;
+
+                const targetIataMatch = dInfo.target.match(/\(([A-Z]{3})\)/);
+                const targetIata = targetIataMatch ? targetIataMatch[1] : '';
+                const isHubRedirect = Boolean(dInfo.note && (dInfo.note.includes('bulunmadığından') || dInfo.note.includes('en yakın')));
+
+                baseOptions.push({
+                    selectValue: dInfo.label,
+                    icon: isHubRedirect ? '🧭' : '🏖️',
+                    title: `${dInfo.label} ➔ ${dInfo.target}`,
+                    subtext: dInfo.note || (isEn ? `Nearest airport: ${dInfo.target}` : `En yakın aktif havalimanı: ${dInfo.target}`),
+                    badgeText: targetIata ? `🧭 ${targetIata} Bağlantılı` : (isEn ? '🧭 Nearest Hub' : '🧭 Yakın Havalimanı'),
+                    badgeCls: 'bg-amber-100 text-amber-950 border-amber-300',
+                    iataCode: targetIata,
+                    normVal: normLbl,
+                    normTitle: normLbl,
+                    normBlob: normalizeTurkish(`${dKey} ${dInfo.label} ${dInfo.target} ${dInfo.note || ''}`),
+                    orderIdx: 500,
+                    isDistrictRedirect: true
+                });
+            }
+        }
+
+        if (!qNorm) {
+            return baseOptions.slice(0, 10);
+        }
+
+        const scored = [];
+        for (const item of baseOptions) {
+            if (!item.normBlob.includes(qNorm)) continue;
+            let score = 500 - Math.min(item.orderIdx, 100);
+            const normIata = normalizeTurkish(item.iataCode || '');
+            if (normIata && normIata === qNorm) {
+                score = 1200;
+            } else if (item.normVal === qNorm || item.normTitle === qNorm) {
+                score = item.isDistrictRedirect ? 960 : 1100;
+            } else if (item.normVal.startsWith(qNorm) || item.normTitle.startsWith(qNorm)) {
+                score = item.isDistrictRedirect ? 860 : 950;
+            } else if (normIata && normIata.startsWith(qNorm)) {
+                score = 880;
+            }
+            scored.push({ item, score });
+        }
+
+        scored.sort((a, b) => b.score - a.score || a.item.orderIdx - b.item.orderIdx);
+        return scored.slice(0, 11).map(s => s.item);
+    }
+
+    function renderTransportAutocompleteDropdown(fieldType, queryStr, showPopularDefault = false) {
+        const drop = getTransportAutoDropdownEl(fieldType);
+        if (!drop) return;
+        const otherType = fieldType === 'origin' ? 'dest' : 'origin';
+        hideTransportAutocompleteDropdown(otherType);
+
+        const items = buildTransportAutocompleteItems(fieldType, queryStr, showPopularDefault);
+        _transAutoState[fieldType].items = items;
+        _transAutoState[fieldType].activeIndex = items.length > 0 ? 0 : -1;
+
+        if (items.length === 0) {
+            drop.classList.add('hidden');
+            drop.innerHTML = '';
+            return;
+        }
+
+        const isEn = window.currentAppLang === 'en';
+        const qClean = showPopularDefault ? '' : String(queryStr || '').trim();
+        const headerTitle = qClean
+            ? (isEn ? `🔍 Matching Locations (${items.length})` : `🔍 Eşleşen Noktalar & Havalimanları (${items.length})`)
+            : (isEn ? '⚡ Popular Hubs & Terminals' : '⚡ Popüler Havalimanları & Merkezler');
+
+        let html = `
+            <div class="px-3.5 py-2 bg-slate-50 border-b border-slate-200/80 flex items-center justify-between text-[10.5px] font-black text-slate-500 uppercase tracking-wider sticky top-0 z-10">
+                <span>${headerTitle}</span>
+                <span class="text-[10px] font-bold text-slate-400">↵ Seç</span>
+            </div>
+        `;
+
+        html += items.map((it, idx) => {
+            const safeValAttr = String(it.selectValue || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            const isActive = idx === 0;
+            return `
+                <button type="button"
+                        data-auto-idx="${idx}"
+                        onmousedown="event.preventDefault(); window.selectTransportAutocompleteItem('${fieldType}', '${safeValAttr}')"
+                        class="trans-auto-item w-full text-left px-3.5 py-2.5 ${isActive ? 'bg-amber-50/90' : 'hover:bg-amber-50/70'} border-b border-slate-100 last:border-b-0 flex items-center justify-between gap-2.5 transition cursor-pointer">
+                    <div class="flex items-start gap-2.5 min-w-0">
+                        <span class="text-base leading-none mt-0.5 shrink-0">${it.icon}</span>
+                        <div class="min-w-0">
+                            <div class="font-black text-xs sm:text-sm text-slate-900 truncate">${escapeHtml(it.title)}</div>
+                            ${it.subtext ? `<div class="text-[11px] font-semibold text-slate-500 truncate mt-0.5">${escapeHtml(it.subtext)}</div>` : ''}
+                        </div>
+                    </div>
+                    ${it.badgeText ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-black border shrink-0 ${it.badgeCls}">${escapeHtml(it.badgeText)}</span>` : ''}
+                </button>
+            `;
+        }).join('');
+
+        drop.innerHTML = html;
+        drop.classList.remove('hidden');
+    }
+    window.renderTransportAutocompleteDropdown = renderTransportAutocompleteDropdown;
+
+    function highlightTransportAutoItem(fieldType, newIdx) {
+        const state = _transAutoState[fieldType];
+        const drop = getTransportAutoDropdownEl(fieldType);
+        if (!state || !drop || !state.items.length) return;
+        const max = state.items.length;
+        state.activeIndex = ((newIdx % max) + max) % max;
+        const buttons = drop.querySelectorAll('.trans-auto-item');
+        buttons.forEach((btn, i) => {
+            if (i === state.activeIndex) {
+                btn.classList.add('bg-amber-50/90');
+                try { btn.scrollIntoView({ block: 'nearest' }); } catch (_) {}
+            } else {
+                btn.classList.remove('bg-amber-50/90');
+            }
+        });
+    }
+
+    function selectTransportAutocompleteItem(fieldType, selectedVal) {
+        const inp = document.getElementById(fieldType === 'origin' ? 'transOrigin' : 'transDest');
+        hideTransportAutocompleteDropdown(fieldType);
+        if (!inp) return;
+
+        inp.value = selectedVal;
+        inp.dataset.rawUserQuery = selectedVal;
+        delete inp.dataset.originalPlaceName;
+        delete inp.dataset.resolvedValue;
+        delete inp.dataset.resolvedForMode;
+
+        clearFieldWarningNotice(inp);
+        resolveDistrictOrAirportInput(inp);
+        updateAirportHints();
+
+        // Kalkış seçildiyse ve Varış kutusu boşsa (veya araç kiralamada aynı yer seçiliyse) akıllı odak geçişi yap
+        if (fieldType === 'origin') {
+            const destInp = document.getElementById('transDest');
+            const subTab = window.currentTransportSubTab || currentTransportSubTab || 'flight';
+            if (subTab === 'car' && window.currentCarSubMode !== 'transfer' && !currentCarDifferentDropoff) {
+                if (destInp) destInp.value = inp.value;
+            } else if (destInp && !destInp.value.trim()) {
+                setTimeout(() => {
+                    try { destInp.focus(); } catch (_) {}
+                }, 40);
+            }
+        }
+    }
+    window.selectTransportAutocompleteItem = selectTransportAutocompleteItem;
+
+    [
+        { inp: originInput, fieldType: 'origin' },
+        { inp: destInput, fieldType: 'dest' }
+    ].forEach(({ inp, fieldType }) => {
         if (!inp) return;
         inp.addEventListener("focus", function() {
             setTimeout(() => {
                 try { this.select(); } catch (_) {}
             }, 60);
+            renderTransportAutocompleteDropdown(fieldType, this.value, true);
         });
         inp.addEventListener("click", function() {
             if (!this.dataset.clickedOnce) {
                 this.dataset.clickedOnce = '1';
                 try { this.select(); } catch (_) {}
             }
+            const drop = getTransportAutoDropdownEl(fieldType);
+            if (drop && drop.classList.contains('hidden')) {
+                renderTransportAutocompleteDropdown(fieldType, this.value, true);
+            }
         });
         inp.addEventListener("blur", function() {
             this.dataset.clickedOnce = '';
+            setTimeout(() => {
+                hideTransportAutocompleteDropdown(fieldType);
+            }, 160);
             resolveDistrictOrAirportInput(this);
         });
         inp.addEventListener("change", function() {
             resolveDistrictOrAirportInput(this);
         });
         inp.addEventListener("keydown", function(e) {
-            if (e.key === "Enter") {
+            const drop = getTransportAutoDropdownEl(fieldType);
+            const state = _transAutoState[fieldType];
+            const isOpen = drop && !drop.classList.contains('hidden') && state && state.items.length > 0;
+
+            if (e.key === "ArrowDown" && isOpen) {
+                e.preventDefault();
+                highlightTransportAutoItem(fieldType, state.activeIndex + 1);
+            } else if (e.key === "ArrowUp" && isOpen) {
+                e.preventDefault();
+                highlightTransportAutoItem(fieldType, state.activeIndex - 1);
+            } else if (e.key === "Escape" && isOpen) {
+                e.preventDefault();
+                hideTransportAutocompleteDropdown(fieldType);
+            } else if (e.key === "Enter") {
+                if (isOpen && state.activeIndex >= 0 && state.items[state.activeIndex]) {
+                    const typed = (this.value || '').trim();
+                    if (typed.length >= 1) {
+                        e.preventDefault();
+                        selectTransportAutocompleteItem(fieldType, state.items[state.activeIndex].selectValue);
+                        return;
+                    }
+                }
+                hideTransportAutocompleteDropdown(fieldType);
                 resolveDistrictOrAirportInput(this);
             }
         });
-        let debounceTimer = null;
         inp.addEventListener("input", function() {
+            if (_isSwappingAirports) return;
             const curTyped = (this.value || "").trim();
             if (curTyped !== (this.dataset.resolvedValue || "").trim()) {
                 this.dataset.rawUserQuery = curTyped;
@@ -8298,10 +8618,8 @@ function setupEventListeners() {
                 delete this.dataset.resolvedValue;
                 delete this.dataset.resolvedForMode;
             }
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                resolveDistrictOrAirportInput(inp, null, true);
-            }, 400);
+            clearFieldWarningNotice(this);
+            renderTransportAutocompleteDropdown(fieldType, curTyped, false);
         });
     });
 

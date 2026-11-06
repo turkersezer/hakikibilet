@@ -1126,7 +1126,7 @@
                                     <i class="fa-solid fa-plane-departure text-amber-500"></i>
                                     <span data-i18n="origin">Nereden</span>
                                 </label>
-                                <input type="text" id="transOrigin" list="originCitiesList" placeholder="" value="" required
+                                <input type="text" id="transOrigin" autocomplete="off" placeholder="" value="" required
                                        data-i18n-ph="originPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="originCitiesList">
@@ -1147,6 +1147,7 @@
                                     {% endfor %}
                                 </datalist>
                             </div>
+                            <div id="originAutocompleteDropdown" class="hidden absolute left-0 right-0 sm:min-w-[350px] top-full mt-1.5 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 max-h-80 overflow-y-auto"></div>
                             <!-- Hızlı Değiştir (Swap) Butonu (Mobil + Masaüstü Uyumlu) -->
                             <button type="button" id="swapAirportsBtn" title="Kalkış ve Varış Noktalarını Değiştir"
                                     class="flex absolute right-3 -bottom-3.5 sm:-right-3 sm:top-3.5 sm:bottom-auto z-20 w-7 h-7 rounded-full bg-white hover:bg-amber-500 hover:text-white border border-slate-300 shadow-md items-center justify-center text-slate-600 transition-all transform hover:scale-110 active:rotate-180 cursor-pointer">
@@ -1155,13 +1156,13 @@
                         </div>
 
                         <!-- Varış (Nereye) -->
-                        <div class="lg:col-span-3">
+                        <div class="lg:col-span-3 relative">
                             <div class="input-box">
                                 <label id="destFieldLabel" class="input-label">
                                     <i class="fa-solid fa-plane-arrival text-amber-500"></i>
                                     <span data-i18n="dest">Nereye</span>
                                 </label>
-                                <input type="text" id="transDest" list="destCitiesList" placeholder="" value="" required
+                                <input type="text" id="transDest" autocomplete="off" placeholder="" value="" required
                                        data-i18n-ph="destDomesticPh"
                                        class="w-full bg-transparent font-bold text-sm text-slate-900 focus:outline-none truncate">
                                 <datalist id="destCitiesList">
@@ -1182,6 +1183,7 @@
                                     {% endfor %}
                                 </datalist>
                             </div>
+                            <div id="destAutocompleteDropdown" class="hidden absolute left-0 right-0 sm:min-w-[350px] top-full mt-1.5 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 max-h-80 overflow-y-auto"></div>
                         </div>
 
                         <!-- Gidiş Tarihi -->
@@ -2810,7 +2812,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261106_v46"></script>
+    <script src="/static/js/app_v3.js?v=20261106_v47"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">
