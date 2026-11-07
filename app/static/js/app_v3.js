@@ -3712,6 +3712,7 @@ function getInternationalTravelComplianceHtml(searchReq, isIntlRoute, isEn) {
     // 2. Yunan Adaları Kapıda Ekspres Vize veya Schengen
     const greekIslands = ['sakız', 'sakiz', 'chios', 'jkd', 'kos', 'istanköy', 'rodos', 'rhodes', 'rho', 'midilli', 'lesvos', 'mjt', 'samos', 'sisam', 'smi', 'simi', 'symi', 'meis', 'kastellorizo'];
     if (greekIslands.some(k => combo.includes(k))) {
+        const safeDestArg = escapeHtml(searchReq.destination || 'Yunan Adaları').replace(/'/g, "\\'");
         return `
             <div class="bg-sky-50 border border-sky-300 text-sky-950 rounded-xl px-3.5 py-2 mb-3 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
@@ -3720,6 +3721,9 @@ function getInternationalTravelComplianceHtml(searchReq, isIntlRoute, isEn) {
                         ? 'Requires a valid Schengen Visa, Green Passport, or 7-Day Greek Island Gate Visa (apply at least 5 business days prior) + Passport valid for 6+ months.'
                         : 'Geçerli <strong>Schengen Vizesi</strong>, <strong>Yeşil Pasaport</strong> veya <strong>7 Günlük Kapıda Ekspres Vize</strong> (en az 5 iş günü önceden başvuru) ve en az 6 ay geçerli pasaport gereklidir.'}</span>
                 </div>
+                <button type="button" onclick="openVisaChecklistModal('${safeDestArg}')" class="px-2.5 py-1 rounded-lg bg-sky-700 hover:bg-sky-900 text-white text-[11px] font-black transition cursor-pointer inline-flex items-center gap-1.5 shrink-0 shadow-2xs">
+                    <span>📋 ${isEn ? 'Gate Visa & Insurance Checklist' : 'Kapıda Vize Evrak & Sigorta Listesi'}</span>
+                </button>
             </div>
         `;
     }
@@ -3742,6 +3746,7 @@ function getInternationalTravelComplianceHtml(searchReq, isIntlRoute, isEn) {
     if (!isIntlRoute) return '';
 
     // 4. Schengen / UK / ABD / BAE Vize & Pasaport Bilgilendirmesi
+    const safeIntlDestArg = escapeHtml(searchReq.destination || 'Yurt Dışı').replace(/'/g, "\\'");
     return `
         <div class="bg-amber-50 border border-amber-300 text-amber-950 rounded-xl px-3.5 py-2 mb-3 text-xs font-bold flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
@@ -3750,6 +3755,9 @@ function getInternationalTravelComplianceHtml(searchReq, isIntlRoute, isEn) {
                     ? 'International route: Please verify destination visa requirements (Schengen / UK / National Visa) and ensure 6+ months passport validity.'
                     : 'Yurt dışı seyahat kuralı: Bordo pasaport sahipleri için <strong>Schengen / Ülke Vizesi</strong> (Yeşil pasaporta Avrupa Schengen vizesiz) ve <strong>en az 6 ay geçerli pasaport</strong> gereklidir.'}</span>
             </div>
+            <button type="button" onclick="openVisaChecklistModal('${safeIntlDestArg}')" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black transition cursor-pointer inline-flex items-center gap-1.5 shrink-0 shadow-2xs">
+                <span>📋 ${isEn ? 'Visa & Insurance Guide' : 'Vize & Sigorta Rehberi'}</span>
+            </button>
         </div>
     `;
 }
@@ -4183,6 +4191,9 @@ function renderTransportResults(data, searchReq) {
             window.recordTransportFunnelStage('impression', searchReq.transport_type || 'flight', impCount);
         }
     }
+    if (typeof window.updateTransportModeTabPriceHints === 'function') {
+        window.updateTransportModeTabPriceHints(data, searchReq);
+    }
 
     const cinDate = searchReq.departure_date;
     const coutDate = searchReq.return_date || getNextDaysDate(cinDate, 2);
@@ -4353,7 +4364,7 @@ function renderTransportResults(data, searchReq) {
         const tip = flexInsights.hakiki_tip;
         const fmtNum = (n) => Number(n).toLocaleString(isEn ? 'en-US' : 'tr-TR');
 
-        html += `<div class="bg-white border border-slate-200 rounded-2xl p-3 mb-3 shadow-2xs">`;
+        html += `<div id="flexDateMatrixStrip" class="bg-white border border-slate-200 rounded-2xl p-3 mb-3 shadow-2xs transition-all duration-300">`;
 
         // 1. Üst "💡 Hakiki İpucu" Bandı (Tek Satır Kompakt)
         if (tip && tip.has_savings) {
@@ -4440,12 +4451,20 @@ function renderTransportResults(data, searchReq) {
         html += `</div>`;
     }
 
+    // #13 Tren & YHT Alternatif Gar & Erken Tükenme Kontenjan Kalkanı
+    if (modeType === 'train' && !isIntlRoute && tickets.length > 0 && typeof buildTrainStationAndQuotaHelperHtml === 'function') {
+        html += buildTrainStationAndQuotaHelperHtml(searchReq, isEn);
+    }
+
     // Filtre & Hızlı Sıralama Çubuğu (Kompakt Tek Satır)
     if (['flight', 'bus', 'train', 'ferry'].includes(currentTransportSubTab) && tickets.length > 1) {
         window.currentFlightSort = 'cheapest';
         window.currentFlightTimeFilter = 'all';
         window.currentFlightAirportFilter = 'all';
         window.currentFlightDirectOnly = false;
+        window.currentFlightBaggageOnly = false;
+        window.currentBus2Plus1Only = false;
+        window.currentBusTerminalFilter = 'all';
 
         const ports = new Set();
         tickets.forEach(t => {
@@ -4457,6 +4476,14 @@ function renderTransportResults(data, searchReq) {
         const isMultiAirportCity = currentTransportSubTab === 'flight' && ((hasSaw && hasIst) || 
             (searchReq.origin && searchReq.origin.toLowerCase().includes('istanbul')) ||
             (searchReq.destination && searchReq.destination.toLowerCase().includes('istanbul')));
+        const rawBusCombo = `${searchReq.origin || ''} ${searchReq.destination || ''}`.toLowerCase();
+        const isIstanbulBusRoute = currentTransportSubTab === 'bus' && (
+            rawBusCombo.includes('istanbul') || rawBusCombo.includes('esenler') || rawBusCombo.includes('alibeyköy') || rawBusCombo.includes('harem') || rawBusCombo.includes('dudullu')
+        );
+        const hasFlexSavings = Boolean(flexInsights && flexInsights.hakiki_tip && flexInsights.hakiki_tip.has_savings);
+        const flexSavingsLabel = hasFlexSavings
+            ? `(-${Number(flexInsights.hakiki_tip.savings).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${flexInsights.hakiki_tip.currency || '₺'})`
+            : '';
         const unitLabel = currentTransportSubTab === 'flight' ? (isEn ? 'flights' : 'uçuş') : (isEn ? 'routes' : 'sefer');
 
         html += `
@@ -4484,6 +4511,17 @@ function renderTransportResults(data, searchReq) {
                         ${currentTransportSubTab === 'flight' ? `
                         <button type="button" onclick="toggleFlightDirectOnly()" id="fltDirectOnlyBtn" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer inline-flex items-center gap-1">
                             <span>✈️ ${isEn ? 'Direct Only' : 'Sadece Direkt'}</span>
+                        </button>
+                        <button type="button" onclick="toggleFlightBaggageOnly()" id="fltBaggageOnlyBtn" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition cursor-pointer inline-flex items-center gap-1" title="${isEn ? 'Show airlines/tariffs with 15kg+ checked baggage included' : '15 kg+ uçak altı bagaj hakkı dahil olan havayolu ve tarifeleri filtrele'}">
+                            <span>🧳 ${isEn ? 'Baggage Included' : 'Bagaj Dahil'}</span>
+                        </button>
+                        <button type="button" onclick="highlightFlexibleDateStrip()" id="fltFlexDatesJumpBtn" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-300 transition cursor-pointer inline-flex items-center gap-1" title="${isEn ? 'Compare ±3 days flexible fares' : 'Seçili tarihin ±3 gün komşu fiyatlarını karşılaştır'}">
+                            <span>📅 ${isEn ? '±3 Days Flexible' : '±3 Gün Esnek'} ${flexSavingsLabel}</span>
+                        </button>
+                        ` : ''}
+                        ${currentTransportSubTab === 'bus' ? `
+                        <button type="button" onclick="toggleBus2Plus1Only()" id="fltBus2Plus1Btn" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer inline-flex items-center gap-1" title="${isEn ? 'Show only 2+1 wide comfort seat buses' : 'Sadece 2+1 tekli koltuk düzenine sahip rahat hat otobüsleri göster'}">
+                            <span>💺 ${isEn ? '2+1 Comfort Only' : 'Sadece 2+1 Rahat'}</span>
                         </button>
                         ` : ''}
                     </div>
@@ -4521,6 +4559,21 @@ function renderTransportResults(data, searchReq) {
                         </button>
                         <button type="button" onclick="setFlightAirportFilter('IST')" id="fltPort-IST" class="flt-port-btn px-2.5 py-0.5 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
                             ${isEn ? 'IST (Istanbul Airport)' : 'IST (İstanbul Havalimanı)'}
+                        </button>
+                    </div>
+                ` : ''}
+
+                ${isIstanbulBusRoute ? `
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-slate-100">
+                        <span class="text-[11px] font-black text-slate-600 mr-1">${isEn ? 'Terminal / Side:' : 'Otogar & Yaka:'}</span>
+                        <button type="button" onclick="setBusTerminalFilter('all')" id="fltBusTerm-all" class="flt-busterm-btn px-2.5 py-0.5 rounded-lg text-[11px] font-black bg-slate-900 text-white transition cursor-pointer">
+                            ${isEn ? 'All Terminals' : 'Tüm Otogarlar'}
+                        </button>
+                        <button type="button" onclick="setBusTerminalFilter('europe')" id="fltBusTerm-europe" class="flt-busterm-btn px-2.5 py-0.5 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                            🇪🇺 ${isEn ? 'European Side (Esenler • Alibeyköy)' : 'Avrupa Yakası (Esenler • Alibeyköy)'}
+                        </button>
+                        <button type="button" onclick="setBusTerminalFilter('asia')" id="fltBusTerm-asia" class="flt-busterm-btn px-2.5 py-0.5 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                            🌉 ${isEn ? 'Asian Side (Dudullu • Harem • Samandıra)' : 'Anadolu Yakası (Dudullu • Harem • Samandıra)'}
                         </button>
                     </div>
                 ` : ''}
@@ -6346,11 +6399,23 @@ function generateTicketCardsHtml(tickets, searchReq) {
 
                     <!-- 2. Kritik Vize / Yeşil Sigorta / Katamaran Araç Uyarı Bantları -->
                     ${ticket.visa_urgent_warning ? `
-                        <div class="mt-2.5 px-3 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-[11px] font-bold flex items-start gap-2">
-                            <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5 shrink-0"></i>
-                            <span>${escapeHtml(ticket.visa_urgent_warning)}</span>
+                        <div class="mt-2.5 px-3 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-[11px] font-bold flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-start gap-2">
+                                <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5 shrink-0"></i>
+                                <span>${escapeHtml(ticket.visa_urgent_warning)}</span>
+                            </div>
+                            <button type="button" onclick="openVisaChecklistModal('${escapeHtml(ticket.destination || 'Yunan Adaları').replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-rose-700 hover:bg-rose-900 text-white text-[10.5px] font-black transition cursor-pointer inline-flex items-center gap-1 shrink-0 shadow-2xs">
+                                <span>📋 ${isEn ? 'Gate Visa Checklist' : 'Kapıda Vize Evrak Listesi'}</span>
+                            </button>
                         </div>
-                    ` : ''}
+                    ` : (isGreekIsland ? `
+                        <div class="mt-2.5 px-3 py-1.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-900 text-[11px] font-bold flex flex-wrap items-center justify-between gap-2">
+                            <span>🇬🇷 ${isEn ? 'Greek Islands Gate Visa (7-Day Express) or Schengen required.' : 'Yunan Adaları geçişlerinde Schengen, Yeşil Pasaport veya 7 Günlük Kapıda Vize geçerlidir.'}</span>
+                            <button type="button" onclick="openVisaChecklistModal('${escapeHtml(ticket.destination || 'Yunan Adaları').replace(/'/g, "\\'")}')" class="px-2.5 py-0.5 rounded-lg bg-sky-700 hover:bg-sky-900 text-white text-[10.5px] font-black transition cursor-pointer inline-flex items-center gap-1 shrink-0">
+                                <span>📋 ${isEn ? 'Gate Visa Checklist' : 'Kapıda Vize Evrak Listesi'}</span>
+                            </button>
+                        </div>
+                    ` : '')}
                     ${ticket.green_card_notice ? `
                         <div class="mt-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 text-[11px] font-bold flex items-start gap-2">
                             <i class="fa-solid fa-id-card-clip text-amber-600 mt-0.5 shrink-0"></i>
@@ -6672,11 +6737,14 @@ function generateTicketCardsHtml(tickets, searchReq) {
 ).join("");
 }
 
-// Hızlı Uçuş Sıralama ve Filtreleme Sistemi (En Ucuz | En İyi F/P | En Hızlı | En Erken Kalkış | En Geç Kalkış + Sadece Direkt + Sabah / Öğle / Akşam)
+// Hızlı Uçuş Sıralama ve Filtreleme Sistemi (En Ucuz | En İyi F/P | En Hızlı | En Erken Kalkış | En Geç Kalkış + Sadece Direkt + Bagaj Dahil + 2+1 + Sabah / Öğle / Akşam)
 window.currentFlightSort = 'cheapest';
 window.currentFlightTimeFilter = 'all';
 window.currentFlightAirportFilter = 'all';
 window.currentFlightDirectOnly = false;
+window.currentFlightBaggageOnly = false;
+window.currentBus2Plus1Only = false;
+window.currentBusTerminalFilter = 'all';
 
 function setFlightSort(sortKey) {
     window.currentFlightSort = sortKey;
@@ -6698,6 +6766,71 @@ function toggleFlightDirectOnly() {
     applyFlightSortAndFilter();
 }
 
+function isFlightTicketBaggageIncluded(t) {
+    if (!t) return false;
+    if (t.baggage_included === true) return true;
+    const bagStr = String(t.baggage || '').toLowerCase();
+    if (bagStr.includes('kg') && !bagStr.includes('sadece kabin')) return true;
+    const c = String(t.carrier || '').toUpperCase();
+    const code = String(t.carrier_code || '').toUpperCase();
+    if (['TK', 'VF', 'LH', 'LX', 'BA', 'AF', 'KL', 'QR', 'EK', 'A3', 'J2'].includes(code)) return true;
+    return (
+        c.includes('THY') ||
+        c.includes('TÜRK') ||
+        c.includes('TURKISH') ||
+        c.includes('AJET') ||
+        c.includes('ANADOLU') ||
+        c.includes('LUFTHANSA') ||
+        c.includes('SWISS') ||
+        c.includes('BRITISH') ||
+        c.includes('AIR FRANCE') ||
+        c.includes('KLM') ||
+        c.includes('QATAR') ||
+        c.includes('EMIRATES') ||
+        c.includes('AEGEAN') ||
+        c.includes('AZAL') ||
+        c.includes('AZERBAIJAN')
+    );
+}
+window.isFlightTicketBaggageIncluded = isFlightTicketBaggageIncluded;
+
+function toggleFlightBaggageOnly() {
+    window.currentFlightBaggageOnly = !window.currentFlightBaggageOnly;
+    applyFlightSortAndFilter();
+}
+window.toggleFlightBaggageOnly = toggleFlightBaggageOnly;
+
+function toggleBus2Plus1Only() {
+    window.currentBus2Plus1Only = !window.currentBus2Plus1Only;
+    applyFlightSortAndFilter();
+}
+window.toggleBus2Plus1Only = toggleBus2Plus1Only;
+
+function setBusTerminalFilter(termKey) {
+    window.currentBusTerminalFilter = termKey || 'all';
+    applyFlightSortAndFilter();
+}
+window.setBusTerminalFilter = setBusTerminalFilter;
+
+function highlightFlexibleDateStrip() {
+    const strip = document.getElementById('flexDateMatrixStrip');
+    if (strip) {
+        strip.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        strip.classList.add('ring-4', 'ring-amber-400', 'bg-amber-50/40');
+        setTimeout(() => {
+            strip.classList.remove('ring-4', 'ring-amber-400', 'bg-amber-50/40');
+        }, 1800);
+        return true;
+    }
+    const depInput = document.getElementById('transDepDate');
+    if (depInput) {
+        depInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        depInput.focus();
+    }
+    return false;
+}
+window.highlightFlexibleDateStrip = highlightFlexibleDateStrip;
+
 function sortFlightTickets(criterion) {
     if (['cheapest', 'best', 'fastest', 'earliest', 'latest'].includes(criterion)) {
         setFlightSort(criterion);
@@ -6716,6 +6849,39 @@ function applyFlightSortAndFilter() {
             if (t.is_direct === false) return false;
             const st = String(t.stops_text || t.badge || '').toLowerCase();
             if (st.includes('aktarma') && !st.includes('aktarmasız')) return false;
+            return true;
+        });
+    }
+
+    // 0-B. Sadece Bagaj Dahil (15kg+ Uçak Altı Bagaj) Filtresi (#12 Flight Product)
+    if (window.currentFlightBaggageOnly) {
+        list = list.filter(t => isFlightTicketBaggageIncluded(t));
+    }
+
+    // 0-C. Otobüs Sadece 2+1 Rahat Koltuk Filtresi (#13 Ground Mobility)
+    if (window.currentBus2Plus1Only) {
+        list = list.filter(t => {
+            const seatInfo = `${t.flight_number || ''} ${t.seat_layout || ''} ${(t.features || []).join(' ')}`.toLowerCase();
+            if (seatInfo.includes('2+2')) return false;
+            return true;
+        });
+    }
+
+    // 0-D. Otobüs Otogar / Yaka Filtresi (Avrupa Yakası vs Anadolu Yakası) (#13 Ground Mobility)
+    if (window.currentBusTerminalFilter === 'europe') {
+        list = list.filter(t => {
+            const txt = `${t.origin || ''} ${t.destination || ''} ${t.terminal || ''}`.toLowerCase();
+            if ((txt.includes('dudullu') || txt.includes('harem')) && !txt.includes('esenler') && !txt.includes('alibeyköy') && !txt.includes('istanbul')) {
+                return false;
+            }
+            return true;
+        });
+    } else if (window.currentBusTerminalFilter === 'asia') {
+        list = list.filter(t => {
+            const txt = `${t.origin || ''} ${t.destination || ''} ${t.terminal || ''}`.toLowerCase();
+            if ((txt.includes('esenler') || txt.includes('alibeyköy')) && !txt.includes('dudullu') && !txt.includes('harem') && !txt.includes('istanbul')) {
+                return false;
+            }
             return true;
         });
     }
@@ -6837,12 +7003,31 @@ function applyFlightSortAndFilter() {
         activeSortBtn.className = "flt-sort-btn px-2.5 py-1 rounded-lg text-[11px] font-black bg-slate-900 text-white shadow-xs transition cursor-pointer";
     }
 
-    // 3-B. Sadece Direkt Buton Stilini Güncelle
+    // 3-B. Sadece Direkt, Bagaj Dahil & 2+1 Buton Stillerini Güncelle
     const directBtn = document.getElementById("fltDirectOnlyBtn");
     if (directBtn) {
         directBtn.className = window.currentFlightDirectOnly
             ? "px-2.5 py-1 rounded-lg text-[11px] font-black text-white bg-emerald-700 border border-emerald-800 shadow-xs transition cursor-pointer inline-flex items-center gap-1"
             : "px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer inline-flex items-center gap-1";
+    }
+    const bagBtn = document.getElementById("fltBaggageOnlyBtn");
+    if (bagBtn) {
+        bagBtn.className = window.currentFlightBaggageOnly
+            ? "px-2.5 py-1 rounded-lg text-[11px] font-black text-white bg-sky-700 border border-sky-800 shadow-xs transition cursor-pointer inline-flex items-center gap-1"
+            : "px-2.5 py-1 rounded-lg text-[11px] font-bold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition cursor-pointer inline-flex items-center gap-1";
+    }
+    const bus21Btn = document.getElementById("fltBus2Plus1Btn");
+    if (bus21Btn) {
+        bus21Btn.className = window.currentBus2Plus1Only
+            ? "px-2.5 py-1 rounded-lg text-[11px] font-black text-white bg-emerald-700 border border-emerald-800 shadow-xs transition cursor-pointer inline-flex items-center gap-1"
+            : "px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer inline-flex items-center gap-1";
+    }
+    document.querySelectorAll(".flt-busterm-btn").forEach(b => {
+        b.className = "flt-busterm-btn px-2.5 py-0.5 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer";
+    });
+    const activeBusTermBtn = document.getElementById(`fltBusTerm-${window.currentBusTerminalFilter}`);
+    if (activeBusTermBtn) {
+        activeBusTermBtn.className = "flt-busterm-btn px-2.5 py-0.5 rounded-lg text-[11px] font-black bg-slate-900 text-white shadow-2xs transition cursor-pointer";
     }
 
     // 4. Zaman Filtre Buton Stillerini Güncelle
@@ -10105,4 +10290,193 @@ function clearRecentTransportSearches() {
     renderRecentSearchesPane();
 }
 window.clearRecentTransportSearches = clearRecentTransportSearches;
+
+// ==================== GRUP B: SEKME ÜZERİ FİYAT İPUÇLARI, YHT GAR KALKANI & KAPIDA VİZE EVRAK ÇEKMECESİ (#11, #12, #13, #24, #27) ====================
+
+function updateTransportModeTabPriceHints(data, searchReq) {
+    if (!searchReq) return;
+    const isEn = window.currentAppLang === 'en';
+    const fmt = (n) => Number(n).toLocaleString(isEn ? 'en-US' : 'tr-TR');
+    const currMode = searchReq.transport_type || 'flight';
+    const tickets = Array.isArray(data && data.tickets) ? data.tickets : [];
+    const altBadges = Array.isArray(data && data.alternative_badges) ? data.alternative_badges : [];
+    const combo = `${searchReq.origin || ''} ${searchReq.destination || ''}`.toLowerCase();
+
+    const hints = { flight: null, bus: null, train: null, ferry: null, car: null };
+
+    // 1. Aktif aranan modun gerçek en düşük fiyatı
+    const validPrices = tickets
+        .map(t => Number(t && t.price))
+        .filter(p => !isNaN(p) && p > 0);
+    if (validPrices.length > 0 && hints.hasOwnProperty(currMode)) {
+        hints[currMode] = Math.min(...validPrices);
+    } else if (currMode === 'car' && data && data.car_rental && Array.isArray(data.car_rental.vehicles)) {
+        const carPrices = data.car_rental.vehicles
+            .map(v => Number(v.daily_price || v.total_price))
+            .filter(p => !isNaN(p) && p > 0);
+        if (carPrices.length > 0) hints.car = Math.min(...carPrices);
+    }
+
+    // 2. Backend'den gelen alternatif ulaşım rozetleri (alternative_badges)
+    altBadges.forEach(b => {
+        if (b && b.mode && b.min_price && Number(b.min_price) > 0 && !hints[b.mode]) {
+            hints[b.mode] = Number(b.min_price);
+        }
+    });
+
+    // 3. Rota koridoruna göre akıllı taban fiyat ipucu tamamlaması
+    const isRailCorridor = ['istanbul', 'ankara', 'eskişehir', 'eskisehir', 'konya', 'sivas', 'karaman', 'izmit', 'kocaeli', 'sakarya', 'arifiye', 'bilecik', 'polatlı', 'kars', 'erzurum', 'erzincan', 'izmir', 'uşak', 'usak', 'denizli', 'aydın', 'adana', 'mersin'].filter(k => combo.includes(k)).length >= 2;
+    const isFerryCorridor = ['bursa', 'yalova', 'bandırma', 'bandirma', 'çanakkale', 'canakkale', 'bozcaada', 'gökçeada', 'sakız', 'sakiz', 'chios', 'kos', 'rodos', 'rhodes', 'midilli', 'lesvos', 'samos', 'meis', 'girne', 'kıbrıs', 'kibris', 'taşucu', 'tasucu', 'çeşme', 'cesme', 'bodrum', 'marmaris', 'fethiye', 'kuşadası', 'kusadasi', 'ayvalık', 'ayvalik'].some(k => combo.includes(k));
+
+    if (!hints.flight) hints.flight = 1450;
+    if (!hints.bus) hints.bus = 650;
+    if (!hints.train && isRailCorridor) hints.train = 540;
+    if (!hints.ferry && isFerryCorridor) hints.ferry = 950;
+    if (!hints.car) hints.car = 1250;
+
+    ['flight', 'bus', 'train', 'ferry', 'car'].forEach(mode => {
+        const el = document.getElementById(`tabPriceHint-${mode}`);
+        if (!el) return;
+        const val = hints[mode];
+        if (val && val > 0) {
+            const prefix = (mode === currMode && validPrices.length > 0) ? '' : '~';
+            el.textContent = `${prefix}${fmt(Math.round(val))}₺`;
+            el.classList.remove('hidden');
+        } else {
+            el.textContent = '';
+            el.classList.add('hidden');
+        }
+    });
+}
+window.updateTransportModeTabPriceHints = updateTransportModeTabPriceHints;
+
+function buildTrainStationAndQuotaHelperHtml(searchReq, isEn = false) {
+    if (!searchReq) return '';
+    const orig = String(searchReq.origin || '');
+    const dest = String(searchReq.destination || '');
+    const combo = `${orig} ${dest}`.toLowerCase();
+
+    const stationTips = [];
+    if (combo.includes('istanbul') || combo.includes('söğütlüçeşme') || combo.includes('halkalı') || combo.includes('pendik')) {
+        stationTips.push(isEn
+            ? '<strong>Istanbul YHT Stations:</strong> Söğütlüçeşme • Bostancı • Pendik (Asian Side) & Bakırköy • Halkalı (European Side)'
+            : '<strong>İstanbul YHT Garları:</strong> Söğütlüçeşme • Bostancı • Pendik (Anadolu) & Bakırköy • Halkalı (Avrupa)');
+    }
+    if (combo.includes('ankara') || combo.includes('eryaman')) {
+        stationTips.push(isEn
+            ? '<strong>Ankara Stations:</strong> Ankara YHT Gar (Central) • Eryaman YHT (West Corridor)'
+            : '<strong>Ankara Garları:</strong> Ankara YHT Gar (Merkez) • Eryaman YHT (Batı Çıkışı)');
+    }
+    if (combo.includes('konya') || combo.includes('selçuklu')) {
+        stationTips.push(isEn
+            ? '<strong>Konya Stations:</strong> Konya Gar (Meram) • Selçuklu YHT (Campus/Hotels)'
+            : '<strong>Konya Garları:</strong> Konya Gar (Merkez) • Selçuklu YHT (Oteller/Kampüs)');
+    }
+
+    const safeOrigAttr = escapeHtml(orig).replace(/'/g, "\\'");
+    const safeDestAttr = escapeHtml(dest).replace(/'/g, "\\'");
+
+    return `
+        <div class="bg-indigo-50/90 border border-indigo-200 rounded-2xl px-3.5 py-2.5 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+            <div class="space-y-1">
+                <div class="font-extrabold text-indigo-950 flex flex-wrap items-center gap-1.5">
+                    <span class="px-2 py-0.5 rounded bg-indigo-700 text-white text-[10px] font-black uppercase">🚄 ${isEn ? 'YHT QUOTA & ALTERNATIVE STATIONS' : 'YHT KONTENJAN & ALTERNATİF GAR REHBERİ'}</span>
+                    <span>${isEn
+                        ? 'TCDD e-Bilet opens 15–20 days prior. If your main station is full, check intermediate YHT stations on the same train!'
+                        : 'TCDD biletleri seferden 15-20 gün önce açılır. Ana garda yer kalmadığında aynı trendeki ara YHT garlarından koltuk bulabilirsiniz!'}</span>
+                </div>
+                ${stationTips.length > 0 ? `<div class="text-[11px] font-medium text-indigo-900/90">${stationTips.join(' • ')}</div>` : ''}
+            </div>
+            <button type="button" onclick="switchToRawGroundRoute('bus', '${safeOrigAttr}', '${safeDestAttr}')"
+                class="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-[11px] whitespace-nowrap transition cursor-pointer shrink-0 inline-flex items-center gap-1.5 shadow-2xs">
+                <span>🚌 ${isEn ? 'Check 2+1 Bus Alternative →' : '2+1 Otobüs Alternatifini Gör →'}</span>
+            </button>
+        </div>
+    `;
+}
+window.buildTrainStationAndQuotaHelperHtml = buildTrainStationAndQuotaHelperHtml;
+
+function openVisaChecklistModal(destName = 'Yunan Adaları & Yurt Dışı') {
+    const isEn = window.currentAppLang === 'en';
+    let modal = document.getElementById('visaChecklistModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'visaChecklistModal';
+        modal.className = 'fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xs';
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeVisaChecklistModal();
+        });
+        document.body.appendChild(modal);
+    }
+
+    const cleanDest = escapeHtml(destName || (isEn ? 'Greek Islands & International' : 'Yunan Adaları & Yurt Dışı'));
+    const checklistItems = isEn ? [
+        'Passport valid for at least 6 months (no TRNC stamp for Greece)',
+        '2 biometric photos (3.5 x 4.5 cm, white background)',
+        'Confirmed Round-Trip Ferry / Flight Ticket & Hotel Reservation',
+        'Last 3 months stamped/signed Bank Account Statement with sufficient balance',
+        '€30,000 Coverage International Travel Health Insurance',
+        'Completed Gate Visa Application Form & €80 Visa Fee (Submit 5–7 business days prior)'
+    ] : [
+        'En az 6 ay geçerli Bordo Pasaport (Yunanistan için pasaportta KKTC damgası bulunmamalıdır)',
+        '2 adet güncel biyometrik fotoğraf (3.5 x 4.5 cm, beyaz fon)',
+        'Onaylı Gidiş-Dönüş Feribot / Uçak Bileti ve Otel Rezervasyonu (Günübirlikte otel şartı yoktur)',
+        'Son 3 aylık kaşeli/imzalı veya barkodlu Banka Hesap Dökümü (bakiyeli)',
+        '30.000 € teminatlı Yurtdışı Seyahat Sağlık Sigortası poliçesi',
+        'Kapıda Vize Başvuru Formu & ~80 € Vize Harcı (Seferden en az 5-7 iş günü önce acenteye teslim)'
+    ];
+
+    modal.innerHTML = `
+        <div class="relative w-full max-w-lg bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <button type="button" onclick="closeVisaChecklistModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-100 text-sky-900 text-[10.5px] font-black uppercase tracking-wider mb-2">
+                <span>🇬🇷 🛂 ${isEn ? '2026 OFFICIAL GATE VISA & INSURANCE GUIDE' : '2026 RESMİ KAPIDA VİZE & SİGORTA REHBERİ'}</span>
+            </div>
+            <h3 class="text-lg font-black text-slate-900">
+                ${cleanDest} — ${isEn ? 'Required Documents Checklist' : 'Evrak Kontrol Listesi & Kurallar'}
+            </h3>
+            <p class="text-xs text-slate-600 font-medium mt-1 mb-4">
+                ${isEn
+                    ? 'Tick off your documents below before travelling. Green Passport & valid Schengen holders do not need a Gate Visa.'
+                    : 'Seyahatiniz öncesinde hazır olan evraklarınızı aşağıdan işaretleyerek kontrol edebilirsiniz. Yeşil Pasaport ve geçerli Schengen vizesi sahipleri kapıda vizeden muaftır.'}
+            </p>
+
+            <div class="space-y-2 mb-4">
+                ${checklistItems.map((item, idx) => `
+                    <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50 hover:bg-sky-50/60 border border-slate-200 cursor-pointer transition text-xs font-semibold text-slate-800">
+                        <input type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-sky-700 shrink-0" ${idx === 0 ? 'checked' : ''}>
+                        <span>${item}</span>
+                    </label>
+                `).join('')}
+            </div>
+
+            <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-950 space-y-1.5 mb-4">
+                <div>🛡️ <strong>${isEn ? 'Green Passport & Schengen Holders:' : 'Yeşil Pasaport & Schengen Sahipleri:'}</strong> ${isEn ? 'Direct visa-free boarding; only a 6+ month passport and Travel Health Insurance are required.' : 'Doğrudan geçiş yapabilirler; sadece en az 6 ay geçerli pasaport ve Seyahat Sağlık Sigortası bulundurulmalıdır.'}</div>
+                <div>🚗 <strong>${isEn ? 'Travelling with a Vehicle:' : 'Araçla Geçiş Kuralları:'}</strong> ${isEn ? 'Requires Green Card (International Motor Insurance), new-type Driving License, and notarized power of attorney if the car is not in your name.' : 'Uluslararası Yeşil Kart (Green Card) motorlu taşıt sigortası, yeni tip çipli ehliyet ve araç başkasının/şirket üzerineyse vekaletname zorunludur.'}</div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2">
+                <button type="button" onclick="closeVisaChecklistModal()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition cursor-pointer">
+                    ${isEn ? 'Got It, Close' : 'Anladım, Kapat'}
+                </button>
+            </div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+window.openVisaChecklistModal = openVisaChecklistModal;
+
+function closeVisaChecklistModal() {
+    const modal = document.getElementById('visaChecklistModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+window.closeVisaChecklistModal = closeVisaChecklistModal;
+
 

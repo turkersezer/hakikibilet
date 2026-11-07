@@ -94,6 +94,22 @@
             background: #F8FAFC;
             color: #0F172A;
         }
+        .tab-price-hint {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 6px;
+            border-radius: 9999px;
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FDE68A;
+            line-height: 1.3;
+            white-space: nowrap;
+        }
+        .tab-btn.active .tab-price-hint {
+            background: rgba(251, 191, 36, 0.2);
+            color: #FCD34D;
+            border-color: rgba(251, 191, 36, 0.4);
+        }
 
         /* 4 Ana Bölüm (Pillar) Butonları */
         .pillar-btn {
@@ -632,18 +648,23 @@
                 <div class="flex flex-wrap items-center gap-1.5">
                     <button type="button" onclick="switchUnifiedTab('flight')" id="tabBtn-flight" class="tab-btn active">
                         <span data-i18n="tabFlight">✈️ Uçak</span>
+                        <span id="tabPriceHint-flight" class="tab-price-hint hidden"></span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('bus')" id="tabBtn-bus" class="tab-btn">
                         <span data-i18n="tabBus">🚌 Otobüs</span>
+                        <span id="tabPriceHint-bus" class="tab-price-hint hidden"></span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('train')" id="tabBtn-train" class="tab-btn">
                         <span data-i18n="tabTrain">🚆 Tren</span>
+                        <span id="tabPriceHint-train" class="tab-price-hint hidden"></span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('ferry')" id="tabBtn-ferry" class="tab-btn">
                         <span data-i18n="tabFerry">⛴️ Feribot</span>
+                        <span id="tabPriceHint-ferry" class="tab-price-hint hidden"></span>
                     </button>
                     <button type="button" onclick="switchUnifiedTab('car')" id="tabBtn-car" class="tab-btn">
                         <span data-i18n="pillCar">🚗 Araç & Transfer</span>
+                        <span id="tabPriceHint-car" class="tab-price-hint hidden"></span>
                     </button>
                 </div>
             </div>
@@ -2812,7 +2833,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261107_v48"></script>
+    <script src="/static/js/app_v3.js?v=20261107_v49"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">
