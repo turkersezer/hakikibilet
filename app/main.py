@@ -495,6 +495,52 @@ def _build_safe_fallback_search_payload(
     }
 
 
+# ==================== #18 VP ENGINEERING & #21 SRE: 5 DAKİKALIK SICAK ÖNBELLEK (WARM CACHE) ====================
+_SEARCH_WARM_CACHE: dict[str, tuple[float, dict]] = {}
+_SEARCH_WARM_CACHE_TTL_SEC = 300.0
+_SEARCH_WARM_CACHE_MAX_SIZE = 256
+
+
+def _build_search_warm_cache_key(req: SearchRequest, adults: int, children: int, infants: int, total_pax: int) -> str:
+    parts = [
+        str(req.transport_type or "flight").strip().lower(),
+        str(req.origin or "").strip().lower(),
+        str(req.destination or "").strip().lower(),
+        str(getattr(req, "raw_origin", "") or "").strip().lower(),
+        str(getattr(req, "raw_destination", "") or "").strip().lower(),
+        str(req.departure_date or "").strip(),
+        str(req.return_date or "").strip(),
+        str(req.trip_type or "one_way").strip().lower(),
+        str(req.cabin_class or "economy").strip().lower(),
+        str(getattr(req, "ferry_vehicle_type", "passenger") or "passenger").strip().lower(),
+        str(getattr(req, "currency", "TRY") or "TRY").strip().upper(),
+        f"{adults}-{children}-{infants}-{total_pax}",
+    ]
+    return "|".join(parts)
+
+
+def _get_search_warm_cache(key: str) -> dict | None:
+    entry = _SEARCH_WARM_CACHE.get(key)
+    if not entry:
+        return None
+    ts, payload = entry
+    if time.time() - ts > _SEARCH_WARM_CACHE_TTL_SEC:
+        _SEARCH_WARM_CACHE.pop(key, None)
+        return None
+    cached_copy = dict(payload)
+    cached_copy["cache_hit"] = True
+    return cached_copy
+
+
+def _set_search_warm_cache(key: str, payload: dict) -> None:
+    if not isinstance(payload, dict):
+        return
+    if len(_SEARCH_WARM_CACHE) >= _SEARCH_WARM_CACHE_MAX_SIZE:
+        oldest_key = min(_SEARCH_WARM_CACHE.keys(), key=lambda k: _SEARCH_WARM_CACHE[k][0])
+        _SEARCH_WARM_CACHE.pop(oldest_key, None)
+    _SEARCH_WARM_CACHE[key] = (time.time(), dict(payload))
+
+
 @app.post("/api/search")
 async def search_tickets(req: SearchRequest, request: Request):
     """
@@ -517,7 +563,14 @@ async def search_tickets(req: SearchRequest, request: Request):
             "🛡️ Güvenlik Kalkanı: Otomatik bot/kazıyıcı veya aşırı istek tespit edildi. Doğrudan resmi acente bağlantıları hazırlandı."
         )
         safe_payload["rate_limited"] = True
+        safe_payload["blocked_bot"] = bool(is_bot)
         return JSONResponse(status_code=429, content=safe_payload)
+
+    # KATMAN 1.5: 5 Dakikalık Sıcak Önbellek (Warm Cache) — Tekrarlanan Aramada 0.01s Anlık Yanıt
+    cache_key = _build_search_warm_cache_key(req, adults, children, infants, total_pax)
+    cached_result = _get_search_warm_cache(cache_key)
+    if cached_result is not None:
+        return JSONResponse(content=cached_result, headers={"X-Hakiki-Cache": "HIT"})
 
     # KATMAN 2: Kırılmaz "Yumuşak Hız Sınırı" (Dakikada 30 Canlı Arama Üzerinde 200 OK + Resmi Derin Linkler)
     if not _check_rate_limit(client_ip, "search_live_scrape", max_requests=30, window_sec=60):
@@ -551,14 +604,19 @@ async def search_tickets(req: SearchRequest, request: Request):
             include_hotel=getattr(req, "include_hotel", False),
             hotel_nights=getattr(req, "hotel_nights", None)
         )
+        from fastapi.encoders import jsonable_encoder
+        encoded_result = jsonable_encoder(result)
+        if isinstance(encoded_result, dict) and (encoded_result.get("tickets") or encoded_result.get("car_rental") or encoded_result.get("smart_hub_analysis")):
+            encoded_result["cache_hit"] = False
+            _set_search_warm_cache(cache_key, encoded_result)
         try:
             from app.services.analytics_service import AnalyticsService
-            res_count = int(result.get("results_count") or len(result.get("tickets") or []))
+            res_count = int(encoded_result.get("results_count") or len(encoded_result.get("tickets") or []))
             asyncio.create_task(AnalyticsService.log_event(
                 event_type="search",
                 transport_type=req.transport_type or "flight",
-                origin=str(result.get("origin") or req.origin),
-                destination=str(result.get("destination") or req.destination),
+                origin=str(encoded_result.get("origin") or req.origin),
+                destination=str(encoded_result.get("destination") or req.destination),
                 results_count=res_count,
                 ip=client_ip,
                 user_agent=ua,
@@ -566,7 +624,7 @@ async def search_tickets(req: SearchRequest, request: Request):
             ))
         except Exception:
             pass
-        return result
+        return JSONResponse(content=encoded_result, headers={"X-Hakiki-Cache": "MISS"})
     except Exception as exc:
         print(f"[/api/search Hata Kalkanı Devrede]: {exc}")
         try:

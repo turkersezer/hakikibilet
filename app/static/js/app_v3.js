@@ -4132,6 +4132,16 @@ async function executeTransportSearch(e) {
             window.recordTransportFunnelStage('search', payload.transport_type, 1);
         }
 
+        const cachedClientData = (typeof window.getClientWarmCache === 'function') ? window.getClientWarmCache(payload) : null;
+        if (cachedClientData) {
+            clearInterval(progressInterval);
+            if (cachedClientData.travel_context) {
+                window.HakikiTravelContext = cachedClientData.travel_context;
+            }
+            renderTransportResults(cachedClientData, payload);
+            return;
+        }
+
         const res = await fetch("/api/search", {
             method: "POST",
             headers: {
@@ -4153,6 +4163,9 @@ async function executeTransportSearch(e) {
         if (finalPct) finalPct.textContent = "%100";
         if (data.travel_context) {
             window.HakikiTravelContext = data.travel_context;
+        }
+        if (typeof window.setClientWarmCache === 'function' && res.status === 200) {
+            window.setClientWarmCache(payload, data);
         }
         renderTransportResults(data, payload);
     } catch (err) {
@@ -4207,6 +4220,9 @@ function renderTransportResults(data, searchReq) {
     let html = '';
 
     const isEn = window.currentAppLang === 'en';
+    if (typeof window.injectDynamicSearchSeoAndJsonLd === 'function') {
+        window.injectDynamicSearchSeoAndJsonLd(data, searchReq, isEn);
+    }
     const modeType = searchReq.transport_type || 'flight';
     // Ulaşım Bilgi ve Kriter Özeti Çubuğu
     const adultWord = isEn ? ((searchReq.adults || 1) > 1 ? "Adults" : "Adult") : "Yetişkin";
@@ -5108,9 +5124,15 @@ function renderTransportResults(data, searchReq) {
                 </div>
             `;
         } else {
+            if (typeof window.buildRoundTripMixAndMatchBannerHtml === 'function') {
+                html += window.buildRoundTripMixAndMatchBannerHtml(data, searchReq, isEn);
+            }
             html += `<div id="ticketCardsContainer" class="space-y-2.5 mb-5">`;
             html += generateTicketCardsHtml(tickets, searchReq);
             html += `</div>`;
+            if (typeof window.buildContextualAdTechNativeSlotHtml === 'function') {
+                html += window.buildContextualAdTechNativeSlotHtml(data, searchReq, isEn);
+            }
             if (modeType === 'flight') {
                 const isEnAir = (window.currentAppLang === 'en');
                 const airhelpUrl = 'https://tp.media/r?campaign_id=120&marker=789884&p=9139&trs=585474&u=https%3A%2F%2Fwww.airhelp.com%2F';
@@ -10879,6 +10901,198 @@ function buildDestinationEventAndGuideBannerHtml(data, searchReq, isEn = false) 
     return out;
 }
 window.buildDestinationEventAndGuideBannerHtml = buildDestinationEventAndGuideBannerHtml;
+
+// ==================== GRUP D: WARM CACHE (#18, #21), SEO & JSON-LD (#31), MIX & MATCH (#5) VE CONTEXTUAL ADTECH (#29) ====================
+
+window._hakikiSearchWarmCache = window._hakikiSearchWarmCache || {};
+const CLIENT_WARM_CACHE_TTL_MS = 5 * 60 * 1000;
+
+function _buildClientWarmCacheKey(payload) {
+    if (!payload) return '';
+    return [
+        String(payload.transport_type || 'flight').toLowerCase(),
+        String(payload.origin || '').toLowerCase(),
+        String(payload.destination || '').toLowerCase(),
+        String(payload.raw_origin || '').toLowerCase(),
+        String(payload.raw_destination || '').toLowerCase(),
+        String(payload.departure_date || ''),
+        String(payload.return_date || ''),
+        String(payload.trip_type || 'one_way'),
+        String(payload.cabin_class || 'economy'),
+        String(payload.ferry_vehicle_type || 'passenger'),
+        String(payload.adults || 1),
+        String(payload.children || 0),
+        String(payload.infants || 0)
+    ].join('|');
+}
+
+function getClientWarmCache(payload) {
+    const key = _buildClientWarmCacheKey(payload);
+    if (!key) return null;
+    const entry = window._hakikiSearchWarmCache[key];
+    if (!entry) return null;
+    if (Date.now() - entry.ts > CLIENT_WARM_CACHE_TTL_MS) {
+        delete window._hakikiSearchWarmCache[key];
+        return null;
+    }
+    try {
+        return JSON.parse(JSON.stringify(entry.data));
+    } catch (e) {
+        return entry.data;
+    }
+}
+window.getClientWarmCache = getClientWarmCache;
+
+function setClientWarmCache(payload, data) {
+    const key = _buildClientWarmCacheKey(payload);
+    if (!key || !data) return;
+    try {
+        window._hakikiSearchWarmCache[key] = {
+            ts: Date.now(),
+            data: JSON.parse(JSON.stringify(data))
+        };
+    } catch (e) {
+        window._hakikiSearchWarmCache[key] = { ts: Date.now(), data };
+    }
+}
+window.setClientWarmCache = setClientWarmCache;
+
+function injectDynamicSearchSeoAndJsonLd(data, searchReq, isEn = false) {
+    if (!searchReq || !searchReq.origin || !searchReq.destination) return;
+    const orig = String(searchReq.origin || '');
+    const dest = String(searchReq.destination || '');
+    const mode = searchReq.transport_type || 'flight';
+    const tickets = Array.isArray(data && data.tickets) ? data.tickets : [];
+    const validPrices = tickets.map(t => Number(t && t.price)).filter(p => !isNaN(p) && p > 0);
+    const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : null;
+    const currSym = (tickets[0] && tickets[0].currency) || '₺';
+
+    const modeNamesTr = { flight: 'Uçak Bileti', bus: 'Otobüs Bileti', train: 'Tren & YHT Bileti', ferry: 'Feribot Bileti', car: 'Araç Kiralama' };
+    const modeNamesEn = { flight: 'Flight Tickets', bus: 'Bus Tickets', train: 'Train Tickets', ferry: 'Ferry Tickets', car: 'Car Rental' };
+    const modeLabel = isEn ? (modeNamesEn[mode] || 'Tickets') : (modeNamesTr[mode] || 'Bileti');
+    const priceSuffix = minPrice
+        ? (isEn ? ` (From ${minPrice.toLocaleString('en-US')} ${currSym})` : ` (${minPrice.toLocaleString('tr-TR')} ${currSym}'den Başlayan Fiyatlar)`)
+        : '';
+
+    document.title = `${orig} ➔ ${dest} ${modeLabel}${priceSuffix} | Hakiki Bilet`;
+
+    const schemaTypeMap = { flight: 'Flight', bus: 'BusTrip', train: 'TrainTrip', ferry: 'BoatTrip', car: 'Product' };
+    const itemType = schemaTypeMap[mode] || 'Trip';
+    const schemaItems = tickets.slice(0, 5).map((t, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        item: {
+            '@type': itemType,
+            name: `${orig} - ${dest} (${t.carrier || 'Resmi Taşıyıcı'})`,
+            provider: { '@type': 'Organization', name: t.carrier || 'Hakiki Bilet Partner' },
+            departureTime: t.departure_time || '09:00',
+            arrivalTime: t.arrival_time || '11:00',
+            offers: {
+                '@type': 'Offer',
+                price: Number(t.price) || 0,
+                priceCurrency: activeCurrency || 'TRY',
+                availability: 'https://schema.org/InStock',
+                url: t.winner_url || t.direct_link || window.location.href
+            }
+        }
+    }));
+
+    const jsonLdObj = {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: `${orig} ➔ ${dest} ${modeLabel}`,
+        numberOfItems: schemaItems.length,
+        itemListElement: schemaItems
+    };
+
+    let scriptEl = document.getElementById('hakikiDynamicSearchJsonLd');
+    if (!scriptEl) {
+        scriptEl = document.createElement('script');
+        scriptEl.type = 'application/ld+json';
+        scriptEl.id = 'hakikiDynamicSearchJsonLd';
+        document.head.appendChild(scriptEl);
+    }
+    scriptEl.textContent = JSON.stringify(jsonLdObj);
+}
+window.injectDynamicSearchSeoAndJsonLd = injectDynamicSearchSeoAndJsonLd;
+
+function buildRoundTripMixAndMatchBannerHtml(data, searchReq, isEn = false) {
+    if (!searchReq || searchReq.trip_type !== 'round_trip') return '';
+    const tickets = Array.isArray(data && data.tickets) ? data.tickets : [];
+    if (tickets.length < 2) return '';
+
+    const sortedByPrice = [...tickets].filter(t => t && Number(t.price) > 0).sort((a, b) => Number(a.price) - Number(b.price));
+    if (sortedByPrice.length < 2) return '';
+    const firstCarrier = sortedByPrice[0].carrier || 'Taşıyıcı A';
+    const altCarrierObj = sortedByPrice.find(t => t.carrier && t.carrier !== firstCarrier) || sortedByPrice[1];
+    const secondCarrier = altCarrierObj.carrier || 'Taşıyıcı B';
+    const bestComboPrice = Number(sortedByPrice[0].price) || 0;
+    const currSym = sortedByPrice[0].currency || '₺';
+
+    return `
+        <div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 text-white rounded-2xl px-4 py-2.5 mb-3 flex flex-wrap items-center justify-between gap-2 text-xs border border-indigo-700/60 shadow-xs">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 text-[10px] font-black uppercase">🔄 ${isEn ? 'MIX & MATCH ROUND-TRIP' : 'AKILLI GİDİŞ-DÖNÜŞ KOMBİNASYONU'}</span>
+                <span class="font-semibold text-slate-200">
+                    ${isEn
+                        ? `Combine <strong>${escapeHtml(firstCarrier)}</strong> outbound + <strong>${escapeHtml(secondCarrier)}</strong> return for flexible schedule & best fare (${bestComboPrice.toLocaleString('en-US')} ${currSym}).`
+                        : `Gidişte <strong>${escapeHtml(firstCarrier)}</strong> + Dönüşte <strong>${escapeHtml(secondCarrier)}</strong> seçerek hem saat esnekliği hem en uygun toplam fiyat (<strong>${bestComboPrice.toLocaleString('tr-TR')} ${currSym}</strong>) avantajı yakalayabilirsiniz.`}
+                </span>
+            </div>
+            <span class="text-[10.5px] font-black text-emerald-300 shrink-0">✓ ${isEn ? 'Zero Extra Combo Fee' : 'Ayrı Biletleme Komisyonu Yok'}</span>
+        </div>
+    `;
+}
+window.buildRoundTripMixAndMatchBannerHtml = buildRoundTripMixAndMatchBannerHtml;
+
+function buildContextualAdTechNativeSlotHtml(data, searchReq, isEn = false) {
+    if (!searchReq) return '';
+    const mode = searchReq.transport_type || 'flight';
+    const destCity = String(searchReq.destination || '').split('(')[0].trim() || 'Varış Şehri';
+    const hotelUrl = typeof buildFlightTripHotelCrossSellUrl === 'function'
+        ? buildFlightTripHotelCrossSellUrl(destCity, searchReq)
+        : 'https://tr.trip.com/hotels/';
+
+    let badge = isEn ? 'SPONSORED PARTNER & LOYALTY CAMPAIGN' : 'SPONSORLU İŞ BİRLİĞİ & KAMPANYA VİTRİNİ';
+    let title = isEn
+        ? `Earn Miles & Get Up to 15% Bundle Discount on ${escapeHtml(destCity)} Hotels`
+        : `${escapeHtml(destCity)} Seyahatinizde Mil Kazanın & Otel Rezervasyonunda %15'e Varan İndirim Yakalayın`;
+    let desc = isEn
+        ? 'Verified Trip.com, Obilet & Enuygun partner offers with zero hidden fees and instant confirmation.'
+        : 'Trip.com, Obilet ve Enuygun resmi iş ortaklığıyla komisyonsuz yönlendirme, taksit ve sadakat puanı avantajı.';
+    let ctaText = isEn ? 'Explore Partner Deals ↗' : 'Kampanyalı Otelleri Gör ↗';
+    let ctaUrl = hotelUrl;
+
+    if (mode === 'bus' || mode === 'train') {
+        title = isEn
+            ? `Zero-Fee Bus & Rail Booking + ${escapeHtml(destCity)} Central Stay Deals`
+            : `${escapeHtml(destCity)} Otobüs & YHT Yolcularına Özel Merkez Otellerde Erken Rezervasyon Fırsatı`;
+    } else if (mode === 'ferry') {
+        title = isEn
+            ? `Greek Islands & Coastal Ferry Travelers: Instant eSIM & Island Stay Discounts`
+            : `Ada & Feribot Yolcularına Özel: Yurt Dışı eSIM (Yesim) ve Ada Konaklama İndirimleri`;
+    }
+
+    return `
+        <div class="mb-5 rounded-2xl border border-dashed border-amber-300 bg-gradient-to-r from-amber-50/80 via-white to-orange-50/60 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+            <div class="space-y-0.5">
+                <div class="inline-flex items-center gap-1.5 text-[9.5px] font-black uppercase tracking-wider text-amber-900 bg-amber-200/70 px-2 py-0.5 rounded">
+                    <i class="fa-solid fa-bullhorn text-amber-700"></i>
+                    <span>${badge}</span>
+                </div>
+                <div class="text-xs sm:text-sm font-black text-slate-900">${title}</div>
+                <div class="text-[11px] font-medium text-slate-600">${desc}</div>
+            </div>
+            <a href="${ctaUrl}" target="_blank" rel="noopener noreferrer"
+               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Trip.com Campaign', '${escapeHtml(mode)}', '${escapeHtml(searchReq.origin || '')}', '${escapeHtml(destCity)}', 0)"
+               class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition inline-flex items-center gap-1.5 shrink-0 shadow-2xs">
+                <span>${ctaText}</span>
+            </a>
+        </div>
+    `;
+}
+window.buildContextualAdTechNativeSlotHtml = buildContextualAdTechNativeSlotHtml;
+
 
 
 
