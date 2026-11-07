@@ -309,9 +309,12 @@
                     <i class="fa-solid fa-bullhorn text-amber-500"></i>
                     <span data-i18n="adSlotBadge">Sponsorlu İş Birliği & Kampanya Alanı</span>
                 </div>
-                <div class="px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 font-black text-xs text-slate-800 shadow-2xs">
-                    ₺ TRY
-                </div>
+                <select onchange="setAppCurrency(this.value)" aria-label="Para Birimi Seçimi" class="hakiki-currency-select px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 font-black text-xs text-slate-800 shadow-2xs cursor-pointer outline-none transition">
+                    <option value="TRY">₺ TRY</option>
+                    <option value="EUR">€ EUR</option>
+                    <option value="USD">$ USD</option>
+                    <option value="GBP">£ GBP</option>
+                </select>
                 <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs font-black shadow-inner">
                     <button type="button" onclick="setAppLanguage('tr')" class="lang-btn-tr px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition font-black ring-1 ring-slate-200 cursor-pointer">🇹🇷 TR</button>
                     <button type="button" onclick="setAppLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition font-bold cursor-pointer">🇬🇧 EN</button>
@@ -556,9 +559,12 @@
                 <aside class="w-full lg:w-[220px] xl:w-[235px] shrink-0 flex flex-col justify-between gap-2.5">
                     <div class="space-y-2.5">
                         <div class="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs flex items-center justify-between gap-2">
-                            <div class="px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 font-black text-xs text-slate-800 shadow-2xs">
-                                ₺ TRY
-                            </div>
+                            <select onchange="setAppCurrency(this.value)" aria-label="Para Birimi Seçimi" class="hakiki-currency-select px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 font-black text-xs text-slate-800 shadow-2xs cursor-pointer outline-none transition">
+                                <option value="TRY">₺ TRY</option>
+                                <option value="EUR">€ EUR</option>
+                                <option value="USD">$ USD</option>
+                                <option value="GBP">£ GBP</option>
+                            </select>
                             <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs font-black shadow-inner">
                                 <button type="button" onclick="setAppLanguage('tr')" id="langBtn-tr" class="lang-btn-tr px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs transition font-black ring-1 ring-slate-200 cursor-pointer">🇹🇷 TR</button>
                                 <button type="button" onclick="setAppLanguage('en')" id="langBtn-en" class="lang-btn-en px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition font-bold cursor-pointer">🇬🇧 EN</button>
@@ -2833,7 +2839,7 @@
             }
         } catch (e) {}
     </script>
-    <script src="/static/js/app_v3.js?v=20261107_v49"></script>
+    <script src="/static/js/app_v3.js?v=20261107_v50"></script>
 
     <!-- ==================== ENTEGRASYON SÜRECİNDE BİLGİLENDİRME MODALI ==================== -->
     <div id="integrationNoticeModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200">

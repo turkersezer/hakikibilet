@@ -4177,6 +4177,9 @@ function renderTransportResults(data, searchReq) {
     } else if (window.lastTransportData) {
         data = Object.assign({}, window.lastTransportData, data);
     }
+    if (typeof window.applyCurrencyToTransportData === 'function') {
+        window.applyCurrencyToTransportData(data, activeCurrency);
+    }
     const isSameRegionShield = Boolean(data.smart_hub_analysis && data.smart_hub_analysis.verdict === 'same_region_ground_only');
     const tickets = isSameRegionShield ? [] : (data.tickets || []);
     window.lastTransportResults = tickets;
@@ -4193,6 +4196,9 @@ function renderTransportResults(data, searchReq) {
     }
     if (typeof window.updateTransportModeTabPriceHints === 'function') {
         window.updateTransportModeTabPriceHints(data, searchReq);
+    }
+    if (typeof window.recordRecentSearchLatestPrice === 'function') {
+        window.recordRecentSearchLatestPrice(searchReq, tickets);
     }
 
     const cinDate = searchReq.departure_date;
@@ -4288,6 +4294,11 @@ function renderTransportResults(data, searchReq) {
     // Uluslararası Vize, Çipli Kimlik & Pasaport Uyumluluk Rehberi (#39 Baş Hukuk Müşaviri & #1 CEO)
     if (typeof getInternationalTravelComplianceHtml === 'function') {
         html += getInternationalTravelComplianceHtml(searchReq, isIntlRoute, isEn);
+    }
+
+    // #14 Hospitality, #15 Events, #26 OTA & #35 Destination Content: Etkinlik Uyarısı & Mevsimsel İklim/Ulaşım Rehberi
+    if (typeof window.buildDestinationEventAndGuideBannerHtml === 'function') {
+        html += window.buildDestinationEventAndGuideBannerHtml(data, searchReq, isEn);
     }
 
     // Adana / Mersin Ortak Bölgesel Havalimanı (Çukurova - COV) Bilgilendirme Bandı
@@ -4454,6 +4465,11 @@ function renderTransportResults(data, searchReq) {
     // #13 Tren & YHT Alternatif Gar & Erken Tükenme Kontenjan Kalkanı
     if (modeType === 'train' && !isIntlRoute && tickets.length > 0 && typeof buildTrainStationAndQuotaHelperHtml === 'function') {
         html += buildTrainStationAndQuotaHelperHtml(searchReq, isEn);
+    }
+
+    // #8 CAIO, #30 Growth & #34 CRM: Yapay Zeka Fiyat Analizi (Şimdi Al / Bekle) & Fiyat Alarmı Çubuğu
+    if (modeType !== 'car' && tickets.length > 0 && typeof window.buildPriceIntelligenceAndAlertBarHtml === 'function') {
+        html += window.buildPriceIntelligenceAndAlertBarHtml(data, searchReq, isEn);
     }
 
     // Filtre & Hızlı Sıralama Çubuğu (Kompakt Tek Satır)
@@ -10202,6 +10218,7 @@ function saveRecentTransportSearch(entry) {
     try {
         const list = getRecentTransportSearches();
         const key = `${entry.mode}|${entry.origin.toLowerCase()}|${entry.destination.toLowerCase()}`;
+        const existing = list.find(item => `${item.mode}|${(item.origin || '').toLowerCase()}|${(item.destination || '').toLowerCase()}` === key);
         const filtered = list.filter(item => `${item.mode}|${(item.origin || '').toLowerCase()}|${(item.destination || '').toLowerCase()}` !== key);
         filtered.unshift({
             mode: entry.mode || 'flight',
@@ -10212,6 +10229,9 @@ function saveRecentTransportSearch(entry) {
             depDate: entry.depDate || '',
             retDate: entry.retDate || '',
             tripType: entry.tripType || 'one_way',
+            lastPrice: entry.lastPrice || (existing ? existing.lastPrice : null) || null,
+            prevPrice: entry.prevPrice || (existing ? existing.prevPrice : null) || null,
+            currencySym: entry.currencySym || (existing ? existing.currencySym : '₺') || '₺',
             ts: Date.now()
         });
         const trimmed = filtered.slice(0, 6);
@@ -10234,14 +10254,24 @@ function renderRecentSearchesPane() {
         return;
     }
     const modeIcons = { flight: '✈️', bus: '🚌', train: '🚆', ferry: '⛴️', car: '🚗' };
-    container.innerHTML = list.map((item, idx) => `
+    const alerts = typeof window.getRoutePriceAlerts === 'function' ? window.getRoutePriceAlerts() : [];
+    container.innerHTML = list.map((item, idx) => {
+        const hasAlert = alerts.some(a => a.mode === item.mode && String(a.origin || '').toLowerCase() === String(item.origin || '').toLowerCase() && String(a.destination || '').toLowerCase() === String(item.destination || '').toLowerCase());
+        const hasDrop = item.lastPrice && item.prevPrice && Number(item.lastPrice) < Number(item.prevPrice);
+        const priceBadge = item.lastPrice
+            ? `<span class="px-1.5 py-0.2 rounded text-[9.5px] font-black ${hasDrop ? 'bg-emerald-100 text-emerald-800' : 'bg-white/80 text-slate-700'}">${hasDrop ? '📉 ' : ''}${Number(item.lastPrice).toLocaleString('tr-TR')}${escapeHtml(item.currencySym || '₺')}</span>`
+            : '';
+        return `
         <button type="button" onclick="applyRecentTransportSearch(${idx})"
             class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-indigo-600 text-slate-800 hover:text-white border border-slate-200 font-bold text-[11px] transition inline-flex items-center gap-1.5 cursor-pointer">
             <span>${modeIcons[item.mode] || '✈️'}</span>
             <span>${escapeHtml(item.origin)} ➔ ${escapeHtml(item.destination)}</span>
             ${item.depDate ? `<span class="text-[9.5px] opacity-75">(${escapeHtml(item.depDate.slice(5))})</span>` : ''}
+            ${priceBadge}
+            ${hasAlert ? `<span title="${isEn ? 'Price Alert Active' : 'Fiyat Alarmı Aktif'}" class="text-[10px]">🔔</span>` : ''}
         </button>
-    `).join('');
+        `;
+    }).join('');
 }
 window.renderRecentSearchesPane = renderRecentSearchesPane;
 
@@ -10478,5 +10508,377 @@ function closeVisaChecklistModal() {
     }
 }
 window.closeVisaChecklistModal = closeVisaChecklistModal;
+
+// ==================== GRUP C: ÇOKLU PARA BİRİMİ (#3 CFO), FİYAT ANALİZİ & ALARM (#8, #30, #34) VE ETKİNLİK/İKLİM/ULAŞIM REHBERİ (#14, #15, #26, #35) ====================
+
+const HAKIKI_FX_RATES_TO_TRY = {
+    TRY: { rateFromTry: 1, symbol: '₺', code: 'TRY' },
+    EUR: { rateFromTry: 1 / 38.5, symbol: '€', code: 'EUR' },
+    USD: { rateFromTry: 1 / 35.5, symbol: '$', code: 'USD' },
+    GBP: { rateFromTry: 1 / 45.0, symbol: '£', code: 'GBP' }
+};
+
+function convertAmountFromTry(amount, origSym, targetCode) {
+    if (amount === null || amount === undefined || isNaN(Number(amount)) || Number(amount) <= 0) return amount;
+    const num = Number(amount);
+    const fx = HAKIKI_FX_RATES_TO_TRY[targetCode] || HAKIKI_FX_RATES_TO_TRY.TRY;
+    const origUp = String(origSym || '₺').toUpperCase();
+    let inTry = num;
+    if (origUp.includes('€') || origUp === 'EUR') inTry = num * 38.5;
+    else if (origUp.includes('$') || origUp === 'USD') inTry = num * 35.5;
+    else if (origUp.includes('£') || origUp === 'GBP') inTry = num * 45.0;
+    const converted = inTry * fx.rateFromTry;
+    return targetCode === 'TRY' ? Math.round(converted) : Math.max(1, Math.round(converted));
+}
+
+function applyCurrencyToTransportData(data, targetCurrCode = 'TRY') {
+    if (!data || typeof data !== 'object') return data;
+    const code = HAKIKI_FX_RATES_TO_TRY[targetCurrCode] ? targetCurrCode : 'TRY';
+    const sym = HAKIKI_FX_RATES_TO_TRY[code].symbol;
+
+    if (Array.isArray(data.tickets)) {
+        data.tickets.forEach(t => {
+            if (!t) return;
+            if (t._orig_price === undefined) {
+                t._orig_price = t.price;
+                t._orig_curr = t.currency || '₺';
+            }
+            if (t._orig_price) {
+                t.price = convertAmountFromTry(t._orig_price, t._orig_curr, code);
+            }
+            t.currency = sym;
+            if (Array.isArray(t.providers)) {
+                t.providers.forEach(p => {
+                    if (!p) return;
+                    if (p._orig_price === undefined) {
+                        p._orig_price = p.price;
+                        p._orig_curr = p.currency || t._orig_curr || '₺';
+                    }
+                    if (p._orig_price) {
+                        p.price = convertAmountFromTry(p._orig_price, p._orig_curr, code);
+                    }
+                    p.currency = sym;
+                });
+            }
+            if (t.discounts && typeof t.discounts === 'object') {
+                if (!t._orig_discounts) t._orig_discounts = Object.assign({}, t.discounts);
+                ['genc_ogrenci', 'yas_65_ustu', 'emekli', 'cocuk_7_12', 'ogretmen', 'original_price'].forEach(k => {
+                    if (t._orig_discounts[k]) {
+                        t.discounts[k] = convertAmountFromTry(t._orig_discounts[k], t._orig_curr, code);
+                    }
+                });
+            }
+        });
+    }
+
+    if (data.flexible_insights && typeof data.flexible_insights === 'object') {
+        const fi = data.flexible_insights;
+        if (Array.isArray(fi.days)) {
+            fi.days.forEach(d => {
+                if (!d) return;
+                if (d._orig_min_price === undefined) {
+                    d._orig_min_price = d.min_price;
+                    d._orig_curr = d.currency || '₺';
+                }
+                if (d._orig_min_price) {
+                    d.min_price = convertAmountFromTry(d._orig_min_price, d._orig_curr, code);
+                }
+                d.currency = sym;
+            });
+        }
+        if (fi.hakiki_tip && typeof fi.hakiki_tip === 'object') {
+            const tip = fi.hakiki_tip;
+            if (tip._orig_best_price === undefined) {
+                tip._orig_best_price = tip.best_price;
+                tip._orig_savings = tip.savings;
+                tip._orig_curr = tip.currency || '₺';
+            }
+            if (tip._orig_best_price) tip.best_price = convertAmountFromTry(tip._orig_best_price, tip._orig_curr, code);
+            if (tip._orig_savings) tip.savings = convertAmountFromTry(tip._orig_savings, tip._orig_curr, code);
+            tip.currency = sym;
+        }
+    }
+
+    if (Array.isArray(data.alternative_badges)) {
+        data.alternative_badges.forEach(b => {
+            if (!b) return;
+            if (b._orig_min_price === undefined) {
+                b._orig_min_price = b.min_price;
+                b._orig_curr = b.currency || '₺';
+            }
+            if (b._orig_min_price) {
+                b.min_price = convertAmountFromTry(b._orig_min_price, b._orig_curr, code);
+            }
+            b.currency = sym;
+        });
+    }
+
+    if (data.car_rental && Array.isArray(data.car_rental.vehicles)) {
+        data.car_rental.vehicles.forEach(v => {
+            if (!v) return;
+            if (v._orig_daily === undefined) {
+                v._orig_daily = v.daily_price;
+                v._orig_total = v.total_price;
+                v._orig_curr = v.currency || '₺';
+            }
+            if (v._orig_daily) v.daily_price = convertAmountFromTry(v._orig_daily, v._orig_curr, code);
+            if (v._orig_total) v.total_price = convertAmountFromTry(v._orig_total, v._orig_curr, code);
+            v.currency = sym;
+        });
+    }
+    return data;
+}
+window.applyCurrencyToTransportData = applyCurrencyToTransportData;
+
+function setAppCurrency(currCode) {
+    const clean = String(currCode || 'TRY').toUpperCase();
+    const valid = HAKIKI_FX_RATES_TO_TRY[clean] ? clean : 'TRY';
+    activeCurrency = valid;
+    if (window.HakikiTravelContext) window.HakikiTravelContext.currency = valid;
+    try {
+        localStorage.setItem('hakiki_currency', valid);
+    } catch (e) {}
+
+    document.querySelectorAll('.hakiki-currency-select').forEach(sel => {
+        if (sel.value !== valid) sel.value = valid;
+    });
+
+    if (window.lastTransportData && window.lastSearchReq && typeof window.renderTransportResults === 'function') {
+        window.renderTransportResults(window.lastTransportData, window.lastSearchReq);
+    }
+    return valid;
+}
+window.setAppCurrency = setAppCurrency;
+
+// Sayfa açılışında kayıtlı para birimini yükle
+try {
+    const savedCurr = localStorage.getItem('hakiki_currency');
+    if (savedCurr && HAKIKI_FX_RATES_TO_TRY[savedCurr]) {
+        activeCurrency = savedCurr;
+        if (window.HakikiTravelContext) window.HakikiTravelContext.currency = savedCurr;
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.hakiki-currency-select').forEach(sel => { sel.value = savedCurr; });
+        });
+    }
+} catch (e) {}
+
+const PRICE_ALERTS_STORAGE_KEY = 'hakiki_price_alerts_v1';
+
+function getRoutePriceAlerts() {
+    try {
+        const raw = localStorage.getItem(PRICE_ALERTS_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        return [];
+    }
+}
+window.getRoutePriceAlerts = getRoutePriceAlerts;
+
+function recordRecentSearchLatestPrice(searchReq, tickets) {
+    if (!searchReq || !Array.isArray(tickets) || tickets.length === 0) return;
+    const validPrices = tickets.map(t => Number(t && t.price)).filter(p => !isNaN(p) && p > 0);
+    if (validPrices.length === 0) return;
+    const minP = Math.min(...validPrices);
+    const currSym = (tickets[0] && tickets[0].currency) || '₺';
+    try {
+        const list = getRecentTransportSearches();
+        if (list.length > 0) {
+            const top = list[0];
+            if (top.lastPrice && top.lastPrice !== minP) {
+                top.prevPrice = top.lastPrice;
+            }
+            top.lastPrice = minP;
+            top.currencySym = currSym;
+            localStorage.setItem(RECENT_SEARCH_STORAGE_KEY, JSON.stringify(list));
+            if (activeQuickDrawerTab === 'recent') renderRecentSearchesPane();
+        }
+    } catch (e) {}
+}
+window.recordRecentSearchLatestPrice = recordRecentSearchLatestPrice;
+
+function toggleRoutePriceAlert() {
+    const req = window.lastSearchReq;
+    if (!req || !req.origin || !req.destination) return false;
+    const tickets = window.lastTransportResults || [];
+    const validPrices = tickets.map(t => Number(t && t.price)).filter(p => !isNaN(p) && p > 0);
+    const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+    const currSym = (tickets[0] && tickets[0].currency) || '₺';
+    const mode = req.transport_type || 'flight';
+    const key = `${mode}|${req.origin.toLowerCase()}|${req.destination.toLowerCase()}`;
+
+    const alerts = getRoutePriceAlerts();
+    const existsIdx = alerts.findIndex(a => `${a.mode}|${String(a.origin || '').toLowerCase()}|${String(a.destination || '').toLowerCase()}` === key);
+    const isEn = window.currentAppLang === 'en';
+    let nowActive = false;
+
+    if (existsIdx >= 0) {
+        alerts.splice(existsIdx, 1);
+        nowActive = false;
+    } else {
+        alerts.unshift({
+            mode,
+            origin: req.origin,
+            destination: req.destination,
+            depDate: req.departure_date || '',
+            baselinePrice: minPrice,
+            currencySym: currSym,
+            createdAt: new Date().toISOString()
+        });
+        nowActive = true;
+    }
+
+    try {
+        localStorage.setItem(PRICE_ALERTS_STORAGE_KEY, JSON.stringify(alerts.slice(0, 15)));
+    } catch (e) {}
+
+    const btn = document.getElementById('priceAlertToggleBtn');
+    if (btn) {
+        btn.className = nowActive
+            ? 'px-3 py-1.5 rounded-xl bg-amber-400 text-slate-950 font-black text-[11px] transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs'
+            : 'px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-[11px] transition cursor-pointer inline-flex items-center gap-1.5 shadow-2xs';
+        btn.innerHTML = nowActive
+            ? `<span>🔔 ${isEn ? 'Price Alert Active ✓' : 'Fiyat Alarmı Aktif ✓'}</span>`
+            : `<span>🔔 ${isEn ? 'Set Price Alert' : 'Bu Rota İçin Fiyat Alarmı Kur'}</span>`;
+    }
+    if (activeQuickDrawerTab === 'recent') renderRecentSearchesPane();
+    return nowActive;
+}
+window.toggleRoutePriceAlert = toggleRoutePriceAlert;
+
+function buildPriceIntelligenceAndAlertBarHtml(data, searchReq, isEn = false) {
+    if (!searchReq) return '';
+    const tickets = Array.isArray(data && data.tickets) ? data.tickets : [];
+    const validPrices = tickets.map(t => Number(t && t.price)).filter(p => !isNaN(p) && p > 0);
+    if (validPrices.length === 0) return '';
+
+    const minPrice = Math.min(...validPrices);
+    const currSym = (tickets[0] && tickets[0].currency) || '₺';
+    const fi = (data && data.flexible_insights) || {};
+    const tip = fi.hakiki_tip || null;
+    const hasCheaperNeighbor = Boolean(tip && tip.has_savings && Number(tip.savings) > 0);
+
+    let verdictBadge = '';
+    let verdictText = '';
+    let toneCls = 'bg-emerald-50/90 border-emerald-200 text-emerald-950';
+
+    if (hasCheaperNeighbor) {
+        verdictBadge = isEn ? '🟠 AI FARE ANALYSIS: WAIT / FLEXIBLE' : '🟠 FİYAT ANALİZİ: KOMŞU GÜN DAHA UCUZ';
+        verdictText = isEn
+            ? `Current lowest fare is <strong>${minPrice.toLocaleString('en-US')} ${currSym}</strong>, but shifting your date saves <strong>${Number(tip.savings).toLocaleString('en-US')} ${currSym}</strong>.`
+            : `Seçili günde en düşük fiyat <strong>${minPrice.toLocaleString('tr-TR')} ${currSym}</strong>; ancak komşu günde <strong>${Number(tip.savings).toLocaleString('tr-TR')} ${currSym} daha ucuz</strong> bilet mevcut.`;
+        toneCls = 'bg-amber-50/90 border-amber-300 text-amber-950';
+    } else {
+        verdictBadge = isEn ? '🟢 AI FARE ANALYSIS: BUY NOW (BEST LEVEL)' : '🟢 FİYAT ANALİZİ: ŞİMDİ AL (EN DİP SEVİYE)';
+        verdictText = isEn
+            ? `Fares start at <strong>${minPrice.toLocaleString('en-US')} ${currSym}</strong> — currently at the lowest level of the 7-day window.`
+            : `Bu rotada biletler <strong>${minPrice.toLocaleString('tr-TR')} ${currSym}</strong> seviyesinden başlıyor — 7 günlük periyodun en avantajlı fiyat aralığındasınız.`;
+        toneCls = 'bg-emerald-50/90 border-emerald-300 text-emerald-950';
+    }
+
+    const mode = searchReq.transport_type || 'flight';
+    const key = `${mode}|${String(searchReq.origin || '').toLowerCase()}|${String(searchReq.destination || '').toLowerCase()}`;
+    const isAlertActive = getRoutePriceAlerts().some(a => `${a.mode}|${String(a.origin || '').toLowerCase()}|${String(a.destination || '').toLowerCase()}` === key);
+
+    return `
+        <div class="${toneCls} border rounded-2xl px-3.5 py-2.5 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs shadow-2xs">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md bg-slate-900 text-amber-400 text-[10px] font-black uppercase tracking-wider">
+                    ${verdictBadge}
+                </span>
+                <span class="font-semibold">${verdictText}</span>
+            </div>
+            <button type="button" id="priceAlertToggleBtn" onclick="toggleRoutePriceAlert()"
+                class="${isAlertActive
+                    ? 'px-3 py-1.5 rounded-xl bg-amber-400 text-slate-950 font-black text-[11px] transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs shrink-0'
+                    : 'px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-[11px] transition cursor-pointer inline-flex items-center gap-1.5 shadow-2xs shrink-0'}">
+                <span>🔔 ${isAlertActive ? (isEn ? 'Price Alert Active ✓' : 'Fiyat Alarmı Aktif ✓') : (isEn ? 'Set Price Alert' : 'Bu Rota İçin Fiyat Alarmı Kur')}</span>
+            </button>
+        </div>
+    `;
+}
+window.buildPriceIntelligenceAndAlertBarHtml = buildPriceIntelligenceAndAlertBarHtml;
+
+function buildDestinationEventAndGuideBannerHtml(data, searchReq, isEn = false) {
+    if (!searchReq || !searchReq.destination) return '';
+    const destRaw = String(searchReq.destination || '');
+    const destCity = destRaw.split('(')[0].replace(/Havalimanı|Otogarı|Garı|İskelesi/gi, '').trim();
+    const destLow = destCity.toLowerCase();
+    const depDate = String(searchReq.departure_date || '');
+    const monthNum = depDate.split('-').length >= 2 ? parseInt(depDate.split('-')[1], 10) : 11;
+
+    // 1. Etkinlik Eşleşmesi (#15 Events & #14 Hospitality)
+    const eventsList = Array.isArray(window.INITIAL_EVENTS) ? window.INITIAL_EVENTS : [];
+    const matchedEvent = eventsList.find(ev => {
+        const loc = `${ev.city || ''} ${ev.location || ''} ${ev.title || ''}`.toLowerCase();
+        return destLow.length >= 3 && loc.includes(destLow.slice(0, 4));
+    });
+
+    // 2. Mevsimsel İklim & Havalimanı/Gar ➔ Şehir Merkezi Ulaşım Rehberi (#26 OTA & #35 Destination Content)
+    const isSummer = [6, 7, 8, 9].includes(monthNum);
+    const isWinter = [12, 1, 2].includes(monthNum);
+    let weatherText = isSummer ? (isEn ? '☀️ 29°C Sunny' : '☀️ ~29°C Güneşli') : (isWinter ? (isEn ? '🌧️ 9°C Cool/Winter' : '🌧️ ~9°C Kış Sezonu') : (isEn ? '🌤️ 18°C Mild' : '🌤️ ~18°C Ilık/Bahar'));
+    let transitText = isEn ? '🚌 Official Airport Shuttle (Havaş) & Public Rail to City Center (~30-40 min)' : '🚌 Havaş / Resmi Havalimanı Otobüsü & Raylı Sistem ile Merkeze (~30-40 dk)';
+
+    if (destLow.includes('antalya') || destLow.includes('alanya')) {
+        weatherText = isSummer ? '☀️ ~33°C Akdeniz Yazı' : (isWinter ? '🌤️ ~16°C Ilık Akdeniz' : '🌤️ ~22°C Güneşli/Ilık');
+        transitText = isEn ? '🚊 Antray Light Rail + Havaş Shuttle to Lara/Kemer/Otogar (~30 min)' : '🚊 Antray Tramvay + Havaş (Lara / Konyaaltı / Otogar ~30 dk)';
+    } else if (destLow.includes('istanbul') || destRaw.includes('IST') || destRaw.includes('SAW')) {
+        weatherText = isSummer ? '☀️ ~28°C Açık' : (isWinter ? '🌧️ ~8°C Serin' : '⛅ ~16°C Parçalı Bulutlu');
+        transitText = destRaw.includes('SAW')
+            ? (isEn ? '🚇 M4 Kadıköy Metro (50 min) & Havabüs Taksim/Kadıköy' : '🚇 M4 Kadıköy Metrosu (50 dk) & Havabüs (Taksim / Kadıköy)')
+            : (isEn ? '🚇 M11 Gayrettepe Metro (30 min) & Havaist 24/7 Coaches' : '🚇 M11 Gayrettepe Metrosu (30 dk) & Havaist 7/24 Ekspres');
+    } else if (destLow.includes('izmir') || destLow.includes('çeşme') || destRaw.includes('ADB')) {
+        weatherText = isSummer ? '☀️ ~31°C Ege Yazı' : '🌤️ ~19°C Ilık Ege Havası';
+        transitText = isEn ? '🚆 İZBAN Suburban Rail (Alsancak 30 min) & Havaş Çeşme/Alaçatı' : '🚆 İZBAN Banliyö (Alsancak 30 dk) & Havaş (Çeşme / Kuşadası)';
+    } else if (destLow.includes('ankara') || destRaw.includes('ESB')) {
+        weatherText = isSummer ? '☀️ ~29°C Açık' : (isWinter ? '❄️ ~3°C Soğuk/Ayaz' : '⛅ ~14°C Serin');
+        transitText = isEn ? '🚌 Ankara Air & EGO 442 Express to Kızılay & AŞTİ (~40 min)' : '🚌 Ankara Air & EGO 442 Ekspres ile Kızılay & AŞTİ (~40 dk)';
+    } else if (destLow.includes('trabzon') || destLow.includes('rize')) {
+        weatherText = '🌦️ ~16°C Karadeniz İklimi';
+        transitText = '🚌 Havaş ile Trabzon Meydan (15 dk) • Rize & Hopa Servisleri';
+    } else if (destLow.includes('kars') || destLow.includes('erzurum')) {
+        weatherText = isSummer ? '🌤️ ~23°C Yayla Havası' : '❄️ ~2°C Karlı Kış Rotası';
+        transitText = '🚌 Havaş / Belediye Otobüsü ile Şehir Merkezi & Tren Garı (~15 dk)';
+    }
+
+    const hotelUrl = typeof buildFlightTripHotelCrossSellUrl === 'function'
+        ? buildFlightTripHotelCrossSellUrl(destCity, searchReq)
+        : 'https://tr.trip.com/hotels/';
+
+    let out = '';
+    if (matchedEvent) {
+        const evTitle = (isEn && matchedEvent.title_en) ? matchedEvent.title_en : (matchedEvent.title || 'Özel Etkinlik');
+        const evDates = (isEn && matchedEvent.dates_en) ? matchedEvent.dates_en : (matchedEvent.dates || '');
+        out += `
+            <div class="bg-gradient-to-r from-rose-50 via-amber-50 to-rose-50 border border-rose-300 text-rose-950 rounded-2xl px-3.5 py-2 mb-2.5 flex flex-wrap items-center justify-between gap-2 text-xs shadow-2xs">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-black uppercase">🎟️ ${isEn ? 'CITY EVENT ALERT' : 'ŞEHİRDE ETKİNLİK VAR'}</span>
+                    <span class="font-bold"><strong>${escapeHtml(destCity)}:</strong> ${escapeHtml(evTitle)} ${evDates ? `(${escapeHtml(evDates)})` : ''} — ${isEn ? 'High hotel demand expected!' : 'Etkinlik döneminde otel dolulukları yüksektir!'}</span>
+                </div>
+                <a href="${hotelUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-rose-700 hover:bg-rose-900 text-white text-[11px] font-black transition inline-flex items-center gap-1 shrink-0">
+                    <span>🏨 ${isEn ? 'Check Hotels Early ↗' : 'Otelleri Erken İncele ↗'}</span>
+                </a>
+            </div>
+        `;
+    }
+
+    out += `
+        <div class="bg-slate-50 border border-slate-200/90 text-slate-700 rounded-2xl px-3.5 py-2 mb-3 flex flex-wrap items-center justify-between gap-2 text-[11.5px] font-semibold">
+            <div class="flex flex-wrap items-center gap-2.5">
+                <span class="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-900 font-black">📍 ${escapeHtml(destCity)} ${isEn ? 'Quick Guide' : 'Varış Rehberi'}:</span>
+                <span class="text-slate-800">${weatherText}</span>
+                <span class="text-slate-300">•</span>
+                <span class="text-slate-700">${transitText}</span>
+            </div>
+            <a href="${hotelUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:text-blue-950 font-black inline-flex items-center gap-1 shrink-0">
+                <span>🏨 ${escapeHtml(destCity)} ${isEn ? 'Hotels ↗' : 'Otelleri ↗'}</span>
+            </a>
+        </div>
+    `;
+    return out;
+}
+window.buildDestinationEventAndGuideBannerHtml = buildDestinationEventAndGuideBannerHtml;
+
 
 
