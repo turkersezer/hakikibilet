@@ -4120,6 +4120,9 @@ async function executeTransportSearch(e) {
                 tripType: isRound ? 'round' : 'one_way'
             });
         }
+        if (typeof window.recordTransportFunnelStage === 'function') {
+            window.recordTransportFunnelStage('search', payload.transport_type, 1);
+        }
 
         const res = await fetch("/api/search", {
             method: "POST",
@@ -4170,6 +4173,16 @@ function renderTransportResults(data, searchReq) {
     const tickets = isSameRegionShield ? [] : (data.tickets || []);
     window.lastTransportResults = tickets;
     window.lastSearchReq = searchReq;
+    const _nowVer = new Date();
+    window.lastSearchVerifiedTimeStr = `${String(_nowVer.getHours()).padStart(2, '0')}:${String(_nowVer.getMinutes()).padStart(2, '0')}`;
+    if (typeof window.recordTransportFunnelStage === 'function') {
+        const impCount = (searchReq.transport_type === 'car' && data.car_rental && Array.isArray(data.car_rental.vehicles))
+            ? data.car_rental.vehicles.length
+            : tickets.length;
+        if (impCount > 0) {
+            window.recordTransportFunnelStage('impression', searchReq.transport_type || 'flight', impCount);
+        }
+    }
 
     const cinDate = searchReq.departure_date;
     const coutDate = searchReq.return_date || getNextDaysDate(cinDate, 2);
@@ -4798,9 +4811,11 @@ function renderTransportResults(data, searchReq) {
                                 <span class="text-[10px] font-black uppercase text-slate-400">Canlı Kiralama Kanalları:</span>
                                 ${(v.providers || []).map(p => {
                                     const pHasPrice = p.daily_price !== null && p.daily_price !== undefined && Number(p.daily_price) > 0;
-                                    const pTimedUrl = typeof applyCarRentalTimesToUrl === 'function' ? applyCarRentalTimesToUrl(p.url) : p.url;
+                                    const pTimedRaw = typeof applyCarRentalTimesToUrl === 'function' ? applyCarRentalTimesToUrl(p.url) : p.url;
+                                    const pTimedUrl = typeof appendPartnerTrackingParams === 'function' ? appendPartnerTrackingParams(pTimedRaw, 'car', p.name) : pTimedRaw;
                                     return `
                                     <a href="${pTimedUrl}" target="_blank" rel="noopener noreferrer"
+                                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(p.name)}', 'car', '${escapeHtml(cr.location)}', '${escapeHtml(cr.location)}', ${Number(p.daily_price) || 0})"
                                        class="px-2.5 py-1 rounded-xl text-xs font-bold border ${p.is_cheapest && pHasPrice ? 'bg-amber-50 border-amber-400 text-amber-950 font-black shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'} transition inline-flex items-center gap-1.5">
                                         ${getBrandLogoHtml(p.name, '🚗', 'w-4 h-4')}
                                         <span>${escapeHtml(p.name)}:</span>
@@ -4819,6 +4834,9 @@ function renderTransportResults(data, searchReq) {
                         <!-- Sağ / Günlük & Toplam Fiyat ve Doğrudan Rezervasyon Butonu -->
                         <div class="lg:w-64 flex flex-col justify-between items-end border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6">
                             <div class="text-right w-full">
+                                <div class="mb-1 flex justify-end">
+                                    ${typeof getVerificationTimestampBadgeHtml === 'function' ? getVerificationTimestampBadgeHtml({ price: v.daily_price, has_live_price: Boolean(v.daily_price) }, isEn) : ''}
+                                </div>
                                 ${v.daily_price && Number(v.daily_price) > 0 ? `
                                     <div class="text-[10px] font-black uppercase tracking-wider text-emerald-700 flex items-center justify-end gap-1">
                                         <i class="fa-solid fa-circle-check text-emerald-500"></i>
@@ -4843,17 +4861,16 @@ function renderTransportResults(data, searchReq) {
                                         ${cr.days_count} Günlük Kiralama Teklifleri
                                     </div>
                                 `}
+                                ${typeof getTaxAndZeroFeeBadgeHtml === 'function' ? getTaxAndZeroFeeBadgeHtml(isEn) : ''}
                             </div>
 
                             <div class="w-full mt-4">
-                                <a href="${typeof applyCarRentalTimesToUrl === 'function' ? applyCarRentalTimesToUrl(v.official_link || (v.providers && v.providers[0] ? v.providers[0].url : '#')) : (v.official_link || (v.providers && v.providers[0] ? v.providers[0].url : '#'))}" target="_blank" rel="noopener noreferrer"
+                                <a href="${(() => { const rUrl = typeof applyCarRentalTimesToUrl === 'function' ? applyCarRentalTimesToUrl(v.official_link || (v.providers && v.providers[0] ? v.providers[0].url : '#')) : (v.official_link || (v.providers && v.providers[0] ? v.providers[0].url : '#')); return typeof appendPartnerTrackingParams === 'function' ? appendPartnerTrackingParams(rUrl, 'car', v.cheapest_provider_name || 'Yolcu360') : rUrl; })()}" target="_blank" rel="noopener noreferrer"
+                                   onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(v.cheapest_provider_name || 'Yolcu360')}', 'car', '${escapeHtml(cr.location)}', '${escapeHtml(cr.location)}', ${Number(v.total_price || v.daily_price) || 0})"
                                    class="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 group">
                                     <span>${escapeHtml(v.cheapest_provider_name || 'Yolcu360')} ile Kirala</span>
                                     <i class="fa-solid fa-arrow-up-right-from-square text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
                                 </a>
-                                <div class="text-[10px] text-center text-slate-400 font-medium mt-1.5">
-                                    Sıfır ek komisyon • Doğrudan güvenli filo rezervasyonu
-                                </div>
                             </div>
                         </div>
 
@@ -5790,6 +5807,130 @@ function buildFlightCarCrossSellUrl(toCity, toCode, searchReq, arrivalTime) {
     return `https://yolcu360.com/arac-kiralama/search?p_d=${encodeURIComponent(pDate)}&d_d=${encodeURIComponent(dDate)}&p_t=${encodeURIComponent(pTime)}&d_t=${encodeURIComponent(dTime)}&a=30-65&sb=lowest_price_first&p_p=${m.pp}&pid=${m.pid}&utm_source=hakikibilet&utm_medium=affiliate&subid=hakikibilet`;
 }
 
+// ==================== GRUP A: KART ÜZERİ GÜVEN, MİL ROZETİ, AFFILIATE ZIRHI & TIE-BREAKER (#2, #7, #10, #25, #28, #33, #36, #37) ====================
+
+function appendPartnerTrackingParams(rawUrl, transportType = 'flight', providerHint = '') {
+    if (!rawUrl || typeof rawUrl !== 'string') return rawUrl || '#';
+    const trimmed = rawUrl.trim();
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) return trimmed;
+    if (trimmed.includes('tp.media/r')) return trimmed;
+
+    try {
+        const u = new URL(trimmed);
+        const host = u.hostname.toLowerCase();
+        const modeSlug = String(transportType || window.currentTransportSubTab || 'flight').toLowerCase();
+
+        if (host.includes('trip.com')) {
+            if (!u.searchParams.has('Allianceid')) u.searchParams.set('Allianceid', '11051531');
+            if (!u.searchParams.has('SID')) u.searchParams.set('SID', '333747492');
+        } else if (host.includes('booking.com')) {
+            if (!u.searchParams.has('aid')) u.searchParams.set('aid', '789884');
+        } else {
+            if (!u.searchParams.has('utm_source')) {
+                u.searchParams.set('utm_source', 'hakikibilet');
+            }
+            if (!u.searchParams.has('utm_medium')) {
+                u.searchParams.set('utm_medium', 'affiliate');
+            }
+            if (!u.searchParams.has('utm_campaign')) {
+                u.searchParams.set('utm_campaign', `hb_${modeSlug}`);
+            }
+            if ((host.includes('obilet.com') || host.includes('yolcu360.com')) && !u.searchParams.has('subid')) {
+                u.searchParams.set('subid', 'hakikibilet');
+            }
+            if ((host.includes('bilet.com') || host.includes('feribotlines.com')) && !u.searchParams.has('ref')) {
+                u.searchParams.set('ref', 'hakikibilet');
+            }
+        }
+        return u.toString();
+    } catch (e) {
+        return trimmed;
+    }
+}
+window.appendPartnerTrackingParams = appendPartnerTrackingParams;
+
+function getPartnerCommercialPriority(channelOrName) {
+    const k = String(channelOrName || '').toLowerCase();
+    if (k.includes('trip')) return 100;
+    if (k.includes('obilet')) return 95;
+    if (k.includes('enuygun')) return 90;
+    if (k.includes('kamil') || k.includes('flix')) return 88;
+    if (k.includes('kiwi')) return 85;
+    if (k.includes('booking') || k.includes('kayak')) return 80;
+    if (k.includes('skyscanner')) return 75;
+    if (k.includes('bilet.com') || k.includes('feribotlines')) return 72;
+    return 60;
+}
+window.getPartnerCommercialPriority = getPartnerCommercialPriority;
+
+function getAirlineLoyaltyBadgeHtml(carrierName, airlineIata, isEn = false) {
+    const c = String(carrierName || '').toLowerCase();
+    const code = String(airlineIata || '').toUpperCase();
+    let progName = '';
+    let icon = '✨';
+    let badgeTone = 'bg-sky-50 text-sky-900 border-sky-200';
+
+    if (code === 'TK' || code === 'VF' || c.includes('thy') || c.includes('türk hava') || c.includes('turkish') || c.includes('ajet') || c.includes('anadolu')) {
+        progName = 'Miles&Smiles';
+        icon = '✨';
+        badgeTone = 'bg-rose-50 text-rose-900 border-rose-200';
+    } else if (code === 'PC' || c.includes('pegasus')) {
+        progName = isEn ? 'BolBol Points' : 'BolBol Puan';
+        icon = '🏅';
+        badgeTone = 'bg-amber-50 text-amber-950 border-amber-300';
+    } else if (code === 'XQ' || c.includes('sunexpress')) {
+        progName = 'SunPoints';
+        icon = '☀️';
+        badgeTone = 'bg-orange-50 text-orange-900 border-orange-200';
+    } else if (code === 'LH' || code === 'LX' || c.includes('lufthansa') || c.includes('swiss')) {
+        progName = 'Miles & More';
+        icon = '✨';
+        badgeTone = 'bg-indigo-50 text-indigo-900 border-indigo-200';
+    } else if (code === 'BA' || code === 'QR' || c.includes('british') || c.includes('qatar')) {
+        progName = 'Avios';
+        icon = '✨';
+        badgeTone = 'bg-purple-50 text-purple-900 border-purple-200';
+    } else if (code === 'AF' || code === 'KL' || c.includes('air france') || c.includes('klm')) {
+        progName = 'Flying Blue';
+        icon = '✨';
+        badgeTone = 'bg-blue-50 text-blue-900 border-blue-200';
+    } else if (code === 'EK' || c.includes('emirates')) {
+        progName = 'Skywards';
+        icon = '✨';
+        badgeTone = 'bg-amber-50 text-amber-900 border-amber-200';
+    } else if (code === 'A3' || c.includes('aegean')) {
+        progName = 'Miles+Bonus';
+        icon = '✨';
+        badgeTone = 'bg-sky-50 text-sky-900 border-sky-200';
+    }
+
+    if (!progName) return '';
+    const tooltip = isEn
+        ? `Earn ${progName} loyalty miles/points when booking with your membership number`
+        : `Üyelik numaranızla biletleme yaptığınızda ${progName} mil/puan kazanabilirsiniz`;
+    return `<span class="px-1.5 py-0.2 rounded border text-[9.5px] font-extrabold inline-flex items-center gap-0.5 ${badgeTone}" title="${escapeHtml(tooltip)}">${icon} ${escapeHtml(progName)}</span>`;
+}
+window.getAirlineLoyaltyBadgeHtml = getAirlineLoyaltyBadgeHtml;
+
+function getVerificationTimestampBadgeHtml(ticket, isEn = false) {
+    const tStr = window.lastSearchVerifiedTimeStr || (isEn ? 'Just now' : 'Az önce');
+    const hasPrice = ticket && ticket.price !== null && ticket.price !== undefined && Number(ticket.price) > 0;
+    const isLive = hasPrice && ticket.has_live_price !== false;
+    if (isLive) {
+        return `<span class="inline-flex items-center gap-1 text-[9.5px] font-extrabold text-emerald-700 bg-emerald-50/90 border border-emerald-200 px-1.5 py-0.2 rounded" title="${isEn ? `Live fare verified at ${tStr}` : `Canlı tedarikçi fiyatı saat ${tStr} itibarıyla doğrulandı`}">⚡ ${isEn ? `Verified • ${tStr}` : `Canlı Doğrulandı • ${tStr}`}</span>`;
+    }
+    return `<span class="inline-flex items-center gap-1 text-[9.5px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.2 rounded" title="${isEn ? `Official schedule & tariff (${tStr})` : `Güncel resmi sefer tarifesi (${tStr})`}">🕒 ${isEn ? `Official Tariff • ${tStr}` : `Güncel Tarife • ${tStr}`}</span>`;
+}
+window.getVerificationTimestampBadgeHtml = getVerificationTimestampBadgeHtml;
+
+function getTaxAndZeroFeeBadgeHtml(isEn = false) {
+    const tip = isEn
+        ? 'Taxes and mandatory surcharges are included. Zero extra commission from Hakiki Bilet; the selected official agency applies its standard checkout terms.'
+        : 'Vergiler ve zorunlu harçlar dahildir. Hakiki Bilet ek komisyon almaz; yönlendirilen resmi acente/taşıyıcı ödeme adımında kendi standart koşullarını uygular.';
+    return `<div class="text-[9.5px] font-bold text-emerald-800/90 mt-0.5 flex items-center md:justify-end gap-1 select-none" title="${escapeHtml(tip)}"><span>🛡️ ${isEn ? 'No Hidden Fees • Taxes Included' : 'Gizli Bedel Yok • Vergiler Dahil'}</span></div>`;
+}
+window.getTaxAndZeroFeeBadgeHtml = getTaxAndZeroFeeBadgeHtml;
+
 function generateTicketCardsHtml(tickets, searchReq) {
     const isRoundTrip = (searchReq.trip_type === 'round_trip');
     const isEn = window.currentAppLang === 'en';
@@ -5857,7 +5998,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
             const trainNo = ticket.flight_number || 'YHT';
             const badgeText = ticket.badge || 'YHT';
             const isIntlTrain = ticket.id && ticket.id.startsWith('tr-intl');
-            const targetUrl = ticket.winner_url || ticket.direct_link || ticket.official_link || 'https://ebilet.tcddtasimacilik.gov.tr/';
+            const rawTargetUrl = ticket.winner_url || ticket.direct_link || ticket.official_link || 'https://ebilet.tcddtasimacilik.gov.tr/';
+            const targetUrl = appendPartnerTrackingParams(rawTargetUrl, 'train', ticket.carrier || 'TCDD');
             const btnLabel = (isEn ? ticket.winner_button_text_en : ticket.winner_button_text) || (isIntlTrain ? (isEn ? 'Trip.com Trains ↗' : 'Trip.com Tren ↗') : (isEn ? 'TCDD Official ↗' : 'TCDD E-Bilet ↗'));
 
             const hasDiscounts = Boolean(discounts.genc_ogrenci || discounts.yas_65_ustu || discounts.emekli);
@@ -5920,6 +6062,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <!-- Sağ: Fiyat + Tek Tık Buton -->
                         <div class="flex items-center justify-between md:justify-end gap-3 md:w-64 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
                             <div class="text-left md:text-right">
+                                <div class="mb-0.5 flex md:justify-end">${getVerificationTimestampBadgeHtml(ticket, isEn)}</div>
                                 ${ticket.price ? `
                                     <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
                                         ${Number(ticket.price).toLocaleString('tr-TR')} <span class="text-sm font-bold">${currSym}</span>
@@ -5931,8 +6074,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     </div>
                                     <div class="text-[10px] font-semibold text-slate-400 mt-0.5">${escapeHtml(ticket.price_status_text || (isEn ? 'Click for Selected Date' : 'Seçili Tarih İçin Sorgula'))}</div>
                                 `}
+                                ${getTaxAndZeroFeeBadgeHtml(isEn)}
                             </div>
                             <a href="${targetUrl}" target="_blank" rel="noopener noreferrer"
+                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(ticket.carrier || 'TCDD')}', 'train', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(ticket.price) || 0})"
                                class="px-4 py-2.5 bg-indigo-900 hover:bg-black text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 whitespace-nowrap">
                                 <span>${btnLabel}</span>
                             </a>
@@ -5946,7 +6091,9 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 ${isEn ? 'Official Rail Partners:' : 'Uluslararası Tren Acenteleri:'}
                             </span>
                             ${ticket.providers.map(p => `
-                                <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg ${String(p.name).toLowerCase().includes('trip') ? 'bg-blue-50 border-blue-200 text-blue-950 font-black hover:bg-blue-100' : (p.is_best ? 'bg-indigo-50 border-indigo-200 text-indigo-950 font-black hover:bg-indigo-100' : 'bg-slate-50 border-slate-200 text-slate-700 font-bold hover:bg-slate-100')} border transition inline-flex items-center gap-1.5">
+                                <a href="${appendPartnerTrackingParams(p.url, 'train', p.name)}" target="_blank" rel="noopener noreferrer"
+                                   onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(p.name)}', 'train', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(p.price || ticket.price) || 0})"
+                                   class="px-2.5 py-0.5 rounded-lg ${String(p.name).toLowerCase().includes('trip') ? 'bg-blue-50 border-blue-200 text-blue-950 font-black hover:bg-blue-100' : (p.is_best ? 'bg-indigo-50 border-indigo-200 text-indigo-950 font-black hover:bg-indigo-100' : 'bg-slate-50 border-slate-200 text-slate-700 font-bold hover:bg-slate-100')} border transition inline-flex items-center gap-1.5">
                                     ${getBrandLogoHtml(p.name, '🚆', 'w-3.5 h-3.5')}
                                     <span>${escapeHtml(p.name)} ↗</span>
                                 </a>
@@ -5968,9 +6115,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
                 ticket.winner_channel === 'kamilkoc_official' ||
                 (ticket.carrier && (ticket.carrier.toLowerCase().includes('kamil') || ticket.carrier.toLowerCase().includes('flix') || ticket.carrier.toLowerCase().includes('alpar')))
             );
-            const targetUrl = isKamilOrFlix
+            const rawTargetUrl = isKamilOrFlix
                 ? (ticket.kamilkoc_link || ticket.direct_link || ticket.official_link || 'https://www.kamilkoc.com.tr/')
                 : (ensureObiletPriceSort(ticket.obilet_link) || ticket.direct_link || ticket.official_link || 'https://www.obilet.com/');
+            const targetUrl = appendPartnerTrackingParams(rawTargetUrl, 'bus', isKamilOrFlix ? 'Kamil Koç' : 'Obilet');
 
             const priceStr = ticket.price ? `${Number(ticket.price).toLocaleString('tr-TR')} ${currSym}` : '';
             const btnLabel = isKamilOrFlix
@@ -6023,13 +6171,16 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <!-- Sağ: Fiyat + Tek Tık Buton -->
                         <div class="flex items-center justify-between md:justify-end gap-3 md:w-64 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
                             <div class="text-left md:text-right">
+                                <div class="mb-0.5 flex md:justify-end">${getVerificationTimestampBadgeHtml(ticket, isEn)}</div>
                                 ${hasTimeDiscount ? `<div class="text-[11px] font-bold text-rose-500 line-through leading-none mb-0.5">${Number(discounts.original_price).toLocaleString('tr-TR')} ${currSym}</div>` : ''}
                                 <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
                                     ${ticket.price ? `${Number(ticket.price).toLocaleString('tr-TR')} <span class="text-sm font-bold">${currSym}</span>` : 'Canlı Fiyat'}
                                 </div>
                                 <div class="text-[10px] font-semibold text-slate-400 mt-0.5">${isRoundTrip ? 'Gidiş-Dönüş' : 'Tek Yön Net'}</div>
+                                ${getTaxAndZeroFeeBadgeHtml(isEn)}
                             </div>
                             <a href="${targetUrl}" target="_blank" rel="noopener noreferrer"
+                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${isKamilOrFlix ? 'Kamil Koç' : 'Obilet'}', 'bus', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(ticket.price) || 0})"
                                class="px-4 py-2.5 ${isKamilOrFlix ? 'bg-amber-500 hover:bg-amber-600 text-slate-950' : 'bg-emerald-800 hover:bg-emerald-950 text-white'} font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 whitespace-nowrap">
                                 <span>${btnLabel}</span>
                             </a>
@@ -6049,11 +6200,11 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         </summary>
                         <div class="mt-2 pt-2 border-t border-dashed border-slate-200 flex flex-wrap items-center justify-between gap-2">
                             <div class="flex flex-wrap items-center gap-1.5">
-                                ${isKamilOrFlix && ticket.kamilkoc_link ? `<a href="${ticket.kamilkoc_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-black inline-flex items-center gap-1.5">${getBrandLogoHtml('Kamil Koç', '🚌', 'w-4 h-4')}<span>Kamil Koç Resmi (${priceStr}) ↗</span></a>` : ''}
-                                ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}<span>Obilet (${!isKamilOrFlix && priceStr ? priceStr : 'Koltuk Seç'}) ↗</span></a>` : ''}
-                                ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}<span>${isEn ? 'Enuygun Deals ↗' : 'Enuygun Teklifleri ↗'}</span></a>` : ''}
-                                ${ticket.biletcom_link ? `<a href="${ticket.biletcom_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-950 border border-sky-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Bilet.com', '🎫', 'w-4 h-4')}<span>${isEn ? 'Bilet.com Bus ↗' : 'Bilet.com Otobüs ↗'}</span></a>` : ''}
-                                ${!isKamilOrFlix && ticket.carrier_official_link ? `<a href="${ticket.carrier_official_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml(ticket.carrier, '🚌', 'w-4 h-4')}<span>${escapeHtml(ticket.carrier)} Resmi Site ↗</span></a>` : ''}
+                                ${isKamilOrFlix && ticket.kamilkoc_link ? `<a href="${appendPartnerTrackingParams(ticket.kamilkoc_link, 'bus', 'Kamil Koç')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Kamil Koç', 'bus', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(ticket.price) || 0})" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 font-black inline-flex items-center gap-1.5">${getBrandLogoHtml('Kamil Koç', '🚌', 'w-4 h-4')}<span>Kamil Koç Resmi (${priceStr}) ↗</span></a>` : ''}
+                                ${ticket.obilet_link ? `<a href="${appendPartnerTrackingParams(ensureObiletPriceSort(ticket.obilet_link), 'bus', 'Obilet')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Obilet', 'bus', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(ticket.price) || 0})" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-4 h-4')}<span>Obilet (${!isKamilOrFlix && priceStr ? priceStr : 'Koltuk Seç'}) ↗</span></a>` : ''}
+                                ${ticket.enuygun_link ? `<a href="${appendPartnerTrackingParams(ticket.enuygun_link, 'bus', 'Enuygun')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Enuygun', 'bus', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(ticket.price) || 0})" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-4 h-4')}<span>${isEn ? 'Enuygun Deals ↗' : 'Enuygun Teklifleri ↗'}</span></a>` : ''}
+                                ${ticket.biletcom_link ? `<a href="${appendPartnerTrackingParams(ticket.biletcom_link, 'bus', 'Bilet.com')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Bilet.com', 'bus', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(ticket.price) || 0})" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-950 border border-sky-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Bilet.com', '🎫', 'w-4 h-4')}<span>${isEn ? 'Bilet.com Bus ↗' : 'Bilet.com Otobüs ↗'}</span></a>` : ''}
+                                ${!isKamilOrFlix && ticket.carrier_official_link ? `<a href="${appendPartnerTrackingParams(ticket.carrier_official_link, 'bus', ticket.carrier)}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(ticket.carrier)}', 'bus', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(ticket.price) || 0})" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml(ticket.carrier, '🚌', 'w-4 h-4')}<span>${escapeHtml(ticket.carrier)} Resmi Site ↗</span></a>` : ''}
                             </div>
                             <div class="flex flex-wrap items-center gap-1 text-[10.5px] text-slate-600">
                                 ${rawFeatures.slice(0, 4).map(f => `<span class="px-2 py-0.5 rounded bg-slate-100">✓ ${escapeHtml(String(f))}</span>`).join('')}
@@ -6071,9 +6222,20 @@ function generateTicketCardsHtml(tickets, searchReq) {
             const isCruise = ticket.is_cruise || ticket.category === 'cruise';
             const isGreekIsland = ticket.is_greek_island || ticket.category === 'greek_islands';
             const hasVerifiedPrice = ticket.price !== null && ticket.price !== undefined && Number(ticket.price) > 0;
-            const targetUrl = ticket.winner_url || ticket.direct_link || ticket.official_link || 'https://www.obilet.com/feribot-bileti';
-            const btnLabel = (isEn ? ticket.winner_button_text_en : ticket.winner_button_text) || (hasVerifiedPrice ? `${ticket.winner_name || 'Obilet Feribot'}'tan Al ↗` : 'Canlı Fiyatı Gör ↗');
-            const providers = Array.isArray(ticket.providers) ? ticket.providers : [];
+            const rawProviders = Array.isArray(ticket.providers) ? ticket.providers.slice() : [];
+            // #28 Tie-breaker: Eşit fiyatlı deniz acentelerinde onaylı iş ortağını öne çıkar
+            rawProviders.sort((a, b) => {
+                const pa = (a.price !== null && a.price !== undefined && Number(a.price) > 0) ? Number(a.price) : 999999999;
+                const pb = (b.price !== null && b.price !== undefined && Number(b.price) > 0) ? Number(b.price) : 999999999;
+                if (Math.abs(pa - pb) > 1) return pa - pb;
+                return getPartnerCommercialPriority(b.name) - getPartnerCommercialPriority(a.name);
+            });
+            const providers = rawProviders;
+            const topTiedFerryProv = providers.find(p => p.price && ticket.price && Math.abs(Number(p.price) - Number(ticket.price)) <= 1);
+            const rawFerryTargetUrl = (topTiedFerryProv && topTiedFerryProv.url) || ticket.winner_url || ticket.direct_link || ticket.official_link || 'https://www.obilet.com/feribot-bileti';
+            const ferryWinnerName = (topTiedFerryProv && topTiedFerryProv.name) || ticket.winner_name || 'Obilet Feribot';
+            const targetUrl = appendPartnerTrackingParams(rawFerryTargetUrl, 'ferry', ferryWinnerName);
+            const btnLabel = (isEn ? ticket.winner_button_text_en : ticket.winner_button_text) || (hasVerifiedPrice ? `${ferryWinnerName}'tan Al ↗` : 'Canlı Fiyatı Gör ↗');
             const cabinTiers = Array.isArray(ticket.cabin_tiers) ? ticket.cabin_tiers : [];
             const cardDomId = escapeHtml(ticket.id || `ferry-${Math.random().toString(36).slice(2, 7)}`);
             const breakdownText = ticket.price_breakdown_text || `${totalPaxText} • Doğrulanmış Canlı Fiyat`;
@@ -6127,10 +6289,11 @@ function generateTicketCardsHtml(tickets, searchReq) {
 
                         <div class="flex items-center justify-between md:justify-end gap-3 md:w-80 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
                             <div class="text-left md:text-right">
+                                <div class="mb-0.5 flex md:justify-end">${getVerificationTimestampBadgeHtml(ticket, isEn)}</div>
                                 ${hasVerifiedPrice ? `
                                     <div class="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded mb-0.5">
                                         <i class="fa-solid fa-circle-check text-[9px]"></i>
-                                        <span>${ticket.has_live_price ? `Canlı En Ucuz (${escapeHtml(ticket.winner_name || 'Acente')})` : `Resmi Tarife (${escapeHtml(ticket.winner_name || 'Operatör')})`}</span>
+                                        <span>${ticket.has_live_price ? `Canlı En Ucuz (${escapeHtml(ferryWinnerName)})` : `Resmi Tarife (${escapeHtml(ferryWinnerName)})`}</span>
                                     </div>
                                     <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
                                         <span id="ferryPriceVal-${cardDomId}">${Number(ticket.price).toLocaleString('tr-TR')}</span> <span class="text-sm font-bold">${currSym}</span>
@@ -6146,8 +6309,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                     </div>
                                     <div class="text-[10px] font-semibold text-slate-400 mt-0.5">Seçili Tarih İçin Tıklayın</div>
                                 `}
+                                ${getTaxAndZeroFeeBadgeHtml(isEn)}
                             </div>
                             <a href="${targetUrl}" target="_blank" rel="noopener noreferrer"
+                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(ferryWinnerName)}', 'ferry', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(ticket.price) || 0})"
                                class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5 whitespace-nowrap">
                                 <span>${escapeHtml(btnLabel)}</span>
                             </a>
@@ -6209,9 +6374,10 @@ function generateTicketCardsHtml(tickets, searchReq) {
                                 ${providers.map((p, pIdx) => {
                                     const pHasPrice = p.price !== null && p.price !== undefined && Number(p.price) > 0;
                                     const pPriceTxt = pHasPrice ? `${Number(p.price).toLocaleString('tr-TR')} ${p.currency || currSym}` : (p.badge === 'Araç İçin Çağrı Merkezi' ? 'Çağrı M. (0850 885 00 97)' : 'Canlı Sorgula ↗');
-                                    const isWin = Boolean(p.is_best || p.is_winner);
+                                    const isWin = pIdx === 0 ? Boolean(pHasPrice || p.is_best || p.is_winner) : Boolean(p.is_best && !providers[0].price);
                                     return `
-                                        <a href="${p.url}" target="_blank" rel="noopener noreferrer"
+                                        <a href="${appendPartnerTrackingParams(p.url, 'ferry', p.name)}" target="_blank" rel="noopener noreferrer"
+                                           onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(p.name)}', 'ferry', '${escapeHtml(ticket.origin)}', '${escapeHtml(ticket.destination)}', ${Number(p.price || ticket.price) || 0})"
                                            class="px-2.5 py-1 rounded-lg text-[11px] transition inline-flex items-center gap-1.5 ${isWin
                                                ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-400 font-black shadow-2xs'
                                                : 'bg-slate-50 hover:bg-slate-900 hover:text-white text-slate-700 border border-slate-200 font-bold'}">
@@ -6257,7 +6423,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="text-xl font-black text-slate-950">${ticket.price ? `${Number(ticket.price).toLocaleString('tr-TR')} ${currSym}` : 'Canlı'}</div>
-                        <a href="${directLink}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-slate-900 text-white font-black text-xs rounded-xl">${actionButtonText}</a>
+                        <a href="${appendPartnerTrackingParams(directLink, ticket.transport_type || 'car', ticket.carrier)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-slate-900 text-white font-black text-xs rounded-xl">${actionButtonText}</a>
                     </div>
                 </div>
             `;
@@ -6321,6 +6487,31 @@ function generateTicketCardsHtml(tickets, searchReq) {
             : '✈️';
 
         const verifiedProviders = (ticket.providers || []).filter(p => p.price !== null && p.price !== undefined && Number(p.price) > 0);
+        // #28 Tie-breaker: Eşit fiyatta en yüksek dönüşümlü onaylı partneri öne al
+        verifiedProviders.sort((a, b) => {
+            const pa = Number(a.price) || 999999999;
+            const pb = Number(b.price) || 999999999;
+            if (Math.abs(pa - pb) > 1) return pa - pb;
+            return getPartnerCommercialPriority(b.channel || b.name) - getPartnerCommercialPriority(a.channel || a.name);
+        });
+        if (verifiedProviders.length > 0 && ticket.price && Math.abs(Number(verifiedProviders[0].price) - Number(ticket.price)) <= 1) {
+            const topProv = verifiedProviders[0];
+            if (topProv.url) flightTargetUrl = topProv.url;
+            const topCh = String(topProv.channel || topProv.name || '').toLowerCase();
+            if (topCh.includes('trip')) {
+                flightActionText = isEn ? 'Trip.com ↗' : "Trip.com'dan Al ↗";
+            } else if (topCh.includes('obilet')) {
+                flightActionText = isEn ? 'Obilet ↗' : "Obilet'ten Al ↗";
+            } else if (topCh.includes('enuygun')) {
+                flightActionText = isEn ? 'Enuygun ↗' : "Enuygun'dan Al ↗";
+            } else if (topCh.includes('kiwi')) {
+                flightActionText = isEn ? 'Kiwi.com ↗' : "Kiwi.com'dan Al ↗";
+            }
+        }
+        flightTargetUrl = appendPartnerTrackingParams(flightTargetUrl, 'flight', winnerLabel);
+        const finalFlightBtnText = flightActionText || actionButtonText;
+        const loyaltyBadgeHtml = getAirlineLoyaltyBadgeHtml(ticket.carrier, airlineIata, isEn);
+
         const hasTripPrice = verifiedProviders.some(p => p.channel === 'trip' || String(p.name || '').toLowerCase().includes('trip'));
         const hasKiwiPrice = verifiedProviders.some(p => p.channel === 'kiwi' || String(p.name || '').toLowerCase().includes('kiwi'));
         const hasBookingPrice = verifiedProviders.some(p => p.channel === 'booking' || String(p.name || '').toLowerCase().includes('booking') || String(p.name || '').toLowerCase().includes('kayak'));
@@ -6340,8 +6531,8 @@ function generateTicketCardsHtml(tickets, searchReq) {
         return `
             <div class="bg-white border border-slate-200/90 hover:border-amber-400 rounded-2xl px-4 py-3 shadow-2xs hover:shadow-md transition-all">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <!-- Sol: Havayolu Logosu & Bagaj Özeti -->
-                    <div class="flex items-center gap-2.5 md:w-56 shrink-0">
+                    <!-- Sol: Havayolu Logosu & Bagaj + Mil Özeti -->
+                    <div class="flex items-center gap-2.5 md:w-60 shrink-0">
                         <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-2xs text-amber-600 flex items-center justify-center text-base shrink-0 overflow-hidden p-1">${airlineLogoHtml}</div>
                         <div class="min-w-0">
                             <div class="flex items-center gap-1.5">
@@ -6350,6 +6541,7 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             </div>
                             <div class="flex flex-wrap items-center gap-1 mt-0.5 text-[10px]">
                                 <span class="text-slate-500 font-bold">${bagLabel}</span>
+                                ${loyaltyBadgeHtml}
                                 ${displayBadge ? `<span class="px-1.5 py-0.2 rounded font-black bg-amber-100 text-amber-900 truncate max-w-[120px]">${escapeHtml(displayBadge)}</span>` : ''}
                             </div>
                         </div>
@@ -6375,16 +6567,19 @@ function generateTicketCardsHtml(tickets, searchReq) {
                     </div>
 
                     <!-- Sağ: Fiyat + Tek Tık Buton -->
-                    <div class="flex items-center justify-between md:justify-end gap-3 md:w-64 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
+                    <div class="flex items-center justify-between md:justify-end gap-3 md:w-68 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
                         <div class="text-left md:text-right">
+                            <div class="mb-0.5 flex md:justify-end">${getVerificationTimestampBadgeHtml(ticket, isEn)}</div>
                             <div class="text-xl sm:text-2xl font-black text-slate-950 leading-none">
                                 ${ticket.price ? `${Number(ticket.price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} <span class="text-sm font-bold">${currSym}</span>` : 'Canlı Fiyat'}
                             </div>
                             <div class="text-[10px] font-semibold text-slate-400 mt-0.5">${totalPaxText} • ${isRoundTrip ? (isEn ? 'Round-Trip' : 'Gidiş-Dönüş') : (isEn ? 'One-Way' : 'Tek Yön')}</div>
+                            ${getTaxAndZeroFeeBadgeHtml(isEn)}
                         </div>
                         <a href="${flightTargetUrl}" target="_blank" rel="noopener noreferrer"
+                           onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(winnerLabel)}', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(ticket.price) || 0})"
                            class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 whitespace-nowrap">
-                            <span>${actionButtonText}</span>
+                            <span>${finalFlightBtnText}</span>
                         </a>
                     </div>
                 </div>
@@ -6397,21 +6592,23 @@ function generateTicketCardsHtml(tickets, searchReq) {
                         <span class="text-[10.5px] font-black text-slate-500 mr-0.5 select-none">
                             ${isEn ? 'All Fares:' : 'Diğer Fiyatlar:'}
                         </span>
-                        ${verifiedProviders.map(p => `
-                            <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg ${p.is_best ? 'bg-amber-50 border-amber-300 text-amber-950 font-black' : 'bg-slate-50 border-slate-200 text-slate-700 font-bold'} border hover:bg-slate-100 transition inline-flex items-center gap-1.5">
+                        ${verifiedProviders.map((p, pIdx) => `
+                            <a href="${appendPartnerTrackingParams(p.url, 'flight', p.name)}" target="_blank" rel="noopener noreferrer"
+                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(p.name)}', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(p.price) || 0})"
+                               class="px-2.5 py-0.5 rounded-lg ${pIdx === 0 || p.is_best ? 'bg-amber-50 border-amber-300 text-amber-950 font-black' : 'bg-slate-50 border-slate-200 text-slate-700 font-bold'} border hover:bg-slate-100 transition inline-flex items-center gap-1.5">
                                 ${getBrandLogoHtml(p.name, '🌐', 'w-3.5 h-3.5')}
                                 <span>${escapeHtml(p.name)}</span>
                                 <span class="font-black">${Number(p.price).toLocaleString('tr-TR')} ${currSym}</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[8.5px] opacity-60"></i>
                             </a>
                         `).join('')}
-                        ${!hasTripPrice && tripFallbackLink ? `<a href="${tripFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Trip.com', '🌐', 'w-3.5 h-3.5')}<span>${isEn ? 'Trip.com Deals ↗' : 'Trip.com Teklifleri ↗'}</span></a>` : ''}
-                        ${!hasKiwiPrice && kiwiFallbackLink ? `<a href="${kiwiFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-950 border border-teal-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Kiwi.com', '🥝', 'w-3.5 h-3.5')}<span>${isEn ? 'Kiwi.com Deals ↗' : 'Kiwi.com Teklifleri ↗'}</span></a>` : ''}
-                        ${!hasBookingPrice && bookingFallbackLink ? `<a href="${bookingFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Booking / Kayak', '🌐', 'w-3.5 h-3.5')}<span>Booking / Kayak ↗</span></a>` : ''}
-                        ${skyscannerFallbackLink ? `<a href="${skyscannerFallbackLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-950 border border-sky-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Skyscanner', '✈️', 'w-3.5 h-3.5')}<span>Skyscanner ↗</span></a>` : ''}
-                        ${safeAirlineDirectUrl ? `<a href="${safeAirlineDirectUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold inline-flex items-center gap-1.5">${airlineIata ? `<img src="https://www.gstatic.com/flights/airline_logos/70px/${escapeHtml(airlineIata)}.png" alt="" class="w-4 h-4 object-contain inline-block shrink-0" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://pics.avs.io/72/72/${escapeHtml(airlineIata)}.png';}else{this.style.display='none';}">` : getBrandLogoHtml(ticket.carrier, '✈️', 'w-4 h-4')}<span>${escapeHtml((isEn ? (ticket.airline_label_en || "Airline Site ↗") : (ticket.airline_label_tr || "Havayolunda Gör ↗")).replace(/^✈️\s*/, ''))}</span></a>` : ''}
-                        ${ticket.enuygun_link ? `<a href="${ticket.enuygun_link}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-3.5 h-3.5')}<span>${isEn ? 'Enuygun Deals ↗' : 'Enuygun Teklifleri ↗'}</span></a>` : ''}
-                        ${ticket.obilet_link ? `<a href="${ensureObiletPriceSort(ticket.obilet_link)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}<span>${isEn ? 'Obilet Deals ↗' : 'Obilet Teklifleri ↗'}</span></a>` : ''}
+                        ${!hasTripPrice && tripFallbackLink ? `<a href="${appendPartnerTrackingParams(tripFallbackLink, 'flight', 'Trip.com')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Trip.com', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(ticket.price) || 0})" class="px-2.5 py-0.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Trip.com', '🌐', 'w-3.5 h-3.5')}<span>${isEn ? 'Trip.com Deals ↗' : 'Trip.com Teklifleri ↗'}</span></a>` : ''}
+                        ${!hasKiwiPrice && kiwiFallbackLink ? `<a href="${appendPartnerTrackingParams(kiwiFallbackLink, 'flight', 'Kiwi.com')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Kiwi.com', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(ticket.price) || 0})" class="px-2.5 py-0.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-950 border border-teal-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Kiwi.com', '🥝', 'w-3.5 h-3.5')}<span>${isEn ? 'Kiwi.com Deals ↗' : 'Kiwi.com Teklifleri ↗'}</span></a>` : ''}
+                        ${!hasBookingPrice && bookingFallbackLink ? `<a href="${appendPartnerTrackingParams(bookingFallbackLink, 'flight', 'Booking / Kayak')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Booking / Kayak', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(ticket.price) || 0})" class="px-2.5 py-0.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Booking / Kayak', '🌐', 'w-3.5 h-3.5')}<span>Booking / Kayak ↗</span></a>` : ''}
+                        ${skyscannerFallbackLink ? `<a href="${appendPartnerTrackingParams(skyscannerFallbackLink, 'flight', 'Skyscanner')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Skyscanner', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(ticket.price) || 0})" class="px-2.5 py-0.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-950 border border-sky-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Skyscanner', '✈️', 'w-3.5 h-3.5')}<span>Skyscanner ↗</span></a>` : ''}
+                        ${safeAirlineDirectUrl ? `<a href="${appendPartnerTrackingParams(safeAirlineDirectUrl, 'flight', ticket.carrier)}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(ticket.carrier)}', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(ticket.price) || 0})" class="px-2.5 py-0.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold inline-flex items-center gap-1.5">${airlineIata ? `<img src="https://www.gstatic.com/flights/airline_logos/70px/${escapeHtml(airlineIata)}.png" alt="" class="w-4 h-4 object-contain inline-block shrink-0" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://pics.avs.io/72/72/${escapeHtml(airlineIata)}.png';}else{this.style.display='none';}">` : getBrandLogoHtml(ticket.carrier, '✈️', 'w-4 h-4')}<span>${escapeHtml((isEn ? (ticket.airline_label_en || "Airline Site ↗") : (ticket.airline_label_tr || "Havayolunda Gör ↗")).replace(/^✈️\s*/, ''))}</span></a>` : ''}
+                        ${ticket.enuygun_link ? `<a href="${appendPartnerTrackingParams(ticket.enuygun_link, 'flight', 'Enuygun')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Enuygun', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(ticket.price) || 0})" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Enuygun', '💚', 'w-3.5 h-3.5')}<span>${isEn ? 'Enuygun Deals ↗' : 'Enuygun Teklifleri ↗'}</span></a>` : ''}
+                        ${ticket.obilet_link ? `<a href="${appendPartnerTrackingParams(ensureObiletPriceSort(ticket.obilet_link), 'flight', 'Obilet')}" target="_blank" rel="noopener noreferrer" onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Obilet', 'flight', '${escapeHtml(fromCode || fromCity)}', '${escapeHtml(toCode || toCity)}', ${Number(ticket.price) || 0})" class="px-2.5 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 font-bold inline-flex items-center gap-1.5">${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}<span>${isEn ? 'Obilet Deals ↗' : 'Obilet Teklifleri ↗'}</span></a>` : ''}
                     </div>
                 ` : ''}
 
@@ -8999,6 +9196,85 @@ window.updateTransportFieldLabels = updateTransportFieldLabels;
         return 0;
     }
 
+    const FUNNEL_STORAGE_KEY = "hakiki_fpa_funnel_v1";
+
+    function loadFunnelStore() {
+        try {
+            const raw = localStorage.getItem(FUNNEL_STORAGE_KEY);
+            const parsed = raw ? JSON.parse(raw) : {};
+            return (parsed && typeof parsed === "object") ? parsed : {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function recordTransportFunnelStage(stage, mode = "flight", count = 1, meta = {}) {
+        const cleanMode = String(mode || window.currentTransportSubTab || "flight").toLowerCase();
+        const inc = Math.max(1, Number(count) || 1);
+        const store = loadFunnelStore();
+        if (!store[cleanMode]) {
+            store[cleanMode] = { searches: 0, impressions: 0, clicks: 0, last_provider: "", updated_at: "" };
+        }
+        if (stage === "search") store[cleanMode].searches += inc;
+        else if (stage === "impression") store[cleanMode].impressions += inc;
+        else if (stage === "click") {
+            store[cleanMode].clicks += inc;
+            if (meta && meta.provider) store[cleanMode].last_provider = String(meta.provider);
+        }
+        store[cleanMode].updated_at = new Date().toISOString();
+        try {
+            localStorage.setItem(FUNNEL_STORAGE_KEY, JSON.stringify(store));
+        } catch (e) {}
+        window.HakikiFunnelMetrics = store;
+        return store[cleanMode];
+    }
+    window.recordTransportFunnelStage = recordTransportFunnelStage;
+
+    function getTransportFunnelReport() {
+        const store = loadFunnelStore();
+        const modes = ["flight", "bus", "train", "ferry", "car"];
+        const report = {};
+        modes.forEach(m => {
+            const row = store[m] || { searches: 0, impressions: 0, clicks: 0 };
+            const s = Number(row.searches) || 0;
+            const imp = Number(row.impressions) || 0;
+            const c = Number(row.clicks) || 0;
+            report[m] = {
+                searches: s,
+                impressions: imp,
+                clicks: c,
+                search_to_click_ctr_pct: s > 0 ? Number(((c / s) * 100).toFixed(1)) : 0,
+                impression_to_click_ctr_pct: imp > 0 ? Number(((c / imp) * 100).toFixed(2)) : 0,
+                last_provider: row.last_provider || "-"
+            };
+        });
+        return report;
+    }
+    window.getTransportFunnelReport = getTransportFunnelReport;
+
+    function trackRedirectClick(providerName, transportType, origin, destination, price) {
+        window._lastTrackedClickTs = Date.now();
+        const oInp = document.getElementById("transOrigin");
+        const dInp = document.getElementById("transDest");
+        const lastReq = window.lastSearchReq || {};
+        const finalMode = transportType || lastReq.transport_type || window.currentTransportSubTab || "flight";
+        const finalProvider = providerName || "Resmi Acente";
+        const finalOrig = origin || lastReq.origin || (oInp ? oInp.value : "") || "";
+        const finalDest = destination || lastReq.destination || (dInp ? dInp.value : "") || "";
+        const finalPrice = Number(price) || 0;
+
+        recordTransportFunnelStage("click", finalMode, 1, { provider: finalProvider, price: finalPrice });
+        trackHakikiEvent({
+            event_type: "affiliate_click",
+            provider_name: finalProvider,
+            transport_type: finalMode,
+            origin: finalOrig,
+            destination: finalDest,
+            ticket_price: finalPrice
+        });
+    }
+    window.trackRedirectClick = trackRedirectClick;
+
     document.addEventListener("DOMContentLoaded", () => {
         try {
             const params = new URLSearchParams(window.location.search);
@@ -9021,7 +9297,7 @@ window.updateTransportFieldLabels = updateTransportFieldLabels;
         } catch (e) {}
     });
 
-    // Acente / Havayolu / Otobüs / Tren / Feribot / Araç Kiralama dış bağlantı tıklama yakalayıcı
+    // Acente / Havayolu / Otobüs / Tren / Feribot / Araç Kiralama dış bağlantı tıklama yakalayıcı & Affiliate Zırhı
     document.addEventListener("click", (ev) => {
         const anchor = ev.target && ev.target.closest ? ev.target.closest("a[href]") : null;
         if (!anchor) return;
@@ -9030,19 +9306,29 @@ window.updateTransportFieldLabels = updateTransportFieldLabels;
         if (href.includes(window.location.hostname) && !href.includes("utm_")) return;
 
         const provider = detectProviderFromLink(href, anchor.innerText || anchor.textContent || "");
+        const lastReq = window.lastSearchReq || {};
+        const activeMode = lastReq.transport_type || window.currentTransportSubTab || "flight";
+
+        if (typeof window.appendPartnerTrackingParams === "function") {
+            const armoredHref = window.appendPartnerTrackingParams(href, activeMode, provider);
+            if (armoredHref && armoredHref !== href) {
+                anchor.setAttribute("href", armoredHref);
+            }
+        }
+
+        if (Date.now() - (window._lastTrackedClickTs || 0) < 300) return;
+
         const price = extractPriceFromCardOrLink(anchor);
         const oInp = document.getElementById("transOrigin");
         const dInp = document.getElementById("transDest");
-        const lastReq = window.lastSearchReq || {};
 
-        trackHakikiEvent({
-            event_type: "affiliate_click",
-            provider_name: provider,
-            transport_type: lastReq.transport_type || window.currentTransportSubTab || "flight",
-            origin: lastReq.origin || (oInp ? oInp.value : "") || "",
-            destination: lastReq.destination || (dInp ? dInp.value : "") || "",
-            ticket_price: price
-        });
+        trackRedirectClick(
+            provider,
+            activeMode,
+            lastReq.origin || (oInp ? oInp.value : "") || "",
+            lastReq.destination || (dInp ? dInp.value : "") || "",
+            price
+        );
     }, true);
 })();
 
