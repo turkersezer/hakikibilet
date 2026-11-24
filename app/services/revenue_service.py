@@ -71,7 +71,7 @@ class RevenueService:
         return cls.enrich_deep_link(provider_key=provider, raw_url=raw_url, vertical=vertical)
 
     # Travelpayouts Onaylı Program Tablosu (campaign_id, p_id)
-    # Marker: 789884 | TRS (Project ID): 585474
+    # Marker: 789884 | TRS (Project ID): 585474 (25 Onaylı Program)
     TRAVELPAYOUTS_PROGRAMS = {
         "kiwi": (111, 4136),
         "aviasales": (100, 4114),
@@ -83,7 +83,33 @@ class RevenueService:
         "tiqets": (89, 2074),
         "yesim": (224, 5998),
         "airhelp": (120, 9139),
+        "klook": (137, 4110),
+        "airalo": (541, 8310),
+        "drimsim": (102, 2762),
+        "getrentacar": (222, 5996),
+        "gocity": (62, 1942),
+        "bikesbooking": (57, 1767),
+        "qeeq": (172, 4845),
+        "wegotrip": (150, 4487),
+        "autoeurope": (143, 4354),
+        "radicalstorage": (209, 5867),
+        "intui": (22, 657),
+        "compensair": (86, 4129),
+        "saily": (629, 8979),
+        "kkday": (633, 9074),
     }
+
+    @classmethod
+    def build_gigsky_link(cls) -> str:
+        """
+        GigSky (campaign_id=636, promo_id=9150) resmi Travelpayouts ready-made click linkini üretir.
+        """
+        marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
+        trs = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_TRS", "585474")
+        return (
+            f"https://tp.media/click?shmarker={marker}&promo_id=9150"
+            f"&source_type=link&type=click&campaign_id=636&trs={trs}"
+        )
 
     @classmethod
     def build_tp_link(cls, raw_url: str, campaign_id: int, p_id: int) -> str:
@@ -93,7 +119,7 @@ class RevenueService:
         """
         if not raw_url or not raw_url.startswith("http"):
             return raw_url
-        if "tp.media/r" in raw_url.lower():
+        if "tp.media/r" in raw_url.lower() or "tp.media/click" in raw_url.lower():
             return raw_url
         marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
         trs = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_TRS", "585474")
@@ -118,7 +144,7 @@ class RevenueService:
             return raw_url
 
         low_url = raw_url.lower()
-        if "tp.media/r" in low_url:
+        if "tp.media/r" in low_url or "tp.media/click" in low_url:
             return raw_url
 
         for strict_dom in cls.STRICT_PASSTHROUGH_DOMAINS:
@@ -128,7 +154,7 @@ class RevenueService:
         pkey = (provider_key or "").lower().strip()
 
         # 1. Trip.com (Uçak, Otel, Tren, Akıllı Rota)
-        if pkey == "trip" or "trip.com" in low_url:
+        if pkey == "trip" or ("trip.com" in low_url and "wegotrip.com" not in low_url):
             return cls._append_safe_params(
                 raw_url,
                 {
@@ -138,7 +164,7 @@ class RevenueService:
             )
 
         # 2. Booking.com (Otel, Uçak Çapraz Satış)
-        if pkey == "booking" or "booking.com" in low_url:
+        if pkey == "booking" or ("booking.com" in low_url and "bikesbooking.com" not in low_url):
             return cls._append_safe_params(
                 raw_url,
                 {
@@ -239,23 +265,55 @@ class RevenueService:
             )
             return cls.build_tp_link(clean_target, 627, 8919)
 
-        # 8b. Diğer Travelpayouts Onaylı Aktif Programlar (Kiwi, Kiwitaxi, GetTransfer, Localrent, EconomyBookings, Tiqets, Yesim, AirHelp)
+        # 8b. Diğer Travelpayouts Onaylı Aktif Programlar (25 Onaylı Program)
         if pkey == "kiwi" or "kiwi.com" in low_url:
             return cls.build_tp_link(raw_url, 111, 4136)
+        if pkey == "aviasales" or "aviasales." in low_url:
+            return cls.build_tp_link(raw_url, 100, 4114)
         if pkey == "kiwitaxi" or "kiwitaxi.com" in low_url:
             return cls.build_tp_link(raw_url, 1, 647)
         if pkey == "gettransfer" or "gettransfer.com" in low_url:
             return cls.build_tp_link(raw_url, 147, 4439)
+        if pkey in ("intui", "intuitravel") or "intui.travel" in low_url:
+            return cls.build_tp_link(raw_url, 22, 657)
         if pkey == "localrent" or "localrent.com" in low_url:
             return cls.build_tp_link(raw_url, 87, 2043)
         if pkey == "economybookings" or "economybookings.com" in low_url:
             return cls.build_tp_link(raw_url, 10, 2018)
+        if pkey == "qeeq" or "qeeq.com" in low_url:
+            return cls.build_tp_link(raw_url, 172, 4845)
+        if pkey == "getrentacar" or "getrentacar.com" in low_url:
+            return cls.build_tp_link(raw_url, 222, 5996)
+        if pkey == "autoeurope" or "autoeurope." in low_url:
+            return cls.build_tp_link(raw_url, 143, 4354)
+        if pkey == "bikesbooking" or "bikesbooking.com" in low_url:
+            return cls.build_tp_link(raw_url, 57, 1767)
         if pkey == "tiqets" or "tiqets.com" in low_url:
             return cls.build_tp_link(raw_url, 89, 2074)
+        if pkey == "klook" or "klook.com" in low_url:
+            return cls.build_tp_link(raw_url, 137, 4110)
+        if pkey == "gocity" or "gocity.com" in low_url:
+            return cls.build_tp_link(raw_url, 62, 1942)
+        if pkey == "wegotrip" or "wegotrip.com" in low_url:
+            return cls.build_tp_link(raw_url, 150, 4487)
+        if pkey == "kkday" or "kkday.com" in low_url:
+            return cls.build_tp_link(raw_url, 633, 9074)
         if pkey == "yesim" or "yesim.app" in low_url:
             return cls.build_tp_link(raw_url, 224, 5998)
+        if pkey == "airalo" or "airalo.com" in low_url:
+            return cls.build_tp_link(raw_url, 541, 8310)
+        if pkey == "saily" or "saily.com" in low_url:
+            return cls.build_tp_link(raw_url, 629, 8979)
+        if pkey == "drimsim" or "drimsim.com" in low_url:
+            return cls.build_tp_link(raw_url, 102, 2762)
+        if pkey == "gigsky" or "gigsky.com" in low_url:
+            return cls.build_gigsky_link()
         if pkey == "airhelp" or "airhelp.com" in low_url:
             return cls.build_tp_link(raw_url, 120, 9139)
+        if pkey == "compensair" or "compensair.com" in low_url:
+            return cls.build_tp_link(raw_url, 86, 4129)
+        if pkey == "radicalstorage" or "radicalstorage.com" in low_url:
+            return cls.build_tp_link(raw_url, 209, 5867)
 
         # 9. Ferryhopper (Yunan Adaları & Akdeniz Feribot)
         if pkey == "ferryhopper" or "ferryhopper.com" in low_url:

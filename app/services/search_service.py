@@ -2916,9 +2916,15 @@ class SearchService:
             passengers=passengers
         )
 
-        # Tiqets Müze & Etkinlik Affiliate Deep Link (Travelpayouts %8 Komisyon - campaign_id=89, p=2074)
+        # Tiqets, Klook, Go City, WeGoTrip, KKday & Radical Storage Affiliate Deep Links (Travelpayouts Onaylı)
+        dest_ascii = dest_lower.replace("ı", "i").replace("ş", "s").replace("ç", "c").replace("ö", "o").replace("ü", "u").replace("ğ", "g")
         raw_tiqets_dest = f"https://www.tiqets.com/en/search?q={urllib.parse.quote(dest_clean)}"
         tiqets_url = RevenueService.enrich_deep_link("tiqets", raw_tiqets_dest, "event")
+        klook_url = RevenueService.enrich_deep_link("klook", f"https://www.klook.com/en-US/search/result/?query={urllib.parse.quote(dest_clean)}", "event")
+        gocity_url = RevenueService.enrich_deep_link("gocity", "https://gocity.com/en", "event")
+        wegotrip_url = RevenueService.enrich_deep_link("wegotrip", f"https://wegotrip.com/en/{dest_ascii}/", "event")
+        kkday_url = RevenueService.enrich_deep_link("kkday", f"https://www.kkday.com/en/product/productlist?keyword={urllib.parse.quote(dest_clean)}", "event")
+        radicalstorage_url = RevenueService.enrich_deep_link("radicalstorage", f"https://radicalstorage.com/luggage-storage/{dest_ascii}", "luggage")
 
         return {
             "city": dest_clean,
@@ -2930,6 +2936,11 @@ class SearchService:
             "highlights": highlight_data,
             "hotel_deep_link": hotel_deep_link,
             "tiqets_url": tiqets_url,
+            "klook_url": klook_url,
+            "gocity_url": gocity_url,
+            "wegotrip_url": wegotrip_url,
+            "kkday_url": kkday_url,
+            "radicalstorage_url": radicalstorage_url,
             "transfer": transfer_meta,
         }
 

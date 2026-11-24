@@ -584,8 +584,10 @@ class TransferService:
         gt_slug = gt_city_map.get(iata or "", _to_ascii_slug(target_info.get("alis_sehir") or city_name))
         kiwitaxi_raw_url = f"https://kiwitaxi.com/en/turkey/{kt_slug}" if kt_slug else "https://kiwitaxi.com/en/turkey"
         gettransfer_raw_url = f"https://gettransfer.com/tr/directions/turkey/{gt_slug}" if gt_slug else "https://gettransfer.com/tr/directions/turkey"
+        intui_raw_url = f"https://en.intui.travel/turkey-transfer/{gt_slug}-airport-transfer/" if gt_slug else "https://en.intui.travel/turkey-transfer/"
         kiwitaxi_url = RevenueService.enrich_deep_link("kiwitaxi", kiwitaxi_raw_url, "airport_transfer")
         gettransfer_url = RevenueService.enrich_deep_link("gettransfer", gettransfer_raw_url, "airport_transfer")
+        intui_url = RevenueService.enrich_deep_link("intui", intui_raw_url, "airport_transfer")
 
         # 3. Resmi Havalimanı Shuttle (HAVAİST / HAVABUS / HAVAŞ / MUTTAŞ) Sefer Saatleri Sayfası (HTTP 200)
         shuttle_url = RevenueService.enrich_deep_link(
@@ -609,6 +611,7 @@ class TransferService:
             "welcomepickups_url": welcomepickups_url,
             "kiwitaxi_url": kiwitaxi_url,
             "gettransfer_url": gettransfer_url,
+            "intui_url": intui_url,
             "live_shuttle_try": live_prices.get("shuttle_try"),
             "live_minivan_try": live_prices.get("minivan_try"),
             "live_vito_try": live_prices.get("vito_try"),

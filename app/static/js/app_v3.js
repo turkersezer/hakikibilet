@@ -4623,6 +4623,7 @@ function renderTransportResults(data, searchReq) {
         const welcomePickupsUrl = trMeta.welcomepickups_url || 'https://www.welcomepickups.com/istanbul/airport-transfer/';
         const kiwitaxiUrl = trMeta.kiwitaxi_url || 'https://tp.media/r?campaign_id=1&marker=789884&p=647&trs=585474&u=https%3A%2F%2Fkiwitaxi.com%2Fen%2Fturkey';
         const gettransferUrl = trMeta.gettransfer_url || 'https://tp.media/r?campaign_id=147&marker=789884&p=4439&trs=585474&u=https%3A%2F%2Fgettransfer.com%2Ftr';
+        const intuiUrl = trMeta.intui_url || 'https://tp.media/r?campaign_id=22&marker=789884&p=657&trs=585474&u=https%3A%2F%2Fen.intui.travel%2Fturkey-transfer%2F';
         const shuttleUrl = trMeta.shuttle_url || 'https://www.havas.net/otobus-hizmetleri';
         const shuttleName = trMeta.shuttle_name || 'HAVAİST / HAVAŞ Resmi Havalimanı Otobüsü';
         const shuttleRoutes = trMeta.shuttle_routes || 'Havalimanı ➔ Şehir Merkezi & Otogar Ekspres Hatları';
@@ -4739,6 +4740,9 @@ function renderTransportResults(data, searchReq) {
                                 <a href="${welcomePickupsUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-indigo-900 hover:bg-indigo-800 text-white font-bold text-xs transition shadow-2xs inline-flex items-center gap-1">
                                     <span>Welcome Pickups ↗</span>
                                 </a>
+                                <a href="${intuiUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs transition shadow-2xs inline-flex items-center gap-1">
+                                    <span>intui.travel ↗</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -4774,6 +4778,9 @@ function renderTransportResults(data, searchReq) {
                         </a>
                         <a href="${welcomePickupsUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-bold text-xs transition inline-flex items-center gap-1.5">
                             <span>Welcome Pickups ↗</span>
+                        </a>
+                        <a href="${intuiUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-sky-800 hover:bg-sky-700 text-white border border-sky-500/50 font-bold text-xs transition inline-flex items-center gap-1.5">
+                            <span>intui.travel VIP ↗</span>
                         </a>
                     </div>
                 </div>
@@ -5136,6 +5143,7 @@ function renderTransportResults(data, searchReq) {
             if (modeType === 'flight') {
                 const isEnAir = (window.currentAppLang === 'en');
                 const airhelpUrl = 'https://tp.media/r?campaign_id=120&marker=789884&p=9139&trs=585474&u=https%3A%2F%2Fwww.airhelp.com%2F';
+                const compensairUrl = 'https://tp.media/r?campaign_id=86&marker=789884&p=4129&trs=585474&u=https%3A%2F%2Fwww.compensair.com%2F';
                 html += `
                     <div class="mb-5 px-4 py-3 rounded-2xl bg-gradient-to-r from-sky-50 via-white to-indigo-50 border border-sky-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
                         <div class="flex items-center gap-2.5 text-xs text-slate-700">
@@ -5145,10 +5153,16 @@ function renderTransportResults(data, searchReq) {
                                 <span class="text-slate-600 ml-1">${isEnAir ? 'Check your eligibility for up to €600 passenger compensation under SHY-PASS / EC261 rules.' : 'Son 3 yıldaki rötarlı veya iptal uçuşlarınız için 600 €\'ya kadar yasal tazminat hakkınızı ücretsiz sorgulayın.'}</span>
                             </div>
                         </div>
-                        <a href="${airhelpUrl}" target="_blank" rel="noopener noreferrer"
-                           class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs transition inline-flex items-center justify-center gap-1.5 shrink-0 shadow-2xs">
-                            <span>${isEnAir ? 'Check Compensation (AirHelp) ↗' : 'AirHelp Tazminat Sorgula ↗'}</span>
-                        </a>
+                        <div class="flex flex-wrap items-center gap-2 shrink-0">
+                            <a href="${airhelpUrl}" target="_blank" rel="noopener noreferrer"
+                               class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs transition inline-flex items-center justify-center gap-1.5 shadow-2xs">
+                                <span>${isEnAir ? 'AirHelp Claim ↗' : 'AirHelp Sorgula ↗'}</span>
+                            </a>
+                            <a href="${compensairUrl}" target="_blank" rel="noopener noreferrer"
+                               class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition inline-flex items-center justify-center gap-1.5 shadow-2xs">
+                                <span>${isEnAir ? 'Compensair (€600) ↗' : 'Compensair (600€) ↗'}</span>
+                            </a>
+                        </div>
                     </div>
                 `;
             }
@@ -5215,6 +5229,20 @@ function renderTransportResults(data, searchReq) {
                                     🏛️ ${cCity} Müze & Gezi Biletleri (Tiqets) ↗
                                 </a>
                             ` : ''}
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <a href="${crossSell.klook_url || 'https://tp.media/r?campaign_id=137&marker=789884&p=4110&trs=585474&u=https%3A%2F%2Fwww.klook.com%2F'}" target="_blank" rel="noopener noreferrer" class="py-1.5 px-2 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-400/40 text-orange-200 font-bold text-[10.5px] text-center transition block">
+                                    🎟️ Klook Turlar ↗
+                                </a>
+                                <a href="${crossSell.gocity_url || 'https://tp.media/r?campaign_id=62&marker=789884&p=1942&trs=585474&u=https%3A%2F%2Fgocity.com%2F'}" target="_blank" rel="noopener noreferrer" class="py-1.5 px-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-200 font-bold text-[10.5px] text-center transition block">
+                                    🎫 Go City Pass ↗
+                                </a>
+                                <a href="${crossSell.wegotrip_url || 'https://tp.media/r?campaign_id=150&marker=789884&p=4487&trs=585474&u=https%3A%2F%2Fwegotrip.com%2F'}" target="_blank" rel="noopener noreferrer" class="py-1.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 font-bold text-[10.5px] text-center transition block">
+                                    🎧 WeGoTrip Sesli ↗
+                                </a>
+                                <a href="${crossSell.kkday_url || 'https://tp.media/r?campaign_id=633&marker=789884&p=9074&trs=585474&u=https%3A%2F%2Fwww.kkday.com%2F'}" target="_blank" rel="noopener noreferrer" class="py-1.5 px-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-200 font-bold text-[10.5px] text-center transition block">
+                                    🌏 KKday Deneyim ↗
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -6735,10 +6763,15 @@ function generateTicketCardsHtml(tickets, searchReq) {
                             <span>🚗 ${isEn ? `Airport Car (${computeArrivalPlusBufferTime(ticket.arrival_time, 30)}) ↗` : `Havalimanı Teslim Araç (${computeArrivalPlusBufferTime(ticket.arrival_time, 30)}) ↗`}</span>
                         </a>
                         ${(ticket.is_international || isInternationalCityOrRoute(toCity, toCode)) ? `
+                        <a href="https://tp.media/r?campaign_id=541&marker=789884&p=8310&trs=585474&u=https%3A%2F%2Fwww.airalo.com%2F"
+                           target="_blank" rel="noopener noreferrer"
+                           class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 font-bold text-[11px] inline-flex items-center gap-1.5 transition">
+                            <span>📱 ${isEn ? 'Airalo eSIM ↗' : 'Airalo Yurt Dışı eSIM ↗'}</span>
+                        </a>
                         <a href="https://tp.media/r?campaign_id=224&marker=789884&p=5998&trs=585474&u=https%3A%2F%2Fyesim.app%2F"
                            target="_blank" rel="noopener noreferrer"
                            class="px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-950 border border-purple-200 font-bold text-[11px] inline-flex items-center gap-1.5 transition">
-                            <span>📱 ${isEn ? 'International eSIM (Yesim) ↗' : 'Yurt Dışı eSIM (Yesim) ↗'}</span>
+                            <span>📱 ${isEn ? 'Yesim eSIM ↗' : 'Yesim eSIM ↗'}</span>
                         </a>
                         ` : ''}
                     </div>
@@ -10504,9 +10537,27 @@ function openVisaChecklistModal(destName = 'Yunan Adaları & Yurt Dışı') {
                 `).join('')}
             </div>
 
-            <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-950 space-y-1.5 mb-4">
+            <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-950 space-y-1.5 mb-3">
                 <div>🛡️ <strong>${isEn ? 'Green Passport & Schengen Holders:' : 'Yeşil Pasaport & Schengen Sahipleri:'}</strong> ${isEn ? 'Direct visa-free boarding; only a 6+ month passport and Travel Health Insurance are required.' : 'Doğrudan geçiş yapabilirler; sadece en az 6 ay geçerli pasaport ve Seyahat Sağlık Sigortası bulundurulmalıdır.'}</div>
                 <div>🚗 <strong>${isEn ? 'Travelling with a Vehicle:' : 'Araçla Geçiş Kuralları:'}</strong> ${isEn ? 'Requires Green Card (International Motor Insurance), new-type Driving License, and notarized power of attorney if the car is not in your name.' : 'Uluslararası Yeşil Kart (Green Card) motorlu taşıt sigortası, yeni tip çipli ehliyet ve araç başkasının/şirket üzerineyse vekaletname zorunludur.'}</div>
+            </div>
+
+            <div class="p-3 rounded-2xl bg-indigo-50/90 border border-indigo-200 text-[11px] text-indigo-950 mb-4">
+                <div class="font-black mb-1.5">📱 ${isEn ? 'Avoid High Roaming Fees on Islands & Ships (Official eSIM Partners):' : 'Adalarda & Gemide Yüksek Roaming Ücreti Ödemeyin (Anında Yurt Dışı eSIM):'}</div>
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <a href="https://tp.media/r?campaign_id=541&marker=789884&p=8310&trs=585474&u=https%3A%2F%2Fwww.airalo.com%2F" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-700 hover:bg-indigo-800 text-white font-black text-[10.5px] transition inline-flex items-center gap-1">
+                        <span>Airalo eSIM ↗</span>
+                    </a>
+                    <a href="https://tp.media/r?campaign_id=224&marker=789884&p=5998&trs=585474&u=https%3A%2F%2Fyesim.app%2F" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-purple-700 hover:bg-purple-800 text-white font-black text-[10.5px] transition inline-flex items-center gap-1">
+                        <span>Yesim eSIM ↗</span>
+                    </a>
+                    <a href="https://tp.media/r?campaign_id=629&marker=789884&p=8979&trs=585474&u=https%3A%2F%2Fsaily.com%2F" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-bold text-[10.5px] transition inline-flex items-center gap-1">
+                        <span>Saily (Nord) ↗</span>
+                    </a>
+                    <a href="https://tp.media/click?shmarker=789884&promo_id=9150&source_type=link&type=click&campaign_id=636&trs=585474" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-sky-700 hover:bg-sky-800 text-white font-bold text-[10.5px] transition inline-flex items-center gap-1">
+                        <span>🛳️ GigSky (Gemi & Ada) ↗</span>
+                    </a>
+                </div>
             </div>
 
             <div class="flex items-center justify-end gap-2">
@@ -10885,6 +10936,9 @@ function buildDestinationEventAndGuideBannerHtml(data, searchReq, isEn = false) 
         `;
     }
 
+    const radicalStorageUrl = (data && data.destination_cross_sell && data.destination_cross_sell.radicalstorage_url)
+        || 'https://tp.media/r?campaign_id=209&marker=789884&p=5867&trs=585474&u=https%3A%2F%2Fradicalstorage.com%2F';
+
     out += `
         <div class="bg-slate-50 border border-slate-200/90 text-slate-700 rounded-2xl px-3.5 py-2 mb-3 flex flex-wrap items-center justify-between gap-2 text-[11.5px] font-semibold">
             <div class="flex flex-wrap items-center gap-2.5">
@@ -10893,9 +10947,14 @@ function buildDestinationEventAndGuideBannerHtml(data, searchReq, isEn = false) 
                 <span class="text-slate-300">•</span>
                 <span class="text-slate-700">${transitText}</span>
             </div>
-            <a href="${hotelUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:text-blue-950 font-black inline-flex items-center gap-1 shrink-0">
-                <span>🏨 ${escapeHtml(destCity)} ${isEn ? 'Hotels ↗' : 'Otelleri ↗'}</span>
-            </a>
+            <div class="flex flex-wrap items-center gap-3 shrink-0">
+                <a href="${radicalStorageUrl}" target="_blank" rel="noopener noreferrer" class="text-amber-800 hover:text-amber-950 font-black inline-flex items-center gap-1">
+                    <span>🧳 ${isEn ? 'Luggage Storage ↗' : 'Valiz Emanet ↗'}</span>
+                </a>
+                <a href="${hotelUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:text-blue-950 font-black inline-flex items-center gap-1">
+                    <span>🏨 ${escapeHtml(destCity)} ${isEn ? 'Hotels ↗' : 'Otelleri ↗'}</span>
+                </a>
+            </div>
         </div>
     `;
     return out;
@@ -11063,14 +11122,25 @@ function buildContextualAdTechNativeSlotHtml(data, searchReq, isEn = false) {
     let ctaText = isEn ? 'Explore Partner Deals ↗' : 'Kampanyalı Otelleri Gör ↗';
     let ctaUrl = hotelUrl;
 
+    let extraCtaHtml = '';
     if (mode === 'bus' || mode === 'train') {
         title = isEn
             ? `Zero-Fee Bus & Rail Booking + ${escapeHtml(destCity)} Central Stay Deals`
             : `${escapeHtml(destCity)} Otobüs & YHT Yolcularına Özel Merkez Otellerde Erken Rezervasyon Fırsatı`;
     } else if (mode === 'ferry') {
         title = isEn
-            ? `Greek Islands & Coastal Ferry Travelers: Instant eSIM & Island Stay Discounts`
-            : `Ada & Feribot Yolcularına Özel: Yurt Dışı eSIM (Yesim) ve Ada Konaklama İndirimleri`;
+            ? `Greek Islands & Coastal Ferry Travelers: Instant eSIM (Airalo / Yesim / GigSky) & Island Stay Discounts`
+            : `Ada & Feribot Yolcularına Özel: Yurt Dışı eSIM (Airalo • Yesim • GigSky) ve Ada Konaklama İndirimleri`;
+        extraCtaHtml = `
+            <a href="https://tp.media/r?campaign_id=541&marker=789884&p=8310&trs=585474&u=https%3A%2F%2Fwww.airalo.com%2F" target="_blank" rel="noopener noreferrer"
+               class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition inline-flex items-center gap-1.5 shrink-0 shadow-2xs">
+                <span>📱 Airalo eSIM ↗</span>
+            </a>
+            <a href="https://tp.media/click?shmarker=789884&promo_id=9150&source_type=link&type=click&campaign_id=636&trs=585474" target="_blank" rel="noopener noreferrer"
+               class="px-3 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-black text-xs transition inline-flex items-center gap-1.5 shrink-0 shadow-2xs">
+                <span>🛳️ GigSky Gemi/Ada eSIM ↗</span>
+            </a>
+        `;
     }
 
     return `
@@ -11083,11 +11153,14 @@ function buildContextualAdTechNativeSlotHtml(data, searchReq, isEn = false) {
                 <div class="text-xs sm:text-sm font-black text-slate-900">${title}</div>
                 <div class="text-[11px] font-medium text-slate-600">${desc}</div>
             </div>
-            <a href="${ctaUrl}" target="_blank" rel="noopener noreferrer"
-               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Trip.com Campaign', '${escapeHtml(mode)}', '${escapeHtml(searchReq.origin || '')}', '${escapeHtml(destCity)}', 0)"
-               class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition inline-flex items-center gap-1.5 shrink-0 shadow-2xs">
-                <span>${ctaText}</span>
-            </a>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                ${extraCtaHtml}
+                <a href="${ctaUrl}" target="_blank" rel="noopener noreferrer"
+                   onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Trip.com Campaign', '${escapeHtml(mode)}', '${escapeHtml(searchReq.origin || '')}', '${escapeHtml(destCity)}', 0)"
+                   class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition inline-flex items-center gap-1.5 shrink-0 shadow-2xs">
+                    <span>${ctaText}</span>
+                </a>
+            </div>
         </div>
     `;
 }

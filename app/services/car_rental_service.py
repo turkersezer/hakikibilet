@@ -907,6 +907,12 @@ class CarRentalService:
         eb_continent = "europe" if city_slug in ("istanbul", "edirne", "tekirdag", "kirklareli") else "asia"
         economybookings_raw_url = f"https://www.economybookings.com/tr/car-rental/{eb_continent}/turkey/{city_slug}"
 
+        # 9. QEEQ, GetRentacar, AutoEurope & BikesBooking (Travelpayouts Onaylı Global Filo & 2 Tekerlekli Mobilite)
+        qeeq_raw_url = "https://www.qeeq.com/"
+        getrentacar_raw_url = f"https://getrentacar.com/tr/car-rental/turkey/{city_slug}"
+        autoeurope_raw_url = "https://www.autoeurope.eu/"
+        bikesbooking_raw_url = f"https://bikesbooking.com/en/search/?location={city_slug}"
+
         from app.services.revenue_service import RevenueService
         y360_eco = f"{yolcu360_base}&c=economy" if "?" in yolcu360_base else yolcu360_base
         y360_mid = f"{yolcu360_base}&c=mid" if "?" in yolcu360_base else yolcu360_base
@@ -922,6 +928,10 @@ class CarRentalService:
             "enuygun": RevenueService.enrich_deep_link("enuygun", enuygun_car_url, "car_rental"),
             "localrent": RevenueService.enrich_deep_link("localrent", localrent_raw_url, "car_rental"),
             "economybookings": RevenueService.enrich_deep_link("economybookings", economybookings_raw_url, "car_rental"),
+            "qeeq": RevenueService.enrich_deep_link("qeeq", qeeq_raw_url, "car_rental"),
+            "getrentacar": RevenueService.enrich_deep_link("getrentacar", getrentacar_raw_url, "car_rental"),
+            "autoeurope": RevenueService.enrich_deep_link("autoeurope", autoeurope_raw_url, "car_rental"),
+            "bikesbooking": RevenueService.enrich_deep_link("bikesbooking", bikesbooking_raw_url, "car_rental"),
             "biletcom": RevenueService.enrich_deep_link("biletcom", bilet_car_url, "car_rental"),
             "obilet": RevenueService.enrich_deep_link("obilet", obilet_car_url, "car_rental"),
             "rentalcars": RevenueService.enrich_deep_link("rentalcars", rentalcars_url, "car_rental"),
@@ -996,6 +1006,46 @@ class CarRentalService:
                 "commission_rank": 89,
                 "badge": "Global Havalimanı Filosu",
                 "btn_class": "bg-cyan-600 hover:bg-cyan-700 text-white",
+            },
+            {
+                "id": "qeeq",
+                "name": "QEEQ Global",
+                "url": links.get("qeeq") or links["rentalcars"],
+                "daily_price": None,
+                "total_price": None,
+                "commission_rank": 88,
+                "badge": "Fiyat Düşüş Korumalı",
+                "btn_class": "bg-orange-600 hover:bg-orange-700 text-white",
+            },
+            {
+                "id": "getrentacar",
+                "name": "GetRentacar",
+                "url": links.get("getrentacar") or links["localrent"],
+                "daily_price": None,
+                "total_price": None,
+                "commission_rank": 87,
+                "badge": "Yerel & Özel Teklifli Filo",
+                "btn_class": "bg-fuchsia-600 hover:bg-fuchsia-700 text-white",
+            },
+            {
+                "id": "autoeurope",
+                "name": "AutoEurope",
+                "url": links.get("autoeurope") or links["rentalcars"],
+                "daily_price": None,
+                "total_price": None,
+                "commission_rank": 84,
+                "badge": "Avrupa & UK Uzmanı",
+                "btn_class": "bg-blue-700 hover:bg-blue-800 text-white",
+            },
+            {
+                "id": "bikesbooking",
+                "name": "BikesBooking (Scooter/Motosiklet)",
+                "url": links.get("bikesbooking") or links["localrent"],
+                "daily_price": None,
+                "total_price": None,
+                "commission_rank": 83,
+                "badge": "🛵 Scooter • Motosiklet • ATV",
+                "btn_class": "bg-lime-600 hover:bg-lime-700 text-white",
             },
             {
                 "id": "biletcom",
