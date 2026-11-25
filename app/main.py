@@ -612,7 +612,7 @@ async def search_tickets(req: SearchRequest, request: Request):
         try:
             from app.services.analytics_service import AnalyticsService
             res_count = int(encoded_result.get("results_count") or len(encoded_result.get("tickets") or []))
-            asyncio.create_task(AnalyticsService.log_event(
+            await AnalyticsService.log_event(
                 event_type="search",
                 transport_type=req.transport_type or "flight",
                 origin=str(encoded_result.get("origin") or req.origin),
@@ -621,7 +621,7 @@ async def search_tickets(req: SearchRequest, request: Request):
                 ip=client_ip,
                 user_agent=ua,
                 referrer=ref,
-            ))
+            )
         except Exception:
             pass
         return JSONResponse(content=encoded_result, headers={"X-Hakiki-Cache": "MISS"})
@@ -629,7 +629,7 @@ async def search_tickets(req: SearchRequest, request: Request):
         print(f"[/api/search Hata Kalkanı Devrede]: {exc}")
         try:
             from app.services.analytics_service import AnalyticsService
-            asyncio.create_task(AnalyticsService.log_event(
+            await AnalyticsService.log_event(
                 event_type="search",
                 transport_type=req.transport_type or "flight",
                 origin=req.origin,
@@ -638,7 +638,7 @@ async def search_tickets(req: SearchRequest, request: Request):
                 ip=client_ip,
                 user_agent=ua,
                 referrer=ref,
-            ))
+            )
         except Exception:
             pass
         return _build_safe_fallback_search_payload(

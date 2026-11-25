@@ -205,22 +205,26 @@ class SearchService:
             except Exception:
                 tp_flight_url = f"https://www.aviasales.com/?marker={tp_marker}&currency={currency}"
 
-            flight_links["travelpayouts"] = tp_flight_url
-            flight_links["aviasales"] = tp_flight_url
+            flight_links["travelpayouts"] = RevenueService.enrich_deep_link("aviasales", tp_flight_url, "flight")
+            flight_links["aviasales"] = flight_links["travelpayouts"]
 
             if is_round:
                 sky_ret = cls.format_date_for_skyscanner(return_date)
                 enuygun_ret = cls.format_date_for_enuygun(return_date)
-                flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{pegasus_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
+                raw_pgs = f"https://www.enuygun.com/ucak-bileti/arama/{pegasus_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
+                raw_enu = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}"
+                flight_links["pegasus"] = RevenueService.enrich_deep_link("enuygun", raw_pgs, "flight")
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/{sky_ret}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=1"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+through+{return_date}{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
-                flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&donus={enuygun_ret}&{enuygun_pax}{biz_extra_enuygun}"
+                flight_links["enuygun"] = RevenueService.enrich_deep_link("enuygun", raw_enu, "flight")
                 trip_ret_param = f"&rdate={return_date}"
             else:
-                flight_links["pegasus"] = f"https://www.enuygun.com/ucak-bileti/arama/{pegasus_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
+                raw_pgs = f"https://www.enuygun.com/ucak-bileti/arama/{pegasus_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}&havayolu=PC"
+                raw_enu = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}"
+                flight_links["pegasus"] = RevenueService.enrich_deep_link("enuygun", raw_pgs, "flight")
                 flight_links["skyscanner"] = f"https://www.skyscanner.com.tr/transport/flights/{origin_iata.lower()}/{dest_iata.lower()}/{sky_dep}/?{sky_pax}&cabinclass={sky_cabin}&currency={currency}&locale=tr-TR&rtn=0"
                 flight_links["google_flights"] = f"https://www.google.com/travel/flights?q=flights+from+{origin_iata}+to+{dest_iata}+on+{departure_date}+one+way{biz_extra_google}&hl=tr&gl=tr&curr={currency}"
-                flight_links["enuygun"] = f"https://www.enuygun.com/ucak-bileti/arama/{enuygun_route}/?gidis={enuygun_dep}&{enuygun_pax}{biz_extra_enuygun}"
+                flight_links["enuygun"] = RevenueService.enrich_deep_link("enuygun", raw_enu, "flight")
                 trip_ret_param = ""
 
             trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "")
@@ -2200,7 +2204,7 @@ class SearchService:
                 infants=infants,
             )
 
-        # Adım 2.2: Haftanın En Ucuz Otobüs / Tren / Alternatif Ulaşım Rozetleri (Paralel Görevden Al)
+        # Adım 2.2: Haftanın En Ucuz Otobüs / Tren / Feribot / Alternatif Ulaşım Rozetleri (Paralel Görevden Al)
         alternative_badges = []
         if _alt_badges_future is not None:
             try:
@@ -2210,6 +2214,16 @@ class SearchService:
             finally:
                 if _alt_executor is not None:
                     _alt_executor.shutdown(wait=False)
+
+        # Alternatif rozetlerden gelen doğrulanmış en düşük fiyatları üst sekme özetine (summary) yansıt
+        for _b in alternative_badges:
+            _bm = _b.get("mode")
+            if _bm and _bm in summary:
+                summary[_bm]["available"] = True
+                if _b.get("min_price") and (not summary[_bm].get("min_price") or _b["min_price"] < summary[_bm]["min_price"]):
+                    summary[_bm]["min_price"] = _b["min_price"]
+                if _b.get("duration") and not summary[_bm].get("min_duration"):
+                    summary[_bm]["min_duration"] = _b["duration"]
 
         # Adım 2.3: Uçuş / Sefer Altı "Gittiğiniz Yerde Bunlar Var!" (Otel + Araç + Etkinlik/Gezi Tavsiyesi)
         destination_cross_sell = cls.build_destination_cross_sell(
@@ -2464,8 +2478,6 @@ class SearchService:
                     )
                 except Exception:
                     day_price = None
-                if day_price is None and selected_min_price and selected_min_price > 0:
-                    day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
             elif transport_type == "train":
                 try:
                     from app.services.train_service import TrainService
@@ -2479,11 +2491,8 @@ class SearchService:
                     )
                 except Exception:
                     day_price = None
-                if day_price is None and selected_min_price and selected_min_price > 0:
-                    day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
             elif transport_type == "ferry":
-                if selected_min_price and selected_min_price > 0:
-                    day_price = round(float(selected_min_price)) if currency == "TRY" else round(float(selected_min_price), 2)
+                day_price = None
 
             day_diff = (d_dt - base_dt).days
             days_strip.append({
@@ -2698,24 +2707,23 @@ class SearchService:
                             "discounts": disc_tcdd,
                         }
                 elif links["train"].get("is_international"):
-                    min_intl_tr = 1450 if currency == "TRY" else 42
                     return {
                         "mode": "train",
                         "icon": "🚆",
                         "title_tr": "Avrupa Hızlı Tren",
                         "title_en": "European High-Speed Rail",
-                        "min_price": min_intl_tr,
+                        "min_price": None,
                         "currency": curr_symbol,
-                        "duration": "3 sa 15 dk",
-                        "provider": "Trainline / Eurostar",
-                        "deep_link": links["train"].get("trainline")
+                        "duration": "Hızlı Tren",
+                        "provider": "Trip.com Trains / Trainline",
+                        "deep_link": links["train"].get("trip_trains") or links["train"].get("trainline")
                     }
             except Exception:
                 pass
             return None
 
         def _fetch_flight_badge() -> Optional[Dict[str, Any]]:
-            if current_mode not in ("bus", "train", "ferry"):
+            if current_mode not in ("bus", "train", "ferry") or is_island_trip:
                 return None
             eff_orig, orig_nearby = resolve_nearest_airport_city(origin_name)
             eff_dest, dest_nearby = resolve_nearest_airport_city(dest_name)
@@ -2743,6 +2751,9 @@ class SearchService:
                 except Exception:
                     fl_min_price = None
 
+            if fl_min_price is None:
+                return None
+
             dest_iata_label = eff_dest.get("iata") or ""
             dest_city_short = (eff_dest.get("name") or "").split("(")[0].strip()
             if dest_nearby and dest_iata_label:
@@ -2765,17 +2776,58 @@ class SearchService:
                 "currency": curr_symbol,
                 "duration": fl_duration,
                 "provider": "THY / Pegasus / AJet",
-                "deep_link": links.get("flight", {}).get("enuygun") or links.get("flight", {}).get("trip"),
+                "deep_link": links.get("flight", {}).get("trip") or links.get("flight", {}).get("enuygun"),
                 "flight_origin": eff_orig["name"] if orig_nearby else None,
                 "flight_dest": eff_dest["name"] if dest_nearby else None,
             }
 
+        def _fetch_ferry_badge() -> Optional[Dict[str, Any]]:
+            if current_mode == "ferry":
+                return None
+            try:
+                from app.services.ferry_service import FerryService
+                f_routes = FerryService.find_matching_routes(origin_name, dest_name)
+                if not f_routes:
+                    return None
+                f_list = FerryService.search_ferries(
+                    origin_name=origin_name,
+                    dest_name=dest_name,
+                    departure_date=departure_date,
+                    passengers=passengers,
+                    is_round=False,
+                    currency=currency,
+                )
+                if not f_list:
+                    return None
+                f_prices = [float(f["price"]) for f in f_list if f.get("price") is not None and float(f["price"]) > 0]
+                min_f_price = (int(round(min(f_prices))) if currency == "TRY" else round(min(f_prices), 2)) if f_prices else None
+                first_f = f_list[0]
+                f_dur = first_f.get("duration") or "30 dk"
+                f_prov = first_f.get("winner_name") or first_f.get("carrier") or "Feribot / Deniz Hattı"
+                f_url = first_f.get("winner_url") or first_f.get("direct_link") or first_f.get("official_link")
+                return {
+                    "mode": "ferry",
+                    "icon": "⛴️",
+                    "title_tr": "En Ucuz Feribot / Deniz",
+                    "title_en": "Cheapest Ferry",
+                    "min_price": min_f_price,
+                    "currency": curr_symbol,
+                    "duration": f_dur,
+                    "provider": f_prov,
+                    "deep_link": f_url,
+                    "ferry_origin": first_f.get("origin") or origin_name,
+                    "ferry_dest": first_f.get("destination") or dest_name,
+                }
+            except Exception:
+                return None
+
         badges: List[Dict[str, Any]] = []
-        with ThreadPoolExecutor(max_workers=3) as ex:
+        with ThreadPoolExecutor(max_workers=4) as ex:
             fut_fl = ex.submit(_fetch_flight_badge)
             fut_tr = ex.submit(_fetch_train_badge)
             fut_bus = ex.submit(_fetch_bus_badge)
-            for fut in (fut_fl, fut_tr, fut_bus):
+            fut_ferry = ex.submit(_fetch_ferry_badge)
+            for fut in (fut_ferry, fut_fl, fut_tr, fut_bus):
                 try:
                     res_b = fut.result(timeout=7)
                     if res_b:

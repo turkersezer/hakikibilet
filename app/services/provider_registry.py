@@ -407,20 +407,36 @@ def decide_winning_flight_offer(
     for it in priced_candidates:
         it["is_best"] = (it.get("url") == winner.get("url") and it.get("channel") == winner.get("channel"))
 
-    # Buton metinlerini üret
+    # ANAYASA 2.1 + 2.2 UYUMU:
+    # Kartın ana fiyatı her zaman doğrulanmış en düşük canlı fiyattır (w_price) ve Google Flights alt şeritte fiyatıyla gösterilir.
+    # Ancak en düşük fiyat komisyonsuz 'official' (Google Flights) kanalından geldiyse ve fiyatsız onaylı ortağımız Trip.com mevcutsa,
+    # ana CTA butonu (sahte fiyat yazmadan!) onaylı ortağımız Trip.com'a yönlendirir (Anayasa 2.2: Komisyon getirmeyen yer ana CTA olamaz).
     w_price = winner.get("price")
-    if w_price and float(w_price) > 0:
-        btn_tr, btn_en = format_button_label(winner["prefix_tr"], winner["prefix_en"], float(w_price))
+    trip_unpriced = next((u for u in unpriced_candidates if u.get("channel") == "trip" and u.get("active_affiliate") and u.get("url")), None)
+    if not winner.get("active_affiliate") and trip_unpriced:
+        cta_winner_id = "trip"
+        cta_winner_name = "Trip.com"
+        cta_winner_channel = "trip"
+        cta_winner_url = trip_unpriced["url"]
+        btn_tr = "Trip.com'da Seferi Seç ↗"
+        btn_en = "Select on Trip.com ↗"
     else:
-        btn_tr = f"{winner['prefix_tr']} Seferleri Gör →"
-        btn_en = f"View on {winner['prefix_en']} →"
+        cta_winner_id = winner.get("channel", "official")
+        cta_winner_name = winner.get("name", carrier_meta["official_name"])
+        cta_winner_channel = winner.get("channel", "official")
+        cta_winner_url = winner.get("url", carrier_meta["official_link"])
+        if w_price and float(w_price) > 0:
+            btn_tr, btn_en = format_button_label(winner["prefix_tr"], winner["prefix_en"], float(w_price))
+        else:
+            btn_tr = f"{winner['prefix_tr']} Seferleri Gör →"
+            btn_en = f"View on {winner['prefix_en']} →"
 
     return {
-        "winner_id": winner.get("channel", "official"),
-        "winner_name": winner.get("name", carrier_meta["official_name"]),
-        "winner_channel": winner.get("channel", "official"),
+        "winner_id": cta_winner_id,
+        "winner_name": cta_winner_name,
+        "winner_channel": cta_winner_channel,
         "winner_price": w_price,
-        "winner_url": winner.get("url", carrier_meta["official_link"]),
+        "winner_url": cta_winner_url,
         "winner_button_tr": btn_tr,
         "winner_button_en": btn_en,
         "providers": priced_candidates,

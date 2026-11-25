@@ -1099,7 +1099,7 @@ class FerryService:
         raw_official = route.get("official_url") or "https://www.ido.com.tr/sefer-saatleri"
         official_route_pages = {
             "cesme-sakiz-car": "https://www.erturk.com.tr/cesme-sakiz-feribot-bileti",
-            "cesme-sakiz-fast": "https://www.turyolonline.com/cesme-sakiz-feribot-bileti",
+            "cesme-sakiz-fast": "https://www.tilostravel.com/tr/online-bilet",
             "bodrum-kos": "https://www.turyolonline.com/bodrum-kos-feribot-bileti",
             "ayvalik-midilli": "https://www.turyolonline.com/ayvalik-midilli-feribot-bileti",
             "fethiye-rodos": "https://www.turyolonline.com/fethiye-rodos-feribot-bileti",

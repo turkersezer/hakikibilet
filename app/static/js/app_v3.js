@@ -4462,8 +4462,10 @@ function renderTransportResults(data, searchReq) {
                         ${altBadges.map(b => {
                             const bTitle = isEn ? b.title_en : b.title_tr;
                             const bPrice = b.min_price ? `${fmtNum(b.min_price)} ${b.currency}` : (isEn ? 'Live Fares' : 'Canlı');
+                            const bOrig = escapeHtml(b.ferry_origin || b.flight_origin || '').replace(/'/g, "\\'");
+                            const bDest = escapeHtml(b.ferry_dest || b.flight_dest || '').replace(/'/g, "\\'");
                             return `
-                                <button type="button" onclick="Promise.resolve(switchUnifiedTab('${b.mode}')).then(() => executeTransportSearch());"
+                                <button type="button" onclick="switchToAlternativeMode('${b.mode}', '${bOrig}', '${bDest}')"
                                         class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-800 border border-slate-200 text-[11px] font-bold transition cursor-pointer inline-flex items-center gap-1.5">
                                     <span>${b.icon} ${bTitle}:</span>
                                     <span class="font-black text-amber-700">${bPrice}</span>
@@ -5080,28 +5082,100 @@ function renderTransportResults(data, searchReq) {
                 </div>
             `;
         }
-                if (!tickets || tickets.length === 0) {
-            let emptyIcon = "fa-route";
-            let emptyTitle = "Bu Güzergahta Doğrudan Sefer Bulunamadı";
-            let emptyDesc = `${escapeHtml(searchReq.origin)} ile ${escapeHtml(searchReq.destination)} arasında seçtiğiniz tarihte tarifeli sefer bulunamadı.`;
-            let showAltButtons = true;
+        if (!tickets || tickets.length === 0) {
+            const rawOrigDisp = data.raw_origin || searchReq.raw_origin || searchReq.origin || '';
+            const rawDestDisp = data.raw_destination || searchReq.raw_destination || searchReq.destination || '';
+            const comboLow = `${rawOrigDisp} ${rawDestDisp} ${searchReq.origin || ''} ${searchReq.destination || ''}`.toLowerCase();
+            const islandKeywords = ['sakız', 'sakiz', 'chios', 'kos', 'midilli', 'lesvos', 'samos', 'sisam', 'rodos', 'rhodes', 'meis', 'simi', 'symi', 'bozcaada', 'gökçeada', 'gokceada', 'avşa', 'avsa', 'adası', 'adasi', 'girne'];
+            const isIslandRoute = islandKeywords.some(k => comboLow.includes(k));
+            const verifiedAlts = Array.isArray(data.alternative_badges) ? data.alternative_badges : [];
+            const ferryAlt = verifiedAlts.find(b => b && b.mode === 'ferry');
 
-            if (modeType === 'train') {
+            let emptyIcon = "fa-compass";
+            let emptyBadge = isEn ? "🧭 SMART MULTI-MODAL COMPASS" : "🧭 AKILLI ÇOK-MODLU ULAŞIM PUSULASI";
+            let emptyTitle = isEn ? "No Direct Trips in This Mode — Available Alternatives Below" : "Seçilen Modda Doğrudan Sefer Yok — Aktif Ulaşım Alternatifleri Hazır";
+            let emptyDesc = `${escapeHtml(rawOrigDisp)} ile ${escapeHtml(rawDestDisp)} arasında seçtiğiniz ulaşım modunda doğrudan tarifeli sefer bulunamadı.`;
+
+            if (isIslandRoute && modeType !== 'ferry') {
+                emptyIcon = "fa-ship";
+                emptyBadge = isEn ? "⛴️ ISLAND & MARITIME ROUTE COMPASS" : "⛴️ ADA & DENİZ ROTASI PUSULASI";
+                emptyTitle = isEn
+                    ? `${escapeHtml(rawOrigDisp)} ➔ ${escapeHtml(rawDestDisp)} Operates via Ferry / Sea Route`
+                    : `${escapeHtml(rawOrigDisp)} ➔ ${escapeHtml(rawDestDisp)} Hattında Ulaşım Feribot İle Sağlanmaktadır`;
+                emptyDesc = isEn
+                    ? `There is no direct highway or direct commercial flight on this island corridor. You can switch to live Ferry & Catamaran departures below${ferryAlt && ferryAlt.min_price ? ` starting from <strong>${Number(ferryAlt.min_price).toLocaleString('en-US')} ${ferryAlt.currency || '₺'}</strong> (${escapeHtml(ferryAlt.duration || '30m')})` : ''}.`
+                    : `${escapeHtml(rawOrigDisp)} ile ${escapeHtml(rawDestDisp)} arasında doğrudan karayolu veya direkt uçuş bulunmamaktadır. Bu ada güzergahında ulaşım <strong>deniz yoluyla (Feribot / Katamaran)</strong> sağlanmaktadır${ferryAlt && ferryAlt.min_price ? ` — <strong>${Number(ferryAlt.min_price).toLocaleString('tr-TR')} ${ferryAlt.currency || '₺'}'den başlayan (${escapeHtml(ferryAlt.duration || '30 dk')})</strong> canlı feribot seferlerine aşağıdan tek tıkla geçebilirsiniz` : ''}.`;
+            } else if (modeType === 'train') {
                 emptyIcon = "fa-train-subway";
-                emptyTitle = "Seçilen Güzergahta Aktif Yolcu Treni / YHT Hattı Bulunmamaktadır";
-                emptyDesc = `${escapeHtml(searchReq.origin)} ile ${escapeHtml(searchReq.destination)} arasında doğrudan tarifeli TCDD tren seferi bulunmamaktadır. Türkiye genelinde demiryolu yolcu hattı belirli koridorlarda (YHT ve anahat hatları) hizmet vermektedir. Kesintisiz seyahat için Otobüs veya Uçak alternatiflerini tek tıkla inceleyebilirsiniz.`;
+                emptyTitle = isEn
+                    ? "No Direct Passenger Rail / YHT Line on This Route"
+                    : "Seçilen Güzergahta Aktif Yolcu Treni / YHT Hattı Bulunmamaktadır";
+                emptyDesc = `${escapeHtml(rawOrigDisp)} ile ${escapeHtml(rawDestDisp)} arasında doğrudan tarifeli TCDD tren seferi bulunmamaktadır. Aynı tarihte bu rota için çalışan gerçek alternatifleri (Uçak / Otobüs / Feribot) aşağıda canlı taban fiyatlarıyla karşılaştırıp tek tıkla geçiş yapabilirsiniz.`;
             } else if (modeType === 'ferry') {
                 emptyIcon = "fa-ship";
-                emptyTitle = "Bu Güzergahta Tarifeli Feribot Seferi Bulunmamaktadır";
-                emptyDesc = `${escapeHtml(searchReq.origin)} ile ${escapeHtml(searchReq.destination)} arasında doğrudan deniz yolu / feribot hattı yoktur. Deniz hatlarımız Marmara Denizi (İDO/BUDO), Ege Adaları (Kapıda Vize) ve KKTC limanlarında hizmet vermektedir.`;
+                emptyTitle = isEn
+                    ? "No Direct Maritime / Ferry Line Between These Cities"
+                    : "Bu Güzergahta Tarifeli Deniz / Feribot Hattı Bulunmamaktadır";
+                emptyDesc = `${escapeHtml(rawOrigDisp)} ile ${escapeHtml(rawDestDisp)} arasında doğrudan deniz yolu bağlantısı yoktur. Bu güzergahta aktif olan karayolu, hızlı tren (YHT) veya uçuş alternatiflerine aşağıdaki canlı fiyat butonlarıyla hemen geçebilirsiniz.`;
             } else if (modeType === 'bus') {
                 emptyIcon = "fa-bus";
-                emptyTitle = "Bu Tarihte Doğrudan Otobüs Seferi Bulunamadı";
-                emptyDesc = `${escapeHtml(searchReq.origin)} - ${escapeHtml(searchReq.destination)} rotasında seçilen tarihte doğrudan sefer bulunamamıştır. Lütfen seyahat tarihinizi değiştiriniz veya uçuş alternatiflerini kontrol ediniz.`;
+                emptyTitle = isEn
+                    ? "No Direct Bus Departures Found for This Route"
+                    : "Bu Güzergahta Doğrudan Otobüs Seferi Bulunmamaktadır";
+                emptyDesc = `${escapeHtml(rawOrigDisp)} - ${escapeHtml(rawDestDisp)} rotasında doğrudan otobüs seferi bulunamamıştır. Aşağıdaki doğrulanmış alternatif ulaşım modlarıyla seyahatinizi planlayabilirsiniz.`;
+            }
+
+            const modeBtnStyle = {
+                ferry: 'bg-sky-400 hover:bg-sky-300 text-slate-950 shadow-sky-500/20',
+                train: 'bg-indigo-400 hover:bg-indigo-300 text-slate-950 shadow-indigo-500/20',
+                bus: 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20',
+                flight: 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/20',
+            };
+            const modeLabelTr = { ferry: 'Feribot Seferlerine Geç', train: 'YHT / Tren Seferlerine Geç', bus: 'Otobüs Seferlerine Geç', flight: 'Uçak Biletlerine Geç' };
+            const modeLabelEn = { ferry: 'View Ferry Departures', train: 'View Train Departures', bus: 'View Bus Departures', flight: 'View Flight Tickets' };
+
+            let altButtonsHtml = '';
+            if (verifiedAlts.length > 0) {
+                altButtonsHtml = verifiedAlts.map(b => {
+                    const m = b.mode || 'flight';
+                    const cls = modeBtnStyle[m] || modeBtnStyle.flight;
+                    const pricePart = b.min_price
+                        ? ` — ${Number(b.min_price).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${b.currency || '₺'}${b.duration ? ` (${escapeHtml(b.duration)})` : ''}`
+                        : '';
+                    const lbl = `${b.icon || '🧭'} ${isEn ? (modeLabelEn[m] || b.title_en) : (modeLabelTr[m] || b.title_tr)}${pricePart} →`;
+                    const bOrig = escapeHtml(b.ferry_origin || b.flight_origin || rawOrigDisp).replace(/'/g, "\\'");
+                    const bDest = escapeHtml(b.ferry_dest || b.flight_dest || rawDestDisp).replace(/'/g, "\\'");
+                    return `
+                        <button type="button" onclick="switchToAlternativeMode('${m}', '${bOrig}', '${bDest}')"
+                                class="px-5 py-3 rounded-2xl ${cls} font-black text-xs sm:text-sm transition cursor-pointer inline-flex items-center gap-2 shadow-lg">
+                            <span>${lbl}</span>
+                        </button>
+                    `;
+                }).join('');
+            } else {
+                const fallbackModes = isIslandRoute
+                    ? ['ferry']
+                    : ['flight', 'bus', 'train', 'ferry'].filter(m => m !== modeType);
+                altButtonsHtml = fallbackModes.map(m => {
+                    const cls = modeBtnStyle[m] || modeBtnStyle.flight;
+                    const icon = m === 'ferry' ? '⛴️' : (m === 'train' ? '🚄' : (m === 'bus' ? '🚌' : '✈️'));
+                    const lbl = `${icon} ${isEn ? modeLabelEn[m] : modeLabelTr[m]} →`;
+                    const bOrig = escapeHtml(rawOrigDisp).replace(/'/g, "\\'");
+                    const bDest = escapeHtml(rawDestDisp).replace(/'/g, "\\'");
+                    return `
+                        <button type="button" onclick="switchToAlternativeMode('${m}', '${bOrig}', '${bDest}')"
+                                class="px-5 py-2.5 rounded-xl ${cls} font-black text-xs transition cursor-pointer inline-flex items-center gap-2 shadow-lg">
+                            <span>${lbl}</span>
+                        </button>
+                    `;
+                }).join('');
             }
 
             html += `
                 <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 text-white rounded-3xl p-6 sm:p-8 my-4 border border-amber-500/40 shadow-xl text-center max-w-3xl mx-auto">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/40 text-amber-300 text-[10.5px] font-black uppercase tracking-wider mb-3">
+                        <span>${emptyBadge}</span>
+                    </div>
                     <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/40 flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
                         <i class="fa-solid ${emptyIcon}"></i>
                     </div>
@@ -5111,23 +5185,10 @@ function renderTransportResults(data, searchReq) {
                     <p class="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl mx-auto leading-relaxed">
                         ${emptyDesc}
                     </p>
-                    ${showAltButtons ? `
-                        <div class="mt-6 pt-5 border-t border-slate-800 flex flex-wrap items-center justify-center gap-3">
-                            <span class="w-full text-xs font-bold text-slate-400 mb-1">Kesintisiz Ulaşım İçin Önerilen Alternatifler:</span>
-                            ${modeType !== 'bus' ? `
-                                <button type="button" onclick="switchToTransportAndSearch('bus')" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-2 shadow-lg shadow-emerald-500/20">
-                                    <i class="fa-solid fa-bus"></i>
-                                    <span>🚌 Otobüs Seferlerini Gör</span>
-                                </button>
-                            ` : ''}
-                            ${modeType !== 'flight' ? `
-                                <button type="button" onclick="switchToTransportAndSearch('flight')" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-2 shadow-lg shadow-amber-500/20">
-                                    <i class="fa-solid fa-plane"></i>
-                                    <span>✈️ Uçak Biletlerini Gör</span>
-                                </button>
-                            ` : ''}
-                        </div>
-                    ` : ''}
+                    <div class="mt-6 pt-5 border-t border-slate-800 flex flex-wrap items-center justify-center gap-3">
+                        <span class="w-full text-xs font-bold text-slate-400 mb-1">${isEn ? 'Verified Active Transport Alternatives on This Route:' : 'Bu Rotada Çalışan Doğrulanmış Ulaşım Alternatifleri:'}</span>
+                        ${altButtonsHtml}
+                    </div>
                 </div>
             `;
         } else {
@@ -6627,16 +6688,19 @@ function generateTicketCardsHtml(tickets, searchReq) {
         });
         if (verifiedProviders.length > 0 && ticket.price && Math.abs(Number(verifiedProviders[0].price) - Number(ticket.price)) <= 1) {
             const topProv = verifiedProviders[0];
-            if (topProv.url) flightTargetUrl = topProv.url;
             const topCh = String(topProv.channel || topProv.name || '').toLowerCase();
-            if (topCh.includes('trip')) {
-                flightActionText = isEn ? 'Trip.com ↗' : "Trip.com'dan Al ↗";
-            } else if (topCh.includes('obilet')) {
-                flightActionText = isEn ? 'Obilet ↗' : "Obilet'ten Al ↗";
-            } else if (topCh.includes('enuygun')) {
-                flightActionText = isEn ? 'Enuygun ↗' : "Enuygun'dan Al ↗";
-            } else if (topCh.includes('kiwi')) {
-                flightActionText = isEn ? 'Kiwi.com ↗' : "Kiwi.com'dan Al ↗";
+            // Anayasa 2.2: Komisyonsuz 'official' (Google Flights) kanalı onaylı partner (Trip.com) ana butonunu ezemez
+            if (topProv.active_affiliate !== false && topCh !== 'official' && !topCh.includes('google')) {
+                if (topProv.url) flightTargetUrl = topProv.url;
+                if (topCh.includes('trip')) {
+                    flightActionText = isEn ? 'Trip.com ↗' : "Trip.com'dan Al ↗";
+                } else if (topCh.includes('obilet')) {
+                    flightActionText = isEn ? 'Obilet ↗' : "Obilet'ten Al ↗";
+                } else if (topCh.includes('enuygun')) {
+                    flightActionText = isEn ? 'Enuygun ↗' : "Enuygun'dan Al ↗";
+                } else if (topCh.includes('kiwi')) {
+                    flightActionText = isEn ? 'Kiwi.com ↗' : "Kiwi.com'dan Al ↗";
+                }
             }
         }
         flightTargetUrl = appendPartnerTrackingParams(flightTargetUrl, 'flight', winnerLabel);
@@ -9695,6 +9759,14 @@ function switchToRawGroundRoute(mode, rawOrig, rawDest) {
     }, 80);
 }
 window.switchToRawGroundRoute = switchToRawGroundRoute;
+
+function switchToAlternativeMode(mode, altOrig = '', altDest = '') {
+    const req = window.lastSearchReq || {};
+    const orig = String(altOrig || req.raw_origin || req.origin || '').trim();
+    const dest = String(altDest || req.raw_destination || req.destination || '').trim();
+    switchToRawGroundRoute(mode, orig, dest);
+}
+window.switchToAlternativeMode = switchToAlternativeMode;
 
 function buildSmartHubAnalysisHtml(sha, data, searchReq, isEn) {
     if (!sha || !sha.verdict) return '';

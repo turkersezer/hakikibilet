@@ -781,11 +781,13 @@ def fetch_live_flights_from_google(
             # Trip.com Flights Canlı Uçak Biletleme Linki (Global IATA Güvencesi, Türkçe Ekran ve TL)
             trip_flighttype = "rt" if (is_round and return_date) else "ow"
             trip_ret_param = f"&rdate={return_date}" if (is_round and return_date) else ""
+            trip_pax_param = f"&quantity={adults}" + (f"&childqty={children}" if children > 0 else "") + (f"&babyqty={infants}" if infants > 0 else "")
+            trip_class_param = "&class=c" if is_biz else "&class=y"
             trip_alliance = getattr(settings, "AFFILIATE_TRIP_ALLIANCE_ID", "")
             trip_sid = getattr(settings, "AFFILIATE_TRIP_SID", "")
             trip_aff_param = f"&Allianceid={trip_alliance}&SID={trip_sid}" if trip_alliance else ""
             trip_airline_param = f"&airline={carrier_code}&airlineCode={carrier_code}" if carrier_code else ""
-            trip_flight_link = f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{from_code.lower()}-{to_code.lower()}?flighttype={trip_flighttype}&dcity={from_code.lower()}&acity={to_code.lower()}&ddate={departure_date}{trip_ret_param}&curr=TRY{trip_airline_param}{trip_aff_param}"
+            trip_flight_link = f"https://tr.trip.com/flights/{orig_slug}-to-{dest_slug}/tickets-{from_code.lower()}-{to_code.lower()}?flighttype={trip_flighttype}&dcity={from_code.lower()}&acity={to_code.lower()}&ddate={departure_date}{trip_ret_param}{trip_pax_param}{trip_class_param}&curr=TRY{trip_airline_param}{trip_aff_param}"
 
             # Kiwi.com Canlı Uçak Arama & Biletleme Derin Linki (Travelpayouts campaign_id=111, p=4136)
             tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")

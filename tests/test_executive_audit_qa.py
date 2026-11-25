@@ -14,7 +14,7 @@ def test_homepage_renders_executive_audit_controls():
     assert "hakiki-currency-select" in html
     assert "tabPriceHint-flight" in html
     assert "hbTransportWebsiteTrap" in html
-    assert "app_v3.js?v=20261124_v52" in html
+    assert "app_v3.js?v=20261125_v53" in html
 
 
 def test_all_26_approved_global_affiliate_programs_enrichment():

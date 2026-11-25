@@ -1130,7 +1130,7 @@ class BusService:
     @classmethod
     def get_omio_deep_link(cls, origin_name: str, dest_name: str, departure_date: str) -> str:
         """
-        Omio resmi arama ekranına doğrudan Travelpayouts Marker ile giden URL üretir.
+        Omio resmi arama ekranına doğrudan parametreli derin link üretir.
         """
         orig_slug = cls.get_clean_slug(origin_name)
         dest_slug = cls.get_clean_slug(dest_name)
@@ -1140,11 +1140,7 @@ class BusService:
             dest_slug = "istanbul"
         en_orig = cls._OMIO_EN_SLUGS.get(orig_slug, orig_slug)
         en_dest = cls._OMIO_EN_SLUGS.get(dest_slug, dest_slug)
-        from app.config import settings
-        tp_marker = getattr(settings, "AFFILIATE_TRAVELPAYOUTS_MARKER", "789884")
-        omio_target = f"https://www.omio.com/buses/{en_orig}/{en_dest}?departure_date={departure_date}"
-        encoded = urllib.parse.quote(omio_target, safe="")
-        return f"https://tp.media/r?marker={tp_marker}&p=4083&u={encoded}"
+        return f"https://www.omio.com/buses/{en_orig}/{en_dest}?departure_date={departure_date}&utm_source=hakikibilet&utm_medium=affiliate"
 
     @classmethod
     def _format_duration_str(cls, raw_duration: str) -> str:
@@ -1381,18 +1377,27 @@ class BusService:
         json_url = f"https://www.obilet.com/json/journeys/{orig_id}-{dest_id}/{clean_date}"
 
         raw_journeys = None
+        now_ts = time.time()
+        cooldown_until = getattr(cls, "_OBILET_403_COOLDOWN_UNTIL", 0.0)
+        if now_ts < cooldown_until:
+            return None
+
         with cls._SESSION_LOCK:
             for attempt in range(2):
                 try:
                     opener = cls._ensure_obilet_session(orig_id, dest_id, clean_date, force_refresh=(attempt > 0))
                     req = urllib.request.Request(json_url, data=b"", headers=base_headers)
-                    body = opener.open(req, timeout=9).read().decode("utf-8", errors="ignore")
+                    body = opener.open(req, timeout=5).read().decode("utf-8", errors="ignore")
                     data = json.loads(body)
                     if isinstance(data, dict) and "journeys" in data:
                         raw_journeys = data.get("journeys") or []
                         break
                 except Exception as exc:
+                    err_str = str(exc)
                     logger.warning(f"Obilet live fetch attempt {attempt + 1} failed for {orig_id}-{dest_id}/{clean_date}: {exc}")
+                    if "403" in err_str or "Forbidden" in err_str:
+                        cls._OBILET_403_COOLDOWN_UNTIL = time.time() + 300
+                        break
                     continue
 
         if raw_journeys is None:
