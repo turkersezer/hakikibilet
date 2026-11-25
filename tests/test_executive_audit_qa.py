@@ -140,3 +140,13 @@ def test_cybersecurity_honeypot_blocks_bots_gracefully():
     assert body.get("rate_limited") is True
     assert body.get("blocked_bot") is True
     assert "deep_links" in body
+
+
+def test_render_keep_alive_health_endpoint_and_scheduler_job():
+    res = client.get("/api/health", headers=BROWSER_HEADERS)
+    assert res.status_code == 200
+    body = res.json()
+    assert body.get("status") == "ok"
+
+    from app.services.scheduler_service import scheduled_render_keep_alive_ping
+    assert callable(scheduled_render_keep_alive_ping)
