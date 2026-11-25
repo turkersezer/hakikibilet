@@ -2825,8 +2825,18 @@ class HotelService:
             # 7. Doğrudan Otelin Kendi Sayfasına İnen (Tarih ve Kişi Sayısı Dolu) Doğrulanmış Linkler
             q_hotel_city = urllib.parse.quote(f"{name} {city_clean}")
 
-            # Trip.com Doğrudan Otel Detay Linki (/hotels/detail/?hotelId=...)
+            # Trip.com Doğrudan Otel Detay Linki (/hotels/detail/?hotelId=... veya otel adı + cityId filtreli doğrudan tesis ekranı)
             trip_hotel_direct = h.get("trip_hotel_url")
+            if not trip_hotel_direct:
+                q_trip_prop = urllib.parse.quote(f"{name} {city_clean}".strip())
+                cid_part = f"&cityId={city_id}" if city_id else ""
+                trip_hotel_direct = (
+                    f"https://{trip_domain}/hotels/list?flexType=1{cid_part}"
+                    f"&cityName={urllib.parse.quote(city_clean)}&destName={urllib.parse.quote(city_clean)}"
+                    f"&searchWord={q_trip_prop}&keyword={q_trip_prop}"
+                    f"&checkin={cin}&checkout={cout}&crn=1&adult={guests}&curr={currency}&locale={locale}"
+                    f"&Allianceid={trip_aid}&SID={trip_sid}"
+                )
 
             # Enuygun Doğrudan Otel Detay Linki (/otel/detay/{slug}/)
             # SIFIR VARSAYIM KURALI: Asla /otel/bolge/... genel şehir arama sayfasına fallback yapılmaz!

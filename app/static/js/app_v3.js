@@ -7261,7 +7261,8 @@ async function executeHotelSearch(e) {
         const abortCtrl = new AbortController();
         window._activeHotelAbort = abortCtrl;
 
-        let dynamicOrigin = (window.HakikiTravelContext && window.HakikiTravelContext.origin_name)
+        let dynamicOrigin = window.customHotelTransitOrigin
+            || (window.HakikiTravelContext && window.HakikiTravelContext.origin_name)
             || (document.getElementById("transOrigin") && document.getElementById("transOrigin").value.trim())
             || "İstanbul";
         const cleanDestToken = city.split("(")[0].trim().toLocaleLowerCase("tr-TR");
@@ -7269,14 +7270,26 @@ async function executeHotelSearch(e) {
             dynamicOrigin = cleanDestToken.includes("ankara") ? "İstanbul" : "Ankara";
         }
 
+        let adultsCount = 2;
+        let childrenCount = 0;
+        if (String(guests).includes("+")) {
+            const gParts = String(guests).split("+");
+            adultsCount = parseInt(gParts[0], 10) || 2;
+            childrenCount = parseInt(gParts[1], 10) || 0;
+        } else {
+            adultsCount = parseInt(guests, 10) || 2;
+        }
+        const totalGuestsCount = adultsCount + childrenCount;
+
         const hotelTrapEl = document.getElementById("hbHotelWebsiteTrap");
         const payload = {
             origin: dynamicOrigin,
             destination: city,
             departure_date: cin,
             return_date: cout,
-            passengers: parseInt(guests) || 2,
-            adults: parseInt(guests) || 2,
+            passengers: totalGuestsCount,
+            adults: adultsCount,
+            children: childrenCount,
             transport_type: "all", // Tüm ulaşım modlarını (uçak, tren, otobüs, feribot) aynı anda sorgula
             trip_type: "round_trip",
             include_hotel: true,
@@ -7308,9 +7321,22 @@ async function executeHotelSearch(e) {
     }
 }
 
+function changeHotelTransitOrigin(newOrigin) {
+    if (!newOrigin) return;
+    window.customHotelTransitOrigin = newOrigin;
+    const transOrigEl = document.getElementById("transOrigin");
+    if (transOrigEl) transOrigEl.value = newOrigin;
+    if (window.HakikiTravelContext) window.HakikiTravelContext.origin_name = newOrigin;
+    executeHotelSearch();
+}
+window.changeHotelTransitOrigin = changeHotelTransitOrigin;
+
 // OTEL ARAMA SONUÇLARI: MULTI-MODAL ULAŞIM BANDI + KOMBİNE SEPET + CANLI OTELLER
 function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
     if (!window.lastHotelSearchArgs || window.lastHotelSearchArgs.city !== city) { window.currentHotelSortTab = 'fp_best'; window.currentHotelConceptFilter = 'all'; }
+    if (typeof applyCurrencyToHotelInfo === 'function') {
+        applyCurrencyToHotelInfo(hotelInfo, data, activeCurrency);
+    }
     window.lastHotelSearchArgs = { hotelInfo, city, cin, cout, guests, data };
     const isEn = (window.currentAppLang === 'en');
     const resultsArea = document.getElementById("hotelResultsArea");
@@ -7570,6 +7596,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                 <span>${isEn ? 'All links open the exact hotel page directly.' : 'Tüm butonlar doğrudan bu otelin kendi resmi acente sayfasına iner.'}</span>
                             </div>
                             <a href="${searchedHotel.url || searchedHotel.direct_url || shTripUrl}" target="_blank" rel="noopener noreferrer"
+                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(searchedHotel.provider || 'Trip.com')}', 'hotel', '${safeOrigJs}', '${safeCityJs}', ${Number(searchedHotel.nightly_price || 0)})"
                                class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-md transition inline-flex items-center gap-2">
                                 <span>🏆 ${shHasNumericPrice
                                     ? (isEn ? `Go to Best Offer (${escapeHtml(searchedHotel.provider)}) ↗` : `En Uygun Teklife Git (${escapeHtml(searchedHotel.provider)}) ↗`)
@@ -7616,6 +7643,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                     </div>
                                 </div>
                                 <a href="${searchedHotel.enuygun_url}" target="_blank" rel="noopener noreferrer"
+                                   onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Enuygun Otel', 'hotel', '${safeOrigJs}', '${safeCityJs}', ${Number(searchedHotel.enuygun_price || searchedHotel.nightly_price || 0)})"
                                    class="mt-3 w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
                                     <span>${searchedHotel.enuygun_price_formatted
                                         ? (isEn ? 'Select on Enuygun ↗' : "Enuygun'da Odayı Seç ↗")
@@ -7650,6 +7678,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                     </div>
                                 </div>
                                 <a href="${shTripUrl}" target="_blank" rel="noopener noreferrer"
+                                   onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Trip.com', 'hotel', '${safeOrigJs}', '${safeCityJs}', ${Number(searchedHotel.trip_price || searchedHotel.nightly_price || 0)})"
                                    class="mt-3 w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
                                     <span>${searchedHotel.trip_price_formatted
                                         ? (isEn ? 'Select on Trip.com ↗' : "Trip.com'da Odayı Seç ↗")
@@ -7684,6 +7713,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                     </div>
                                 </div>
                                 <a href="${searchedHotel.etstur_url}" target="_blank" rel="noopener noreferrer"
+                                   onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Etstur', 'hotel', '${safeOrigJs}', '${safeCityJs}', ${Number(searchedHotel.etstur_price || searchedHotel.nightly_price || 0)})"
                                    class="mt-3 w-full py-2.5 px-3 bg-sky-700 hover:bg-sky-800 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
                                     <span>${searchedHotel.etstur_price_formatted
                                         ? (isEn ? 'Select on Etstur ↗' : "Etstur'da Odayı Seç ↗")
@@ -7704,6 +7734,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                     <div class="text-[11px] font-bold text-slate-500 mt-0.5">${isEn ? 'Pre-filled property search' : 'Tarih dolu doğrudan tesis araması'}</div>
                                 </div>
                                 <a href="${searchedHotel.booking_url}" target="_blank" rel="noopener noreferrer"
+                                   onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Booking.com', 'hotel', '${safeOrigJs}', '${safeCityJs}', ${Number(searchedHotel.nightly_price || 0)})"
                                    class="mt-3 w-full py-2.5 px-3 bg-[#003580] hover:bg-[#00224f] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
                                     <span>${isEn ? 'Open Booking.com ↗' : "Booking.com'da Aç ↗"}</span>
                                 </a>
@@ -7727,6 +7758,7 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                                 </div>
                             </div>
                             <a href="${shGoogleUrl}" target="_blank" rel="noopener noreferrer"
+                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Google Hotels', 'hotel', '${safeOrigJs}', '${safeCityJs}', ${Number(searchedHotel.nightly_price || 0)})"
                                class="mt-3 w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
                                 <span>${isEn ? 'Open Google Hotels ↗' : "Google Hotels'de Aç ↗"}</span>
                             </a>
@@ -7737,13 +7769,23 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
         `;
     }
 
+    const transitOriginsList = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Trabzon', 'Gaziantep', 'Kayseri', 'Konya', 'Diyarbakır', 'Samsun'];
+    const currentOrigClean = String(activeOrigName || 'İstanbul').split('(')[0].trim();
+    if (!transitOriginsList.some(c => c.toLocaleLowerCase('tr-TR') === currentOrigClean.toLocaleLowerCase('tr-TR'))) {
+        transitOriginsList.unshift(currentOrigClean);
+    }
+    const radicalStorageStayUrl = 'https://tp.media/r?campaign_id=209&marker=789884&p=5867&trs=585474&u=https%3A%2F%2Fradicalstorage.com%2F';
+    const tiqetsStayUrl = `https://tp.media/r?campaign_id=89&marker=789884&p=2074&trs=585474&u=${encodeURIComponent('https://www.tiqets.com/en/search?q=' + encodeURIComponent(displayCity || city))}`;
+    const airaloStayUrl = 'https://tp.media/r?campaign_id=541&marker=789884&p=8310&trs=585474&u=https%3A%2F%2Fwww.airalo.com%2F';
+    const currSym = (hotelInfo && hotelInfo.currency) || (HAKIKI_FX_RATES_TO_TRY[activeCurrency] && HAKIKI_FX_RATES_TO_TRY[activeCurrency].symbol) || '₺';
+
     let html = `
         ${searchedHotelHeroHtml}
         <!-- 🧭 MULTI-MODAL ULAŞIM ALTERNATİFLERİ BANDI (ÇİFT YÖNLÜ ÇAPRAZ SATIŞ) -->
         <div class="mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/80 rounded-3xl p-5 sm:p-6 text-white shadow-xl">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-700/80 pb-4 mb-4">
                 <div>
-                    <div class="flex items-center gap-2 mb-1">
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950">
                             🧭 ${isEn ? 'Transport Options to City' : 'Şehre Ulaşım Alternatifleri'}
                         </span>
@@ -7751,9 +7793,18 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     </div>
                     <h4 class="text-base sm:text-lg font-black text-white">${isEn ? `How to Get to ${safeCity}? (Verified Base Fares)` : `${safeCity} Şehrine Nasıl Gidilir? (Doğrulanmış Taban Fiyatlar)`}</h4>
                 </div>
-                <button onclick="prefillTransportAndSwitch('${safeOrigJs}', '${safeCityJs}', '${escapeHtml(cin)}', '${escapeHtml(cout)}')" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-amber-300 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0">
-                    <span>${isEn ? 'List All Schedules ▾' : 'Tüm Sefer Saatlerini Listele ▾'}</span>
-                </button>
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <label class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs font-bold text-slate-200">
+                        <i class="fa-solid fa-location-arrow text-amber-400 text-[11px]"></i>
+                        <span>${isEn ? 'From:' : 'Kalkış:'}</span>
+                        <select onchange="changeHotelTransitOrigin(this.value)" class="bg-transparent text-amber-300 font-black focus:outline-none cursor-pointer">
+                            ${transitOriginsList.map(origOpt => `<option value="${escapeHtml(origOpt)}" class="text-slate-900 font-bold" ${origOpt.toLocaleLowerCase('tr-TR') === currentOrigClean.toLocaleLowerCase('tr-TR') ? 'selected' : ''}>${escapeHtml(origOpt)}</option>`).join('')}
+                        </select>
+                    </label>
+                    <button onclick="prefillTransportAndSwitch('${safeOrigJs}', '${safeCityJs}', '${escapeHtml(cin)}', '${escapeHtml(cout)}')" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-amber-300 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0">
+                        <span>${isEn ? 'List All Schedules ▾' : 'Tüm Sefer Saatlerini Listele ▾'}</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Mod Kartları Grid (Uçak, Tren, Otobüs, Feribot) -->
@@ -7875,11 +7926,11 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     <div class="flex flex-wrap items-center gap-2 text-xs text-slate-700 mt-2 font-medium">
                         <span class="inline-flex items-center gap-1.5 bg-white px-3 py-1 rounded-xl border border-slate-200 shadow-2xs">
                             ${bestTransport.transport_type === 'flight' ? '✈️' : (bestTransport.transport_type === 'train' ? '🚆' : (bestTransport.transport_type === 'bus' ? '🚌' : '⛴️'))} 
-                            <strong>${isEn ? 'Transit:' : 'Ulaşım:'}</strong> ${escapeHtml(bestTransport.carrier)} (${bestTransport.price ? Number(bestTransport.price).toLocaleString('tr-TR') + ' ₺' : (isEn ? 'Live' : 'Canlı')})
+                            <strong>${isEn ? 'Transit:' : 'Ulaşım:'}</strong> ${escapeHtml(bestTransport.carrier)} (${bestTransport.price ? Number(bestTransport.price).toLocaleString('tr-TR') + ' ' + currSym : (isEn ? 'Live' : 'Canlı')})
                         </span>
                         <span class="text-slate-400 font-bold">+</span>
                         <span class="inline-flex items-center gap-1.5 bg-white px-3 py-1 rounded-xl border border-emerald-200 shadow-2xs">
-                            🏨 <strong>${isEn ? 'Hotel:' : 'Otel:'}</strong> ${escapeHtml(topHotel.name)} (${topHotel.total_price_formatted || (hotelTotal.toLocaleString('tr-TR') + ' ₺')})
+                            🏨 <strong>${isEn ? 'Hotel:' : 'Otel:'}</strong> ${escapeHtml(topHotel.name)} (${topHotel.total_price_formatted || (hotelTotal.toLocaleString('tr-TR') + ' ' + currSym)})
                         </span>
                     </div>
                 </div>
@@ -7887,17 +7938,21 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                 <div class="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between w-full lg:w-auto gap-3">
                     <div class="text-left lg:text-right">
                         <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">${isEn ? 'Estimated Total Bundle' : 'Tahmini Toplam Paket Tutarı'}</div>
-                        <div class="text-2xl sm:text-3xl font-black text-[#0F172A]">${combinedTotal ? combinedTotal.toLocaleString('tr-TR') + ' ₺' : (isEn ? 'Live Rate' : 'Canlı Fiyat')}</div>
+                        <div class="text-2xl sm:text-3xl font-black text-[#0F172A]">${combinedTotal ? combinedTotal.toLocaleString('tr-TR') + ' ' + currSym : (isEn ? 'Live Rate' : 'Canlı Fiyat')}</div>
                         <div class="text-[10px] text-emerald-700 font-bold mt-0.5 flex items-center lg:justify-end gap-1">
                             <i class="fa-solid fa-shield-check"></i>
                             <span>${isEn ? 'Zero Markup • Direct Official Links' : 'Sıfır Komisyon • Doğrudan Otel & Taşıyıcı Sayfası'}</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <a href="${bestTransport.direct_link || '#'}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-slate-900 hover:bg-black text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                        <a href="${bestTransport.direct_link || '#'}" target="_blank" rel="noopener noreferrer"
+                           onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(bestTransport.carrier || 'Transit')}', '${escapeHtml(bestTransport.transport_type || 'flight')}', '${safeOrigJs}', '${safeCityJs}', ${Number(bestTransport.price || 0)})"
+                           class="px-3.5 py-2 bg-slate-900 hover:bg-black text-white font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
                             <span>${bestTransport.transport_type === 'flight' ? (isEn ? '✈️ Book Transit ↗' : '✈️ Ulaşımı Al ↗') : (isEn ? '🚆 Book Transit ↗' : '🚌 Ulaşımı Al ↗')}</span>
                         </a>
-                        <a href="${topHotel.url || topHotel.direct_url || tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                        <a href="${topHotel.url || topHotel.direct_url || tripHotelUrl}" target="_blank" rel="noopener noreferrer"
+                           onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('${escapeHtml(topHotel.provider || 'Trip.com')}', 'hotel', '${safeOrigJs}', '${safeCityJs}', ${Number(hotelNightly || 0)})"
+                           class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
                             <span>🏨 ${isEn ? 'Open Hotel Page ↗' : 'Otelin Sayfasına Git ↗'}</span>
                         </a>
                     </div>
@@ -7921,44 +7976,68 @@ function renderHotelResults(hotelInfo, city, cin, cout, guests, data) {
                     <div class="text-xs text-slate-500 mt-0.5 font-medium">${cin} — ${cout} (${hotelInfo.nights} ${isEn ? 'Nights' : 'Gece'}) • ${guests} ${isEn ? 'Guests • Pre-filled Direct Room Links' : 'Misafir • Tarih ve Kişi Sayısı Dolu Doğrudan Otel Sayfaları'}</div>
                 </div>
                 <div class="flex flex-wrap items-center gap-1.5">
-                    <a href="${tripHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                    <a href="${tripHotelUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Trip.com', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Trip.com', '🏨', 'w-3.5 h-3.5')}
                         <span>${isEn ? 'All on Trip.com ↗' : 'Trip.com Tüm Liste ↗'}</span>
                     </a>
                     ${bookingUrl ? `
-                    <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-[#003580] hover:bg-[#00224f] text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                    <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Booking.com', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-[#003580] hover:bg-[#00224f] text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Booking.com', '🏨', 'w-3.5 h-3.5')}
                         <span>Booking.com ↗</span>
                     </a>
                     ` : ''}
                     ${enuygunUrl ? `
-                    <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                    <a href="${enuygunUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Enuygun Otel', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Enuygun', '💚', 'w-3.5 h-3.5')}
                         <span>${isEn ? 'Enuygun Hotels ↗' : 'Enuygun Tüm Liste ↗'}</span>
                     </a>
                     ` : ''}
                     ${obiletHotelUrl ? `
-                    <a href="${obiletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                    <a href="${obiletHotelUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Obilet Otel', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Obilet', '🎟️', 'w-3.5 h-3.5')}
                         <span>Obilet Otel ↗</span>
                     </a>
                     ` : ''}
                     ${etsturUrl ? `
-                    <a href="${etsturUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-sky-700 hover:bg-sky-800 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                    <a href="${etsturUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Etstur', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-sky-700 hover:bg-sky-800 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
                         <i class="fa-solid fa-umbrella-beach text-[10px]"></i>
                         <span>Etstur ↗</span>
                     </a>
                     ` : ''}
                     ${biletHotelUrl ? `
-                    <a href="${biletHotelUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
+                    <a href="${biletHotelUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Bilet.com', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
                         ${getBrandLogoHtml('Bilet.com', '🏨', 'w-3.5 h-3.5')}
                         <span>Bilet.com ↗</span>
                     </a>
                     ` : ''}
-                    ${agodaUrl ? `
-                    <a href="${agodaUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-[11px] rounded-xl shadow-2xs transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-suitcase text-[10px]"></i>
-                        <span>Agoda ↗</span>
+                    <a href="${radicalStorageStayUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Radical Storage', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-950 font-black text-[11px] rounded-xl border border-amber-300 shadow-2xs transition flex items-center gap-1.5"
+                       title="${isEn ? 'Early arrival or late checkout luggage storage' : 'Erken varış veya geç çıkışta valiz emanet noktaları'}">
+                        <span>🧳 ${isEn ? 'Luggage Storage ↗' : 'Valiz Emanet ↗'}</span>
+                    </a>
+                    <a href="${tiqetsStayUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Tiqets', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-950 font-black text-[11px] rounded-xl border border-purple-300 shadow-2xs transition flex items-center gap-1.5">
+                        <span>🏛️ ${isEn ? 'Museums & Tours ↗' : 'Müze & Tur ↗'}</span>
+                    </a>
+                    ${isIntl ? `
+                    <a href="${airaloStayUrl}" target="_blank" rel="noopener noreferrer"
+                       onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Airalo eSIM', 'hotel', '${safeOrigJs}', '${safeCityJs}', 0)"
+                       class="px-3 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-950 font-black text-[11px] rounded-xl border border-indigo-300 shadow-2xs transition flex items-center gap-1.5">
+                        <span>📱 Airalo eSIM ↗</span>
                     </a>
                     ` : ''}
                 </div>
@@ -8384,12 +8463,14 @@ function renderFilteredHotelCards() {
                                     ${!isIntl ? `
                                         ${h.enuygun_url ? `
                                             <a href="${h.enuygun_url}" target="_blank" rel="noopener noreferrer"
+                                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Enuygun Otel', 'hotel', '', '${escapeHtml(String(city || '').replace(/'/g, ''))}', ${Number(h.enuygun_price || h.nightly_price || 0)})"
                                                class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[11.5px] font-black rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-center">
                                                 <span>${isEn ? 'Select on Enuygun ↗' : "Enuygun'da Odayı Seç ↗"}</span>
                                             </a>
                                         ` : ''}
                                         ${tripDirect ? `
                                             <a href="${tripDirect}" target="_blank" rel="noopener noreferrer"
+                                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Trip.com', 'hotel', '', '${escapeHtml(String(city || '').replace(/'/g, ''))}', ${Number(h.trip_price || h.nightly_price || 0)})"
                                                class="py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-[11.5px] font-black rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-center">
                                                 <span>${isEn ? 'Select on Trip.com ↗' : "Trip.com'da Odayı Seç ↗"}</span>
                                             </a>
@@ -8397,12 +8478,14 @@ function renderFilteredHotelCards() {
                                     ` : `
                                         ${tripDirect ? `
                                             <a href="${tripDirect}" target="_blank" rel="noopener noreferrer"
+                                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Trip.com', 'hotel', '', '${escapeHtml(String(city || '').replace(/'/g, ''))}', ${Number(h.trip_price || h.nightly_price || 0)})"
                                                class="py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-[11.5px] font-black rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-center">
                                                 <span>${isEn ? 'Select on Trip.com ↗' : "Trip.com'da Odayı Seç ↗"}</span>
                                             </a>
                                         ` : ''}
                                         ${h.booking_url ? `
                                             <a href="${h.booking_url}" target="_blank" rel="noopener noreferrer"
+                                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Booking.com', 'hotel', '', '${escapeHtml(String(city || '').replace(/'/g, ''))}', ${Number(h.nightly_price || 0)})"
                                                class="py-2.5 px-3 bg-[#003580] hover:bg-[#00224f] text-white text-[11.5px] font-black rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-center">
                                                 <span>${isEn ? 'Booking.com Room ↗' : "Booking'de Odayı Seç ↗"}</span>
                                             </a>
@@ -8415,12 +8498,16 @@ function renderFilteredHotelCards() {
                                     <span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>${isEn ? 'Dates & guests pre-filled' : 'Tarih ve kişi sayısı dolu açılır'}</span>
                                     <div class="flex items-center gap-2.5">
                                         ${!isIntl && h.etstur_url ? `
-                                            <a href="${h.etstur_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-sky-700 hover:text-sky-900">
+                                            <a href="${h.etstur_url}" target="_blank" rel="noopener noreferrer"
+                                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Etstur', 'hotel', '', '${escapeHtml(String(city || '').replace(/'/g, ''))}', ${Number(h.etstur_price || h.nightly_price || 0)})"
+                                               class="font-bold text-sky-700 hover:text-sky-900">
                                                 ${h.etstur_price_formatted ? `Etstur (${escapeHtml(h.etstur_price_formatted)}) ↗` : "Etstur'da İncele ↗"}
                                             </a>
                                         ` : ''}
                                         ${h.google_url ? `
-                                            <a href="${h.google_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-slate-700 hover:text-slate-950">
+                                            <a href="${h.google_url}" target="_blank" rel="noopener noreferrer"
+                                               onclick="if(typeof trackRedirectClick==='function') trackRedirectClick('Google Hotels', 'hotel', '', '${escapeHtml(String(city || '').replace(/'/g, ''))}', ${Number(h.nightly_price || 0)})"
+                                               class="font-bold text-slate-700 hover:text-slate-950">
                                                 Google Hotels ↗
                                             </a>
                                         ` : ''}
@@ -10775,6 +10862,72 @@ function applyCurrencyToTransportData(data, targetCurrCode = 'TRY') {
 }
 window.applyCurrencyToTransportData = applyCurrencyToTransportData;
 
+function applyCurrencyToHotelInfo(hotelInfo, data, targetCurrCode = 'TRY') {
+    const code = HAKIKI_FX_RATES_TO_TRY[targetCurrCode] ? targetCurrCode : 'TRY';
+    const sym = HAKIKI_FX_RATES_TO_TRY[code].symbol;
+    if (data && typeof data === 'object') {
+        applyCurrencyToTransportData(data, code);
+    }
+    if (!hotelInfo || typeof hotelInfo !== 'object') return hotelInfo;
+    hotelInfo.currency = sym;
+    const nights = Number(hotelInfo.nights || 2);
+    const fmtPrice = (val) => (val && Number(val) > 0) ? `${Number(val).toLocaleString('tr-TR')} ${sym}` : null;
+
+    if (Array.isArray(hotelInfo.live_hotels)) {
+        hotelInfo.live_hotels.forEach(h => {
+            if (!h) return;
+            if (h._orig_curr === undefined) {
+                h._orig_curr = h.currency || '₺';
+                h._orig_nightly_price = h.nightly_price || h.price || null;
+                h._orig_total_price = h.total_price || null;
+                h._orig_old_nightly_price = h.old_nightly_price || null;
+                h._orig_enuygun_price = h.enuygun_price || null;
+                h._orig_enuygun_total = h.enuygun_total || null;
+                h._orig_trip_price = h.trip_price || null;
+                h._orig_trip_total = h.trip_total || null;
+                h._orig_etstur_price = h.etstur_price || null;
+                h._orig_etstur_total = h.etstur_total || null;
+            }
+            h.currency = sym;
+            if (h._orig_nightly_price) {
+                h.nightly_price = convertAmountFromTry(h._orig_nightly_price, h._orig_curr, code);
+                h.price = h.nightly_price;
+                h.price_formatted = fmtPrice(h.nightly_price);
+            }
+            if (h._orig_total_price) {
+                h.total_price = convertAmountFromTry(h._orig_total_price, h._orig_curr, code);
+                h.total_price_formatted = fmtPrice(h.total_price);
+            } else if (h.nightly_price) {
+                h.total_price = h.nightly_price * nights;
+                h.total_price_formatted = fmtPrice(h.total_price);
+            }
+            if (h._orig_old_nightly_price) {
+                h.old_nightly_price = convertAmountFromTry(h._orig_old_nightly_price, h._orig_curr, code);
+            }
+            if (h._orig_enuygun_price) {
+                h.enuygun_price = convertAmountFromTry(h._orig_enuygun_price, h._orig_curr, code);
+                h.enuygun_price_formatted = fmtPrice(h.enuygun_price);
+                h.enuygun_total = h._orig_enuygun_total ? convertAmountFromTry(h._orig_enuygun_total, h._orig_curr, code) : (h.enuygun_price * nights);
+                h.enuygun_total_formatted = fmtPrice(h.enuygun_total);
+            }
+            if (h._orig_trip_price) {
+                h.trip_price = convertAmountFromTry(h._orig_trip_price, h._orig_curr, code);
+                h.trip_price_formatted = fmtPrice(h.trip_price);
+                h.trip_total = h._orig_trip_total ? convertAmountFromTry(h._orig_trip_total, h._orig_curr, code) : (h.trip_price * nights);
+                h.trip_total_formatted = fmtPrice(h.trip_total);
+            }
+            if (h._orig_etstur_price) {
+                h.etstur_price = convertAmountFromTry(h._orig_etstur_price, h._orig_curr, code);
+                h.etstur_price_formatted = fmtPrice(h.etstur_price);
+                h.etstur_total = h._orig_etstur_total ? convertAmountFromTry(h._orig_etstur_total, h._orig_curr, code) : (h.etstur_price * nights);
+                h.etstur_total_formatted = fmtPrice(h.etstur_total);
+            }
+        });
+    }
+    return hotelInfo;
+}
+window.applyCurrencyToHotelInfo = applyCurrencyToHotelInfo;
+
 function setAppCurrency(currCode) {
     const clean = String(currCode || 'TRY').toUpperCase();
     const valid = HAKIKI_FX_RATES_TO_TRY[clean] ? clean : 'TRY';
@@ -10790,6 +10943,10 @@ function setAppCurrency(currCode) {
 
     if (window.lastTransportData && window.lastSearchReq && typeof window.renderTransportResults === 'function') {
         window.renderTransportResults(window.lastTransportData, window.lastSearchReq);
+    }
+    if (window.lastHotelSearchArgs && typeof window.renderHotelResults === 'function') {
+        const ha = window.lastHotelSearchArgs;
+        window.renderHotelResults(ha.hotelInfo, ha.city, ha.cin, ha.cout, ha.guests, ha.data);
     }
     return valid;
 }

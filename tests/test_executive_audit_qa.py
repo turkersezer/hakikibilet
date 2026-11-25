@@ -14,7 +14,9 @@ def test_homepage_renders_executive_audit_controls():
     assert "hakiki-currency-select" in html
     assert "tabPriceHint-flight" in html
     assert "hbTransportWebsiteTrap" in html
-    assert "app_v3.js?v=20261125_v53" in html
+    assert 'value="2+1c"' in html
+    assert 'value="2+2c"' in html
+    assert "app_v3.js?v=20261125_v54" in html
 
 
 def test_all_26_approved_global_affiliate_programs_enrichment():
@@ -150,3 +152,22 @@ def test_render_keep_alive_health_endpoint_and_scheduler_job():
 
     from app.services.scheduler_service import scheduled_render_keep_alive_ping
     assert callable(scheduled_render_keep_alive_ping)
+
+
+def test_hotel_service_guarantees_trip_com_button_on_all_hotel_cards():
+    from app.services.hotel_service import HotelService
+
+    rec = HotelService.get_hotel_recommendation(
+        "Antalya",
+        "2026-11-28",
+        "2026-12-01",
+        2,
+    )
+    assert rec is not None
+    live_hotels = rec.get("live_hotels") or []
+    assert len(live_hotels) > 0
+    for h in live_hotels:
+        trip_u = h.get("trip_url") or ""
+        assert trip_u.startswith("https://"), f"Missing trip_url on hotel card: {h.get('name')}"
+        assert "Allianceid=11051531" in trip_u and "SID=333747492" in trip_u
+
